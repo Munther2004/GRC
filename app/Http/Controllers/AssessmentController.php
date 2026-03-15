@@ -200,6 +200,45 @@ class AssessmentController extends Controller
         return back()->with('success', 'Answers saved successfully.');
     }
 
+    public function autoFill(Assessment $assessment)
+    {
+        $statuses = ['compliant', 'compliant', 'compliant', 'partially_compliant', 'partially_compliant', 'non_compliant', 'not_applicable'];
+        $comments = [
+            'compliant'            => ['Control fully implemented and verified.', 'Evidence reviewed and approved.', 'Process documented and operational.'],
+            'partially_compliant'  => ['Partially implemented, gaps identified.', 'In progress — remediation planned Q3.', 'Some evidence available, documentation incomplete.'],
+            'non_compliant'        => ['Not yet implemented.', 'Control missing — remediation required.', 'No evidence of implementation found.'],
+            'not_applicable'       => [],
+        ];
+
+        $assessment->items()->each(function ($item) use ($statuses, $comments) {
+            $status = $statuses[array_rand($statuses)];
+            $pool   = $comments[$status];
+            $item->update([
+                'compliance_status' => $status,
+                'comments'          => count($pool) ? $pool[array_rand($pool)] : null,
+            ]);
+        });
+
+        $assessment->recalculateCompliance();
+        $assessment->update(['status' => 'completed']);
+
+        AuditLog::record(
+            'submitted',
+            'Assessment',
+            $assessment->id,
+            "[QA AUTO-FILL] Assessment '{$assessment->title}' auto-filled and submitted with {$assessment->compliance_percentage}% compliance"
+        );
+
+        $rulesEngine = new RulesEngine();
+        $rulesEngine->applyRule1($assessment);
+        $rulesEngine->applyRule2($assessment);
+
+        (new AIRiskGenerator())->generateRisksFromAssessment($assessment);
+
+        return redirect()->route('assessments.show', $assessment)
+            ->with('success', '[QA] Assessment auto-filled and submitted successfully.');
+    }
+
     public function submit(Assessment $assessment)
     {
         $assessment->recalculateCompliance();

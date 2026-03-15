@@ -4,7 +4,7 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ArrowRight, Save, CheckCircle, Upload, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, CheckCircle, Upload, ChevronRight, FlaskConical } from 'lucide-react';
 import { useState, useRef } from 'react';
 
 interface Control {
@@ -103,6 +103,11 @@ export default function Questionnaire({ assessment, items, pagination, progress 
         router.post(route('assessments.submit', assessment.id));
     };
 
+    const qaAutoFill = () => {
+        if (!confirm('[QA] Auto-fill ALL controls with random statuses and submit? This will complete the assessment immediately.')) return;
+        router.post(route('assessments.auto-fill', assessment.id));
+    };
+
     const handleFileSelect = (itemId: number, file: File) => {
         setPendingUpload({ itemId, file });
         setExpiryDate('');
@@ -152,14 +157,26 @@ export default function Questionnaire({ assessment, items, pagination, progress 
                             </div>
                         </div>
                     </div>
-                    <Button
-                        onClick={submitAssessment}
-                        className="gap-2 bg-green-600 hover:bg-green-700"
-                        disabled={saving}
-                    >
-                        <CheckCircle className="w-4 h-4" />
-                        Submit Assessment
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            onClick={qaAutoFill}
+                            variant="outline"
+                            className="gap-2 border-orange-400 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950"
+                            disabled={saving}
+                            title="QA: randomly fills all controls and submits the assessment"
+                        >
+                            <FlaskConical className="w-4 h-4" />
+                            QA Auto-Fill
+                        </Button>
+                        <Button
+                            onClick={submitAssessment}
+                            className="gap-2 bg-green-600 hover:bg-green-700"
+                            disabled={saving}
+                        >
+                            <CheckCircle className="w-4 h-4" />
+                            Submit Assessment
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Progress Bar */}

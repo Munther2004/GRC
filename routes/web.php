@@ -70,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/assessments/{assessment}/questionnaire',         [AssessmentController::class, 'questionnaire'])->name('assessments.questionnaire');
         Route::post('/assessments/{assessment}/save-answers',         [AssessmentController::class, 'saveAnswers'])->name('assessments.save-answers');
         Route::post('/assessments/{assessment}/submit',               [AssessmentController::class, 'submit'])->name('assessments.submit');
+        Route::post('/assessments/{assessment}/auto-fill',            [AssessmentController::class, 'autoFill'])->name('assessments.auto-fill');
         Route::post('/assessments/{assessment}/items/{item}/evidence',[AssessmentController::class, 'uploadEvidence'])->name('assessments.upload-evidence');
     });
 

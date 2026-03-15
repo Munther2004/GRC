@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Risk extends Model
 {
-    protected $fillable = ['user_id', 'title', 'description', 'category', 'owner', 'likelihood', 'impact', 'status', 'treatment', 'treatment_plan', 'due_date', 'auto_generated', 'source_control_id', 'mitigation_steps'];
+    protected $fillable = ['user_id', 'title', 'description', 'category', 'owner', 'likelihood', 'impact', 'status', 'treatment', 'treatment_plan', 'due_date', 'auto_generated', 'source_control_id', 'assessment_id', 'mitigation_steps'];
 
     public function user() { return $this->belongsTo(User::class); }
 
@@ -18,6 +18,11 @@ class Risk extends Model
     public function sourceControl()
     {
         return $this->belongsTo(Control::class, 'source_control_id');
+    }
+
+    public function assessment()
+    {
+        return $this->belongsTo(Assessment::class);
     }
 
     public function getRiskLevelAttribute(): string

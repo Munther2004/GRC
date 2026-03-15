@@ -19,6 +19,7 @@ class Assessment extends Model
     public function user()       { return $this->belongsTo(User::class); }
     public function framework()  { return $this->belongsTo(Framework::class); }
     public function items()      { return $this->hasMany(AssessmentItem::class); }
+    public function risks()      { return $this->hasMany(Risk::class); }
 
     public function recalculateCompliance(): void
     {

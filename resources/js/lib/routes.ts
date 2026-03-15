@@ -30,6 +30,7 @@ export const route = (name: string, params?: any): string => {
         'assessments.export-pdf':    `/assessments/${id}/export-pdf`,
         'assessments.save-answers':  `/assessments/${id}/save-answers`,
         'assessments.submit':        `/assessments/${id}/submit`,
+        'assessments.auto-fill':     `/assessments/${id}/auto-fill`,
 
         // Admin — Users
         'admin.users.index':   '/admin/users',

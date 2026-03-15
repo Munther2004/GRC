@@ -16,40 +16,47 @@ class AIRiskGenerator
 
     public function generateRisksFromAssessment(Assessment $assessment): void
     {
-        $nonCompliantItems = AssessmentItem::where('assessment_id', $assessment->id)
-            ->where('compliance_status', 'non_compliant')
+        $items = AssessmentItem::where('assessment_id', $assessment->id)
+            ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
             ->with(['control.framework'])
             ->get();
 
-        foreach ($nonCompliantItems as $item) {
+        foreach ($items as $item) {
             if (!$item->control) continue;
 
             $control = $item->control;
 
-            // Skip if an AI-generated risk already exists for this control
+            // Skip if a risk was already generated for this control in this assessment
             $exists = Risk::where('auto_generated', 1)
                 ->where('source_control_id', $control->id)
+                ->where('assessment_id', $assessment->id)
                 ->exists();
 
             if ($exists) continue;
 
-            $this->generateRiskForControl($control, $assessment);
+            $this->generateRiskForControl($control, $assessment, $item->compliance_status);
         }
     }
 
-    private function generateRiskForControl($control, Assessment $assessment): void
+    private function generateRiskForControl($control, Assessment $assessment, string $complianceStatus): void
     {
         try {
-            $frameworkName = $control->framework->name ?? $control->framework->short_name ?? 'Unknown';
+            $frameworkName   = $control->framework->name ?? $control->framework->short_name ?? 'Unknown';
+            $statusLabel     = $complianceStatus === 'non_compliant' ? 'Non-Compliant' : 'Partially Compliant';
+            $severityContext = $complianceStatus === 'non_compliant'
+                ? 'The control is fully non-compliant — no implementation exists.'
+                : 'The control is partially compliant — some implementation exists but gaps remain.';
 
             $prompt = <<<PROMPT
-You are a GRC risk analyst. A security control has been assessed as non-compliant. Generate a professional risk record.
+You are a GRC risk analyst. A security control has been assessed as {$statusLabel}. Generate a professional risk record.
 
 Control Code: {$control->control_id}
 Control Title: {$control->title}
 Control Description: {$control->description}
 Framework: {$frameworkName}
 Category: {$control->category}
+Assessment Status: {$statusLabel}
+Context: {$severityContext}
 
 Return ONLY valid JSON, no explanation, no markdown:
 {
@@ -72,14 +79,13 @@ PROMPT;
 
             $cleaned = preg_replace('/^```json\s*/i', '', trim($responseText));
             $cleaned = preg_replace('/```$/', '', trim($cleaned));
-            $data = json_decode(trim($cleaned), true);
+            $data    = json_decode(trim($cleaned), true);
 
             if (!is_array($data)) {
                 Log::warning('AIRiskGenerator: invalid JSON response', ['response' => $responseText]);
                 return;
             }
 
-            // Validate required fields
             if (empty($data['title']) || empty($data['description'])) {
                 return;
             }
@@ -91,7 +97,7 @@ PROMPT;
                 : 'mitigate';
 
             $risk = Risk::create([
-                'user_id' => \App\Models\User::where('role', 'admin')->first()->id,
+                'user_id'           => \App\Models\User::where('role', 'admin')->first()->id,
                 'title'             => substr($data['title'], 0, 255),
                 'description'       => $data['description'],
                 'category'          => $control->category ?? 'Information Security',
@@ -104,15 +110,15 @@ PROMPT;
                 'mitigation_steps'  => $data['mitigation_steps'] ?? null,
                 'auto_generated'    => 1,
                 'source_control_id' => $control->id,
+                'assessment_id'     => $assessment->id,
             ]);
 
-            // Link risk to control in control_risk with link_type = 'ai'
             DB::table('control_risk')->insert([
                 'control_id'  => $control->id,
                 'risk_id'     => $risk->id,
                 'auto_linked' => true,
                 'link_type'   => 'ai',
-                'link_reason' => "Auto-generated from non-compliant control {$control->control_id} in assessment '{$assessment->title}'",
+                'link_reason' => "Auto-generated from {$statusLabel} control {$control->control_id} in assessment '{$assessment->title}'",
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ]);
@@ -120,7 +126,7 @@ PROMPT;
             Notification::create([
                 'type'    => 'critical_risk',
                 'title'   => 'AI Generated New Risk',
-                'message' => "AI generated new risk: {$risk->title} from non-compliant control {$control->control_id}",
+                'message' => "AI generated new risk: {$risk->title} from {$statusLabel} control {$control->control_id}",
                 'url'     => "/risks/{$risk->id}",
                 'is_read' => false,
             ]);
@@ -129,12 +135,12 @@ PROMPT;
                 'created',
                 'Risk',
                 $risk->id,
-                "AI Rule: Auto-created risk #{$risk->id} from non-compliant control #{$control->id} in assessment #{$assessment->id}"
+                "AI Rule: Auto-created risk #{$risk->id} from {$statusLabel} control #{$control->id} in assessment #{$assessment->id}"
             );
         } catch (\Throwable $e) {
             Log::error('AIRiskGenerator exception', [
-                'message'     => $e->getMessage(),
-                'control_id'  => $control->id,
+                'message'      => $e->getMessage(),
+                'control_id'   => $control->id,
                 'assessment_id' => $assessment->id,
             ]);
         }

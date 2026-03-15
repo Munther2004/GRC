@@ -1,0 +1,150 @@
+import { Head, Link, router } from '@inertiajs/react';
+import { route } from '@/lib/routes';
+import AdminLayout from '@/layouts/admin-layout';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Shield, Pencil, ToggleLeft, ToggleRight, BookOpen } from 'lucide-react';
+
+interface Framework {
+    id: number;
+    name: string;
+    short_name: string;
+    description: string | null;
+    version: string | null;
+    is_active: boolean;
+    controls_count: number;
+}
+
+interface Props {
+    frameworks: Framework[];
+}
+
+export default function FrameworksIndex({ frameworks }: Props) {
+    const total  = frameworks.length;
+    const active = frameworks.filter(f => f.is_active).length;
+
+    const toggle = (framework: Framework) => {
+        const action = framework.is_active ? 'deactivate' : 'activate';
+        if (!confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} "${framework.name}"?`)) return;
+        router.post(route('admin.frameworks.toggle', framework.id));
+    };
+
+    return (
+        <AdminLayout>
+            <Head title="Frameworks" />
+
+            <div className="space-y-6">
+
+                {/* Header */}
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Frameworks</h1>
+                    <p className="text-sm text-gray-500 mt-1">Manage compliance frameworks and their associated controls</p>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {[
+                        { label: 'Total Frameworks', value: total,          color: 'text-blue-500',  icon: Shield },
+                        { label: 'Active',            value: active,         color: 'text-green-500', icon: ToggleRight },
+                        { label: 'Inactive',          value: total - active, color: 'text-gray-400',  icon: ToggleLeft },
+                    ].map(({ label, value, color, icon: Icon }) => (
+                        <Card key={label}>
+                            <CardContent className="p-4 flex items-center gap-3">
+                                <Icon className={`w-8 h-8 ${color}`} />
+                                <div>
+                                    <p className="text-2xl font-bold">{value}</p>
+                                    <p className="text-xs text-gray-500">{label}</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Table */}
+                <Card>
+                    <CardHeader className="pb-0">
+                        <CardTitle className="text-base">{total} framework{total !== 1 ? 's' : ''}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0 mt-4">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
+                                    <tr>
+                                        {['Framework', 'Version', 'Controls', 'Status', 'Actions'].map(h => (
+                                            <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                    {frameworks.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={5} className="px-4 py-12 text-center text-gray-400">No frameworks found.</td>
+                                        </tr>
+                                    ) : frameworks.map(framework => (
+                                        <tr key={framework.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                                                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                                                            {framework.short_name.substring(0, 4)}
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium text-gray-900 dark:text-white">{framework.name}</p>
+                                                        {framework.description && (
+                                                            <p className="text-xs text-gray-400 truncate max-w-xs">{framework.description}</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-gray-500">
+                                                {framework.version ?? <span className="text-gray-300">—</span>}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+                                                    <BookOpen className="w-4 h-4 text-gray-400" />
+                                                    {framework.controls_count}
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <Badge
+                                                    variant="outline"
+                                                    className={framework.is_active
+                                                        ? 'bg-green-50 text-green-700 border-green-200'
+                                                        : 'bg-gray-100 text-gray-500 border-gray-200'}
+                                                >
+                                                    {framework.is_active ? 'Active' : 'Inactive'}
+                                                </Badge>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-1">
+                                                    <Link href={route('admin.frameworks.edit', framework.id)}>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                            <Pencil className="w-4 h-4" />
+                                                        </Button>
+                                                    </Link>
+                                                    <Button
+                                                        variant="ghost" size="icon"
+                                                        className={`h-8 w-8 ${framework.is_active ? 'text-orange-500 hover:bg-orange-50' : 'text-green-500 hover:bg-green-50'}`}
+                                                        onClick={() => toggle(framework)}
+                                                        title={framework.is_active ? 'Deactivate' : 'Activate'}
+                                                    >
+                                                        {framework.is_active
+                                                            ? <ToggleRight className="w-4 h-4" />
+                                                            : <ToggleLeft className="w-4 h-4" />}
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </CardContent>
+                </Card>
+
+            </div>
+        </AdminLayout>
+    );
+}

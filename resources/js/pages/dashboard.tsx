@@ -70,6 +70,7 @@ type Props = {
     heatmap: HeatmapRisk[]
     kpis: Kpis
     ruleAdjustments: number
+    lastSchedulerRun: string | null
 }
 
 function KpiCards({ kpis }: { kpis: Kpis }) {
@@ -145,7 +146,7 @@ function KpiCards({ kpis }: { kpis: Kpis }) {
     )
 }
 
-export default function AdminDashboard({ stats, recentRisks, recentActivity, recentAssessments, trendData, heatmap, kpis, ruleAdjustments }: Props) {
+export default function AdminDashboard({ stats, recentRisks, recentActivity, recentAssessments, trendData, heatmap, kpis, ruleAdjustments, lastSchedulerRun }: Props) {
     const { notifications } = usePage<{ notifications: { unread_count: number; recent: NotificationItem[] } }>().props
     const unreadCount = notifications?.unread_count ?? 0
     const recent: NotificationItem[] = notifications?.recent ?? []
@@ -256,6 +257,10 @@ export default function AdminDashboard({ stats, recentRisks, recentActivity, rec
                 </div>
 
                 <TopRisks risks={recentRisks} />
+
+                <p className="text-xs text-gray-400 dark:text-gray-600 text-center pb-2">
+                    🕐 Nightly checks run at 02:00 — Last run: {lastSchedulerRun ?? 'Never'}
+                </p>
             </div>
         </AdminLayout>
     )

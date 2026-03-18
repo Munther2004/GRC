@@ -1,4 +1,4 @@
-import { AlertTriangle, Bell, Clock, FileCheck, Menu, Search, Shield } from "lucide-react"
+import { AlertTriangle, Bell, Clock, FileCheck, Menu, Search, Shield, X } from "lucide-react"
 import { Link, router, usePage } from "@inertiajs/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -67,14 +67,28 @@ export function AdminHeader() {
     }, [])
 
     function handleNotificationClick(n: NotificationItem) {
-        router.post(`/notifications/${n.id}/read`, {}, { preserveScroll: true })
+        router.post(`/notifications/${n.id}/read`, {}, {
+            preserveScroll: true,
+            onSuccess: () => router.reload({ only: ['notifications'] }),
+        })
         setOpen(false)
         if (n.url) router.visit(n.url)
     }
 
     function handleMarkAllRead() {
-        router.post('/notifications/read-all', {}, { preserveScroll: true })
+        router.post('/notifications/read-all', {}, {
+            preserveScroll: true,
+            onSuccess: () => router.reload({ only: ['notifications'] }),
+        })
         setOpen(false)
+    }
+
+    function handleDismiss(e: React.MouseEvent, id: number) {
+        e.stopPropagation()
+        router.delete(`/notifications/${id}`, {
+            preserveScroll: true,
+            onSuccess: () => router.reload({ only: ['notifications'] }),
+        })
     }
 
     return (
@@ -159,27 +173,39 @@ export function AdminHeader() {
                                     </div>
                                 ) : (
                                     recent.map(n => (
-                                        <button
+                                        <div
                                             key={n.id}
-                                            onClick={() => handleNotificationClick(n)}
                                             className={cn(
-                                                "w-full text-left flex gap-3 px-4 py-3 hover:bg-accent/50 transition-colors border-b border-border/50 last:border-0",
-                                                !n.is_read && "bg-blue-500/5"
+                                                "group flex items-start gap-3 px-4 py-3 border-b border-border/50 last:border-0 transition-colors",
+                                                !n.is_read && "bg-blue-500/5",
+                                                "hover:bg-accent/50"
                                             )}
                                         >
-                                            <div className="mt-0.5">{notificationIcon(n.type)}</div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className={cn("text-sm truncate", !n.is_read && "font-semibold text-foreground")}>
-                                                    {n.title}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
-                                                    {n.message}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground/60 mt-1">
-                                                    {timeAgo(n.created_at)}
-                                                </p>
-                                            </div>
-                                        </button>
+                                            <button
+                                                onClick={() => handleNotificationClick(n)}
+                                                className="flex flex-1 gap-3 text-left min-w-0"
+                                            >
+                                                <div className="mt-0.5 shrink-0">{notificationIcon(n.type)}</div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className={cn("text-sm truncate", !n.is_read && "font-semibold text-foreground")}>
+                                                        {n.title}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                                                        {n.message}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground/60 mt-1">
+                                                        {timeAgo(n.created_at)}
+                                                    </p>
+                                                </div>
+                                            </button>
+                                            <button
+                                                onClick={(e) => handleDismiss(e, n.id)}
+                                                className="shrink-0 mt-0.5 p-0.5 rounded opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
+                                                title="Dismiss"
+                                            >
+                                                <X className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
                                     ))
                                 )}
                             </div>

@@ -26,6 +26,7 @@ interface Risk {
     risk_level: string;
     status: string;
     treatment: string;
+    treatment_plan: string | null;
     due_date: string | null;
     auto_generated: number;
     user: { name: string };
@@ -38,7 +39,7 @@ interface Props {
         total: number;
     };
     stats: { total: number; open: number; critical: number; overdue: number };
-    filters: { search?: string; status?: string; level?: string; category?: string };
+    filters: { search?: string; status?: string; level?: string; category?: string; has_plan?: string };
 }
 
 const levelColors: Record<string, string> = {
@@ -64,15 +65,23 @@ export default function RisksIndex({ risks, stats, filters }: Props) {
     const [status, setStatus]     = useState(filters.status ?? 'all');
     const [level, setLevel]       = useState(filters.level ?? 'all');
     const [category, setCategory] = useState(filters.category ?? 'all');
+    const [hasPlan, setHasPlan]   = useState(!!filters.has_plan);
 
     const applyFilters = (overrides: Record<string, string> = {}) => {
         router.get(route('risks.index'), {
             search,
-            status:   status   === 'all' ? '' : status,
-            level:    level    === 'all' ? '' : level,
-            category: category === 'all' ? '' : category,
+            status:    status   === 'all' ? '' : status,
+            level:     level    === 'all' ? '' : level,
+            category:  category === 'all' ? '' : category,
+            has_plan:  hasPlan ? '1' : '',
             ...overrides,
         }, { preserveState: true, replace: true });
+    };
+
+    const toggleHasPlan = () => {
+        const next = !hasPlan;
+        setHasPlan(next);
+        applyFilters({ has_plan: next ? '1' : '' });
     };
 
     const deleteRisk = (id: number, title: string) => {
@@ -165,6 +174,13 @@ export default function RisksIndex({ risks, stats, filters }: Props) {
                                 </SelectContent>
                             </Select>
                             <Button variant="outline" onClick={() => applyFilters({ search })}>Search</Button>
+                            <Button
+                                variant="outline"
+                                onClick={toggleHasPlan}
+                                className={hasPlan ? 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700' : ''}
+                            >
+                                📋 Has Remediation Plan
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -201,6 +217,11 @@ export default function RisksIndex({ risks, stats, filters }: Props) {
                                                     {risk.auto_generated === 1 && (
                                                         <Badge className="text-xs bg-purple-100 text-purple-700 border-purple-200 shrink-0 px-1 py-0">
                                                             <Sparkles className="w-2.5 h-2.5 mr-0.5" />AI
+                                                        </Badge>
+                                                    )}
+                                                    {risk.treatment_plan && (
+                                                        <Badge className="text-xs bg-green-100 text-green-700 border-green-200 shrink-0 px-1 py-0">
+                                                            📋 Plan
                                                         </Badge>
                                                     )}
                                                 </div>

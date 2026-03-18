@@ -11,10 +11,13 @@ class Evidence extends Model
         'user_id', 'assessment_item_id', 'title',
         'description', 'file_path', 'file_name',
         'file_type', 'status', 'expiry_date',
+        'ai_review', 'ai_verdict', 'ai_confidence', 'ai_reviewed_at',
     ];
 
     protected $casts = [
-        'expiry_date' => 'date',
+        'expiry_date'    => 'date',
+        'ai_review'      => 'array',
+        'ai_reviewed_at' => 'datetime',
     ];
 
     public function user()           { return $this->belongsTo(User::class); }

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Control;
+use App\Models\Notification;
 use App\Models\Risk;
 use App\Models\AuditLog;
 use App\Services\AIControlLinker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class RiskController extends Controller
@@ -34,6 +36,9 @@ class RiskController extends Controller
             ->when($request->category, fn($q) =>
                 $q->where('category', $request->category)
             )
+            ->when($request->has_plan, fn($q) =>
+                $q->whereNotNull('treatment_plan')->where('treatment_plan', '<>', '')
+            )
             ->orderByRaw('likelihood * impact DESC')
             ->paginate(15)
             ->withQueryString();
@@ -50,7 +55,7 @@ class RiskController extends Controller
         return Inertia::render('risks/index', [
             'risks'   => $query,
             'stats'   => $stats,
-            'filters' => $request->only(['search', 'status', 'level', 'category']),
+            'filters' => $request->only(['search', 'status', 'level', 'category', 'has_plan']),
         ]);
     }
 
@@ -189,6 +194,9 @@ class RiskController extends Controller
     {
         $title = $risk->title;
         $id    = $risk->id;
+
+        Notification::where('url', '/risks/' . $risk->id)->delete();
+        DB::table('control_risk')->where('risk_id', $risk->id)->delete();
 
         $risk->delete();
 

@@ -12,8 +12,6 @@ class NotificationController extends Controller
 
     public function index()
     {
-        $this->service->generateNotifications();
-
         $types = NotificationService::typesForRole(auth()->user()->role);
 
         $query = Notification::where(function ($q) {
@@ -60,6 +58,12 @@ class NotificationController extends Controller
     public function destroy(Notification $notification)
     {
         $notification->delete();
+        return back();
+    }
+
+    public function destroyAll()
+    {
+        Notification::query()->delete();
         return back();
     }
 }

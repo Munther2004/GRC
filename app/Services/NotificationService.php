@@ -163,7 +163,7 @@ class NotificationService
         string $message,
         bool $updateExisting = false
     ): void {
-        $existing = Notification::where('type', $type)->where('url', $url)->first();
+        $existing = Notification::where('type', $type)->where('url', $url)->where('is_read', false)->first();
 
         if ($existing && $updateExisting) {
             $existing->update(['message' => $message, 'is_read' => false]);
@@ -171,14 +171,10 @@ class NotificationService
         }
 
         if (!$existing) {
-            Notification::create([
-                'user_id' => null,
-                'type'    => $type,
-                'title'   => $title,
-                'message' => $message,
-                'url'     => $url,
-                'is_read' => false,
-            ]);
+            Notification::firstOrCreate(
+                ['type' => $type, 'url' => $url, 'is_read' => false],
+                ['user_id' => null, 'title' => $title, 'message' => $message]
+            );
         }
     }
 }

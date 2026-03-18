@@ -29,6 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::delete('/notifications',               [NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
 
     // ── Everyone ──────────────────────────────────────────────────────────────
     Route::get('/dashboard',    [DashboardController::class, 'index'])->name('dashboard');
@@ -54,7 +55,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ── AI endpoints ─────────────────────────────────────────────────────────
     Route::middleware('role:admin,user')->group(function () {
-        Route::post('/ai/suggest-threats', [AdminAIController::class, 'suggestThreats'])->name('ai.suggest-threats');
+        Route::post('/ai/suggest-threats',                    [AdminAIController::class, 'suggestThreats'])->name('ai.suggest-threats');
+        Route::post('/ai/remediate-gap',                      [AdminAIController::class, 'remediateGap'])->name('ai.remediate-gap');
+        Route::post('/ai/save-remediation',                   [AdminAIController::class, 'saveRemediation'])->name('ai.save-remediation');
+        Route::post('/ai/assessment-summary/{assessment}',    [AdminAIController::class, 'generateAssessmentSummary'])->name('ai.assessment-summary');
     });
 
     Route::get('/risks/{risk}', [RiskController::class, 'show'])->name('risks.show');
@@ -83,6 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:admin,auditor')->group(function () {
         Route::post('/evidence/{evidence}/approve', [EvidenceController::class, 'approve'])->name('evidence.approve');
         Route::post('/evidence/{evidence}/reject',  [EvidenceController::class, 'reject'])->name('evidence.reject');
+        Route::post('/ai/review-evidence',          [AdminAIController::class, 'reviewEvidence'])->name('ai.review-evidence');
     });
 
     Route::middleware('role:admin')->group(function () {

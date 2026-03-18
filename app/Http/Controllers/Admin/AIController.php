@@ -3,9 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Assessment;
+use App\Models\AssessmentItem;
+use App\Models\AuditLog;
+use App\Models\Control;
+use App\Models\Evidence;
+use App\Models\Risk;
+use App\Services\AIRiskGenerator;
 use App\Services\AIService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class AIController extends Controller
 {
@@ -70,5 +78,356 @@ PROMPT;
         }, array_slice($suggestions, 0, 4));
 
         return response()->json($suggestions);
+    }
+
+    public function remediateGap(Request $request)
+    {
+        $request->validate([
+            'control_id'          => 'required',
+            'control_code'        => 'required|string',
+            'control_title'       => 'required|string',
+            'control_description' => 'required|string',
+            'control_category'    => 'nullable|string',
+            'framework'           => 'nullable|string',
+            'compliance_status'   => 'required|string',
+        ]);
+
+        $code        = $request->control_code;
+        $title       = $request->control_title;
+        $description = $request->control_description;
+        $framework   = $request->input('framework', 'N/A');
+        $category    = $request->input('control_category', 'General');
+        $status      = $request->compliance_status;
+
+        $prompt = <<<PROMPT
+You are a GRC compliance expert. A security control has been assessed as non-compliant or partially compliant. Provide a practical remediation plan.
+
+Control Code: {$code}
+Control Title: {$title}
+Control Description: {$description}
+Framework: {$framework}
+Category: {$category}
+Compliance Status: {$status}
+
+Return ONLY valid JSON, no explanation, no markdown:
+{
+  "summary": "one sentence explaining the core gap",
+  "priority": "High",
+  "estimated_effort": "2-3 weeks",
+  "remediation_steps": [
+    {
+      "step": 1,
+      "action": "short action title",
+      "detail": "detailed explanation of what to do",
+      "evidence_needed": "what evidence to upload to prove compliance"
+    }
+  ],
+  "quick_wins": ["immediate action 1", "immediate action 2"],
+  "resources_needed": ["resource 1", "resource 2"]
+}
+
+Priority must be one of: Critical, High, Medium, Low.
+Estimated effort should be realistic. Provide 3-5 remediation steps. Provide 2-3 quick wins.
+PROMPT;
+
+        try {
+            $ai           = new AIService();
+            $responseText = $ai->callClaude($prompt);
+
+            if (empty($responseText)) {
+                return response()->json(['error' => 'AI service unavailable'], 503);
+            }
+
+            $plan = json_decode($responseText, true);
+
+            if (!is_array($plan)) {
+                Log::warning('AIController::remediateGap: invalid JSON', ['response' => $responseText]);
+                return response()->json(['error' => 'Invalid AI response format'], 500);
+            }
+
+            return response()->json($plan);
+        } catch (\Exception $e) {
+            Log::error('AIController::remediateGap error', ['message' => $e->getMessage()]);
+            return response()->json(['error' => 'Failed to generate remediation plan'], 500);
+        }
+    }
+
+    public function saveRemediation(Request $request)
+    {
+        $request->validate([
+            'control_id' => 'required|integer',
+            'plan_text'  => 'required|string',
+        ]);
+
+        $control = Control::find($request->control_id);
+        if (!$control) {
+            return response()->json(['error' => 'Control not found'], 404);
+        }
+
+        $risk = Risk::where('auto_generated', 1)
+            ->where('source_control_id', $control->id)
+            ->first();
+
+        if (!$risk) {
+            // Find the most recent completed assessment that flagged this control as non/partial
+            $item = AssessmentItem::where('control_id', $control->id)
+                ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
+                ->whereHas('assessment', fn($q) => $q->where('status', 'completed'))
+                ->with('assessment')
+                ->latest()
+                ->first();
+
+            if (!$item) {
+                return response()->json(['error' => 'Could not find assessment context to generate a risk'], 422);
+            }
+
+            (new AIRiskGenerator())->generateRiskForControl($control, $item->assessment, $item->compliance_status);
+
+            $risk = Risk::where('auto_generated', 1)
+                ->where('source_control_id', $control->id)
+                ->first();
+
+            if (!$risk) {
+                return response()->json(['error' => 'Failed to auto-generate risk for this control'], 500);
+            }
+        }
+
+        $existing             = $risk->treatment_plan ?? '';
+        $separator            = $existing ? "\n\n---\n\n" : '';
+        $risk->treatment_plan = $existing . $separator . $request->plan_text;
+        $risk->save();
+
+        return response()->json(['success' => true, 'risk_id' => $risk->id, 'risk_title' => $risk->title]);
+    }
+
+    public function generateAssessmentSummary(Request $request, $assessmentId)
+    {
+        $assessment = Assessment::with(['framework', 'items.control'])
+            ->findOrFail($assessmentId);
+
+        $items       = $assessment->items;
+        $total       = $items->count();
+        $compliant   = $items->where('compliance_status', 'compliant')->count();
+        $partial     = $items->where('compliance_status', 'partially_compliant')->count();
+        $nonCompliant= $items->where('compliance_status', 'non_compliant')->count();
+        $na          = $items->where('compliance_status', 'not_applicable')->count();
+
+        // Top 5 non-compliant controls — non_compliant first, then partially_compliant
+        $topGaps = $items
+            ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
+            ->sortByDesc(fn($i) => $i->compliance_status === 'non_compliant' ? 1 : 0)
+            ->take(5);
+
+        $controlsList = $topGaps->map(fn($i) =>
+            "- [{$i->control->control_id}] {$i->control->title} (" . ucfirst(str_replace('_', ' ', $i->compliance_status)) . ")"
+        )->implode("\n");
+
+        if (empty(trim($controlsList))) {
+            $controlsList = '- No non-compliant controls identified';
+        }
+
+        // AI-generated risks linked to this assessment
+        $risks = Risk::where('auto_generated', 1)
+            ->where('assessment_id', $assessment->id)
+            ->get();
+
+        $risksList = $risks->isEmpty()
+            ? '- No AI-identified risks for this assessment'
+            : $risks->map(fn($r) =>
+                "- {$r->title} (Likelihood: {$r->likelihood}, Impact: {$r->impact}, Score: " . ($r->likelihood * $r->impact) . ")"
+              )->implode("\n");
+
+        $frameworkName = $assessment->framework->name;
+        $pct   = $assessment->compliance_percentage;
+        $title = $assessment->title;
+        $period= $assessment->period;
+        $scope = $assessment->scope;
+
+        $prompt = <<<PROMPT
+You are a senior GRC consultant writing an executive summary for a compliance assessment report.
+
+Assessment Details:
+- Title: {$title}
+- Framework: {$frameworkName}
+- Period: {$period}
+- Scope: {$scope}
+- Compliance Score: {$pct}%
+- Total Controls Assessed: {$total}
+- Compliant: {$compliant}
+- Partially Compliant: {$partial}
+- Non-Compliant: {$nonCompliant}
+- Not Applicable: {$na}
+
+Top Non-Compliant Controls:
+{$controlsList}
+
+AI-Identified Risks from this Assessment:
+{$risksList}
+
+Write a professional executive summary suitable for senior management. Return ONLY valid JSON, no markdown:
+{
+  "overall_status": "At Risk",
+  "executive_summary": "3-4 paragraph professional summary",
+  "compliance_rating": "Poor",
+  "key_findings": [
+    {"finding": "short finding title", "detail": "one sentence explanation", "severity": "High"}
+  ],
+  "immediate_priorities": ["priority 1", "priority 2", "priority 3"],
+  "positive_observations": ["what is going well 1", "what is going well 2"],
+  "recommended_next_steps": ["step 1", "step 2", "step 3"]
+}
+
+overall_status must be one of: Strong, Adequate, Needs Improvement, At Risk, Critical.
+compliance_rating must be one of: Excellent, Good, Fair, Poor, Critical.
+Provide exactly 3-5 key findings, 3 immediate priorities, 2-3 positive observations, 3 recommended next steps.
+PROMPT;
+
+        try {
+            $ai           = new AIService();
+            $responseText = $ai->callClaude($prompt);
+
+            if (empty($responseText)) {
+                return response()->json(['error' => 'AI service unavailable'], 503);
+            }
+
+            $cleaned = preg_replace('/^```json\s*/i', '', trim($responseText));
+            $cleaned = preg_replace('/```$/', '', trim($cleaned));
+            $summary = json_decode(trim($cleaned), true);
+
+            if (!is_array($summary)) {
+                Log::warning('AIController::generateAssessmentSummary: invalid JSON', ['response' => $responseText]);
+                return response()->json(['error' => 'Invalid AI response format'], 500);
+            }
+
+            return response()->json($summary);
+        } catch (\Exception $e) {
+            Log::error('AIController::generateAssessmentSummary error', ['message' => $e->getMessage()]);
+            return response()->json(['error' => 'Failed to generate assessment summary'], 500);
+        }
+    }
+
+    public function reviewEvidence(Request $request)
+    {
+        $request->validate(['evidence_id' => 'required|integer|exists:evidence,id']);
+
+        $evidence = Evidence::with([
+            'user',
+            'assessmentItem.control',
+            'assessmentItem.assessment.framework',
+        ])->findOrFail($request->evidence_id);
+
+        $item       = $evidence->assessmentItem;
+        $control    = $item?->control;
+        $assessment = $item?->assessment;
+        $framework  = $assessment?->framework;
+
+        // Attempt PDF text extraction if library is available
+        $fileContent = '';
+        if (!empty($evidence->file_path) && Storage::disk('public')->exists($evidence->file_path)) {
+            if (str_contains($evidence->file_type ?? '', 'pdf') && class_exists(\Smalot\PdfParser\Parser::class)) {
+                try {
+                    $raw    = Storage::disk('public')->get($evidence->file_path);
+                    $parser = new \Smalot\PdfParser\Parser();
+                    $text   = $parser->parseContent($raw)->getText();
+                    if (!empty(trim($text))) {
+                        $fileContent = "\nExtracted PDF Content (first 2000 chars):\n" . substr($text, 0, 2000);
+                    }
+                } catch (\Exception $e) {
+                    // Parsing failed — continue with metadata only
+                }
+            }
+        }
+
+        $controlCode        = $control?->control_id ?? 'N/A';
+        $controlTitle       = $control?->title ?? 'N/A';
+        $controlDescription = $control?->description ?? 'N/A';
+        $frameworkName      = $framework?->name ?? 'N/A';
+        $controlCategory    = $control?->category ?? 'General';
+        $fileName           = $evidence->file_name ?? 'N/A';
+        $fileType           = $evidence->file_type ?? 'N/A';
+        $uploadDate         = $evidence->created_at->toDateString();
+        $uploaderName       = $evidence->user?->name ?? 'Unknown';
+        $descLine           = $evidence->description ? "\n- Description: {$evidence->description}" : '';
+
+        $prompt = <<<PROMPT
+You are a GRC auditor reviewing evidence submitted for a security control compliance assessment.
+
+Control Being Assessed:
+- Code: {$controlCode}
+- Title: {$controlTitle}
+- Description: {$controlDescription}
+- Framework: {$frameworkName}
+- Category: {$controlCategory}
+
+Evidence Submitted:
+- Filename: {$fileName}
+- File Type: {$fileType}
+- Upload Date: {$uploadDate}
+- Uploaded By: {$uploaderName}{$descLine}{$fileContent}
+
+Based on the control requirements and the evidence provided, assess whether this evidence adequately demonstrates compliance.
+
+Return ONLY valid JSON, no markdown:
+{
+  "verdict": "Adequate",
+  "confidence": 85,
+  "summary": "one sentence verdict explanation",
+  "strengths": ["what the evidence does well 1", "what the evidence does well 2"],
+  "gaps": ["what is missing or insufficient 1", "what is missing or insufficient 2"],
+  "recommendation": "one clear sentence on what action to take",
+  "suggested_status": "approved"
+}
+
+verdict must be one of: Adequate, Partially Adequate, Insufficient.
+confidence must be integer 0-100.
+suggested_status must be one of: approved, rejected, pending.
+If no file content is available, base assessment on filename and metadata only and note this in gaps.
+PROMPT;
+
+        try {
+            $ai           = new AIService();
+            $responseText = $ai->callClaude($prompt);
+
+            if (empty($responseText)) {
+                return response()->json(['error' => 'AI service unavailable'], 503);
+            }
+
+            $cleaned = preg_replace('/^```json\s*/i', '', trim($responseText));
+            $cleaned = preg_replace('/```$/', '', trim($cleaned));
+            $review  = json_decode(trim($cleaned), true);
+
+            if (!is_array($review)) {
+                Log::warning('AIController::reviewEvidence: invalid JSON', ['response' => $responseText]);
+                return response()->json(['error' => 'Invalid AI response format'], 500);
+            }
+
+            // Sanitize fields
+            $review['verdict']          = in_array($review['verdict'] ?? '', ['Adequate', 'Partially Adequate', 'Insufficient'])
+                ? $review['verdict'] : 'Insufficient';
+            $review['confidence']       = max(0, min(100, (int) ($review['confidence'] ?? 50)));
+            $review['suggested_status'] = in_array($review['suggested_status'] ?? '', ['approved', 'rejected', 'pending'])
+                ? $review['suggested_status'] : 'pending';
+            $review['strengths']        = array_values(array_filter((array) ($review['strengths'] ?? [])));
+            $review['gaps']             = array_values(array_filter((array) ($review['gaps'] ?? [])));
+
+            $evidence->update([
+                'ai_review'      => $review,
+                'ai_verdict'     => $review['verdict'],
+                'ai_confidence'  => $review['confidence'],
+                'ai_reviewed_at' => now(),
+            ]);
+
+            AuditLog::record(
+                'ai_reviewed',
+                'Evidence',
+                $evidence->id,
+                "AI reviewed evidence #{$evidence->id} — verdict: {$review['verdict']}"
+            );
+
+            return response()->json($review);
+        } catch (\Exception $e) {
+            Log::error('AIController::reviewEvidence error', ['message' => $e->getMessage()]);
+            return response()->json(['error' => 'Failed to review evidence'], 500);
+        }
     }
 }

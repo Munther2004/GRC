@@ -28,13 +28,11 @@ class RulesEngine
                     if ($risk->likelihood !== $oldLikelihood) {
                         $risk->save();
 
-                        Notification::create([
-                            'type'    => 'critical_risk',
-                            'title'   => 'Risk Score Auto-Adjusted',
-                            'message' => "Risk '{$risk->title}' likelihood raised due to non-compliant control {$item->control->control_id}",
-                            'url'     => "/risks/{$risk->id}",
-                            'is_read' => false,
-                        ]);
+                        $riskUrl = "/risks/{$risk->id}";
+                        Notification::firstOrCreate(
+                            ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false],
+                            ['title' => 'Risk Score Auto-Adjusted', 'message' => "Risk '{$risk->title}' likelihood raised due to non-compliant control {$item->control->control_id}"]
+                        );
 
                         AuditLog::record(
                             'updated',
@@ -76,13 +74,11 @@ class RulesEngine
                 if ($risk->likelihood !== $oldLikelihood) {
                     $risk->save();
 
-                    Notification::create([
-                        'type'    => 'critical_risk',
-                        'title'   => 'Risk Score Improved',
-                        'message' => "Risk '{$risk->title}' likelihood reduced — control {$item->control->control_id} is now compliant",
-                        'url'     => "/risks/{$risk->id}",
-                        'is_read' => false,
-                    ]);
+                    $riskUrl = "/risks/{$risk->id}";
+                    Notification::firstOrCreate(
+                        ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false],
+                        ['title' => 'Risk Score Improved', 'message' => "Risk '{$risk->title}' likelihood reduced — control {$item->control->control_id} is now compliant"]
+                    );
 
                     AuditLog::record(
                         'updated',

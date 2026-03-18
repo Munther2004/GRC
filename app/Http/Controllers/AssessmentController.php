@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\GenerateAIRisksJob;
 use App\Models\Assessment;
 use App\Models\AssessmentItem;
 use App\Models\AuditLog;
 use App\Models\Control;
 use App\Models\Evidence;
 use App\Models\Framework;
-use App\Services\AIRiskGenerator;
+use App\Models\Notification;
+use App\Models\Risk;
 use App\Services\RulesEngine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -233,7 +236,7 @@ class AssessmentController extends Controller
         $rulesEngine->applyRule1($assessment);
         $rulesEngine->applyRule2($assessment);
 
-        (new AIRiskGenerator())->generateRisksFromAssessment($assessment);
+        GenerateAIRisksJob::dispatch($assessment);
 
         return redirect()->route('assessments.show', $assessment)
             ->with('success', '[QA] Assessment auto-filled and submitted successfully.');
@@ -255,7 +258,7 @@ class AssessmentController extends Controller
         $rulesEngine->applyRule1($assessment);
         $rulesEngine->applyRule2($assessment);
 
-        (new AIRiskGenerator())->generateRisksFromAssessment($assessment);
+        GenerateAIRisksJob::dispatch($assessment);
 
         return redirect()->route('assessments.show', $assessment)
             ->with('success', 'Assessment submitted successfully.');
@@ -338,6 +341,28 @@ class AssessmentController extends Controller
     {
         $title = $assessment->title;
         $id    = $assessment->id;
+
+        // Get all control IDs from this assessment's items
+        $controlIds = AssessmentItem::where('assessment_id', $assessment->id)
+            ->pluck('control_id');
+
+        // Find all AI risks linked to those controls OR to this assessment directly
+        $riskIds = Risk::where('auto_generated', 1)
+            ->where(function ($q) use ($controlIds, $assessment) {
+                $q->whereIn('source_control_id', $controlIds)
+                  ->orWhere('assessment_id', $assessment->id);
+            })
+            ->pluck('id');
+
+        if ($riskIds->isNotEmpty()) {
+            Notification::whereIn('url', $riskIds->map(fn ($rid) => '/risks/' . $rid)->toArray())->delete();
+            DB::table('control_risk')->whereIn('risk_id', $riskIds)->delete();
+            Risk::whereIn('id', $riskIds)->delete();
+        }
+
+        // Delete assessment items
+        AssessmentItem::where('assessment_id', $assessment->id)->delete();
+
         $assessment->delete();
 
         AuditLog::record('deleted', 'Assessment', $id, "Assessment '{$title}' deleted");

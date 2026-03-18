@@ -80,17 +80,35 @@ export default function NotificationsPage({ notifications }: Props) {
 
     function markRead(n: NotificationItem) {
         if (!n.is_read) {
-            router.post(`/notifications/${n.id}/read`, {}, { preserveScroll: true })
+            router.post(`/notifications/${n.id}/read`, {}, {
+                preserveScroll: true,
+                onSuccess: () => router.reload({ only: ['notifications'] }),
+            })
         }
         if (n.url) router.visit(n.url)
     }
 
     function markAllRead() {
-        router.post('/notifications/read-all', {}, { preserveScroll: true })
+        router.post('/notifications/read-all', {}, {
+            preserveScroll: true,
+            onSuccess: () => router.reload({ only: ['notifications'] }),
+        })
     }
 
     function deleteNotification(id: number) {
-        router.delete(`/notifications/${id}`, { preserveScroll: true })
+        router.delete(`/notifications/${id}`, {
+            preserveScroll: true,
+            onSuccess: () => router.reload({ only: ['notifications'] }),
+        })
+    }
+
+    function clearAll() {
+        if (confirm('Delete all notifications? This cannot be undone.')) {
+            router.delete('/notifications', {
+                preserveScroll: true,
+                onSuccess: () => router.reload({ only: ['notifications'] }),
+            })
+        }
     }
 
     const unreadCount = notifications.data.filter(n => !n.is_read).length
@@ -106,11 +124,19 @@ export default function NotificationsPage({ notifications }: Props) {
                             {notifications.total} total &bull; {unreadCount} unread
                         </p>
                     </div>
-                    {unreadCount > 0 && (
-                        <Button variant="outline" size="sm" onClick={markAllRead}>
-                            Mark all read
-                        </Button>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {unreadCount > 0 && (
+                            <Button variant="outline" size="sm" onClick={markAllRead}>
+                                Mark all read
+                            </Button>
+                        )}
+                        {notifications.total > 0 && (
+                            <Button variant="outline" size="sm" onClick={clearAll} className="text-destructive hover:text-destructive">
+                                <Trash2 className="w-4 h-4 mr-1" />
+                                Clear all
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Filter tabs */}

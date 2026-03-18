@@ -5,6 +5,7 @@ use App\Models\Assessment;
 use App\Models\AuditLog;
 use App\Models\Evidence;
 use App\Models\Risk;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -108,14 +109,15 @@ class DashboardController extends Controller
         })->where('created_at', '>=', now()->subDays(30))->count();
 
         return Inertia::render('dashboard', [
-            'stats'             => $stats,
-            'recentRisks'       => $recentRisks,
-            'recentActivity'    => $recentActivity,
-            'recentAssessments' => $recentAssessments,
-            'trendData'         => $trendData,
-            'heatmap'           => $heatmap,
-            'kpis'              => $kpis,
-            'ruleAdjustments'   => $ruleAdjustments,
+            'stats'              => $stats,
+            'recentRisks'        => $recentRisks,
+            'recentActivity'     => $recentActivity,
+            'recentAssessments'  => $recentAssessments,
+            'trendData'          => $trendData,
+            'heatmap'            => $heatmap,
+            'kpis'               => $kpis,
+            'ruleAdjustments'    => $ruleAdjustments,
+            'lastSchedulerRun'   => Cache::get('scheduler_last_run'),
         ]);
     }
 }

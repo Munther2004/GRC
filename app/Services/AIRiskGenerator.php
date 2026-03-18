@@ -38,7 +38,7 @@ class AIRiskGenerator
         }
     }
 
-    private function generateRiskForControl($control, Assessment $assessment, string $complianceStatus): void
+    public function generateRiskForControl($control, Assessment $assessment, string $complianceStatus): void
     {
         try {
             $frameworkName   = $control->framework->name ?? $control->framework->short_name ?? 'Unknown';
@@ -123,13 +123,11 @@ PROMPT;
                 'updated_at'  => now(),
             ]);
 
-            Notification::create([
-                'type'    => 'critical_risk',
-                'title'   => 'AI Generated New Risk',
-                'message' => "AI generated new risk: {$risk->title} from {$statusLabel} control {$control->control_id}",
-                'url'     => "/risks/{$risk->id}",
-                'is_read' => false,
-            ]);
+            $riskUrl = "/risks/{$risk->id}";
+            Notification::firstOrCreate(
+                ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false],
+                ['title' => 'AI Generated New Risk', 'message' => "AI generated new risk: {$risk->title} from {$statusLabel} control {$control->control_id}"]
+            );
 
             AuditLog::record(
                 'created',

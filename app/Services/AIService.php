@@ -10,7 +10,8 @@ class AIService
     public function callClaude(string $prompt): string
     {
         try {
-            $response = Http::withHeaders([
+            $response = Http::withoutVerifying()
+            ->withHeaders([
                 'x-api-key'         => config('services.anthropic.key'),
                 'anthropic-version' => '2023-06-01',
                 'Content-Type'      => 'application/json',

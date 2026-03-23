@@ -8,6 +8,7 @@ use App\Models\Notification;
 use App\Models\Risk;
 use App\Models\AuditLog;
 use App\Services\AIControlLinker;
+use App\Services\AIService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -96,6 +97,7 @@ class RiskController extends Controller
             'treatment'      => 'required|in:accept,mitigate,transfer,avoid',
             'treatment_plan' => 'nullable|string',
             'due_date'       => 'nullable|date',
+            'ai_validated'   => 'boolean',
         ]);
 
         $risk = Risk::create([
@@ -187,6 +189,7 @@ class RiskController extends Controller
             'treatment'      => 'required|in:accept,mitigate,transfer,avoid',
             'treatment_plan' => 'nullable|string',
             'due_date'       => 'nullable|date',
+            'ai_validated'   => 'boolean',
         ]);
 
         $oldScore = $risk->risk_score;
@@ -224,6 +227,30 @@ class RiskController extends Controller
 
         return redirect()->route('risks.index')
             ->with('success', 'Risk deleted successfully.');
+    }
+
+    public function validateScores(Request $request)
+    {
+        $validated = $request->validate([
+            'title'       => 'required|string',
+            'description' => 'required|string',
+            'likelihood'  => 'required|integer|min:1|max:5',
+            'impact'      => 'required|integer|min:1|max:5',
+        ]);
+
+        try {
+            $result = (new AIService())->validateRiskScores(
+                $validated['title'],
+                $validated['description'],
+                $validated['likelihood'],
+                $validated['impact']
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('validateScores exception', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json(['error' => 'Validation failed: ' . $e->getMessage()], 500);
+        }
+
+        return response()->json($result);
     }
 
     public function linkControl(Request $request, Risk $risk)

@@ -29,6 +29,7 @@ interface Risk {
     treatment_plan: string | null;
     due_date: string | null;
     auto_generated: number;
+    ai_validated: boolean;
     framework_name: string | null;
     user: { name: string };
 }
@@ -235,6 +236,11 @@ export default function RisksIndex({ risks, stats, filters, frameworks }: Props)
                                                     {risk.treatment_plan && (
                                                         <Badge className="text-xs bg-green-100 text-green-700 border-green-200 shrink-0 px-1 py-0">
                                                             📋 Plan
+                                                        </Badge>
+                                                    )}
+                                                    {risk.ai_validated && (
+                                                        <Badge className="text-xs bg-blue-100 text-blue-700 border-blue-200 shrink-0 px-1 py-0">
+                                                            <Sparkles className="w-2.5 h-2.5 mr-0.5" />Validated
                                                         </Badge>
                                                     )}
                                                 </div>

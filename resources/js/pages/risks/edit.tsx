@@ -2,19 +2,40 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, Save, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Save, AlertTriangle, Sparkles, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { useState } from 'react';
+import axios from 'axios';
 
 
 interface Risk {
     id: number; title: string; description: string; category: string;
     owner: string; likelihood: number; impact: number; status: string;
     treatment: string; treatment_plan: string | null; due_date: string | null;
+    ai_validated: boolean;
 }
+
+interface ValidationResult {
+    error?:                 boolean;
+    valid:                  boolean;
+    recommended_likelihood: number;
+    recommended_impact:     number;
+    reasoning:              string;
+    confidence:             string;
+}
+
+const levelColors: Record<number, string> = {
+    1: 'bg-green-100 text-green-700',
+    2: 'bg-lime-100 text-lime-700',
+    3: 'bg-yellow-100 text-yellow-700',
+    4: 'bg-orange-100 text-orange-700',
+    5: 'bg-red-100 text-red-700',
+};
 interface Props {
     risk: Risk;
     categories: string[];
@@ -41,10 +62,49 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
         treatment:      risk.treatment,
         treatment_plan: risk.treatment_plan ?? '',
         due_date:       risk.due_date?.split('T')[0] ?? '',
+        ai_validated:   risk.ai_validated ?? false,
     });
+
+    const [validationResult, setValidationResult]   = useState<ValidationResult | null>(null);
+    const [loadingValidation, setLoadingValidation] = useState(false);
+    const [validationError, setValidationError]     = useState('');
 
     const score = Number(data.likelihood) * Number(data.impact);
     const level = levelFromScore(score);
+
+    const canValidate = data.title.length >= 5 && data.description.length >= 10;
+
+    const validateScores = async () => {
+        if (!canValidate) return;
+        setLoadingValidation(true);
+        setValidationError('');
+        setValidationResult(null);
+        try {
+            const res = await axios.post('/risks/validate-scores', {
+                title:       data.title,
+                description: data.description,
+                likelihood:  Number(data.likelihood),
+                impact:      Number(data.impact),
+            });
+            setValidationResult(res.data);
+            if (!res.data.error) setData('ai_validated', true);
+        } catch {
+            setValidationError('AI validation failed. Please try again.');
+        } finally {
+            setLoadingValidation(false);
+        }
+    };
+
+    const applyRecommendations = () => {
+        if (!validationResult) return;
+        setData({
+            ...data,
+            likelihood:   String(validationResult.recommended_likelihood),
+            impact:       String(validationResult.recommended_impact),
+            ai_validated: true,
+        });
+        setValidationResult(null);
+    };
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -115,8 +175,17 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">Risk Scoring</CardTitle>
-                            <CardDescription>ISO/IEC 27005 — Likelihood × Impact</CardDescription>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-base">Risk Scoring</CardTitle>
+                                    <CardDescription>ISO/IEC 27005 — Likelihood × Impact</CardDescription>
+                                </div>
+                                {data.ai_validated && (
+                                    <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-xs">
+                                        <Sparkles className="w-3 h-3 mr-1" />AI Validated
+                                    </Badge>
+                                )}
+                            </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-2 gap-6">
@@ -143,6 +212,90 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Validate Scores */}
+                            <div className="flex items-center justify-between">
+                                <div />
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    className="gap-1.5 border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400"
+                                    onClick={validateScores}
+                                    disabled={loadingValidation || !canValidate}
+                                >
+                                    {loadingValidation
+                                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                        : <Sparkles className="w-3.5 h-3.5" />
+                                    }
+                                    {loadingValidation ? 'Validating...' : '✨ Validate Scores'}
+                                </Button>
+                            </div>
+
+                            {validationError && (
+                                <div className="flex items-start gap-2 p-3 rounded-lg border border-red-200 bg-red-50">
+                                    <XCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                                    <p className="text-sm text-red-700">{validationError}</p>
+                                </div>
+                            )}
+
+                            {validationResult && validationResult.error === true && (
+                                <div className="rounded-lg border border-red-200 bg-red-50">
+                                    <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-red-100">
+                                        <XCircle className="w-4 h-4 text-red-600" />
+                                        <span className="text-sm font-semibold text-red-800">Validation Unavailable</span>
+                                    </div>
+                                    <div className="px-4 py-3">
+                                        <p className="text-sm text-red-700">{validationResult.reasoning}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {validationResult && !validationResult.error && validationResult.valid && (
+                                <div className="rounded-lg border border-green-200 bg-green-50">
+                                    <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-green-100">
+                                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                        <span className="text-sm font-semibold text-green-800">Scores Validated — Looks Good</span>
+                                        <span className={`ml-auto text-xs px-1.5 py-0.5 rounded capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}>
+                                            {validationResult.confidence} confidence
+                                        </span>
+                                    </div>
+                                    <div className="px-4 py-3">
+                                        <p className="text-sm text-gray-700">{validationResult.reasoning}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {validationResult && !validationResult.error && !validationResult.valid && (
+                                <div className="rounded-lg border border-amber-200 bg-amber-50">
+                                    <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-amber-100">
+                                        <AlertTriangle className="w-4 h-4 text-amber-600" />
+                                        <span className="text-sm font-semibold text-amber-800">Scores Adjusted — Recommendations Available</span>
+                                        <span className={`ml-auto text-xs px-1.5 py-0.5 rounded capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}>
+                                            {validationResult.confidence} confidence
+                                        </span>
+                                    </div>
+                                    <div className="px-4 py-3 space-y-3">
+                                        <p className="text-sm text-gray-700">{validationResult.reasoning}</p>
+                                        <div className="flex items-center justify-between gap-4 pt-1">
+                                            <div className="flex items-center gap-3 text-sm">
+                                                <span className="text-gray-500">Recommended:</span>
+                                                <span className="font-medium">Likelihood <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${levelColors[validationResult.recommended_likelihood]}`}>{validationResult.recommended_likelihood}</span></span>
+                                                <span className="font-medium">Impact <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${levelColors[validationResult.recommended_impact]}`}>{validationResult.recommended_impact}</span></span>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white"
+                                                onClick={applyRecommendations}
+                                            >
+                                                Apply Recommendations
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className={`flex items-center justify-between p-4 rounded-lg border ${level.color}`}>
                                 <div className="flex items-center gap-2">
                                     <AlertTriangle className="w-5 h-5" />

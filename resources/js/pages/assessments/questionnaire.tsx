@@ -43,6 +43,7 @@ interface Props {
     items: Item[];
     pagination: { current_page: number; total_pages: number; total_items: number; per_page: number };
     progress: { answered: number; total: number; percent: number };
+    prefilledCount: number;
 }
 
 const statusOptions = [
@@ -59,7 +60,7 @@ const statusBadgeColors: Record<string, string> = {
     not_applicable:      'bg-gray-100 text-gray-500 border-gray-200',
 };
 
-export default function Questionnaire({ assessment, items, pagination, progress }: Props) {
+export default function Questionnaire({ assessment, items, pagination, progress, prefilledCount }: Props) {
     const [answers, setAnswers] = useState<Record<number, { compliance_status: string; comments: string }>>(
         Object.fromEntries(items.map(item => [item.id, {
             compliance_status: item.compliance_status,
@@ -140,6 +141,16 @@ export default function Questionnaire({ assessment, items, pagination, progress 
             <Head title={`Questionnaire — ${assessment.title}`} />
 
             <div className="max-w-4xl mx-auto space-y-6">
+
+                {/* Controls Hub pre-fill notice */}
+                {prefilledCount > 0 && (
+                    <div className="flex items-center gap-2 px-4 py-3 rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 text-sm">
+                        <CheckCircle className="w-4 h-4 text-blue-500 shrink-0" />
+                        <span className="text-blue-700 dark:text-blue-300">
+                            <strong>{prefilledCount}</strong> control{prefilledCount !== 1 ? 's' : ''} pre-filled from Controls Hub — update if status has changed.
+                        </span>
+                    </div>
+                )}
 
                 {/* Header */}
                 <div className="flex items-start justify-between">

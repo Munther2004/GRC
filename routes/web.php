@@ -7,7 +7,9 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\GapAnalysisController;
 use App\Http\Controllers\EvidenceController;
+use App\Http\Controllers\ControlHubController;
 use App\Http\Controllers\NotificationController;
+use App\Models\KriSnapshot;
 use App\Http\Controllers\Admin\AIController as AdminAIController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\FrameworkController as AdminFrameworkController;
@@ -33,19 +35,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ── Everyone ──────────────────────────────────────────────────────────────
     Route::get('/dashboard',    [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/kri-snapshots', fn () =>
+        KriSnapshot::latest('snapshot_date')->limit(12)->get()->sortBy('snapshot_date')->values()
+    )->name('kri-snapshots.index');
     Route::get('/reports',      [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');
     Route::get('/gap-analysis', [GapAnalysisController::class, 'index'])->name('gap-analysis.index');
+    Route::get('/controls/hub', [ControlHubController::class, 'index'])->name('controls.hub');
+    Route::get('/controls/{control}/history', [ControlHubController::class, 'history'])->name('controls.history');
 
     // ── Risks — read-only for all, write for admin & user ────────────────────
     Route::get('/risks', [RiskController::class, 'index'])->name('risks.index');
 
     Route::middleware('role:admin,user')->group(function () {
-        Route::get('/risks/create',      [RiskController::class, 'create'])->name('risks.create');
-        Route::post('/risks',            [RiskController::class, 'store'])->name('risks.store');
-        Route::get('/risks/{risk}/edit', [RiskController::class, 'edit'])->name('risks.edit');
-        Route::put('/risks/{risk}',      [RiskController::class, 'update'])->name('risks.update');
-        Route::delete('/risks/{risk}',   [RiskController::class, 'destroy'])->name('risks.destroy');
+        Route::post('/controls/{control}/update-status', [ControlHubController::class, 'updateStatus'])->name('controls.update-status');
+        Route::get('/risks/create',           [RiskController::class, 'create'])->name('risks.create');
+        Route::post('/risks/validate-scores', [RiskController::class, 'validateScores'])->name('risks.validate-scores');
+        Route::post('/risks',                 [RiskController::class, 'store'])->name('risks.store');
+        Route::get('/risks/{risk}/edit',      [RiskController::class, 'edit'])->name('risks.edit');
+        Route::put('/risks/{risk}',           [RiskController::class, 'update'])->name('risks.update');
+        Route::delete('/risks/{risk}',        [RiskController::class, 'destroy'])->name('risks.destroy');
     });
 
     Route::middleware('role:admin')->group(function () {

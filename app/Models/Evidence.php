@@ -8,7 +8,7 @@ use Illuminate\Support\Carbon;
 class Evidence extends Model
 {
     protected $fillable = [
-        'user_id', 'assessment_item_id', 'title',
+        'user_id', 'assessment_item_id', 'control_id', 'title',
         'description', 'file_path', 'file_name',
         'file_type', 'status', 'expiry_date',
         'ai_review', 'ai_verdict', 'ai_confidence', 'ai_reviewed_at',
@@ -22,6 +22,7 @@ class Evidence extends Model
 
     public function user()           { return $this->belongsTo(User::class); }
     public function assessmentItem() { return $this->belongsTo(AssessmentItem::class); }
+    public function control()        { return $this->belongsTo(Control::class); }
 
     public function getIsExpiredAttribute(): bool
     {

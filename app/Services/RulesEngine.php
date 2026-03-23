@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Assessment;
 use App\Models\AssessmentItem;
 use App\Models\AuditLog;
+use App\Models\Control;
 use App\Models\Notification;
 
 class RulesEngine
@@ -43,6 +44,64 @@ class RulesEngine
                     }
                 }
                 // partially_compliant: flag only, no score change
+            }
+        }
+    }
+
+    /**
+     * Controls Hub: directly mark a control non-compliant → raise linked risk likelihoods.
+     */
+    public function applyRule1ForControl(Control $control): void
+    {
+        foreach ($control->risks as $risk) {
+            $oldLikelihood = $risk->likelihood;
+            $risk->likelihood = min(5, $risk->likelihood + 1);
+
+            if ($risk->likelihood !== $oldLikelihood) {
+                $risk->save();
+
+                $riskUrl = "/risks/{$risk->id}";
+                Notification::firstOrCreate(
+                    ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false],
+                    ['title' => 'Risk Score Auto-Adjusted', 'message' => "Risk '{$risk->title}' likelihood raised — control {$control->control_id} marked non-compliant in Controls Hub"]
+                );
+
+                AuditLog::record(
+                    'updated',
+                    'Risk',
+                    $risk->id,
+                    "Rule 1 (Controls Hub): Risk '{$risk->title}' likelihood increased from {$oldLikelihood} to {$risk->likelihood} due to non-compliant control {$control->control_id}"
+                );
+            }
+        }
+    }
+
+    /**
+     * Controls Hub: directly mark a control compliant (was non-compliant) → lower linked risk likelihoods.
+     */
+    public function applyRule2ForControl(Control $control, string $oldStatus): void
+    {
+        if ($oldStatus !== 'non_compliant') return;
+
+        foreach ($control->risks as $risk) {
+            $oldLikelihood = $risk->likelihood;
+            $risk->likelihood = max(1, $risk->likelihood - 1);
+
+            if ($risk->likelihood !== $oldLikelihood) {
+                $risk->save();
+
+                $riskUrl = "/risks/{$risk->id}";
+                Notification::firstOrCreate(
+                    ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false],
+                    ['title' => 'Risk Score Improved', 'message' => "Risk '{$risk->title}' likelihood reduced — control {$control->control_id} marked compliant in Controls Hub"]
+                );
+
+                AuditLog::record(
+                    'updated',
+                    'Risk',
+                    $risk->id,
+                    "Rule 2 (Controls Hub): Risk '{$risk->title}' likelihood decreased from {$oldLikelihood} to {$risk->likelihood} — control {$control->control_id} now compliant"
+                );
             }
         }
     }

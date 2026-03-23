@@ -7,6 +7,7 @@ import {
     FileCheck,
     FolderOpen,
     LayoutDashboard,
+    LayoutGrid,
     ScrollText,
     Settings,
     Shield,
@@ -32,8 +33,9 @@ const mainNavigation = [
     { name: "Risk Register",href: "/risks",        icon: AlertTriangle,   roles: ['admin', 'auditor', 'user'] },
     { name: "Assessments",  href: "/assessments",  icon: ClipboardList,   roles: ['admin', 'auditor', 'user'] },
     { name: "Evidence",     href: "/evidence",     icon: FolderOpen,      roles: ['admin', 'auditor', 'user'] },
-    { name: "Gap Analysis", href: "/gap-analysis", icon: FileCheck,       roles: ['admin', 'auditor', 'user'] },
-    { name: "Reports",      href: "/reports",      icon: BarChart3,       roles: ['admin', 'auditor', 'user'] },
+    { name: "Gap Analysis",  href: "/gap-analysis",  icon: FileCheck,    roles: ['admin', 'auditor', 'user'] },
+    { name: "Controls Hub",  href: "/controls/hub",  icon: LayoutGrid,   roles: ['admin', 'auditor', 'user'] },
+    { name: "Reports",       href: "/reports",        icon: BarChart3,    roles: ['admin', 'auditor', 'user'] },
 ]
 
 const reviewNavigation = [

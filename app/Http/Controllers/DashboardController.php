@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Assessment;
 use App\Models\AuditLog;
 use App\Models\Evidence;
+use App\Models\KriSnapshot;
 use App\Models\Risk;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
@@ -108,6 +109,27 @@ class DashboardController extends Controller
               ->orWhere('description', 'like', 'Rule 2:%');
         })->where('created_at', '>=', now()->subDays(30))->count();
 
+        $kriSnapshots = KriSnapshot::latest('snapshot_date')
+            ->limit(12)
+            ->get()
+            ->sortBy('snapshot_date')
+            ->values()
+            ->map(fn($s) => [
+                'snapshot_date'          => $s->snapshot_date->toDateString(),
+                'compliance_percentage'  => $s->compliance_percentage,
+                'open_risks_critical'    => $s->open_risks_critical,
+                'open_risks_high'        => $s->open_risks_high,
+                'open_risks_medium'      => $s->open_risks_medium,
+                'open_risks_low'         => $s->open_risks_low,
+                'overdue_risks'          => $s->overdue_risks,
+                'overdue_assessments'    => $s->overdue_assessments,
+                'evidence_approval_rate' => $s->evidence_approval_rate,
+                'ai_generated_risks'     => $s->ai_generated_risks,
+                'total_risks'            => $s->total_risks,
+                'total_controls'         => $s->total_controls,
+                'compliant_controls'     => $s->compliant_controls,
+            ]);
+
         return Inertia::render('dashboard', [
             'stats'              => $stats,
             'recentRisks'        => $recentRisks,
@@ -118,6 +140,7 @@ class DashboardController extends Controller
             'kpis'               => $kpis,
             'ruleAdjustments'    => $ruleAdjustments,
             'lastSchedulerRun'   => Cache::get('scheduler_last_run'),
+            'kriSnapshots'       => $kriSnapshots,
         ]);
     }
 }

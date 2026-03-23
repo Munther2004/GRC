@@ -7,6 +7,7 @@ use App\Models\Assessment;
 use App\Models\AssessmentItem;
 use App\Models\AuditLog;
 use App\Models\Control;
+use App\Models\ControlStatusHistory;
 use App\Models\Evidence;
 use App\Models\Framework;
 use App\Models\Notification;
@@ -76,16 +77,30 @@ class AssessmentController extends Controller
             'compliance_percentage' => 0,
         ]);
 
-        // Pre-create assessment items for all controls in this framework
+        // Pre-create assessment items, pre-filling from Controls Hub current_status if set
         $controls = Control::where('framework_id', $validated['framework_id'])
             ->where('is_active', true)
             ->get();
 
+        $prefilledCount = 0;
+
         foreach ($controls as $control) {
+            $prefilledStatus = match ($control->current_status) {
+                'compliant'           => 'compliant',
+                'partially_compliant' => 'partially_compliant',
+                'non_compliant'       => 'non_compliant',
+                'not_applicable'      => 'not_applicable',
+                default               => 'not_applicable',
+            };
+
+            if ($control->current_status !== null) {
+                $prefilledCount++;
+            }
+
             AssessmentItem::create([
                 'assessment_id'     => $assessment->id,
                 'control_id'        => $control->id,
-                'compliance_status' => 'not_applicable',
+                'compliance_status' => $prefilledStatus,
                 'comments'          => null,
             ]);
         }
@@ -158,20 +173,25 @@ class AssessmentController extends Controller
             ->where('compliance_status', '!=', 'not_applicable')
             ->count();
 
+        $prefilledCount = Control::where('framework_id', $assessment->framework_id)
+            ->whereNotNull('current_status')
+            ->count();
+
         return Inertia::render('assessments/questionnaire', [
-            'assessment'  => $assessment,
-            'items'       => $items,
-            'pagination'  => [
+            'assessment'     => $assessment,
+            'items'          => $items,
+            'pagination'     => [
                 'current_page' => $page,
                 'total_pages'  => $totalPages,
                 'total_items'  => $totalItems,
                 'per_page'     => $perPage,
             ],
-            'progress'    => [
+            'progress'       => [
                 'answered' => $answered,
                 'total'    => $totalItems,
                 'percent'  => $totalItems > 0 ? round($answered / $totalItems * 100) : 0,
             ],
+            'prefilledCount' => $prefilledCount,
         ]);
     }
 
@@ -236,6 +256,8 @@ class AssessmentController extends Controller
         $rulesEngine->applyRule1($assessment);
         $rulesEngine->applyRule2($assessment);
 
+        $this->syncControlStatuses($assessment);
+
         GenerateAIRisksJob::dispatch($assessment);
 
         return redirect()->route('assessments.show', $assessment)
@@ -257,6 +279,8 @@ class AssessmentController extends Controller
         $rulesEngine = new RulesEngine();
         $rulesEngine->applyRule1($assessment);
         $rulesEngine->applyRule2($assessment);
+
+        $this->syncControlStatuses($assessment);
 
         GenerateAIRisksJob::dispatch($assessment);
 
@@ -335,6 +359,46 @@ class AssessmentController extends Controller
         $pdf->setPaper('A4', 'portrait');
         $slug = str($assessment->title)->slug()->limit(40);
         return $pdf->download("assessment-{$slug}-" . now()->format('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * Sync every assessment item's compliance_status back to the controls table.
+     * Idempotent: skips creating a history record if one for this assessment already exists.
+     */
+    private function syncControlStatuses(Assessment $assessment): void
+    {
+        $items = AssessmentItem::with('control')
+            ->where('assessment_id', $assessment->id)
+            ->get();
+
+        foreach ($items as $item) {
+            $control = $item->control;
+            if (!$control) continue;
+
+            $newStatus = $item->compliance_status;
+            $oldStatus = $control->current_status;
+
+            $updates = ['current_status' => $newStatus];
+            if (in_array($newStatus, ['compliant', 'partially_compliant'])) {
+                $updates['last_remediated_at'] = now();
+            }
+            $control->update($updates);
+
+            // Idempotency: only create history if not already synced from this assessment
+            $alreadySynced = ControlStatusHistory::where('control_id', $control->id)
+                ->where('notes', "Synced from assessment #{$assessment->id}")
+                ->exists();
+
+            if (!$alreadySynced) {
+                ControlStatusHistory::create([
+                    'control_id' => $control->id,
+                    'user_id'    => null,
+                    'old_status' => $oldStatus,
+                    'new_status' => $newStatus,
+                    'notes'      => "Synced from assessment #{$assessment->id}",
+                ]);
+            }
+        }
     }
 
     public function destroy(Assessment $assessment)

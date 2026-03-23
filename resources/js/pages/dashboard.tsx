@@ -10,6 +10,10 @@ import { Link, usePage } from "@inertiajs/react"
 import { AlertTriangle, TrendingUp, TrendingDown, Clock, FileCheck, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    LineChart, Line, BarChart, Bar,
+    XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+} from 'recharts'
 
 
 type Stats = {
@@ -61,6 +65,22 @@ type NotificationItem = {
     is_read: boolean
 }
 
+type KriSnapshot = {
+    snapshot_date: string
+    compliance_percentage: number
+    open_risks_critical: number
+    open_risks_high: number
+    open_risks_medium: number
+    open_risks_low: number
+    overdue_risks: number
+    overdue_assessments: number
+    evidence_approval_rate: number
+    ai_generated_risks: number
+    total_risks: number
+    total_controls: number
+    compliant_controls: number
+}
+
 type Props = {
     stats: Stats
     recentRisks: Risk[]
@@ -71,6 +91,7 @@ type Props = {
     kpis: Kpis
     ruleAdjustments: number
     lastSchedulerRun: string | null
+    kriSnapshots: KriSnapshot[]
 }
 
 function KpiCards({ kpis }: { kpis: Kpis }) {
@@ -146,7 +167,99 @@ function KpiCards({ kpis }: { kpis: Kpis }) {
     )
 }
 
-export default function AdminDashboard({ stats, recentRisks, recentActivity, recentAssessments, trendData, heatmap, kpis, ruleAdjustments, lastSchedulerRun }: Props) {
+function formatSnapshotDate(dateStr: string): string {
+    const d = new Date(dateStr + 'T00:00:00')
+    return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
+}
+
+function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
+    const lastSnapshot = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null
+
+    const chartData = snapshots.map(s => ({
+        date:     formatSnapshotDate(s.snapshot_date),
+        compliance: s.compliance_percentage,
+        critical: s.open_risks_critical,
+        high:     s.open_risks_high,
+        medium:   s.open_risks_medium,
+        low:      s.open_risks_low,
+    }))
+
+    return (
+        <div className="space-y-3">
+            <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold tracking-tight">KRI Trends</h2>
+                {lastSnapshot && (
+                    <span className="text-xs text-muted-foreground">
+                        Last snapshot: {formatSnapshotDate(lastSnapshot.snapshot_date)}
+                    </span>
+                )}
+            </div>
+
+            {snapshots.length < 2 ? (
+                <Card>
+                    <CardContent className="p-8 text-center text-muted-foreground text-sm">
+                        <p className="mb-1 font-medium">Not enough data yet</p>
+                        <p>Trends will appear after the first few nightly snapshots.</p>
+                        <p className="mt-2 font-mono text-xs bg-muted inline-block px-2 py-1 rounded">
+                            php artisan kri:snapshot
+                        </p>
+                    </CardContent>
+                </Card>
+            ) : (
+                <div className="grid lg:grid-cols-2 gap-6">
+                    {/* Compliance Trend */}
+                    <Card>
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium">Compliance % Trend</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ResponsiveContainer width="100%" height={220}>
+                                <LineChart data={chartData} margin={{ top: 5, right: 16, left: 0, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.1} />
+                                    <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                                    <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" />
+                                    <Tooltip formatter={(v: number) => [`${v}%`, 'Compliance']} />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="compliance"
+                                        stroke="#3b82f6"
+                                        strokeWidth={2}
+                                        dot={{ r: 3 }}
+                                        activeDot={{ r: 5 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+
+                    {/* Risk Distribution Trend */}
+                    <Card>
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium">Open Risk Distribution</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ResponsiveContainer width="100%" height={220}>
+                                <BarChart data={chartData} margin={{ top: 5, right: 16, left: 0, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.1} />
+                                    <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                                    <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                                    <Tooltip />
+                                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                                    <Bar dataKey="critical" name="Critical" stackId="a" fill="#dc2626" />
+                                    <Bar dataKey="high"     name="High"     stackId="a" fill="#f97316" />
+                                    <Bar dataKey="medium"   name="Medium"   stackId="a" fill="#eab308" />
+                                    <Bar dataKey="low"      name="Low"      stackId="a" fill="#16a34a" radius={[2, 2, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+        </div>
+    )
+}
+
+export default function AdminDashboard({ stats, recentRisks, recentActivity, recentAssessments, trendData, heatmap, kpis, ruleAdjustments, lastSchedulerRun, kriSnapshots }: Props) {
     const { notifications } = usePage<{ notifications: { unread_count: number; recent: NotificationItem[] } }>().props
     const unreadCount = notifications?.unread_count ?? 0
     const recent: NotificationItem[] = notifications?.recent ?? []
@@ -233,6 +346,9 @@ export default function AdminDashboard({ stats, recentRisks, recentActivity, rec
 
                 {/* KPI Section */}
                 <KpiCards kpis={kpis} />
+
+                {/* KRI Trends */}
+                <KriTrends snapshots={kriSnapshots} />
 
                 {/* Rule Adjustments Indicator */}
                 <div className="flex items-center gap-2 px-4 py-3 rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 text-sm">

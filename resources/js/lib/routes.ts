@@ -62,6 +62,11 @@ export const route = (name: string, params?: any): string => {
         //Gap Analysis
         'gap-analysis.index': '/gap-analysis',
 
+        // Controls Hub
+        'controls.hub':            '/controls/hub',
+        'controls.update-status':  `/controls/${id}/update-status`,
+        'controls.history':        `/controls/${id}/history`,
+
         // Notifications
         'notifications.index':   '/notifications',
         'notifications.read':    `/notifications/${id}/read`,

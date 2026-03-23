@@ -13,6 +13,7 @@ interface Risk {
     risk_level: string; status: string; treatment: string; treatment_plan: string | null;
     due_date: string | null; created_at: string; user: { name: string };
     auto_generated: number;
+    ai_validated: boolean;
     source_control: { control_id: string; title: string } | null;
 }
 
@@ -133,6 +134,17 @@ export default function RiskShow({ risk, linkedControls, allControls }: Props) {
                                 From non-compliant control: <span className="font-mono font-semibold">{risk.source_control.control_id}</span> — {risk.source_control.title}
                             </p>
                         </div>
+                    </div>
+                )}
+
+                {/* AI Validated banner */}
+                {risk.ai_validated && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg border border-blue-200 bg-blue-50">
+                        <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
+                        <p className="text-sm font-medium text-blue-800">Risk scores have been validated by AI</p>
+                        <Badge className="ml-auto bg-blue-100 text-blue-700 border-blue-200 text-xs shrink-0">
+                            <Sparkles className="w-3 h-3 mr-1" />AI Validated
+                        </Badge>
                     </div>
                 )}
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Control;
+use App\Models\Framework;
 use App\Models\Notification;
 use App\Models\Risk;
 use App\Models\AuditLog;
@@ -16,7 +17,7 @@ class RiskController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Risk::with('user')
+        $paginator = Risk::with(['user', 'sourceControl.framework'])
             ->when($request->search, fn($q) =>
                 $q->where('title', 'like', "%{$request->search}%")
                   ->orWhere('description', 'like', "%{$request->search}%")
@@ -39,9 +40,18 @@ class RiskController extends Controller
             ->when($request->has_plan, fn($q) =>
                 $q->whereNotNull('treatment_plan')->where('treatment_plan', '<>', '')
             )
+            ->when($request->framework, fn($q) =>
+                $q->whereHas('sourceControl.framework', fn($fq) =>
+                    $fq->where('short_name', $request->framework)
+                )
+            )
             ->orderByRaw('likelihood * impact DESC')
             ->paginate(15)
             ->withQueryString();
+
+        $paginator->through(fn($risk) => array_merge($risk->toArray(), [
+            'framework_name' => $risk->sourceControl?->framework?->short_name ?? null,
+        ]));
 
         $stats = [
             'total'    => Risk::count(),
@@ -52,10 +62,15 @@ class RiskController extends Controller
                               ->count(),
         ];
 
+        $frameworks = Framework::where('is_active', true)
+            ->orderBy('short_name')
+            ->get(['id', 'short_name', 'name']);
+
         return Inertia::render('risks/index', [
-            'risks'   => $query,
-            'stats'   => $stats,
-            'filters' => $request->only(['search', 'status', 'level', 'category', 'has_plan']),
+            'risks'      => $paginator,
+            'stats'      => $stats,
+            'filters'    => $request->only(['search', 'status', 'level', 'category', 'has_plan', 'framework']),
+            'frameworks' => $frameworks,
         ]);
     }
 

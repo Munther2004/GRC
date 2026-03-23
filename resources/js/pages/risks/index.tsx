@@ -29,6 +29,7 @@ interface Risk {
     treatment_plan: string | null;
     due_date: string | null;
     auto_generated: number;
+    framework_name: string | null;
     user: { name: string };
 }
 
@@ -39,14 +40,15 @@ interface Props {
         total: number;
     };
     stats: { total: number; open: number; critical: number; overdue: number };
-    filters: { search?: string; status?: string; level?: string; category?: string; has_plan?: string };
+    filters: { search?: string; status?: string; level?: string; category?: string; has_plan?: string; framework?: string };
+    frameworks: { id: number; short_name: string; name: string }[];
 }
 
-const levelColors: Record<string, string> = {
-    critical: 'bg-red-500/10 text-red-500 border-red-500/20',
-    high:     'bg-orange-500/10 text-orange-500 border-orange-500/20',
-    medium:   'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
-    low:      'bg-green-500/10 text-green-600 border-green-500/20',
+const getLevel = (score: number) => {
+    if (score >= 19) return { label: 'Critical', bg: 'bg-red-600',    text: 'text-white' }
+    if (score >= 13) return { label: 'High',     bg: 'bg-orange-500', text: 'text-white' }
+    if (score >= 7)  return { label: 'Medium',   bg: 'bg-yellow-500', text: 'text-black' }
+    return                   { label: 'Low',      bg: 'bg-green-600',  text: 'text-white' }
 };
 
 const statusColors: Record<string, string> = {
@@ -56,23 +58,25 @@ const statusColors: Record<string, string> = {
     closed:       'bg-gray-500/10 text-gray-500 border-gray-500/20',
 };
 
-export default function RisksIndex({ risks, stats, filters }: Props) {
+export default function RisksIndex({ risks, stats, filters, frameworks }: Props) {
     const { auth } = usePage().props as any;
     const isAdmin  = auth.user.role === 'admin';
     const canEdit  = auth.user.role === 'admin' || auth.user.role === 'user';
 
-    const [search, setSearch]     = useState(filters.search ?? '');
-    const [status, setStatus]     = useState(filters.status ?? 'all');
-    const [level, setLevel]       = useState(filters.level ?? 'all');
-    const [category, setCategory] = useState(filters.category ?? 'all');
-    const [hasPlan, setHasPlan]   = useState(!!filters.has_plan);
+    const [search, setSearch]       = useState(filters.search ?? '');
+    const [status, setStatus]       = useState(filters.status ?? 'all');
+    const [level, setLevel]         = useState(filters.level ?? 'all');
+    const [category, setCategory]   = useState(filters.category ?? 'all');
+    const [framework, setFramework] = useState(filters.framework ?? 'all');
+    const [hasPlan, setHasPlan]     = useState(!!filters.has_plan);
 
     const applyFilters = (overrides: Record<string, string> = {}) => {
         router.get(route('risks.index'), {
             search,
-            status:    status   === 'all' ? '' : status,
-            level:     level    === 'all' ? '' : level,
-            category:  category === 'all' ? '' : category,
+            status:    status    === 'all' ? '' : status,
+            level:     level     === 'all' ? '' : level,
+            category:  category  === 'all' ? '' : category,
+            framework: framework === 'all' ? '' : framework,
             has_plan:  hasPlan ? '1' : '',
             ...overrides,
         }, { preserveState: true, replace: true });
@@ -173,6 +177,15 @@ export default function RisksIndex({ risks, stats, filters }: Props) {
                                     ))}
                                 </SelectContent>
                             </Select>
+                            <Select value={framework} onValueChange={v => { setFramework(v); applyFilters({ framework: v === 'all' ? '' : v }); }}>
+                                <SelectTrigger className="w-[160px]"><SelectValue placeholder="Framework" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Frameworks</SelectItem>
+                                    {frameworks.map(f => (
+                                        <SelectItem key={f.id} value={f.short_name}>{f.short_name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                             <Button variant="outline" onClick={() => applyFilters({ search })}>Search</Button>
                             <Button
                                 variant="outline"
@@ -225,7 +238,14 @@ export default function RisksIndex({ risks, stats, filters }: Props) {
                                                         </Badge>
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-gray-400">{risk.user?.name}</p>
+                                                <div className="flex items-center gap-1.5 mt-0.5">
+                                                    <p className="text-xs text-gray-400">{risk.user?.name}</p>
+                                                    {risk.framework_name && (
+                                                        <span className="px-1.5 py-0.5 rounded text-xs bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 font-medium">
+                                                            {risk.framework_name}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{risk.category}</td>
                                             <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{risk.owner}</td>
@@ -237,9 +257,11 @@ export default function RisksIndex({ risks, stats, filters }: Props) {
                                                 <p className="text-xs text-gray-400">{risk.likelihood}×{risk.impact}</p>
                                             </td>
                                             <td className="px-4 py-3">
-                                                <Badge variant="outline" className={`capitalize ${levelColors[risk.risk_level]}`}>
-                                                    {risk.risk_level}
-                                                </Badge>
+                                                {(() => { const level = getLevel(risk.likelihood * risk.impact); return (
+                                                    <span className={`px-3 py-1 rounded-md text-xs font-bold ${level.bg} ${level.text}`}>
+                                                        {level.label}
+                                                    </span>
+                                                ); })()}
                                             </td>
                                             <td className="px-4 py-3">
                                                 <Badge variant="outline" className={`capitalize ${statusColors[risk.status]}`}>

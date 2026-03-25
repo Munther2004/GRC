@@ -16,6 +16,7 @@ use App\Services\RulesEngine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -258,7 +259,17 @@ class AssessmentController extends Controller
 
         $this->syncControlStatuses($assessment);
 
-        GenerateAIRisksJob::dispatch($assessment);
+        try {
+            Log::info('Dispatching GenerateAIRisksJob (autoFill)', ['assessment_id' => $assessment->id]);
+            GenerateAIRisksJob::dispatch($assessment);
+            Log::info('GenerateAIRisksJob dispatched successfully (autoFill)', ['assessment_id' => $assessment->id]);
+        } catch (\Throwable $e) {
+            Log::error('Failed to dispatch GenerateAIRisksJob (autoFill)', [
+                'assessment_id' => $assessment->id,
+                'error'         => $e->getMessage(),
+                'trace'         => $e->getTraceAsString(),
+            ]);
+        }
 
         return redirect()->route('assessments.show', $assessment)
             ->with('success', '[QA] Assessment auto-filled and submitted successfully.');
@@ -282,7 +293,17 @@ class AssessmentController extends Controller
 
         $this->syncControlStatuses($assessment);
 
-        GenerateAIRisksJob::dispatch($assessment);
+        try {
+            Log::info('Dispatching GenerateAIRisksJob', ['assessment_id' => $assessment->id]);
+            GenerateAIRisksJob::dispatch($assessment);
+            Log::info('GenerateAIRisksJob dispatched successfully', ['assessment_id' => $assessment->id]);
+        } catch (\Throwable $e) {
+            Log::error('Failed to dispatch GenerateAIRisksJob', [
+                'assessment_id' => $assessment->id,
+                'error'         => $e->getMessage(),
+                'trace'         => $e->getTraceAsString(),
+            ]);
+        }
 
         return redirect()->route('assessments.show', $assessment)
             ->with('success', 'Assessment submitted successfully.');

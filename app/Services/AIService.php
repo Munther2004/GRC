@@ -96,6 +96,67 @@ PROMPT;
         }
     }
 
+    /**
+     * Compliance chatbot — sends a user message with full conversation history and a live GRC
+     * context snapshot to Claude, returning a plain-English markdown response.
+     *
+     * @param  array<int, array{role: 'user'|'assistant', content: string}> $history
+     */
+    public function complianceChatbot(string $userMessage, array $context, array $history = []): string
+    {
+        try {
+            $contextJson = json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+            $systemPrompt = <<<PROMPT
+You are an AI compliance assistant for a GRC (Governance, Risk, and Compliance) Management System.
+You have access to the following real-time data about the organization:
+
+{$contextJson}
+
+Answer the user's questions based on this data. Be concise, professional, and specific — reference actual numbers and control names from the data. If something is not in the data, say so clearly.
+Format responses with bullet points or numbered lists where appropriate.
+Never make up data that is not in the context provided.
+PROMPT;
+
+            $messages = [];
+            foreach ($history as $turn) {
+                $role    = $turn['role']    ?? '';
+                $content = $turn['content'] ?? '';
+                if (in_array($role, ['user', 'assistant'], true) && $content !== '') {
+                    $messages[] = ['role' => $role, 'content' => (string) $content];
+                }
+            }
+            $messages[] = ['role' => 'user', 'content' => $userMessage];
+
+            $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'x-api-key'         => config('services.anthropic.key'),
+                    'anthropic-version' => '2023-06-01',
+                    'Content-Type'      => 'application/json',
+                ])->post('https://api.anthropic.com/v1/messages', [
+                    'model'      => 'claude-opus-4-5',
+                    'max_tokens' => 2048,
+                    'system'     => $systemPrompt,
+                    'messages'   => $messages,
+                ]);
+
+            if ($response->failed()) {
+                Log::error('ComplianceChatbot API error', [
+                    'status' => $response->status(),
+                    'body'   => $response->body(),
+                ]);
+                return '';
+            }
+
+            $data = $response->json();
+            return trim($data['content'][0]['text'] ?? '');
+
+        } catch (\Throwable $e) {
+            Log::error('ComplianceChatbot exception', ['message' => $e->getMessage()]);
+            return '';
+        }
+    }
+
     public function callClaude(string $prompt): string
     {
         try {

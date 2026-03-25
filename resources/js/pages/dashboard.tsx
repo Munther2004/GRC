@@ -213,7 +213,7 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
                             <CardTitle className="text-sm font-medium">Compliance % Trend</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <ResponsiveContainer width="100%" height={220}>
+                            <ResponsiveContainer width="100%" height={300}>
                                 <LineChart data={chartData} margin={{ top: 5, right: 16, left: 0, bottom: 5 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.1} />
                                     <XAxis dataKey="date" tick={{ fontSize: 11 }} />
@@ -222,7 +222,7 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
                                     <Line
                                         type="monotone"
                                         dataKey="compliance"
-                                        stroke="#3b82f6"
+                                        stroke="#16a34a"
                                         strokeWidth={2}
                                         dot={{ r: 3 }}
                                         activeDot={{ r: 5 }}
@@ -238,7 +238,7 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
                             <CardTitle className="text-sm font-medium">Open Risk Distribution</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <ResponsiveContainer width="100%" height={220}>
+                            <ResponsiveContainer width="100%" height={300}>
                                 <BarChart data={chartData} margin={{ top: 5, right: 16, left: 0, bottom: 5 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.1} />
                                     <XAxis dataKey="date" tick={{ fontSize: 11 }} />

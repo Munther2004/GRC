@@ -8,6 +8,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\GapAnalysisController;
 use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\ControlHubController;
+use App\Http\Controllers\ComplianceChatbotController;
 use App\Http\Controllers\NotificationController;
 use App\Models\KriSnapshot;
 use App\Http\Controllers\Admin\AIController as AdminAIController;
@@ -35,6 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ── Everyone ──────────────────────────────────────────────────────────────
     Route::get('/dashboard',    [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/chatbot',       [ComplianceChatbotController::class, 'index'])->name('chatbot.index');
+    Route::post('/chatbot/chat', [ComplianceChatbotController::class, 'chat'])->name('chatbot.chat');
     Route::get('/kri-snapshots', fn () =>
         KriSnapshot::latest('snapshot_date')->limit(12)->get()->sortBy('snapshot_date')->values()
     )->name('kri-snapshots.index');

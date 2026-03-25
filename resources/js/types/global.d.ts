@@ -1,4 +1,3 @@
-/// <reference path="./ziggy.d.ts" />
 import type { Auth } from '@/types/auth';
 
 declare module '@inertiajs/core' {

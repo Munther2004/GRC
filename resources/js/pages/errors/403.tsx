@@ -6,17 +6,22 @@ export default function Error403() {
     return (
         <>
             <Head title="403 — Forbidden" />
-            <div className="min-h-screen bg-background dark flex items-center justify-center p-6">
-                <div className="text-center max-w-md">
-                    <div className="flex justify-center mb-6">
-                        <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center">
-                            <ShieldOff className="w-10 h-10 text-red-500" />
+            <div className="dark flex min-h-screen items-center justify-center bg-background p-6">
+                <div className="max-w-md text-center">
+                    <div className="mb-6 flex justify-center">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-950">
+                            <ShieldOff className="h-10 w-10 text-red-500" />
                         </div>
                     </div>
-                    <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-2">403</h1>
-                    <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3">Access Denied</h2>
-                    <p className="text-gray-500 dark:text-gray-400 mb-8">
-                        You don't have permission to access this page. Contact your administrator if you believe this is a mistake.
+                    <h1 className="mb-2 text-6xl font-bold text-gray-900 dark:text-white">
+                        403
+                    </h1>
+                    <h2 className="mb-3 text-xl font-semibold text-gray-700 dark:text-gray-200">
+                        Access Denied
+                    </h2>
+                    <p className="mb-8 text-gray-500 dark:text-gray-400">
+                        You don't have permission to access this page. Contact
+                        your administrator if you believe this is a mistake.
                     </p>
                     <Link href="/">
                         <Button>Go to Dashboard</Button>

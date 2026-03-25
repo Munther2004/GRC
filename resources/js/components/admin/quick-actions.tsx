@@ -1,45 +1,52 @@
-import { Plus, FileText, ClipboardList, AlertCircle, Upload, ShieldCheck } from "lucide-react"
-import { Link } from "@inertiajs/react"
-import { Button } from "@/components/ui/button"
+import { Link } from '@inertiajs/react';
+import {
+    Plus,
+    FileText,
+    ClipboardList,
+    AlertCircle,
+    Upload,
+    ShieldCheck,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const actions = [
     {
-        label: "New Risk",
+        label: 'New Risk',
         icon: Plus,
-        variant: "default" as const,
-        href: "/risks/create",
+        variant: 'default' as const,
+        href: '/risks/create',
     },
     {
-        label: "Start Assessment",
+        label: 'Start Assessment',
         icon: ClipboardList,
-        variant: "outline" as const,
-        href: "/assessments/create",
+        variant: 'outline' as const,
+        href: '/assessments/create',
     },
     {
-        label: "Upload Evidence",
+        label: 'Upload Evidence',
         icon: Upload,
-        variant: "outline" as const,
-        href: "/evidence/upload",
+        variant: 'outline' as const,
+        href: '/evidence/upload',
     },
     {
-        label: "Gap Analysis",
+        label: 'Gap Analysis',
         icon: ShieldCheck,
-        variant: "outline" as const,
-        href: "/assessments",
+        variant: 'outline' as const,
+        href: '/assessments',
     },
     {
-        label: "Log Incident",
+        label: 'Log Incident',
         icon: AlertCircle,
-        variant: "outline" as const,
-        href: "/risks/create?type=incident",
+        variant: 'outline' as const,
+        href: '/risks/create?type=incident',
     },
     {
-        label: "Generate Report",
+        label: 'Generate Report',
         icon: FileText,
-        variant: "outline" as const,
-        href: "/reports",
+        variant: 'outline' as const,
+        href: '/reports',
     },
-]
+];
 
 export function QuickActions() {
     return (
@@ -49,15 +56,19 @@ export function QuickActions() {
                     key={action.label}
                     variant={action.variant}
                     size="sm"
-                    className={action.variant === "default" ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}
+                    className={
+                        action.variant === 'default'
+                            ? 'bg-accent text-accent-foreground hover:bg-accent/90'
+                            : ''
+                    }
                     asChild
                 >
                     <Link href={action.href}>
-                        <action.icon className="w-4 h-4 mr-2" />
+                        <action.icon className="mr-2 h-4 w-4" />
                         {action.label}
                     </Link>
                 </Button>
             ))}
         </div>
-    )
+    );
 }

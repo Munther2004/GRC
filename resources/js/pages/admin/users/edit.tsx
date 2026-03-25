@@ -1,20 +1,32 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
+import { ArrowLeft, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, Save } from 'lucide-react';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
 
 // Inner component — only renders when user exists
 function EditForm({ user }: { user: any }) {
     const { data, setData, put, processing, errors } = useForm({
-        name:                  user.name,
-        email:                 user.email,
-        role:                  user.role,
-        password:              '',
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        password: '',
         password_confirmation: '',
     });
 
@@ -26,13 +38,17 @@ function EditForm({ user }: { user: any }) {
     return (
         <>
             <Head title={`Edit — ${user.name}`} />
-            <div className="max-w-2xl mx-auto space-y-6">
+            <div className="mx-auto max-w-2xl space-y-6">
                 <div className="flex items-center gap-3">
                     <Link href={route('admin.users.index')}>
-                        <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon">
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit User</h1>
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                            Edit User
+                        </h1>
                         <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                 </div>
@@ -40,8 +56,12 @@ function EditForm({ user }: { user: any }) {
                 <form onSubmit={submit} className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">Account Details</CardTitle>
-                            <CardDescription>Leave password blank to keep unchanged</CardDescription>
+                            <CardTitle className="text-base">
+                                Account Details
+                            </CardTitle>
+                            <CardDescription>
+                                Leave password blank to keep unchanged
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-1">
@@ -49,9 +69,15 @@ function EditForm({ user }: { user: any }) {
                                 <Input
                                     id="name"
                                     value={data.name}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('name', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => setData('name', e.target.value)}
                                 />
-                                {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
+                                {errors.name && (
+                                    <p className="text-xs text-red-500">
+                                        {errors.name}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="email">Email Address *</Label>
@@ -59,21 +85,46 @@ function EditForm({ user }: { user: any }) {
                                     id="email"
                                     type="email"
                                     value={data.email}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('email', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => setData('email', e.target.value)}
                                 />
-                                {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
+                                {errors.email && (
+                                    <p className="text-xs text-red-500">
+                                        {errors.email}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-1">
                                 <Label>Role *</Label>
-                                <Select value={data.role} onValueChange={(v: string) => setData('role', v)}>
-                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                <Select
+                                    value={data.role}
+                                    onValueChange={(v: string) =>
+                                        setData('role', v)
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="user">User — Complete assessments, manage risks</SelectItem>
-                                        <SelectItem value="auditor">Auditor — Read-only access to all data</SelectItem>
-                                        <SelectItem value="admin">Admin — Full system access</SelectItem>
+                                        <SelectItem value="user">
+                                            User — Complete assessments, manage
+                                            risks
+                                        </SelectItem>
+                                        <SelectItem value="auditor">
+                                            Auditor — Read-only access to all
+                                            data
+                                        </SelectItem>
+                                        <SelectItem value="admin">
+                                            Admin — Full system access
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
-                                {errors.role && <p className="text-xs text-red-500">{errors.role}</p>}
+                                {errors.role && (
+                                    <p className="text-xs text-red-500">
+                                        {errors.role}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="password">New Password</Label>
@@ -81,18 +132,33 @@ function EditForm({ user }: { user: any }) {
                                     id="password"
                                     type="password"
                                     value={data.password}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('password', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => setData('password', e.target.value)}
                                     placeholder="Leave blank to keep current password"
                                 />
-                                {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
+                                {errors.password && (
+                                    <p className="text-xs text-red-500">
+                                        {errors.password}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-1">
-                                <Label htmlFor="password_confirmation">Confirm New Password</Label>
+                                <Label htmlFor="password_confirmation">
+                                    Confirm New Password
+                                </Label>
                                 <Input
                                     id="password_confirmation"
                                     type="password"
                                     value={data.password_confirmation}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('password_confirmation', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) =>
+                                        setData(
+                                            'password_confirmation',
+                                            e.target.value,
+                                        )
+                                    }
                                     placeholder="Repeat new password"
                                 />
                             </div>
@@ -103,8 +169,12 @@ function EditForm({ user }: { user: any }) {
                         <Link href={route('admin.users.index')}>
                             <Button variant="outline">Cancel</Button>
                         </Link>
-                        <Button type="submit" disabled={processing} className="gap-2">
-                            <Save className="w-4 h-4" />
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            className="gap-2"
+                        >
+                            <Save className="h-4 w-4" />
                             {processing ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
@@ -120,11 +190,13 @@ export default function UserEdit() {
     console.log('ALL PROPS:', props);
     console.log('USER:', props.user);
     const { user } = props;
-    
+
     return (
         <AdminLayout>
-            {user ? <EditForm user={user} /> : (
-                <div className="flex items-center justify-center h-64">
+            {user ? (
+                <EditForm user={user} />
+            ) : (
+                <div className="flex h-64 items-center justify-center">
                     <p className="text-gray-400">Loading...</p>
                 </div>
             )}

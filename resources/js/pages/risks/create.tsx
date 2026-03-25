@@ -1,37 +1,71 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
+import axios from 'axios';
+import {
+    ArrowLeft,
+    Save,
+    AlertTriangle,
+    Sparkles,
+    Loader2,
+    CheckCircle2,
+    XCircle,
+} from 'lucide-react';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Save, AlertTriangle, Sparkles, Loader2, CheckCircle2, XCircle } from 'lucide-react';
-import { useState } from 'react';
-import axios from 'axios';
-
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
 
 interface Props {
     categories: string[];
-    statuses:   { value: string; label: string }[];
+    statuses: { value: string; label: string }[];
     treatments: { value: string; label: string }[];
 }
 
 interface ThreatSuggestion {
-    threat:              string;
-    explanation:         string;
-    likelihood:          number;
-    impact:              number;
+    threat: string;
+    explanation: string;
+    likelihood: number;
+    impact: number;
     suggested_treatment: string;
 }
 
 const levelFromScore = (score: number) => {
-    if (score >= 20) return { label: 'Critical', color: 'text-red-500 bg-red-50 border-red-200' };
-    if (score >= 13) return { label: 'High',     color: 'text-orange-500 bg-orange-50 border-orange-200' };
-    if (score >= 7)  return { label: 'Medium',   color: 'text-yellow-600 bg-yellow-50 border-yellow-200' };
-    return                   { label: 'Low',     color: 'text-green-600 bg-green-50 border-green-200' };
+    if (score >= 20)
+        return {
+            label: 'Critical',
+            color: 'text-red-500 bg-red-50 border-red-200',
+        };
+    if (score >= 13)
+        return {
+            label: 'High',
+            color: 'text-orange-500 bg-orange-50 border-orange-200',
+        };
+    if (score >= 7)
+        return {
+            label: 'Medium',
+            color: 'text-yellow-600 bg-yellow-50 border-yellow-200',
+        };
+    return {
+        label: 'Low',
+        color: 'text-green-600 bg-green-50 border-green-200',
+    };
 };
 
 const levelColors: Record<number, string> = {
@@ -43,42 +77,47 @@ const levelColors: Record<number, string> = {
 };
 
 interface ValidationResult {
-    error?:                 boolean;
-    valid:                  boolean;
+    error?: boolean;
+    valid: boolean;
     recommended_likelihood: number;
-    recommended_impact:     number;
-    reasoning:              string;
-    confidence:             string;
+    recommended_impact: number;
+    reasoning: string;
+    confidence: string;
 }
 
-export default function RiskCreate({ categories, statuses, treatments }: Props) {
+export default function RiskCreate({
+    categories,
+    statuses,
+    treatments,
+}: Props) {
     const { data, setData, post, processing, errors } = useForm({
-        title:          '',
-        description:    '',
-        category:       '',
-        owner:          '',
-        likelihood:     '3',
-        impact:         '3',
-        status:         'open',
-        treatment:      'mitigate',
+        title: '',
+        description: '',
+        category: '',
+        owner: '',
+        likelihood: '3',
+        impact: '3',
+        status: 'open',
+        treatment: 'mitigate',
         treatment_plan: '',
-        due_date:       '',
-        ai_validated:   false,
+        due_date: '',
+        ai_validated: false,
     });
 
-    const [threats, setThreats]               = useState<ThreatSuggestion[]>([]);
+    const [threats, setThreats] = useState<ThreatSuggestion[]>([]);
     const [loadingThreats, setLoadingThreats] = useState(false);
-    const [threatError, setThreatError]       = useState('');
+    const [threatError, setThreatError] = useState('');
 
-    const [validationResult, setValidationResult]   = useState<ValidationResult | null>(null);
+    const [validationResult, setValidationResult] =
+        useState<ValidationResult | null>(null);
     const [loadingValidation, setLoadingValidation] = useState(false);
-    const [validationError, setValidationError]     = useState('');
+    const [validationError, setValidationError] = useState('');
 
     const score = Number(data.likelihood) * Number(data.impact);
     const level = levelFromScore(score);
 
-    const canSuggest  = data.title.length >= 10 && data.description.length >= 10;
-    const canValidate = data.title.length >= 5  && data.description.length >= 10;
+    const canSuggest = data.title.length >= 10 && data.description.length >= 10;
+    const canValidate = data.title.length >= 5 && data.description.length >= 10;
 
     const suggestThreats = async () => {
         if (!canSuggest) return;
@@ -87,9 +126,9 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
         setThreats([]);
         try {
             const res = await axios.post('/ai/suggest-threats', {
-                title:       data.title,
+                title: data.title,
                 description: data.description,
-                category:    data.category || 'General',
+                category: data.category || 'General',
             });
             setThreats(res.data);
         } catch {
@@ -99,14 +138,14 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
         }
     };
 
-    const useThreat = (t: ThreatSuggestion) => {
+    const applyThreat = (t: ThreatSuggestion) => {
         setData({
             ...data,
-            title:       t.threat,
+            title: t.threat,
             description: t.explanation,
-            likelihood:  String(t.likelihood),
-            impact:      String(t.impact),
-            treatment:   t.suggested_treatment,
+            likelihood: String(t.likelihood),
+            impact: String(t.impact),
+            treatment: t.suggested_treatment,
         });
         setThreats([]);
     };
@@ -118,10 +157,10 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
         setValidationResult(null);
         try {
             const res = await axios.post('/risks/validate-scores', {
-                title:       data.title,
+                title: data.title,
                 description: data.description,
-                likelihood:  Number(data.likelihood),
-                impact:      Number(data.impact),
+                likelihood: Number(data.likelihood),
+                impact: Number(data.impact),
             });
             setValidationResult(res.data);
             if (!res.data.error) setData('ai_validated', true);
@@ -136,8 +175,8 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
         if (!validationResult) return;
         setData({
             ...data,
-            likelihood:   String(validationResult.recommended_likelihood),
-            impact:       String(validationResult.recommended_impact),
+            likelihood: String(validationResult.recommended_likelihood),
+            impact: String(validationResult.recommended_impact),
             ai_validated: true,
         });
         setValidationResult(null);
@@ -152,29 +191,38 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
         <AdminLayout>
             <Head title="Add Risk" />
 
-            <div className="max-w-3xl mx-auto space-y-6">
-
+            <div className="mx-auto max-w-3xl space-y-6">
                 <div className="flex items-center gap-3">
                     <Link href={route('risks.index')}>
-                        <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon">
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
                     </Link>
                     <div className="flex-1">
                         <div className="flex items-center gap-3">
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Risk</h1>
-                            <Badge className="bg-purple-100 text-purple-700 border-purple-200 text-xs">
-                                <Sparkles className="w-3 h-3 mr-1" />AI Powered
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                Add New Risk
+                            </h1>
+                            <Badge className="border-purple-200 bg-purple-100 text-xs text-purple-700">
+                                <Sparkles className="mr-1 h-3 w-3" />
+                                AI Powered
                             </Badge>
                         </div>
-                        <p className="text-sm text-gray-500">ISO/IEC 27005 risk assessment</p>
+                        <p className="text-sm text-gray-500">
+                            ISO/IEC 27005 risk assessment
+                        </p>
                     </div>
                 </div>
 
                 <form onSubmit={submit} className="space-y-6">
-
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">Risk Details</CardTitle>
-                            <CardDescription>Basic information about the risk</CardDescription>
+                            <CardTitle className="text-base">
+                                Risk Details
+                            </CardTitle>
+                            <CardDescription>
+                                Basic information about the risk
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-1">
@@ -185,57 +233,95 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                                             type="button"
                                             size="sm"
                                             variant="outline"
-                                            className="gap-1.5 border-purple-300 text-purple-700 hover:bg-purple-50 hover:border-purple-400"
+                                            className="gap-1.5 border-purple-300 text-purple-700 hover:border-purple-400 hover:bg-purple-50"
                                             onClick={suggestThreats}
                                             disabled={loadingThreats}
                                         >
+                                            {loadingThreats ? (
+                                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                            ) : (
+                                                <Sparkles className="h-3.5 w-3.5" />
+                                            )}
                                             {loadingThreats
-                                                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                                : <Sparkles className="w-3.5 h-3.5" />
-                                            }
-                                            {loadingThreats ? 'Thinking...' : 'Suggest Threats'}
+                                                ? 'Thinking...'
+                                                : 'Suggest Threats'}
                                         </Button>
                                     )}
                                 </div>
                                 <Input
                                     id="title"
                                     value={data.title}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('title', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => setData('title', e.target.value)}
                                     placeholder="e.g. Unauthorized access to customer data"
                                 />
-                                {errors.title && <p className="text-xs text-red-500">{errors.title}</p>}
+                                {errors.title && (
+                                    <p className="text-xs text-red-500">
+                                        {errors.title}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-1">
-                                <Label htmlFor="description">Description *</Label>
+                                <Label htmlFor="description">
+                                    Description *
+                                </Label>
                                 <Textarea
                                     id="description"
                                     value={data.description}
-                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLTextAreaElement>,
+                                    ) => setData('description', e.target.value)}
                                     rows={4}
                                     placeholder="Describe the risk in detail..."
                                 />
-                                {errors.description && <p className="text-xs text-red-500">{errors.description}</p>}
+                                {errors.description && (
+                                    <p className="text-xs text-red-500">
+                                        {errors.description}
+                                    </p>
+                                )}
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <Label>Category *</Label>
-                                    <Select value={data.category} onValueChange={(v: string) => setData('category', v)}>
-                                        <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                                    <Select
+                                        value={data.category}
+                                        onValueChange={(v: string) =>
+                                            setData('category', v)
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select category" />
+                                        </SelectTrigger>
                                         <SelectContent>
-                                            {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                            {categories.map((c) => (
+                                                <SelectItem key={c} value={c}>
+                                                    {c}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
-                                    {errors.category && <p className="text-xs text-red-500">{errors.category}</p>}
+                                    {errors.category && (
+                                        <p className="text-xs text-red-500">
+                                            {errors.category}
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="space-y-1">
                                     <Label htmlFor="owner">Risk Owner *</Label>
                                     <Input
                                         id="owner"
                                         value={data.owner}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('owner', e.target.value)}
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>,
+                                        ) => setData('owner', e.target.value)}
                                         placeholder="e.g. IT Department"
                                     />
-                                    {errors.owner && <p className="text-xs text-red-500">{errors.owner}</p>}
+                                    {errors.owner && (
+                                        <p className="text-xs text-red-500">
+                                            {errors.owner}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </CardContent>
@@ -243,40 +329,63 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
 
                     {/* AI Threat Suggestions */}
                     {threatError && (
-                        <p className="text-sm text-red-500 px-1">{threatError}</p>
+                        <p className="px-1 text-sm text-red-500">
+                            {threatError}
+                        </p>
                     )}
 
                     {threats.length > 0 && (
                         <div className="space-y-3">
                             <div className="flex items-center gap-2">
-                                <Sparkles className="w-4 h-4 text-purple-600" />
-                                <p className="text-sm font-medium text-purple-700">AI Threat Suggestions — click "Use This" to populate the form</p>
+                                <Sparkles className="h-4 w-4 text-purple-600" />
+                                <p className="text-sm font-medium text-purple-700">
+                                    AI Threat Suggestions — click "Use This" to
+                                    populate the form
+                                </p>
                             </div>
                             <div className="grid grid-cols-1 gap-3">
                                 {threats.map((t, i) => (
-                                    <Card key={i} className="border-purple-200 bg-purple-50/30">
+                                    <Card
+                                        key={i}
+                                        className="border-purple-200 bg-purple-50/30"
+                                    >
                                         <CardContent className="p-4">
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="flex-1 space-y-1.5">
-                                                    <p className="font-medium text-sm text-gray-900 dark:text-white">{t.threat}</p>
-                                                    <p className="text-xs text-gray-600">{t.explanation}</p>
+                                                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                                        {t.threat}
+                                                    </p>
+                                                    <p className="text-xs text-gray-600">
+                                                        {t.explanation}
+                                                    </p>
                                                     <div className="flex items-center gap-2 pt-1">
-                                                        <Badge className={`text-xs ${levelColors[t.likelihood]}`}>
+                                                        <Badge
+                                                            className={`text-xs ${levelColors[t.likelihood]}`}
+                                                        >
                                                             L: {t.likelihood}
                                                         </Badge>
-                                                        <Badge className={`text-xs ${levelColors[t.impact]}`}>
+                                                        <Badge
+                                                            className={`text-xs ${levelColors[t.impact]}`}
+                                                        >
                                                             I: {t.impact}
                                                         </Badge>
-                                                        <Badge variant="outline" className="text-xs capitalize">
-                                                            {t.suggested_treatment}
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="text-xs capitalize"
+                                                        >
+                                                            {
+                                                                t.suggested_treatment
+                                                            }
                                                         </Badge>
                                                     </div>
                                                 </div>
                                                 <Button
                                                     type="button"
                                                     size="sm"
-                                                    className="shrink-0 bg-purple-600 hover:bg-purple-700 text-white"
-                                                    onClick={() => useThreat(t)}
+                                                    className="shrink-0 bg-purple-600 text-white hover:bg-purple-700"
+                                                    onClick={() =>
+                                                        applyThreat(t)
+                                                    }
                                                 >
                                                     Use This
                                                 </Button>
@@ -292,12 +401,18 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base">Risk Scoring</CardTitle>
-                                    <CardDescription>ISO/IEC 27005 — Likelihood × Impact matrix (1–5 scale)</CardDescription>
+                                    <CardTitle className="text-base">
+                                        Risk Scoring
+                                    </CardTitle>
+                                    <CardDescription>
+                                        ISO/IEC 27005 — Likelihood × Impact
+                                        matrix (1–5 scale)
+                                    </CardDescription>
                                 </div>
                                 {data.ai_validated && (
-                                    <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-xs">
-                                        <Sparkles className="w-3 h-3 mr-1" />AI Validated
+                                    <Badge className="border-blue-200 bg-blue-100 text-xs text-blue-700">
+                                        <Sparkles className="mr-1 h-3 w-3" />
+                                        AI Validated
                                     </Badge>
                                 )}
                             </div>
@@ -305,25 +420,50 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label>Likelihood: {data.likelihood}/5</Label>
+                                    <Label>
+                                        Likelihood: {data.likelihood}/5
+                                    </Label>
                                     <input
-                                        type="range" min="1" max="5" value={data.likelihood}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('likelihood', e.target.value)}
+                                        type="range"
+                                        min="1"
+                                        max="5"
+                                        value={data.likelihood}
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>,
+                                        ) =>
+                                            setData(
+                                                'likelihood',
+                                                e.target.value,
+                                            )
+                                        }
                                         className="w-full accent-blue-600"
                                     />
                                     <div className="flex justify-between text-xs text-gray-400">
-                                        <span>Rare</span><span>Unlikely</span><span>Possible</span><span>Likely</span><span>Almost Certain</span>
+                                        <span>Rare</span>
+                                        <span>Unlikely</span>
+                                        <span>Possible</span>
+                                        <span>Likely</span>
+                                        <span>Almost Certain</span>
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Impact: {data.impact}/5</Label>
                                     <input
-                                        type="range" min="1" max="5" value={data.impact}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('impact', e.target.value)}
+                                        type="range"
+                                        min="1"
+                                        max="5"
+                                        value={data.impact}
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>,
+                                        ) => setData('impact', e.target.value)}
                                         className="w-full accent-blue-600"
                                     />
                                     <div className="flex justify-between text-xs text-gray-400">
-                                        <span>Negligible</span><span>Minor</span><span>Moderate</span><span>Major</span><span>Catastrophic</span>
+                                        <span>Negligible</span>
+                                        <span>Minor</span>
+                                        <span>Moderate</span>
+                                        <span>Major</span>
+                                        <span>Catastrophic</span>
                                     </div>
                                 </div>
                             </div>
@@ -334,90 +474,147 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                                     type="button"
                                     size="sm"
                                     variant="outline"
-                                    className="gap-1.5 border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400"
+                                    className="gap-1.5 border-blue-300 text-blue-700 hover:border-blue-400 hover:bg-blue-50"
                                     onClick={validateScores}
                                     disabled={loadingValidation || !canValidate}
                                 >
+                                    {loadingValidation ? (
+                                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                    ) : (
+                                        <Sparkles className="h-3.5 w-3.5" />
+                                    )}
                                     {loadingValidation
-                                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                        : <Sparkles className="w-3.5 h-3.5" />
-                                    }
-                                    {loadingValidation ? 'Validating...' : '✨ Validate Scores'}
+                                        ? 'Validating...'
+                                        : '✨ Validate Scores'}
                                 </Button>
                             </div>
 
                             {validationError && (
-                                <div className="flex items-start gap-2 p-3 rounded-lg border border-red-200 bg-red-50">
-                                    <XCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                                    <p className="text-sm text-red-700">{validationError}</p>
+                                <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3">
+                                    <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+                                    <p className="text-sm text-red-700">
+                                        {validationError}
+                                    </p>
                                 </div>
                             )}
 
-                            {validationResult && validationResult.error === true && (
-                                <div className="rounded-lg border border-red-200 bg-red-50">
-                                    <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-red-100">
-                                        <XCircle className="w-4 h-4 text-red-600" />
-                                        <span className="text-sm font-semibold text-red-800">Validation Unavailable</span>
-                                    </div>
-                                    <div className="px-4 py-3">
-                                        <p className="text-sm text-red-700">{validationResult.reasoning}</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {validationResult && !validationResult.error && validationResult.valid && (
-                                <div className="rounded-lg border border-green-200 bg-green-50">
-                                    <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-green-100">
-                                        <CheckCircle2 className="w-4 h-4 text-green-600" />
-                                        <span className="text-sm font-semibold text-green-800">Scores Validated — Looks Good</span>
-                                        <span className={`ml-auto text-xs px-1.5 py-0.5 rounded capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}>
-                                            {validationResult.confidence} confidence
-                                        </span>
-                                    </div>
-                                    <div className="px-4 py-3">
-                                        <p className="text-sm text-gray-700">{validationResult.reasoning}</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {validationResult && !validationResult.error && !validationResult.valid && (
-                                <div className="rounded-lg border border-amber-200 bg-amber-50">
-                                    <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-amber-100">
-                                        <AlertTriangle className="w-4 h-4 text-amber-600" />
-                                        <span className="text-sm font-semibold text-amber-800">Scores Adjusted — Recommendations Available</span>
-                                        <span className={`ml-auto text-xs px-1.5 py-0.5 rounded capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}>
-                                            {validationResult.confidence} confidence
-                                        </span>
-                                    </div>
-                                    <div className="px-4 py-3 space-y-3">
-                                        <p className="text-sm text-gray-700">{validationResult.reasoning}</p>
-                                        <div className="flex items-center justify-between gap-4 pt-1">
-                                            <div className="flex items-center gap-3 text-sm">
-                                                <span className="text-gray-500">Recommended:</span>
-                                                <span className="font-medium">Likelihood <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${levelColors[validationResult.recommended_likelihood]}`}>{validationResult.recommended_likelihood}</span></span>
-                                                <span className="font-medium">Impact <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${levelColors[validationResult.recommended_impact]}`}>{validationResult.recommended_impact}</span></span>
-                                            </div>
-                                            <Button
-                                                type="button"
-                                                size="sm"
-                                                className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white"
-                                                onClick={applyRecommendations}
-                                            >
-                                                Apply Recommendations
-                                            </Button>
+                            {validationResult &&
+                                validationResult.error === true && (
+                                    <div className="rounded-lg border border-red-200 bg-red-50">
+                                        <div className="flex items-center gap-2 rounded-t-lg bg-red-100 px-4 py-2">
+                                            <XCircle className="h-4 w-4 text-red-600" />
+                                            <span className="text-sm font-semibold text-red-800">
+                                                Validation Unavailable
+                                            </span>
+                                        </div>
+                                        <div className="px-4 py-3">
+                                            <p className="text-sm text-red-700">
+                                                {validationResult.reasoning}
+                                            </p>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            <div className={`flex items-center justify-between p-4 rounded-lg border ${level.color}`}>
+                            {validationResult &&
+                                !validationResult.error &&
+                                validationResult.valid && (
+                                    <div className="rounded-lg border border-green-200 bg-green-50">
+                                        <div className="flex items-center gap-2 rounded-t-lg bg-green-100 px-4 py-2">
+                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                            <span className="text-sm font-semibold text-green-800">
+                                                Scores Validated — Looks Good
+                                            </span>
+                                            <span
+                                                className={`ml-auto rounded px-1.5 py-0.5 text-xs capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}
+                                            >
+                                                {validationResult.confidence}{' '}
+                                                confidence
+                                            </span>
+                                        </div>
+                                        <div className="px-4 py-3">
+                                            <p className="text-sm text-gray-700">
+                                                {validationResult.reasoning}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                            {validationResult &&
+                                !validationResult.error &&
+                                !validationResult.valid && (
+                                    <div className="rounded-lg border border-amber-200 bg-amber-50">
+                                        <div className="flex items-center gap-2 rounded-t-lg bg-amber-100 px-4 py-2">
+                                            <AlertTriangle className="h-4 w-4 text-amber-600" />
+                                            <span className="text-sm font-semibold text-amber-800">
+                                                Scores Adjusted —
+                                                Recommendations Available
+                                            </span>
+                                            <span
+                                                className={`ml-auto rounded px-1.5 py-0.5 text-xs capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}
+                                            >
+                                                {validationResult.confidence}{' '}
+                                                confidence
+                                            </span>
+                                        </div>
+                                        <div className="space-y-3 px-4 py-3">
+                                            <p className="text-sm text-gray-700">
+                                                {validationResult.reasoning}
+                                            </p>
+                                            <div className="flex items-center justify-between gap-4 pt-1">
+                                                <div className="flex items-center gap-3 text-sm">
+                                                    <span className="text-gray-500">
+                                                        Recommended:
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        Likelihood{' '}
+                                                        <span
+                                                            className={`rounded px-1.5 py-0.5 text-xs font-bold ${levelColors[validationResult.recommended_likelihood]}`}
+                                                        >
+                                                            {
+                                                                validationResult.recommended_likelihood
+                                                            }
+                                                        </span>
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        Impact{' '}
+                                                        <span
+                                                            className={`rounded px-1.5 py-0.5 text-xs font-bold ${levelColors[validationResult.recommended_impact]}`}
+                                                        >
+                                                            {
+                                                                validationResult.recommended_impact
+                                                            }
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    className="shrink-0 bg-amber-600 text-white hover:bg-amber-700"
+                                                    onClick={
+                                                        applyRecommendations
+                                                    }
+                                                >
+                                                    Apply Recommendations
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                            <div
+                                className={`flex items-center justify-between rounded-lg border p-4 ${level.color}`}
+                            >
                                 <div className="flex items-center gap-2">
-                                    <AlertTriangle className="w-5 h-5" />
-                                    <span className="font-semibold">Risk Level: {level.label}</span>
+                                    <AlertTriangle className="h-5 w-5" />
+                                    <span className="font-semibold">
+                                        Risk Level: {level.label}
+                                    </span>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-3xl font-bold">{score}</span>
-                                    <span className="text-sm ml-1">/ 25</span>
+                                    <span className="text-3xl font-bold">
+                                        {score}
+                                    </span>
+                                    <span className="ml-1 text-sm">/ 25</span>
                                 </div>
                             </div>
                         </CardContent>
@@ -425,36 +622,77 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">Risk Treatment</CardTitle>
-                            <CardDescription>ISO/IEC 27005 treatment strategies</CardDescription>
+                            <CardTitle className="text-base">
+                                Risk Treatment
+                            </CardTitle>
+                            <CardDescription>
+                                ISO/IEC 27005 treatment strategies
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <Label>Treatment Strategy *</Label>
-                                    <Select value={data.treatment} onValueChange={(v: string) => setData('treatment', v)}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <Select
+                                        value={data.treatment}
+                                        onValueChange={(v: string) =>
+                                            setData('treatment', v)
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
                                         <SelectContent>
-                                            {treatments.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                                            {treatments.map((t) => (
+                                                <SelectItem
+                                                    key={t.value}
+                                                    value={t.value}
+                                                >
+                                                    {t.label}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div className="space-y-1">
                                     <Label>Status *</Label>
-                                    <Select value={data.status} onValueChange={(v: string) => setData('status', v)}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <Select
+                                        value={data.status}
+                                        onValueChange={(v: string) =>
+                                            setData('status', v)
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
                                         <SelectContent>
-                                            {statuses.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                                            {statuses.map((s) => (
+                                                <SelectItem
+                                                    key={s.value}
+                                                    value={s.value}
+                                                >
+                                                    {s.label}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
                             <div className="space-y-1">
-                                <Label htmlFor="treatment_plan">Treatment Plan</Label>
+                                <Label htmlFor="treatment_plan">
+                                    Treatment Plan
+                                </Label>
                                 <Textarea
                                     id="treatment_plan"
                                     value={data.treatment_plan}
-                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('treatment_plan', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLTextAreaElement>,
+                                    ) =>
+                                        setData(
+                                            'treatment_plan',
+                                            e.target.value,
+                                        )
+                                    }
                                     rows={3}
                                     placeholder="Describe the treatment plan, actions, and responsible parties..."
                                 />
@@ -465,7 +703,9 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                                     id="due_date"
                                     type="date"
                                     value={data.due_date}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('due_date', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => setData('due_date', e.target.value)}
                                 />
                             </div>
                         </CardContent>
@@ -475,8 +715,12 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                         <Link href={route('risks.index')}>
                             <Button variant="outline">Cancel</Button>
                         </Link>
-                        <Button type="submit" disabled={processing} className="gap-2">
-                            <Save className="w-4 h-4" />
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            className="gap-2"
+                        >
+                            <Save className="h-4 w-4" />
                             {processing ? 'Saving...' : 'Save Risk'}
                         </Button>
                     </div>

@@ -1,13 +1,19 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Search, Pencil, Trash2, Settings } from 'lucide-react';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
 
 interface Control {
     id: number;
@@ -29,26 +35,41 @@ interface Props {
     filters: { search?: string; framework_id?: string; category?: string };
     stats: {
         total: number;
-        by_framework: { id: number; short_name: string; controls_count: number }[];
+        by_framework: {
+            id: number;
+            short_name: string;
+            controls_count: number;
+        }[];
     };
 }
 
-export default function ControlsIndex({ controls, frameworks, categories, filters, stats }: Props) {
-    const [search, setSearch]         = useState(filters.search ?? '');
+export default function ControlsIndex({
+    controls,
+    frameworks,
+    categories,
+    filters,
+    stats,
+}: Props) {
+    const [search, setSearch] = useState(filters.search ?? '');
     const [frameworkId, setFramework] = useState(filters.framework_id ?? 'all');
-    const [category, setCategory]     = useState(filters.category ?? 'all');
+    const [category, setCategory] = useState(filters.category ?? 'all');
 
     const applyFilters = (overrides: Record<string, string> = {}) => {
-        router.get(route('admin.controls.index'), {
-            search,
-            framework_id: frameworkId === 'all' ? '' : frameworkId,
-            category:     category    === 'all' ? '' : category,
-            ...overrides,
-        }, { preserveState: true, replace: true });
+        router.get(
+            route('admin.controls.index'),
+            {
+                search,
+                framework_id: frameworkId === 'all' ? '' : frameworkId,
+                category: category === 'all' ? '' : category,
+                ...overrides,
+            },
+            { preserveState: true, replace: true },
+        );
     };
 
     const deleteControl = (id: number, controlId: string) => {
-        if (!confirm(`Delete control "${controlId}"? This cannot be undone.`)) return;
+        if (!confirm(`Delete control "${controlId}"? This cannot be undone.`))
+            return;
         router.delete(route('admin.controls.destroy', id));
     };
 
@@ -58,19 +79,27 @@ export default function ControlsIndex({ controls, frameworks, categories, filter
 
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Controls Library</h1>
-                    <p className="text-sm text-gray-500 mt-1">All {stats.total} controls across all frameworks</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        Controls Library
+                    </h1>
+                    <p className="mt-1 text-sm text-gray-500">
+                        All {stats.total} controls across all frameworks
+                    </p>
                 </div>
 
                 {/* Framework Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {stats.by_framework.map(f => (
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                    {stats.by_framework.map((f) => (
                         <Card key={f.id}>
-                            <CardContent className="p-4 flex items-center gap-3">
-                                <Settings className="w-8 h-8 text-blue-500" />
+                            <CardContent className="flex items-center gap-3 p-4">
+                                <Settings className="h-8 w-8 text-blue-500" />
                                 <div>
-                                    <p className="text-2xl font-bold">{f.controls_count}</p>
-                                    <p className="text-xs text-gray-500">{f.short_name}</p>
+                                    <p className="text-2xl font-bold">
+                                        {f.controls_count}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        {f.short_name}
+                                    </p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -81,35 +110,76 @@ export default function ControlsIndex({ controls, frameworks, categories, filter
                 <Card>
                     <CardContent className="p-4">
                         <div className="flex flex-wrap gap-3">
-                            <div className="relative flex-1 min-w-[200px]">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <div className="relative min-w-[200px] flex-1">
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                 <Input
                                     placeholder="Search by ID, title, or description..."
                                     value={search}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-                                    onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && applyFilters({ search })}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => setSearch(e.target.value)}
+                                    onKeyDown={(e: React.KeyboardEvent) =>
+                                        e.key === 'Enter' &&
+                                        applyFilters({ search })
+                                    }
                                     className="pl-9"
                                 />
                             </div>
-                            <Select value={frameworkId} onValueChange={(v: string) => { setFramework(v); applyFilters({ framework_id: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[180px]"><SelectValue placeholder="Framework" /></SelectTrigger>
+                            <Select
+                                value={frameworkId}
+                                onValueChange={(v: string) => {
+                                    setFramework(v);
+                                    applyFilters({
+                                        framework_id: v === 'all' ? '' : v,
+                                    });
+                                }}
+                            >
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Framework" />
+                                </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Frameworks</SelectItem>
-                                    {frameworks.map(f => (
-                                        <SelectItem key={f.id} value={String(f.id)}>{f.short_name}</SelectItem>
+                                    <SelectItem value="all">
+                                        All Frameworks
+                                    </SelectItem>
+                                    {frameworks.map((f) => (
+                                        <SelectItem
+                                            key={f.id}
+                                            value={String(f.id)}
+                                        >
+                                            {f.short_name}
+                                        </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Select value={category} onValueChange={(v: string) => { setCategory(v); applyFilters({ category: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[180px]"><SelectValue placeholder="Category" /></SelectTrigger>
+                            <Select
+                                value={category}
+                                onValueChange={(v: string) => {
+                                    setCategory(v);
+                                    applyFilters({
+                                        category: v === 'all' ? '' : v,
+                                    });
+                                }}
+                            >
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Category" />
+                                </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Categories</SelectItem>
-                                    {categories.map(c => (
-                                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                                    <SelectItem value="all">
+                                        All Categories
+                                    </SelectItem>
+                                    {categories.map((c) => (
+                                        <SelectItem key={c} value={c}>
+                                            {c}
+                                        </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Button variant="outline" onClick={() => applyFilters({ search })}>Search</Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => applyFilters({ search })}
+                            >
+                                Search
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -117,76 +187,139 @@ export default function ControlsIndex({ controls, frameworks, categories, filter
                 {/* Table */}
                 <Card>
                     <CardHeader className="pb-0">
-                        <CardTitle className="text-base">{controls.total} controls</CardTitle>
+                        <CardTitle className="text-base">
+                            {controls.total} controls
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-0 mt-4">
+                    <CardContent className="mt-4 p-0">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
+                                <thead className="border-y border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
                                     <tr>
-                                        {['Control ID', 'Title', 'Framework', 'Category', 'Status', 'Actions'].map(h => (
-                                            <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                                        {[
+                                            'Control ID',
+                                            'Title',
+                                            'Framework',
+                                            'Category',
+                                            'Status',
+                                            'Actions',
+                                        ].map((h) => (
+                                            <th
+                                                key={h}
+                                                className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-500 uppercase"
+                                            >
+                                                {h}
+                                            </th>
                                         ))}
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                                     {controls.data.length === 0 ? (
                                         <tr>
-                                            <td colSpan={6} className="px-4 py-12 text-center text-gray-400">No controls found.</td>
+                                            <td
+                                                colSpan={6}
+                                                className="px-4 py-12 text-center text-gray-400"
+                                            >
+                                                No controls found.
+                                            </td>
                                         </tr>
-                                    ) : controls.data.map(control => (
-                                        <tr key={control.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                            <td className="px-4 py-3">
-                                                <span className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                                                    {control.control_id}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <p className="font-medium text-gray-900 dark:text-white max-w-[280px] truncate">{control.title}</p>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <Badge variant="outline" className="text-xs">{control.framework.short_name}</Badge>
-                                            </td>
-                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-300 text-xs">{control.category}</td>
-                                            <td className="px-4 py-3">
-                                                <Badge variant="outline" className={control.is_active
-                                                    ? 'bg-green-50 text-green-600 border-green-200'
-                                                    : 'bg-gray-100 text-gray-500 border-gray-200'
-                                                }>
-                                                    {control.is_active ? 'Active' : 'Inactive'}
-                                                </Badge>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-1">
-                                                    <Link href={route('admin.controls.edit', control.id)}>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                            <Pencil className="w-4 h-4" />
-                                                        </Button>
-                                                    </Link>
-                                                    <Button
-                                                        variant="ghost" size="icon"
-                                                        className="h-8 w-8 text-red-500 hover:bg-red-50"
-                                                        onClick={() => deleteControl(control.id, control.control_id)}
+                                    ) : (
+                                        controls.data.map((control) => (
+                                            <tr
+                                                key={control.id}
+                                                className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                                            >
+                                                <td className="px-4 py-3">
+                                                    <span className="rounded bg-gray-100 px-2 py-1 font-mono text-xs dark:bg-gray-800">
+                                                        {control.control_id}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <p className="max-w-[280px] truncate font-medium text-gray-900 dark:text-white">
+                                                        {control.title}
+                                                    </p>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-xs"
                                                     >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </Button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                        {
+                                                            control.framework
+                                                                .short_name
+                                                        }
+                                                    </Badge>
+                                                </td>
+                                                <td className="px-4 py-3 text-xs text-gray-600 dark:text-gray-300">
+                                                    {control.category}
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className={
+                                                            control.is_active
+                                                                ? 'border-green-200 bg-green-50 text-green-600'
+                                                                : 'border-gray-200 bg-gray-100 text-gray-500'
+                                                        }
+                                                    >
+                                                        {control.is_active
+                                                            ? 'Active'
+                                                            : 'Inactive'}
+                                                    </Badge>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-1">
+                                                        <Link
+                                                            href={route(
+                                                                'admin.controls.edit',
+                                                                control.id,
+                                                            )}
+                                                        >
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8"
+                                                            >
+                                                                <Pencil className="h-4 w-4" />
+                                                            </Button>
+                                                        </Link>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                                            onClick={() =>
+                                                                deleteControl(
+                                                                    control.id,
+                                                                    control.control_id,
+                                                                )
+                                                            }
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>
                         {controls.links.length > 3 && (
-                            <div className="flex items-center justify-center gap-1 p-4 border-t">
+                            <div className="flex items-center justify-center gap-1 border-t p-4">
                                 {controls.links.map((link, i) => (
                                     <Button
                                         key={i}
-                                        variant={link.active ? 'default' : 'outline'}
+                                        variant={
+                                            link.active ? 'default' : 'outline'
+                                        }
                                         size="sm"
                                         disabled={!link.url}
-                                        onClick={() => link.url && router.get(link.url)}
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                        onClick={() =>
+                                            link.url && router.get(link.url)
+                                        }
+                                        dangerouslySetInnerHTML={{
+                                            __html: link.label,
+                                        }}
                                     />
                                 ))}
                             </div>

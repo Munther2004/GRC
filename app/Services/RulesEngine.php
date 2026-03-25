@@ -19,7 +19,9 @@ class RulesEngine
             ->get();
 
         foreach ($nonCompliantItems as $item) {
-            if (!$item->control) continue;
+            if (! $item->control) {
+                continue;
+            }
 
             foreach ($item->control->risks as $risk) {
                 if ($item->compliance_status === 'non_compliant') {
@@ -81,7 +83,9 @@ class RulesEngine
      */
     public function applyRule2ForControl(Control $control, string $oldStatus): void
     {
-        if ($oldStatus !== 'non_compliant') return;
+        if ($oldStatus !== 'non_compliant') {
+            return;
+        }
 
         foreach ($control->risks as $risk) {
             $oldLikelihood = $risk->likelihood;
@@ -115,16 +119,20 @@ class RulesEngine
             ->get();
 
         foreach ($compliantItems as $item) {
-            if (!$item->control) continue;
+            if (! $item->control) {
+                continue;
+            }
 
             // Was this control previously non-compliant in any other completed assessment?
             $wasPreviouslyNonCompliant = AssessmentItem::where('control_id', $item->control_id)
                 ->whereNot('assessment_id', $assessment->id)
                 ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
-                ->whereHas('assessment', fn($q) => $q->where('status', 'completed'))
+                ->whereHas('assessment', fn ($q) => $q->where('status', 'completed'))
                 ->exists();
 
-            if (!$wasPreviouslyNonCompliant) continue;
+            if (! $wasPreviouslyNonCompliant) {
+                continue;
+            }
 
             foreach ($item->control->risks as $risk) {
                 $oldLikelihood = $risk->likelihood;

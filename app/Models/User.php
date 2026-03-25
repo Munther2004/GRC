@@ -23,23 +23,38 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at'      => 'datetime',
-            'password'               => 'hashed',
-            'two_factor_confirmed_at'=> 'datetime',
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'two_factor_confirmed_at' => 'datetime',
         ];
     }
 
-    public function isAdmin(): bool { return $this->role === 'admin'; }
-    public function isAuditor(): bool { return $this->role === 'auditor'; }
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
 
-    public function getRoleNameAttribute(): string {
-        return match($this->role) {
-            'admin'   => 'Administrator',
+    public function isAuditor(): bool
+    {
+        return $this->role === 'auditor';
+    }
+
+    public function getRoleNameAttribute(): string
+    {
+        return match ($this->role) {
+            'admin' => 'Administrator',
             'auditor' => 'Auditor',
-            default   => 'User',
+            default => 'User',
         };
     }
 
-    public function risks() { return $this->hasMany(Risk::class); }
-    public function assessments() { return $this->hasMany(Assessment::class); }
+    public function risks()
+    {
+        return $this->hasMany(Risk::class);
+    }
+
+    public function assessments()
+    {
+        return $this->hasMany(Assessment::class);
+    }
 }

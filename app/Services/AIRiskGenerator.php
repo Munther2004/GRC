@@ -7,12 +7,13 @@ use App\Models\AssessmentItem;
 use App\Models\AuditLog;
 use App\Models\Notification;
 use App\Models\Risk;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AIRiskGenerator
 {
-    public function __construct(private AIService $ai = new AIService()) {}
+    public function __construct(private AIService $ai = new AIService) {}
 
     public function generateRisksFromAssessment(Assessment $assessment): void
     {
@@ -22,7 +23,9 @@ class AIRiskGenerator
             ->get();
 
         foreach ($items as $item) {
-            if (!$item->control) continue;
+            if (! $item->control) {
+                continue;
+            }
 
             $control = $item->control;
 
@@ -32,7 +35,9 @@ class AIRiskGenerator
                 ->where('assessment_id', $assessment->id)
                 ->exists();
 
-            if ($exists) continue;
+            if ($exists) {
+                continue;
+            }
 
             $this->generateRiskForControl($control, $assessment, $item->compliance_status);
         }
@@ -41,8 +46,8 @@ class AIRiskGenerator
     public function generateRiskForControl($control, Assessment $assessment, string $complianceStatus): void
     {
         try {
-            $frameworkName   = $control->framework->name ?? $control->framework->short_name ?? 'Unknown';
-            $statusLabel     = $complianceStatus === 'non_compliant' ? 'Non-Compliant' : 'Partially Compliant';
+            $frameworkName = $control->framework->name ?? $control->framework->short_name ?? 'Unknown';
+            $statusLabel = $complianceStatus === 'non_compliant' ? 'Non-Compliant' : 'Partially Compliant';
             $severityContext = $complianceStatus === 'non_compliant'
                 ? 'The control is fully non-compliant — no implementation exists.'
                 : 'The control is partially compliant — some implementation exists but gaps remain.';
@@ -79,10 +84,11 @@ PROMPT;
 
             $cleaned = preg_replace('/^```json\s*/i', '', trim($responseText));
             $cleaned = preg_replace('/```$/', '', trim($cleaned));
-            $data    = json_decode(trim($cleaned), true);
+            $data = json_decode(trim($cleaned), true);
 
-            if (!is_array($data)) {
+            if (! is_array($data)) {
                 Log::warning('AIRiskGenerator: invalid JSON response', ['response' => $responseText]);
+
                 return;
             }
 
@@ -91,36 +97,36 @@ PROMPT;
             }
 
             $likelihood = max(1, min(5, (int) ($data['likelihood'] ?? 3)));
-            $impact     = max(1, min(5, (int) ($data['impact'] ?? 3)));
-            $treatment  = in_array($data['treatment'] ?? '', ['mitigate', 'accept', 'transfer', 'avoid'])
+            $impact = max(1, min(5, (int) ($data['impact'] ?? 3)));
+            $treatment = in_array($data['treatment'] ?? '', ['mitigate', 'accept', 'transfer', 'avoid'])
                 ? $data['treatment']
                 : 'mitigate';
 
             $risk = Risk::create([
-                'user_id'           => \App\Models\User::where('role', 'admin')->first()->id,
-                'title'             => substr($data['title'], 0, 255),
-                'description'       => $data['description'],
-                'category'          => $control->category ?? 'Information Security',
-                'owner'             => 'AI Generated',
-                'likelihood'        => $likelihood,
-                'impact'            => $impact,
-                'status'            => 'open',
-                'treatment'         => $treatment,
-                'treatment_plan'    => null,
-                'mitigation_steps'  => $data['mitigation_steps'] ?? null,
-                'auto_generated'    => 1,
+                'user_id' => User::where('role', 'admin')->first()->id,
+                'title' => substr($data['title'], 0, 255),
+                'description' => $data['description'],
+                'category' => $control->category ?? 'Information Security',
+                'owner' => 'AI Generated',
+                'likelihood' => $likelihood,
+                'impact' => $impact,
+                'status' => 'open',
+                'treatment' => $treatment,
+                'treatment_plan' => null,
+                'mitigation_steps' => $data['mitigation_steps'] ?? null,
+                'auto_generated' => 1,
                 'source_control_id' => $control->id,
-                'assessment_id'     => $assessment->id,
+                'assessment_id' => $assessment->id,
             ]);
 
             DB::table('control_risk')->insert([
-                'control_id'  => $control->id,
-                'risk_id'     => $risk->id,
+                'control_id' => $control->id,
+                'risk_id' => $risk->id,
                 'auto_linked' => true,
-                'link_type'   => 'ai',
+                'link_type' => 'ai',
                 'link_reason' => "Auto-generated from {$statusLabel} control {$control->control_id} in assessment '{$assessment->title}'",
-                'created_at'  => now(),
-                'updated_at'  => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             $riskUrl = "/risks/{$risk->id}";
@@ -137,8 +143,8 @@ PROMPT;
             );
         } catch (\Throwable $e) {
             Log::error('AIRiskGenerator exception', [
-                'message'      => $e->getMessage(),
-                'control_id'   => $control->id,
+                'message' => $e->getMessage(),
+                'control_id' => $control->id,
                 'assessment_id' => $assessment->id,
             ]);
         }

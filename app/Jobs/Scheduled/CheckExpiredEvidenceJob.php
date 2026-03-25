@@ -30,12 +30,12 @@ class CheckExpiredEvidenceJob implements ShouldQueue
             );
 
             AuditLog::create([
-                'user_id'    => null,
-                'user_name'  => 'System',
-                'action'     => 'updated',
+                'user_id' => null,
+                'user_name' => 'System',
+                'action' => 'updated',
                 'model_type' => 'Evidence',
-                'model_id'   => $evidence->id,
-                'description'=> "Scheduler: Evidence #{$evidence->id} marked as expired",
+                'model_id' => $evidence->id,
+                'description' => "Scheduler: Evidence #{$evidence->id} marked as expired",
                 'ip_address' => null,
             ]);
         }

@@ -12,14 +12,29 @@ class Assessment extends Model
     ];
 
     protected $casts = [
-        'due_date'              => 'date',
+        'due_date' => 'date',
         'compliance_percentage' => 'float',
     ];
 
-    public function user()       { return $this->belongsTo(User::class); }
-    public function framework()  { return $this->belongsTo(Framework::class); }
-    public function items()      { return $this->hasMany(AssessmentItem::class); }
-    public function risks()      { return $this->hasMany(Risk::class); }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function framework()
+    {
+        return $this->belongsTo(Framework::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(AssessmentItem::class);
+    }
+
+    public function risks()
+    {
+        return $this->hasMany(Risk::class);
+    }
 
     public function recalculateCompliance(): void
     {
@@ -27,6 +42,7 @@ class Assessment extends Model
 
         if ($items->isEmpty()) {
             $this->update(['compliance_percentage' => 0]);
+
             return;
         }
 

@@ -11,9 +11,9 @@ class AIService
     {
         try {
             Log::info('validateRiskScores called', [
-                'title'      => $title,
+                'title' => $title,
                 'likelihood' => $likelihood,
-                'impact'     => $impact,
+                'impact' => $impact,
             ]);
 
             $prompt = <<<PROMPT
@@ -48,12 +48,12 @@ PROMPT;
 
             if (empty($raw)) {
                 return [
-                    'error'                  => true,
-                    'valid'                  => false,
+                    'error' => true,
+                    'valid' => false,
                     'recommended_likelihood' => $likelihood,
-                    'recommended_impact'     => $impact,
-                    'reasoning'              => 'AI validation unavailable. Please check your API configuration.',
-                    'confidence'             => 'low',
+                    'recommended_impact' => $impact,
+                    'reasoning' => 'AI validation unavailable. Please check your API configuration.',
+                    'confidence' => 'low',
                 ];
             }
 
@@ -61,37 +61,38 @@ PROMPT;
 
             Log::info('Parsed result', ['parsed' => $parsed]);
 
-            if (!is_array($parsed)) {
+            if (! is_array($parsed)) {
                 return [
-                    'error'                  => true,
-                    'valid'                  => false,
+                    'error' => true,
+                    'valid' => false,
                     'recommended_likelihood' => $likelihood,
-                    'recommended_impact'     => $impact,
-                    'reasoning'              => 'Could not parse AI response.',
-                    'confidence'             => 'low',
+                    'recommended_impact' => $impact,
+                    'reasoning' => 'Could not parse AI response.',
+                    'confidence' => 'low',
                 ];
             }
 
             return [
-                'valid'                  => (bool)   ($parsed['valid']                  ?? true),
+                'valid' => (bool) ($parsed['valid'] ?? true),
                 'recommended_likelihood' => max(1, min(5, (int) ($parsed['recommended_likelihood'] ?? $likelihood))),
-                'recommended_impact'     => max(1, min(5, (int) ($parsed['recommended_impact']     ?? $impact))),
-                'reasoning'              => (string)  ($parsed['reasoning']              ?? ''),
-                'confidence'             => in_array($parsed['confidence'] ?? '', ['high', 'medium', 'low'])
+                'recommended_impact' => max(1, min(5, (int) ($parsed['recommended_impact'] ?? $impact))),
+                'reasoning' => (string) ($parsed['reasoning'] ?? ''),
+                'confidence' => in_array($parsed['confidence'] ?? '', ['high', 'medium', 'low'])
                                                 ? $parsed['confidence'] : 'medium',
             ];
         } catch (\Throwable $e) {
             Log::error('validateRiskScores exception', [
                 'message' => $e->getMessage(),
-                'class'   => get_class($e),
+                'class' => get_class($e),
             ]);
+
             return [
-                'error'                  => true,
-                'valid'                  => false,
+                'error' => true,
+                'valid' => false,
                 'recommended_likelihood' => $likelihood,
-                'recommended_impact'     => $impact,
-                'reasoning'              => 'An unexpected error occurred during validation.',
-                'confidence'             => 'low',
+                'recommended_impact' => $impact,
+                'reasoning' => 'An unexpected error occurred during validation.',
+                'confidence' => 'low',
             ];
         }
     }
@@ -100,14 +101,14 @@ PROMPT;
     {
         try {
             $response = Http::withoutVerifying()
-            ->withHeaders([
-                'x-api-key'         => config('services.anthropic.key'),
-                'anthropic-version' => '2023-06-01',
-                'Content-Type'      => 'application/json',
-            ])->post('https://api.anthropic.com/v1/messages', [
-                'model'      => 'claude-opus-4-5',
+                ->withHeaders([
+                    'x-api-key' => config('services.anthropic.key'),
+                    'anthropic-version' => '2023-06-01',
+                    'Content-Type' => 'application/json',
+                ])->post('https://api.anthropic.com/v1/messages', [
+                'model' => 'claude-opus-4-5',
                 'max_tokens' => 1024,
-                'messages'   => [
+                'messages' => [
                     ['role' => 'user', 'content' => $prompt],
                 ],
             ]);
@@ -115,8 +116,9 @@ PROMPT;
             if ($response->failed()) {
                 Log::error('Claude API error', [
                     'status' => $response->status(),
-                    'body'   => $response->body(),
+                    'body' => $response->body(),
                 ]);
+
                 return '';
             }
 
@@ -126,9 +128,11 @@ PROMPT;
             $text = preg_replace('/^```json\s*/i', '', trim($text));
             $text = preg_replace('/^```\s*/i', '', trim($text));
             $text = preg_replace('/```$/m', '', trim($text));
+
             return trim($text);
         } catch (\Throwable $e) {
             Log::error('Claude API exception', ['message' => $e->getMessage()]);
+
             return '';
         }
     }

@@ -21,16 +21,16 @@ class FrameworkController extends Controller
 
     public function toggle(Framework $framework)
     {
-        $framework->update(['is_active' => !$framework->is_active]);
+        $framework->update(['is_active' => ! $framework->is_active]);
 
         AuditLog::record(
             'updated',
             'Framework',
             $framework->id,
-            "Framework '{$framework->name}' " . ($framework->is_active ? 'activated' : 'deactivated')
+            "Framework '{$framework->name}' ".($framework->is_active ? 'activated' : 'deactivated')
         );
 
-        return back()->with('success', "Framework {$framework->name} " . ($framework->is_active ? 'activated' : 'deactivated') . '.');
+        return back()->with('success', "Framework {$framework->name} ".($framework->is_active ? 'activated' : 'deactivated').'.');
     }
 
     public function edit(Framework $framework)
@@ -43,9 +43,9 @@ class FrameworkController extends Controller
     public function update(Request $request, Framework $framework)
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'version'     => 'nullable|string|max:50',
+            'version' => 'nullable|string|max:50',
         ]);
 
         $framework->update($validated);

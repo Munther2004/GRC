@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -24,12 +26,12 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        $middleware->alias(['role' => \App\Http\Middleware\CheckRole::class,]);
+        $middleware->alias(['role' => CheckRole::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (HttpException $e, \Illuminate\Http\Request $request) {
+        $exceptions->render(function (HttpException $e, Request $request) {
             $status = $e->getStatusCode();
-            $pages  = [403 => 'errors/403', 404 => 'errors/404', 500 => 'errors/500'];
+            $pages = [403 => 'errors/403', 404 => 'errors/404', 500 => 'errors/500'];
 
             if (isset($pages[$status])) {
                 return Inertia::render($pages[$status])

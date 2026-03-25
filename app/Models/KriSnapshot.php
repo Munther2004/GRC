@@ -24,8 +24,8 @@ class KriSnapshot extends Model
     ];
 
     protected $casts = [
-        'snapshot_date'          => 'date',
-        'compliance_percentage'  => 'float',
+        'snapshot_date' => 'date',
+        'compliance_percentage' => 'float',
         'evidence_approval_rate' => 'float',
     ];
 
@@ -63,8 +63,8 @@ class KriSnapshot extends Model
                     ? round(($approvedEvidence / $totalEvidence) * 100, 2)
                     : 0,
                 'ai_generated_risks' => Risk::where('auto_generated', 1)->count(),
-                'total_risks'        => Risk::count(),
-                'total_controls'     => Control::where('is_active', true)->count(),
+                'total_risks' => Risk::count(),
+                'total_controls' => Control::where('is_active', true)->count(),
                 'compliant_controls' => DB::table('assessment_items')
                     ->where('compliance_status', 'compliant')
                     ->distinct('control_id')

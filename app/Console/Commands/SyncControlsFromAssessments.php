@@ -7,11 +7,11 @@ use App\Models\AssessmentItem;
 use App\Models\Control;
 use App\Models\ControlStatusHistory;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class SyncControlsFromAssessments extends Command
 {
-    protected $signature   = 'controls:sync-from-assessments';
+    protected $signature = 'controls:sync-from-assessments';
+
     protected $description = 'Retroactively sync the most recent assessment response per control to controls.current_status';
 
     public function handle(): int
@@ -31,23 +31,25 @@ class SyncControlsFromAssessments extends Command
 
         if ($latestItems->isEmpty()) {
             $this->warn('No completed assessments found. Nothing to sync.');
+
             return self::SUCCESS;
         }
 
-        $updated  = 0;
-        $skipped  = 0;
+        $updated = 0;
+        $skipped = 0;
         $controls = Control::whereIn('id', $latestItems->keys())->get()->keyBy('id');
 
         foreach ($latestItems as $controlId => $item) {
             $control = $controls->get($controlId);
-            if (!$control) {
+            if (! $control) {
                 $skipped++;
+
                 continue;
             }
 
-            $newStatus    = $item->compliance_status;
+            $newStatus = $item->compliance_status;
             $assessmentId = $item->assessment_db_id;
-            $oldStatus    = $control->current_status;
+            $oldStatus = $control->current_status;
 
             // Idempotency: skip if history for this assessment already exists for this control
             $alreadySynced = ControlStatusHistory::where('control_id', $control->id)
@@ -56,6 +58,7 @@ class SyncControlsFromAssessments extends Command
 
             if ($alreadySynced) {
                 $skipped++;
+
                 continue;
             }
 
@@ -67,10 +70,10 @@ class SyncControlsFromAssessments extends Command
 
             ControlStatusHistory::create([
                 'control_id' => $control->id,
-                'user_id'    => null,
+                'user_id' => null,
                 'old_status' => $oldStatus,
                 'new_status' => $newStatus,
-                'notes'      => "Synced from assessment #{$assessmentId}",
+                'notes' => "Synced from assessment #{$assessmentId}",
             ]);
 
             $updated++;

@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Control extends Model
@@ -14,14 +16,21 @@ class Control extends Model
         'last_remediated_at' => 'datetime',
     ];
 
-    public function framework()     { return $this->belongsTo(Framework::class); }
-    public function assessmentItems() { return $this->hasMany(AssessmentItem::class); }
+    public function framework()
+    {
+        return $this->belongsTo(Framework::class);
+    }
+
+    public function assessmentItems()
+    {
+        return $this->hasMany(AssessmentItem::class);
+    }
 
     public function risks()
     {
         return $this->belongsToMany(Risk::class, 'control_risk')
-                    ->withPivot('auto_linked', 'link_type', 'link_reason')
-                    ->withTimestamps();
+            ->withPivot('auto_linked', 'link_type', 'link_reason')
+            ->withTimestamps();
     }
 
     public function statusHistory()
@@ -32,7 +41,7 @@ class Control extends Model
     public function latestEvidence()
     {
         return $this->hasManyThrough(Evidence::class, AssessmentItem::class)
-                    ->latest();
+            ->latest();
     }
 
     public function directEvidence()

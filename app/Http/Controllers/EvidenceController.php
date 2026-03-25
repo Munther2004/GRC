@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assessment;
 use App\Models\AuditLog;
 use App\Models\Evidence;
 use App\Models\Framework;
-use App\Models\Assessment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -20,40 +20,34 @@ class EvidenceController extends Controller
             'assessmentItem.assessment.framework',
             'assessmentItem.assessment.user',
         ])
-        ->when($request->search, fn($q) =>
-            $q->where('title', 'like', "%{$request->search}%")
-              ->orWhere('file_name', 'like', "%{$request->search}%")
-        )
-        ->when($request->status, fn($q) =>
-            $q->where('status', $request->status)
-        )
-        ->when($request->framework_id, fn($q) =>
-            $q->whereHas('assessmentItem.assessment', fn($q2) =>
-                $q2->where('framework_id', $request->framework_id)
+            ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
+                ->orWhere('file_name', 'like', "%{$request->search}%")
             )
-        )
-        ->when($request->assessment_id, fn($q) =>
-            $q->whereHas('assessmentItem', fn($q2) =>
-                $q2->where('assessment_id', $request->assessment_id)
+            ->when($request->status, fn ($q) => $q->where('status', $request->status)
             )
-        )
-        ->orderBy('created_at', 'desc')
-        ->paginate(20)
-        ->withQueryString();
+            ->when($request->framework_id, fn ($q) => $q->whereHas('assessmentItem.assessment', fn ($q2) => $q2->where('framework_id', $request->framework_id)
+            )
+            )
+            ->when($request->assessment_id, fn ($q) => $q->whereHas('assessmentItem', fn ($q2) => $q2->where('assessment_id', $request->assessment_id)
+            )
+            )
+            ->orderBy('created_at', 'desc')
+            ->paginate(20)
+            ->withQueryString();
 
         $stats = [
-            'total'    => Evidence::count(),
-            'pending'  => Evidence::where('status', 'pending')->count(),
+            'total' => Evidence::count(),
+            'pending' => Evidence::where('status', 'pending')->count(),
             'approved' => Evidence::where('status', 'approved')->count(),
             'rejected' => Evidence::where('status', 'rejected')->count(),
         ];
 
         return Inertia::render('evidence/index', [
-            'evidence'    => $query,
-            'frameworks'  => Framework::where('is_active', true)->get(['id', 'name', 'short_name']),
+            'evidence' => $query,
+            'frameworks' => Framework::where('is_active', true)->get(['id', 'name', 'short_name']),
             'assessments' => Assessment::where('status', 'completed')->orderBy('title')->get(['id', 'title']),
-            'stats'       => $stats,
-            'filters'     => $request->only(['search', 'status', 'framework_id', 'assessment_id']),
+            'stats' => $stats,
+            'filters' => $request->only(['search', 'status', 'framework_id', 'assessment_id']),
         ]);
     }
 
@@ -87,7 +81,7 @@ class EvidenceController extends Controller
 
     public function download(Evidence $evidence)
     {
-        if (!Storage::disk('public')->exists($evidence->file_path)) {
+        if (! Storage::disk('public')->exists($evidence->file_path)) {
             abort(404, 'File not found.');
         }
 
@@ -99,7 +93,7 @@ class EvidenceController extends Controller
         Storage::disk('public')->delete($evidence->file_path);
 
         $title = $evidence->title;
-        $id    = $evidence->id;
+        $id = $evidence->id;
         $evidence->delete();
 
         AuditLog::record('deleted', 'Evidence', $id, "Evidence '{$title}' deleted");

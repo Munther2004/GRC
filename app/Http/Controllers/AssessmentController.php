@@ -13,10 +13,10 @@ use App\Models\Framework;
 use App\Models\Notification;
 use App\Models\Risk;
 use App\Services\RulesEngine;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class AssessmentController extends Controller
@@ -24,31 +24,28 @@ class AssessmentController extends Controller
     public function index(Request $request)
     {
         $query = Assessment::with(['user', 'framework'])
-            ->when($request->search, fn($q) =>
-                $q->where('title', 'like', "%{$request->search}%")
+            ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
             )
-            ->when($request->status, fn($q) =>
-                $q->where('status', $request->status)
+            ->when($request->status, fn ($q) => $q->where('status', $request->status)
             )
-            ->when($request->framework_id, fn($q) =>
-                $q->where('framework_id', $request->framework_id)
+            ->when($request->framework_id, fn ($q) => $q->where('framework_id', $request->framework_id)
             )
             ->orderBy('created_at', 'desc')
             ->paginate(15)
             ->withQueryString();
 
         $stats = [
-            'total'      => Assessment::count(),
-            'in_progress'=> Assessment::where('status', 'in_progress')->count(),
-            'completed'  => Assessment::where('status', 'completed')->count(),
+            'total' => Assessment::count(),
+            'in_progress' => Assessment::where('status', 'in_progress')->count(),
+            'completed' => Assessment::where('status', 'completed')->count(),
             'avg_compliance' => round(Assessment::where('status', 'completed')->avg('compliance_percentage') ?? 0),
         ];
 
         return Inertia::render('assessments/index', [
             'assessments' => $query,
-            'frameworks'  => Framework::where('is_active', true)->get(['id', 'name', 'short_name']),
-            'stats'       => $stats,
-            'filters'     => $request->only(['search', 'status', 'framework_id']),
+            'frameworks' => Framework::where('is_active', true)->get(['id', 'name', 'short_name']),
+            'stats' => $stats,
+            'filters' => $request->only(['search', 'status', 'framework_id']),
         ]);
     }
 
@@ -62,18 +59,18 @@ class AssessmentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'        => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'framework_id' => 'required|exists:frameworks,id',
-            'scope'        => 'required|string',
-            'period'       => 'required|string|max:255',
-            'due_date'     => 'nullable|date',
-            'description'  => 'nullable|string',
+            'scope' => 'required|string',
+            'period' => 'required|string|max:255',
+            'due_date' => 'nullable|date',
+            'description' => 'nullable|string',
         ]);
 
         $assessment = Assessment::create([
             ...$validated,
-            'user_id'               => Auth::id(),
-            'status'                => 'draft',
+            'user_id' => Auth::id(),
+            'status' => 'draft',
             'compliance_percentage' => 0,
         ]);
 
@@ -86,11 +83,11 @@ class AssessmentController extends Controller
 
         foreach ($controls as $control) {
             $prefilledStatus = match ($control->current_status) {
-                'compliant'           => 'compliant',
+                'compliant' => 'compliant',
                 'partially_compliant' => 'partially_compliant',
-                'non_compliant'       => 'non_compliant',
-                'not_applicable'      => 'not_applicable',
-                default               => 'not_applicable',
+                'non_compliant' => 'non_compliant',
+                'not_applicable' => 'not_applicable',
+                default => 'not_applicable',
             };
 
             if ($control->current_status !== null) {
@@ -98,10 +95,10 @@ class AssessmentController extends Controller
             }
 
             AssessmentItem::create([
-                'assessment_id'     => $assessment->id,
-                'control_id'        => $control->id,
+                'assessment_id' => $assessment->id,
+                'control_id' => $control->id,
                 'compliance_status' => $prefilledStatus,
-                'comments'          => null,
+                'comments' => null,
             ]);
         }
 
@@ -125,16 +122,16 @@ class AssessmentController extends Controller
             ->get();
 
         $breakdown = [
-            'compliant'           => $items->where('compliance_status', 'compliant')->count(),
+            'compliant' => $items->where('compliance_status', 'compliant')->count(),
             'partially_compliant' => $items->where('compliance_status', 'partially_compliant')->count(),
-            'non_compliant'       => $items->where('compliance_status', 'non_compliant')->count(),
-            'not_applicable'      => $items->where('compliance_status', 'not_applicable')->count(),
+            'non_compliant' => $items->where('compliance_status', 'non_compliant')->count(),
+            'not_applicable' => $items->where('compliance_status', 'not_applicable')->count(),
         ];
 
         $byCategory = $items->groupBy('control.category')->map(function ($group) {
             return [
-                'total'      => $group->count(),
-                'compliant'  => $group->where('compliance_status', 'compliant')->count(),
+                'total' => $group->count(),
+                'compliant' => $group->where('compliance_status', 'compliant')->count(),
                 'percentage' => $group->count() > 0
                     ? round($group->where('compliance_status', 'compliant')->count() / $group->count() * 100)
                     : 0,
@@ -143,9 +140,9 @@ class AssessmentController extends Controller
 
         return Inertia::render('assessments/show', [
             'assessment' => $assessment,
-            'breakdown'  => $breakdown,
+            'breakdown' => $breakdown,
             'byCategory' => $byCategory,
-            'items'      => $items,
+            'items' => $items,
         ]);
     }
 
@@ -153,12 +150,12 @@ class AssessmentController extends Controller
     {
         $assessment->load('framework');
 
-        $page     = max(1, (int) $request->get('page', 1));
-        $perPage  = 20;
+        $page = max(1, (int) $request->get('page', 1));
+        $perPage = 20;
 
         $totalItems = AssessmentItem::where('assessment_id', $assessment->id)->count();
         $totalPages = max(1, (int) ceil($totalItems / $perPage));
-        $page       = min($page, $totalPages);
+        $page = min($page, $totalPages);
 
         $items = AssessmentItem::with(['control', 'evidence'])
             ->where('assessment_id', $assessment->id)
@@ -178,18 +175,18 @@ class AssessmentController extends Controller
             ->count();
 
         return Inertia::render('assessments/questionnaire', [
-            'assessment'     => $assessment,
-            'items'          => $items,
-            'pagination'     => [
+            'assessment' => $assessment,
+            'items' => $items,
+            'pagination' => [
                 'current_page' => $page,
-                'total_pages'  => $totalPages,
-                'total_items'  => $totalItems,
-                'per_page'     => $perPage,
+                'total_pages' => $totalPages,
+                'total_items' => $totalItems,
+                'per_page' => $perPage,
             ],
-            'progress'       => [
+            'progress' => [
                 'answered' => $answered,
-                'total'    => $totalItems,
-                'percent'  => $totalItems > 0 ? round($answered / $totalItems * 100) : 0,
+                'total' => $totalItems,
+                'percent' => $totalItems > 0 ? round($answered / $totalItems * 100) : 0,
             ],
             'prefilledCount' => $prefilledCount,
         ]);
@@ -198,10 +195,10 @@ class AssessmentController extends Controller
     public function saveAnswers(Request $request, Assessment $assessment)
     {
         $validated = $request->validate([
-            'answers'                          => 'required|array',
-            'answers.*.id'                     => 'required|exists:assessment_items,id',
-            'answers.*.compliance_status'      => 'required|in:compliant,partially_compliant,non_compliant,not_applicable',
-            'answers.*.comments'               => 'nullable|string',
+            'answers' => 'required|array',
+            'answers.*.id' => 'required|exists:assessment_items,id',
+            'answers.*.compliance_status' => 'required|in:compliant,partially_compliant,non_compliant,not_applicable',
+            'answers.*.comments' => 'nullable|string',
         ]);
 
         foreach ($validated['answers'] as $answer) {
@@ -209,7 +206,7 @@ class AssessmentController extends Controller
                 ->where('assessment_id', $assessment->id)
                 ->update([
                     'compliance_status' => $answer['compliance_status'],
-                    'comments'          => $answer['comments'] ?? null,
+                    'comments' => $answer['comments'] ?? null,
                 ]);
         }
 
@@ -227,18 +224,18 @@ class AssessmentController extends Controller
     {
         $statuses = ['compliant', 'compliant', 'compliant', 'partially_compliant', 'partially_compliant', 'non_compliant', 'not_applicable'];
         $comments = [
-            'compliant'            => ['Control fully implemented and verified.', 'Evidence reviewed and approved.', 'Process documented and operational.'],
-            'partially_compliant'  => ['Partially implemented, gaps identified.', 'In progress — remediation planned Q3.', 'Some evidence available, documentation incomplete.'],
-            'non_compliant'        => ['Not yet implemented.', 'Control missing — remediation required.', 'No evidence of implementation found.'],
-            'not_applicable'       => [],
+            'compliant' => ['Control fully implemented and verified.', 'Evidence reviewed and approved.', 'Process documented and operational.'],
+            'partially_compliant' => ['Partially implemented, gaps identified.', 'In progress — remediation planned Q3.', 'Some evidence available, documentation incomplete.'],
+            'non_compliant' => ['Not yet implemented.', 'Control missing — remediation required.', 'No evidence of implementation found.'],
+            'not_applicable' => [],
         ];
 
         $assessment->items()->each(function ($item) use ($statuses, $comments) {
             $status = $statuses[array_rand($statuses)];
-            $pool   = $comments[$status];
+            $pool = $comments[$status];
             $item->update([
                 'compliance_status' => $status,
-                'comments'          => count($pool) ? $pool[array_rand($pool)] : null,
+                'comments' => count($pool) ? $pool[array_rand($pool)] : null,
             ]);
         });
 
@@ -252,7 +249,7 @@ class AssessmentController extends Controller
             "[QA AUTO-FILL] Assessment '{$assessment->title}' auto-filled and submitted with {$assessment->compliance_percentage}% compliance"
         );
 
-        $rulesEngine = new RulesEngine();
+        $rulesEngine = new RulesEngine;
         $rulesEngine->applyRule1($assessment);
         $rulesEngine->applyRule2($assessment);
 
@@ -276,7 +273,7 @@ class AssessmentController extends Controller
             "Assessment '{$assessment->title}' submitted with {$assessment->compliance_percentage}% compliance"
         );
 
-        $rulesEngine = new RulesEngine();
+        $rulesEngine = new RulesEngine;
         $rulesEngine->applyRule1($assessment);
         $rulesEngine->applyRule2($assessment);
 
@@ -291,25 +288,25 @@ class AssessmentController extends Controller
     public function uploadEvidence(Request $request, Assessment $assessment, AssessmentItem $item)
     {
         $request->validate([
-            'file'        => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
-            'title'       => 'required|string|max:255',
+            'file' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'expiry_date' => 'nullable|date|after:today',
         ]);
 
-        $file     = $request->file('file');
-        $path     = $file->store("evidence/assessment-{$assessment->id}", 'public');
+        $file = $request->file('file');
+        $path = $file->store("evidence/assessment-{$assessment->id}", 'public');
 
         Evidence::create([
-            'user_id'            => Auth::id(),
+            'user_id' => Auth::id(),
             'assessment_item_id' => $item->id,
-            'title'              => $request->title,
-            'description'        => $request->description,
-            'file_path'          => $path,
-            'file_name'          => $file->getClientOriginalName(),
-            'file_type'          => $file->getMimeType(),
-            'status'             => 'pending',
-            'expiry_date'        => $request->expiry_date,
+            'title' => $request->title,
+            'description' => $request->description,
+            'file_path' => $path,
+            'file_name' => $file->getClientOriginalName(),
+            'file_type' => $file->getMimeType(),
+            'status' => 'pending',
+            'expiry_date' => $request->expiry_date,
         ]);
 
         AuditLog::record(
@@ -334,31 +331,32 @@ class AssessmentController extends Controller
             ->get();
 
         $breakdown = [
-            'compliant'           => $items->where('compliance_status', 'compliant')->count(),
+            'compliant' => $items->where('compliance_status', 'compliant')->count(),
             'partially_compliant' => $items->where('compliance_status', 'partially_compliant')->count(),
-            'non_compliant'       => $items->where('compliance_status', 'non_compliant')->count(),
-            'not_applicable'      => $items->where('compliance_status', 'not_applicable')->count(),
+            'non_compliant' => $items->where('compliance_status', 'non_compliant')->count(),
+            'not_applicable' => $items->where('compliance_status', 'not_applicable')->count(),
         ];
 
-        $byCategory = $items->groupBy('control.category')->map(fn($g) => [
-            'total'      => $g->count(),
-            'compliant'  => $g->where('compliance_status', 'compliant')->count(),
+        $byCategory = $items->groupBy('control.category')->map(fn ($g) => [
+            'total' => $g->count(),
+            'compliant' => $g->where('compliance_status', 'compliant')->count(),
             'percentage' => $g->count() > 0
                 ? round($g->where('compliance_status', 'compliant')->count() / $g->count() * 100)
                 : 0,
         ]);
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('assessments.pdf', [
-            'assessment'  => $assessment,
-            'items'       => $items,
-            'breakdown'   => $breakdown,
-            'byCategory'  => $byCategory,
+        $pdf = Pdf::loadView('assessments.pdf', [
+            'assessment' => $assessment,
+            'items' => $items,
+            'breakdown' => $breakdown,
+            'byCategory' => $byCategory,
             'generatedAt' => now()->format('Y-m-d H:i'),
         ]);
 
         $pdf->setPaper('A4', 'portrait');
         $slug = str($assessment->title)->slug()->limit(40);
-        return $pdf->download("assessment-{$slug}-" . now()->format('Y-m-d') . '.pdf');
+
+        return $pdf->download("assessment-{$slug}-".now()->format('Y-m-d').'.pdf');
     }
 
     /**
@@ -373,7 +371,9 @@ class AssessmentController extends Controller
 
         foreach ($items as $item) {
             $control = $item->control;
-            if (!$control) continue;
+            if (! $control) {
+                continue;
+            }
 
             $newStatus = $item->compliance_status;
             $oldStatus = $control->current_status;
@@ -389,13 +389,13 @@ class AssessmentController extends Controller
                 ->where('notes', "Synced from assessment #{$assessment->id}")
                 ->exists();
 
-            if (!$alreadySynced) {
+            if (! $alreadySynced) {
                 ControlStatusHistory::create([
                     'control_id' => $control->id,
-                    'user_id'    => null,
+                    'user_id' => null,
                     'old_status' => $oldStatus,
                     'new_status' => $newStatus,
-                    'notes'      => "Synced from assessment #{$assessment->id}",
+                    'notes' => "Synced from assessment #{$assessment->id}",
                 ]);
             }
         }
@@ -404,7 +404,7 @@ class AssessmentController extends Controller
     public function destroy(Assessment $assessment)
     {
         $title = $assessment->title;
-        $id    = $assessment->id;
+        $id = $assessment->id;
 
         // Get all control IDs from this assessment's items
         $controlIds = AssessmentItem::where('assessment_id', $assessment->id)
@@ -414,12 +414,12 @@ class AssessmentController extends Controller
         $riskIds = Risk::where('auto_generated', 1)
             ->where(function ($q) use ($controlIds, $assessment) {
                 $q->whereIn('source_control_id', $controlIds)
-                  ->orWhere('assessment_id', $assessment->id);
+                    ->orWhere('assessment_id', $assessment->id);
             })
             ->pluck('id');
 
         if ($riskIds->isNotEmpty()) {
-            Notification::whereIn('url', $riskIds->map(fn ($rid) => '/risks/' . $rid)->toArray())->delete();
+            Notification::whereIn('url', $riskIds->map(fn ($rid) => '/risks/'.$rid)->toArray())->delete();
             DB::table('control_risk')->whereIn('risk_id', $riskIds)->delete();
             Risk::whereIn('id', $riskIds)->delete();
         }

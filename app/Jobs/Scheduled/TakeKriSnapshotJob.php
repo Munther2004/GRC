@@ -16,9 +16,9 @@ class TakeKriSnapshotJob implements ShouldQueue
         $snapshot = KriSnapshot::takeSnapshot();
 
         Log::info('KRI snapshot taken', [
-            'snapshot_date'         => $snapshot->snapshot_date->toDateString(),
+            'snapshot_date' => $snapshot->snapshot_date->toDateString(),
             'compliance_percentage' => $snapshot->compliance_percentage,
-            'total_risks'           => $snapshot->total_risks,
+            'total_risks' => $snapshot->total_risks,
         ]);
     }
 }

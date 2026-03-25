@@ -15,6 +15,6 @@ class GenerateAIRisksJob implements ShouldQueue
 
     public function handle(): void
     {
-        (new AIRiskGenerator())->generateRisksFromAssessment($this->assessment);
+        (new AIRiskGenerator)->generateRisksFromAssessment($this->assessment);
     }
 }

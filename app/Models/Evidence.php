@@ -15,14 +15,25 @@ class Evidence extends Model
     ];
 
     protected $casts = [
-        'expiry_date'    => 'date',
-        'ai_review'      => 'array',
+        'expiry_date' => 'date',
+        'ai_review' => 'array',
         'ai_reviewed_at' => 'datetime',
     ];
 
-    public function user()           { return $this->belongsTo(User::class); }
-    public function assessmentItem() { return $this->belongsTo(AssessmentItem::class); }
-    public function control()        { return $this->belongsTo(Control::class); }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function assessmentItem()
+    {
+        return $this->belongsTo(AssessmentItem::class);
+    }
+
+    public function control()
+    {
+        return $this->belongsTo(Control::class);
+    }
 
     public function getIsExpiredAttribute(): bool
     {
@@ -31,7 +42,10 @@ class Evidence extends Model
 
     public function getExpiresSoonAttribute(): bool
     {
-        if ($this->expiry_date === null || $this->is_expired) return false;
+        if ($this->expiry_date === null || $this->is_expired) {
+            return false;
+        }
+
         return $this->expiry_date->lte(Carbon::now()->addDays(30));
     }
 }

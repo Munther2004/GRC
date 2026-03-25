@@ -106,12 +106,12 @@ PROMPT;
                     'anthropic-version' => '2023-06-01',
                     'Content-Type' => 'application/json',
                 ])->post('https://api.anthropic.com/v1/messages', [
-                'model' => 'claude-opus-4-5',
-                'max_tokens' => 1024,
-                'messages' => [
-                    ['role' => 'user', 'content' => $prompt],
-                ],
-            ]);
+                    'model' => 'claude-opus-4-5',
+                    'max_tokens' => 1024,
+                    'messages' => [
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                ]);
 
             if ($response->failed()) {
                 Log::error('Claude API error', [

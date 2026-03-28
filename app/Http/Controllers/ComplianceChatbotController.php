@@ -85,6 +85,12 @@ class ComplianceChatbotController extends Controller
                 'expiring_in_14_days' => Evidence::whereNotNull('expiry_date')
                     ->whereBetween('expiry_date', [now()->toDateString(), now()->addDays(14)->toDateString()])
                     ->count(),
+                'ai_verdict_summary' => [
+                    'adequate'           => Evidence::where('ai_verdict', 'Adequate')->count(),
+                    'partially_adequate' => Evidence::where('ai_verdict', 'Partially Adequate')->count(),
+                    'insufficient'       => Evidence::where('ai_verdict', 'Insufficient')->count(),
+                    'not_yet_reviewed'   => Evidence::whereNull('ai_verdict')->count(),
+                ],
             ],
             'recent_audit_logs' => $recentAuditLogs,
             'last_kri_snapshot' => $lastKri ? [

@@ -11,6 +11,7 @@ import {
     ScrollText,
     Settings,
     Shield,
+    Sparkles,
     Users,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -30,6 +31,7 @@ type SharedProps = {
 
 const mainNavigation = [
     { name: "Dashboard",    href: "/dashboard",    icon: LayoutDashboard, roles: ['admin', 'auditor', 'user'] },
+    { name: "AI Assistant", href: "/chatbot",      icon: Sparkles,        roles: ['admin', 'auditor', 'user'] },
     { name: "Risk Register",href: "/risks",        icon: AlertTriangle,   roles: ['admin', 'auditor', 'user'] },
     { name: "Assessments",  href: "/assessments",  icon: ClipboardList,   roles: ['admin', 'auditor', 'user'] },
     { name: "Evidence",     href: "/evidence",     icon: FolderOpen,      roles: ['admin', 'auditor', 'user'] },

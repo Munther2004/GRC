@@ -38,6 +38,7 @@ interface ControlRow {
     risks_count: number;
     highest_risk_level: 'critical' | 'high' | 'medium' | 'low' | null;
     evidence_status: 'valid' | 'expiring' | 'expired' | 'none';
+    has_weak_evidence: boolean;
     linked_evidence: EvidenceItem[];
     latest_history: { user_name: string; created_at: string; new_status: string } | null;
 }
@@ -50,6 +51,7 @@ interface EvidenceItem {
     is_expired: boolean;
     expires_soon: boolean;
     expiry_date: string | null;
+    ai_verdict: string | null;
 }
 
 interface HistoryEntry {
@@ -226,7 +228,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                 payload = {
                     new_status:  updateForm.new_status,
                     notes:       updateForm.notes || null,
-                    evidence_id: updateForm.evidence_id || null,
+                    evidence_id: (updateForm.evidence_id && updateForm.evidence_id !== 'none') ? updateForm.evidence_id : null,
                 };
             }
 
@@ -483,7 +485,15 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
 
                                             {/* Evidence */}
                                             <td className="px-4 py-3">
-                                                <EvidenceBadge status={ctrl.evidence_status} />
+                                                <div className="flex flex-col gap-1">
+                                                    <EvidenceBadge status={ctrl.evidence_status} />
+                                                    {ctrl.has_weak_evidence && (
+                                                        <span className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400 font-medium">
+                                                            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                                            Weak Evidence
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
 
                                             {/* Last updated */}
@@ -561,7 +571,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
 
             {/* ── Update Status Modal ─────────────────────────────────────────── */}
             <Dialog open={!!updateModal} onOpenChange={open => { if (!open) { setUpdateModal(null); setEvidenceFile(null); setEvidenceTitle(''); setEvidenceDescription(''); } }}>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md" aria-describedby={undefined}>
                     <DialogHeader>
                         <DialogTitle>Update Control Status</DialogTitle>
                     </DialogHeader>
@@ -616,7 +626,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                             <SelectValue placeholder="Select evidence..." />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="">None</SelectItem>
+                                            <SelectItem value="none">Select evidence (optional)</SelectItem>
                                             {updateModal.linked_evidence.map(e => (
                                                 <SelectItem key={e.id} value={String(e.id)}>
                                                     {e.title} {e.is_expired ? '(expired)' : e.expires_soon ? '(expiring)' : ''}

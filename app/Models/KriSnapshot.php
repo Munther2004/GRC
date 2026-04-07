@@ -29,28 +29,31 @@ class KriSnapshot extends Model
         'evidence_approval_rate' => 'float',
     ];
 
-    public static function takeSnapshot(): self
+    public static function takeSnapshot(?string $date = null): self
     {
-        $totalEvidence = Evidence::count();
+        $date = $date ?? now()->toDateString();
+
+        $totalEvidence    = Evidence::count();
         $approvedEvidence = Evidence::where('status', 'approved')->count();
 
         return static::updateOrCreate(
-            ['snapshot_date' => now()->toDateString()],
+            ['snapshot_date' => $date],
             [
                 'compliance_percentage' => round(
                     Assessment::avg('compliance_percentage') ?? 0, 2
                 ),
+                // Thresholds match Risk::getRiskLevelAttribute(): critical>=15, high>=10, medium>=5, low<5
                 'open_risks_critical' => Risk::whereIn('status', ['open', 'in_progress'])
-                    ->whereRaw('likelihood * impact >= 20')
+                    ->whereRaw('likelihood * impact >= 15')
                     ->count(),
                 'open_risks_high' => Risk::whereIn('status', ['open', 'in_progress'])
-                    ->whereRaw('likelihood * impact BETWEEN 13 AND 19')
+                    ->whereRaw('likelihood * impact BETWEEN 10 AND 14')
                     ->count(),
                 'open_risks_medium' => Risk::whereIn('status', ['open', 'in_progress'])
-                    ->whereRaw('likelihood * impact BETWEEN 7 AND 12')
+                    ->whereRaw('likelihood * impact BETWEEN 5 AND 9')
                     ->count(),
                 'open_risks_low' => Risk::whereIn('status', ['open', 'in_progress'])
-                    ->whereRaw('likelihood * impact BETWEEN 1 AND 6')
+                    ->whereRaw('likelihood * impact BETWEEN 1 AND 4')
                     ->count(),
                 'overdue_risks' => Risk::where('due_date', '<', now())
                     ->whereNotIn('status', ['closed'])
@@ -65,10 +68,10 @@ class KriSnapshot extends Model
                 'ai_generated_risks' => Risk::where('auto_generated', 1)->count(),
                 'total_risks'        => Risk::count(),
                 'total_controls'     => Control::where('is_active', true)->count(),
-                'compliant_controls' => DB::table('assessment_items')
-                    ->where('compliance_status', 'compliant')
-                    ->distinct('control_id')
-                    ->count('control_id'),
+                // Use controls.current_status — source of truth after Controls Hub changes
+                'compliant_controls' => Control::where('current_status', 'compliant')
+                    ->where('is_active', true)
+                    ->count(),
             ]
         );
     }

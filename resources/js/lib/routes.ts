@@ -74,11 +74,12 @@ export const route = (name: string, params?: any): string => {
         'notifications.destroy': `/notifications/${id}`,
 
         //Evidence
-        'evidence.index':    '/evidence',
-        'evidence.approve':  `/evidence/${id}/approve`,
-        'evidence.reject':   `/evidence/${id}/reject`,
-        'evidence.download': `/evidence/${id}/download`,
-        'evidence.destroy':  `/evidence/${id}`,
+        'evidence.index':     '/evidence',
+        'evidence.approve':   `/evidence/${id}/approve`,
+        'evidence.reject':    `/evidence/${id}/reject`,
+        'evidence.download':  `/evidence/${id}/download`,
+        'evidence.destroy':   `/evidence/${id}`,
+        'evidence.ai-review': `/evidence/${id}/ai-review`,
     };
 
     return routes[name] ?? `/${name.replace('.', '/')}`;

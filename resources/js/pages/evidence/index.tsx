@@ -15,13 +15,11 @@ import { useState } from 'react';
 import axios from 'axios';
 
 interface AiReview {
-    verdict: string;
-    confidence: number;
-    summary: string;
-    strengths: string[];
-    gaps: string[];
+    verdict:        'Adequate' | 'Partially Adequate' | 'Insufficient';
+    confidence:     'High' | 'Medium' | 'Low';
+    strengths:      string;
+    gaps:           string;
     recommendation: string;
-    suggested_status: string;
 }
 
 interface EvidenceItem {
@@ -36,10 +34,13 @@ interface EvidenceItem {
     expiry_date: string | null;
     is_expired: boolean;
     expires_soon: boolean;
-    ai_verdict: string | null;
-    ai_confidence: number | null;
-    ai_reviewed_at: string | null;
-    ai_review: AiReview | null;
+    ai_verdict:        string | null;
+    ai_confidence:     string | null;
+    ai_strengths:      string | null;
+    ai_gaps:           string | null;
+    ai_recommendation: string | null;
+    ai_reviewed_at:    string | null;
+    ai_review:         AiReview | null;
     user: { name: string } | null;
     assessment_item: {
         control: { control_id: string; title: string; category: string };
@@ -82,84 +83,51 @@ const FileIcon = ({ type }: { type: string }) => {
     return <File className="w-5 h-5 text-gray-500" />;
 };
 
-function AiReviewPanel({ review, onApply }: { review: AiReview; onApply: (status: string) => void }) {
+const CONFIDENCE_BADGE: Record<string, string> = {
+    High:   'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700',
+    Medium: 'bg-yellow-100 text-yellow-700 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700',
+    Low:    'bg-red-100 text-red-600 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700',
+};
+
+function AiReviewPanel({ review }: { review: AiReview }) {
     const vc = verdictConfig[review.verdict] ?? verdictConfig['Insufficient'];
 
     return (
         <div className="mt-3 pt-3 border-t border-purple-200 dark:border-purple-800 space-y-3">
             {/* Verdict + confidence */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap">
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${vc.bg} ${vc.color}`}>
-                    {review.verdict === 'Adequate' && <CheckCircle2 className="w-3.5 h-3.5" />}
+                    {review.verdict === 'Adequate'           && <CheckCircle2  className="w-3.5 h-3.5" />}
                     {review.verdict === 'Partially Adequate' && <AlertTriangle className="w-3.5 h-3.5" />}
-                    {review.verdict === 'Insufficient' && <XCircle className="w-3.5 h-3.5" />}
+                    {review.verdict === 'Insufficient'       && <XCircle       className="w-3.5 h-3.5" />}
                     {review.verdict}
                 </span>
-                <div className="flex items-center gap-2">
-                    <div className="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div
-                            className={`h-full rounded-full ${review.confidence >= 70 ? 'bg-green-500' : review.confidence >= 40 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                            style={{ width: `${review.confidence}%` }}
-                        />
-                    </div>
-                    <span className="text-xs text-gray-500 font-medium">{review.confidence}% confidence</span>
-                </div>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${CONFIDENCE_BADGE[review.confidence] ?? CONFIDENCE_BADGE['Medium']}`}>
+                    {review.confidence} Confidence
+                </span>
             </div>
-
-            {/* Summary */}
-            <p className="text-sm text-gray-700 dark:text-gray-300">{review.summary}</p>
 
             {/* Strengths + Gaps */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {review.strengths.length > 0 && (
+                {review.strengths && (
                     <div>
-                        <p className="text-xs font-semibold text-green-700 dark:text-green-400 mb-1.5">Strengths</p>
-                        <ul className="space-y-1">
-                            {review.strengths.map((s, i) => (
-                                <li key={i} className="flex items-start gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0 mt-0.5" />
-                                    {s}
-                                </li>
-                            ))}
-                        </ul>
+                        <p className="text-xs font-semibold text-green-700 dark:text-green-400 mb-1">Strengths</p>
+                        <p className="text-xs text-green-800 dark:text-green-300 leading-relaxed">{review.strengths}</p>
                     </div>
                 )}
-                {review.gaps.length > 0 && (
+                {review.gaps && (
                     <div>
-                        <p className="text-xs font-semibold text-red-700 dark:text-red-400 mb-1.5">Gaps</p>
-                        <ul className="space-y-1">
-                            {review.gaps.map((g, i) => (
-                                <li key={i} className="flex items-start gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-                                    <XCircle className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
-                                    {g}
-                                </li>
-                            ))}
-                        </ul>
+                        <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-1">Gaps</p>
+                        <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">{review.gaps}</p>
                     </div>
                 )}
             </div>
 
             {/* Recommendation */}
-            <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg px-3 py-2">
-                <AlertTriangle className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-blue-700 dark:text-blue-300">{review.recommendation}</p>
-            </div>
-
-            {/* Apply suggestion */}
-            {review.suggested_status !== 'pending' && (
-                <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500">AI suggests:</span>
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        className={`text-xs h-7 ${review.suggested_status === 'approved' ? 'border-green-400 text-green-700 hover:bg-green-50' : 'border-red-400 text-red-700 hover:bg-red-50'}`}
-                        onClick={() => onApply(review.suggested_status)}
-                    >
-                        {review.suggested_status === 'approved'
-                            ? <><CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Apply Approval</>
-                            : <><XCircle className="w-3.5 h-3.5 mr-1" /> Apply Rejection</>
-                        }
-                    </Button>
+            {review.recommendation && (
+                <div className="flex items-start gap-2 bg-muted/60 border border-border rounded-lg px-3 py-2">
+                    <AlertTriangle className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                    <p className="text-xs text-muted-foreground">{review.recommendation}</p>
                 </div>
             )}
         </div>
@@ -208,11 +176,15 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
         setReviewError(prev => { const n = { ...prev }; delete n[id]; return n; });
 
         try {
-            const { data } = await axios.post(route('ai.review-evidence'), { evidence_id: id });
+            const { data } = await axios.post(route('evidence.ai-review', id));
+            if (!data.verdict) {
+                setReviewError(prev => ({ ...prev, [id]: 'AI review could not be completed. Please try again.' }));
+                return;
+            }
             setLiveReviews(prev => ({ ...prev, [id]: data }));
             setExpanded(prev => ({ ...prev, [id]: true }));
         } catch (err: any) {
-            const msg = err.response?.data?.error ?? 'AI review failed';
+            const msg = err.response?.data?.error ?? 'AI review could not be completed. Please try again.';
             setReviewError(prev => ({ ...prev, [id]: msg }));
         } finally {
             setReviewing(prev => ({ ...prev, [id]: false }));
@@ -223,7 +195,20 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
         setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
-    const getReview = (ev: EvidenceItem): AiReview | null => liveReviews[ev.id] ?? ev.ai_review ?? null;
+    const getReview = (ev: EvidenceItem): AiReview | null => {
+        if (liveReviews[ev.id]) return liveReviews[ev.id];
+        // New structured columns take precedence over the legacy ai_review JSON blob
+        if (ev.ai_verdict && ev.ai_strengths !== null) {
+            return {
+                verdict:        ev.ai_verdict        as AiReview['verdict'],
+                confidence:     (ev.ai_confidence ?? 'Medium') as AiReview['confidence'],
+                strengths:      ev.ai_strengths      ?? '',
+                gaps:           ev.ai_gaps           ?? '',
+                recommendation: ev.ai_recommendation ?? '',
+            };
+        }
+        return null;
+    };
 
     const formatSize = (type: string) => type.split('/')[1]?.toUpperCase() ?? 'FILE';
 
@@ -337,7 +322,7 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
                                                         <div className="flex items-center gap-2 flex-wrap mb-1">
                                                             <p className="font-semibold text-sm text-gray-900 dark:text-white">{ev.title}</p>
                                                             {hasReview && (
-                                                                <Sparkles className="w-3.5 h-3.5 text-purple-500 shrink-0" title="AI reviewed" />
+                                                                <Sparkles className="w-3.5 h-3.5 text-purple-500 shrink-0" aria-label="AI reviewed" />
                                                             )}
                                                             <Badge variant="outline" className={`text-xs ${statusColors[ev.status]}`}>
                                                                 {ev.status}
@@ -349,7 +334,10 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
                                                                 <Badge className="text-xs bg-yellow-100 text-yellow-700 border border-yellow-300">Expiring Soon</Badge>
                                                             )}
                                                             {ev.ai_verdict && !liveReviews[ev.id] && (
-                                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${verdictConfig[ev.ai_verdict]?.bg ?? ''} ${verdictConfig[ev.ai_verdict]?.color ?? ''}`}>
+                                                                <span
+                                                                    title={ev.ai_reviewed_at ? `Last reviewed: ${new Date(ev.ai_reviewed_at).toLocaleDateString()}` : 'AI reviewed'}
+                                                                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border cursor-default ${verdictConfig[ev.ai_verdict]?.bg ?? ''} ${verdictConfig[ev.ai_verdict]?.color ?? ''}`}
+                                                                >
                                                                     {ev.ai_verdict}
                                                                 </span>
                                                             )}
@@ -398,13 +386,7 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
 
                                                         {/* Expandable AI review panel */}
                                                         {hasReview && isExpanded && (
-                                                            <AiReviewPanel
-                                                                review={review}
-                                                                onApply={(suggestedStatus) => {
-                                                                    if (suggestedStatus === 'approved') approve(ev.id);
-                                                                    else if (suggestedStatus === 'rejected') reject(ev.id);
-                                                                }}
-                                                            />
+                                                            <AiReviewPanel review={review} />
                                                         )}
                                                     </div>
                                                 </div>

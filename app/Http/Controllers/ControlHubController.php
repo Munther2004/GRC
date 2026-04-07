@@ -87,16 +87,19 @@ class ControlHubController extends Controller
             'evidence_description' => 'nullable|string',
         ]);
 
+        $newStatus  = $request->input('new_status');
+        $notes      = $request->input('notes');
+        $evidenceId = $request->input('evidence_id');
+
         $oldStatus = $control->current_status;
 
         $control->update([
-            'current_status'     => $validated['new_status'],
+            'current_status'     => $newStatus,
             'last_remediated_at' => now(),
-            'remediation_notes'  => $validated['notes'] ?? $control->remediation_notes,
+            'remediation_notes'  => $notes ?? $control->remediation_notes,
         ]);
 
         // Handle optional evidence file upload
-        $evidenceId = $validated['evidence_id'] ?? null;
         if ($request->hasFile('file')) {
             $file          = $request->file('file');
             $path          = $file->store("evidence/control-{$control->id}", 'public');
@@ -124,8 +127,8 @@ class ControlHubController extends Controller
             'control_id'  => $control->id,
             'user_id'     => Auth::id(),
             'old_status'  => $oldStatus,
-            'new_status'  => $validated['new_status'],
-            'notes'       => $validated['notes'] ?? null,
+            'new_status'  => $newStatus,
+            'notes'       => $notes,
             'evidence_id' => $evidenceId,
         ]);
 
@@ -133,9 +136,9 @@ class ControlHubController extends Controller
         $engine = new RulesEngine();
         $control->load('risks');
 
-        if ($validated['new_status'] === 'non_compliant') {
+        if ($newStatus === 'non_compliant') {
             $engine->applyRule1ForControl($control);
-        } elseif ($validated['new_status'] === 'compliant') {
+        } elseif ($newStatus === 'compliant') {
             $engine->applyRule2ForControl($control, $oldStatus ?? '');
         }
 
@@ -144,8 +147,8 @@ class ControlHubController extends Controller
             'Control',
             $control->id,
             "Controls Hub: '{$control->control_id}' status changed from " .
-            ($oldStatus ?? 'not set') . " to {$validated['new_status']}" .
-            ($validated['notes'] ? " — {$validated['notes']}" : '')
+            ($oldStatus ?? 'not set') . " to {$newStatus}" .
+            ($notes ? " — {$notes}" : '')
         );
 
         return response()->json([
@@ -204,8 +207,11 @@ class ControlHubController extends Controller
                 'is_expired'  => $e->is_expired,
                 'expires_soon'=> $e->expires_soon,
                 'expiry_date' => $e->expiry_date?->toDateString(),
+                'ai_verdict'  => $e->ai_verdict,
             ])
             ->values();
+
+        $hasWeakEvidence = $linkedEvidence->contains(fn ($e) => $e['ai_verdict'] === 'Insufficient');
 
         $latestHistory = $control->statusHistory->first();
 
@@ -225,6 +231,7 @@ class ControlHubController extends Controller
             'risks_count'         => $control->risks->count(),
             'highest_risk_level'  => $this->highestRiskLevel($control->risks),
             'evidence_status'     => $evidenceStatus,
+            'has_weak_evidence'   => $hasWeakEvidence,
             'linked_evidence'     => $linkedEvidence,
             'latest_history'      => $latestHistory ? [
                 'user_name'  => $latestHistory->user?->name ?? 'System',

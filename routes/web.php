@@ -8,6 +8,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\GapAnalysisController;
 use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\ControlHubController;
+use App\Http\Controllers\ComplianceChatbotController;
 use App\Http\Controllers\NotificationController;
 use App\Models\KriSnapshot;
 use App\Http\Controllers\Admin\AIController as AdminAIController;
@@ -35,6 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ── Everyone ──────────────────────────────────────────────────────────────
     Route::get('/dashboard',    [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/chatbot',       [ComplianceChatbotController::class, 'index'])->name('chatbot.index');
+    Route::post('/chatbot/chat', [ComplianceChatbotController::class, 'chat'])->name('chatbot.chat');
     Route::get('/kri-snapshots', fn () =>
         KriSnapshot::latest('snapshot_date')->limit(12)->get()->sortBy('snapshot_date')->values()
     )->name('kri-snapshots.index');
@@ -94,9 +97,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/evidence/{evidence}/download', [EvidenceController::class, 'download'])->name('evidence.download');
 
     Route::middleware('role:admin,auditor')->group(function () {
-        Route::post('/evidence/{evidence}/approve', [EvidenceController::class, 'approve'])->name('evidence.approve');
-        Route::post('/evidence/{evidence}/reject',  [EvidenceController::class, 'reject'])->name('evidence.reject');
-        Route::post('/ai/review-evidence',          [AdminAIController::class, 'reviewEvidence'])->name('ai.review-evidence');
+        Route::post('/evidence/{evidence}/approve',    [EvidenceController::class, 'approve'])->name('evidence.approve');
+        Route::post('/evidence/{evidence}/reject',     [EvidenceController::class, 'reject'])->name('evidence.reject');
+        Route::post('/evidence/{evidence}/ai-review',  [EvidenceController::class, 'aiReview'])->name('evidence.ai-review');
+        Route::post('/ai/review-evidence',             [AdminAIController::class, 'reviewEvidence'])->name('ai.review-evidence');
     });
 
     Route::middleware('role:admin')->group(function () {

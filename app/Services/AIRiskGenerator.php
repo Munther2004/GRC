@@ -96,6 +96,9 @@ PROMPT;
                 ? $data['treatment']
                 : 'mitigate';
 
+            // Only reference the assessment if it still exists in the DB
+            $assessmentId = Assessment::where('id', $assessment->id)->value('id');
+
             $risk = Risk::create([
                 'user_id'           => \App\Models\User::where('role', 'admin')->first()->id,
                 'title'             => substr($data['title'], 0, 255),
@@ -110,7 +113,7 @@ PROMPT;
                 'mitigation_steps'  => $data['mitigation_steps'] ?? null,
                 'auto_generated'    => 1,
                 'source_control_id' => $control->id,
-                'assessment_id'     => $assessment->id,
+                'assessment_id'     => $assessmentId,
             ]);
 
             DB::table('control_risk')->insert([

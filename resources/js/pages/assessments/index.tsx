@@ -6,8 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, ClipboardList, CheckCircle, Clock, TrendingUp, Eye, Trash2, PlayCircle } from 'lucide-react';
+import { Plus, Search, ClipboardList, CheckCircle, Clock, TrendingUp, Eye, Trash2, PlayCircle, AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 interface Assessment {
     id: number;
@@ -17,6 +18,7 @@ interface Assessment {
     period: string;
     due_date: string | null;
     created_at: string;
+    items_count: number;
     user: { name: string };
     framework: { name: string; short_name: string };
 }
@@ -53,6 +55,8 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
     const [search, setSearch]         = useState(filters.search ?? '');
     const [status, setStatus]         = useState(filters.status ?? 'all');
     const [frameworkId, setFramework] = useState(filters.framework_id ?? 'all');
+    const [deleteModal, setDeleteModal] = useState<Assessment | null>(null);
+    const [deleting, setDeleting]       = useState(false);
 
     const applyFilters = (overrides: Record<string, string> = {}) => {
         router.get(route('assessments.index'), {
@@ -63,9 +67,14 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
         }, { preserveState: true, replace: true });
     };
 
-    const deleteAssessment = (id: number, title: string) => {
-        if (!confirm(`Delete assessment "${title}"? This cannot be undone.`)) return;
-        router.delete(route('assessments.destroy', id));
+    const confirmDelete = (resetControls: boolean) => {
+        if (!deleteModal || deleting) return;
+        setDeleting(true);
+        router.delete(route('assessments.destroy', deleteModal.id), {
+            data: { reset_controls: resetControls },
+            onSuccess: () => { setDeleteModal(null); setDeleting(false); },
+            onError:   () => setDeleting(false),
+        });
     };
 
     return (
@@ -219,7 +228,7 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
                                                         <Button
                                                             variant="ghost" size="icon"
                                                             className="h-8 w-8 text-red-500 hover:bg-red-50"
-                                                            onClick={() => deleteAssessment(a.id, a.title)}
+                                                            onClick={() => setDeleteModal(a)}
                                                         >
                                                             <Trash2 className="w-4 h-4" />
                                                         </Button>
@@ -248,6 +257,81 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
                     </CardContent>
                 </Card>
             </div>
+
+            {/* ── Delete Confirmation Modal ───────────────────────────────────── */}
+            <Dialog open={!!deleteModal} onOpenChange={open => { if (!open && !deleting) setDeleteModal(null); }}>
+                <DialogContent className="max-w-md" aria-describedby={undefined}>
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                            <Trash2 className="w-4 h-4" /> Delete Assessment
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    {deleteModal && (
+                        <div className="space-y-4 py-1">
+                            {/* Assessment info */}
+                            <div className="rounded-lg border bg-gray-50 dark:bg-gray-800/50 p-3">
+                                <p className="font-medium text-sm">{deleteModal.title}</p>
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                    {deleteModal.framework.short_name} &middot; {deleteModal.items_count} control{deleteModal.items_count !== 1 ? 's' : ''} &middot; Created {new Date(deleteModal.created_at).toLocaleDateString()}
+                                </p>
+                            </div>
+
+                            {/* Option A */}
+                            <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-1">
+                                <p className="text-sm font-semibold">
+                                    Option A — Delete assessment only
+                                    <span className="ml-1.5 text-xs font-normal text-gray-400">(default)</span>
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                    Keeps all control statuses in the Controls Hub and all AI-generated risks in the register.
+                                </p>
+                            </div>
+
+                            {/* Option B */}
+                            <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-700 p-3 space-y-2">
+                                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                                    Option B — Delete and reset control statuses
+                                </p>
+                                <p className="text-xs text-amber-700 dark:text-amber-400">
+                                    Resets all assessed control statuses to <em>Not Set</em> in the Controls Hub. AI-generated risks are kept in the register.
+                                </p>
+                                <div className="flex items-start gap-2 pt-0.5">
+                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
+                                    <p className="text-xs font-medium text-amber-800 dark:text-amber-300">
+                                        This will reset <strong>{deleteModal.items_count}</strong> control status{deleteModal.items_count !== 1 ? 'es' : ''} to Not Set. This cannot be undone.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <DialogFooter className="flex-wrap gap-2 sm:gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteModal(null)}
+                            disabled={deleting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-950/30"
+                            onClick={() => confirmDelete(false)}
+                            disabled={deleting}
+                        >
+                            Delete Only
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => confirmDelete(true)}
+                            disabled={deleting}
+                        >
+                            Delete &amp; Reset Controls
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </AdminLayout>
     );
 }

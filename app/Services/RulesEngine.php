@@ -114,17 +114,24 @@ class RulesEngine
             ->with(['control.risks'])
             ->get();
 
+        if ($compliantItems->isEmpty()) return;
+
+        // Batch: in one query, find which control IDs were previously non-compliant
+        // in other completed assessments — avoids one subquery per item
+        $compliantControlIds = $compliantItems->pluck('control_id')->filter()->unique()->values();
+
+        $previouslyNonCompliantControlIds = AssessmentItem::whereIn('control_id', $compliantControlIds)
+            ->whereNot('assessment_id', $assessment->id)
+            ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
+            ->whereHas('assessment', fn($q) => $q->where('status', 'completed'))
+            ->pluck('control_id')
+            ->flip()
+            ->all();
+
         foreach ($compliantItems as $item) {
             if (!$item->control) continue;
 
-            // Was this control previously non-compliant in any other completed assessment?
-            $wasPreviouslyNonCompliant = AssessmentItem::where('control_id', $item->control_id)
-                ->whereNot('assessment_id', $assessment->id)
-                ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
-                ->whereHas('assessment', fn($q) => $q->where('status', 'completed'))
-                ->exists();
-
-            if (!$wasPreviouslyNonCompliant) continue;
+            if (!isset($previouslyNonCompliantControlIds[$item->control_id])) continue;
 
             foreach ($item->control->risks as $risk) {
                 $oldLikelihood = $risk->likelihood;

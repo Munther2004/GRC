@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Assessment;
 use App\Models\AuditLog;
+use App\Models\Control;
 use App\Models\Evidence;
 use App\Models\KriSnapshot;
 use App\Models\Risk;
@@ -22,7 +23,18 @@ class DashboardController extends Controller
             'medium_risks'      => $risks->filter(fn($r) => $r->risk_level === 'medium')->count(),
             'low_risks'         => $risks->filter(fn($r) => $r->risk_level === 'low')->count(),
             'open_risks'        => $risks->whereIn('status', ['open', 'in_progress'])->count(),
-            'compliance_score'  => Assessment::avg('compliance_percentage') ?? 0,
+            'compliance_score'  => (function () {
+                // Exclude not_applicable — they don't factor into compliance %
+                $applicable = Control::where('is_active', true)
+                    ->where(function ($q) {
+                        $q->whereNull('current_status')
+                          ->orWhere('current_status', '!=', 'not_applicable');
+                    });
+                $total     = (clone $applicable)->count();
+                $compliant = (clone $applicable)->where('current_status', 'compliant')->count();
+                $partial   = (clone $applicable)->where('current_status', 'partially_compliant')->count();
+                return $total > 0 ? round((($compliant + ($partial * 0.5)) / $total) * 100) : 0;
+            })(),
             'total_assessments' => Assessment::count(),
             'evidence_files'    => Evidence::count(),
             'pending_evidence'  => Evidence::where('status', 'pending')->count(),

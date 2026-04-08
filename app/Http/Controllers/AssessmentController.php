@@ -430,38 +430,48 @@ class AssessmentController extends Controller
 
     public function destroy(Request $request, Assessment $assessment)
     {
-        $title         = $assessment->title;
-        $id            = $assessment->id;
-        $resetControls = $request->boolean('reset_controls');
+        $title = $assessment->title;
+        $id    = $assessment->id;
 
-        // Option B: reset control statuses before deleting items
-        if ($resetControls) {
-            $items = AssessmentItem::with('control')
-                ->where('assessment_id', $assessment->id)
-                ->get();
+        // Reset all control statuses linked to this assessment
+        $items = AssessmentItem::with('control')
+            ->where('assessment_id', $assessment->id)
+            ->get();
 
-            foreach ($items as $item) {
-                $control = $item->control;
-                if (!$control) continue;
+        $resetCount = 0;
+        foreach ($items as $item) {
+            $control = $item->control;
+            if (!$control) continue;
 
-                $oldStatus = $control->current_status;
+            $oldStatus = $control->current_status;
 
-                $control->update([
-                    'current_status'     => null,
-                    'last_remediated_at' => null,
-                ]);
+            $control->update([
+                'current_status'     => null,
+                'last_remediated_at' => null,
+            ]);
 
-                ControlStatusHistory::create([
-                    'control_id' => $control->id,
-                    'user_id'    => null,
-                    'old_status' => $oldStatus,
-                    'new_status' => 'not_set',
-                    'notes'      => "Status reset — linked assessment #{$id} was deleted",
-                ]);
-            }
+            ControlStatusHistory::create([
+                'control_id' => $control->id,
+                'user_id'    => null,
+                'old_status' => $oldStatus,
+                'new_status' => 'not_set',
+                'notes'      => "Status reset — linked assessment #{$id} was deleted",
+            ]);
+
+            $resetCount++;
         }
 
-        // Delete evidence uploaded as part of this assessment (identified by assessment_item_id)
+        // Delete AI-generated risks linked to this assessment
+        $risks = Risk::where('assessment_id', $assessment->id)
+            ->where('auto_generated', true)
+            ->get();
+
+        $riskCount = $risks->count();
+        foreach ($risks as $risk) {
+            $risk->delete();
+        }
+
+        // Delete evidence files and records linked to this assessment's items
         $itemIds = AssessmentItem::where('assessment_id', $assessment->id)->pluck('id');
         $evidenceRecords = Evidence::whereIn('assessment_item_id', $itemIds)->get();
         foreach ($evidenceRecords as $ev) {
@@ -471,23 +481,17 @@ class AssessmentController extends Controller
             $ev->delete();
         }
 
-        // Delete assessment items (assessment_id FK also has cascadeOnDelete, but explicit is fine)
+        // Delete assessment items then the assessment itself
         AssessmentItem::where('assessment_id', $assessment->id)->delete();
-
         $assessment->delete();
-        // Risks linked via assessment_id have nullOnDelete() and remain in the register
 
-        $auditNote = $resetControls
-            ? "Assessment '{$title}' deleted with control status reset"
-            : "Assessment '{$title}' deleted";
+        $auditNote = "Assessment '{$title}' deleted — {$resetCount} control status" .
+            ($resetCount !== 1 ? 'es' : '') . " reset, {$riskCount} risk" .
+            ($riskCount !== 1 ? 's' : '') . " removed";
 
         AuditLog::record('deleted', 'Assessment', $id, $auditNote);
 
-        $successMsg = $resetControls
-            ? "Assessment '{$title}' deleted and control statuses reset to Not Set."
-            : "Assessment '{$title}' deleted.";
-
         return redirect()->route('assessments.index')
-            ->with('success', $successMsg);
+            ->with('success', "Assessment '{$title}' deleted and control statuses reset to Not Set.");
     }
 }

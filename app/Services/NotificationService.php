@@ -29,8 +29,8 @@ class NotificationService
     public static function typesForRole(string $role): ?array
     {
         return match ($role) {
-            'auditor' => ['pending_evidence', 'overdue_assessment', 'expiring_evidence', 'expired_evidence'],
-            'user'    => ['overdue_assessment', 'critical_risk', 'overdue_risk'],
+            'auditor' => ['pending_evidence', 'overdue_assessment', 'expiring_evidence', 'expired_evidence', 'status_request_pending'],
+            'user'    => ['overdue_assessment', 'critical_risk', 'overdue_risk', 'status_request_approved', 'status_request_rejected'],
             default   => null, // admin sees everything
         };
     }

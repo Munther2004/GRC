@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ControlStatusRequest;
 use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -40,9 +41,14 @@ class HandleInertiaRequests extends Middleware
                     $base->whereIn('type', $types);
                 }
 
+                $pendingApprovals = in_array($user->role, ['admin', 'auditor'])
+                    ? ControlStatusRequest::where('status', 'pending')->count()
+                    : 0;
+
                 return [
-                    'unread_count' => (clone $base)->count(),
-                    'recent'       => (clone $base)->orderBy('created_at', 'desc')->take(5)->get(),
+                    'unread_count'           => (clone $base)->count(),
+                    'recent'                 => (clone $base)->orderBy('created_at', 'desc')->take(5)->get(),
+                    'pending_approvals_count' => $pendingApprovals,
                 ];
             },
         ];

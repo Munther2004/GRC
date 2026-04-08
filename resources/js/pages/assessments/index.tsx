@@ -67,11 +67,10 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
         }, { preserveState: true, replace: true });
     };
 
-    const confirmDelete = (resetControls: boolean) => {
+    const confirmDelete = () => {
         if (!deleteModal || deleting) return;
         setDeleting(true);
         router.delete(route('assessments.destroy', deleteModal.id), {
-            data: { reset_controls: resetControls },
             onSuccess: () => { setDeleteModal(null); setDeleting(false); },
             onError:   () => setDeleting(false),
         });
@@ -277,31 +276,12 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
                                 </p>
                             </div>
 
-                            {/* Option A */}
-                            <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-1">
-                                <p className="text-sm font-semibold">
-                                    Option A — Delete assessment only
-                                    <span className="ml-1.5 text-xs font-normal text-gray-400">(default)</span>
+                            {/* Warning */}
+                            <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-800 p-3">
+                                <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
+                                <p className="text-sm text-red-700 dark:text-red-400">
+                                    Deleting this assessment will reset all {deleteModal.items_count} control status{deleteModal.items_count !== 1 ? 'es' : ''} to Not Set in the Controls Hub. This action cannot be undone.
                                 </p>
-                                <p className="text-xs text-gray-500">
-                                    Keeps all control statuses in the Controls Hub and all AI-generated risks in the register.
-                                </p>
-                            </div>
-
-                            {/* Option B */}
-                            <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-700 p-3 space-y-2">
-                                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                                    Option B — Delete and reset control statuses
-                                </p>
-                                <p className="text-xs text-amber-700 dark:text-amber-400">
-                                    Resets all assessed control statuses to <em>Not Set</em> in the Controls Hub. AI-generated risks are kept in the register.
-                                </p>
-                                <div className="flex items-start gap-2 pt-0.5">
-                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
-                                    <p className="text-xs font-medium text-amber-800 dark:text-amber-300">
-                                        This will reset <strong>{deleteModal.items_count}</strong> control status{deleteModal.items_count !== 1 ? 'es' : ''} to Not Set. This cannot be undone.
-                                    </p>
-                                </div>
                             </div>
                         </div>
                     )}
@@ -315,19 +295,11 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
                             Cancel
                         </Button>
                         <Button
-                            variant="outline"
-                            className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-950/30"
-                            onClick={() => confirmDelete(false)}
-                            disabled={deleting}
-                        >
-                            Delete Only
-                        </Button>
-                        <Button
                             variant="destructive"
-                            onClick={() => confirmDelete(true)}
+                            onClick={() => confirmDelete()}
                             disabled={deleting}
                         >
-                            Delete &amp; Reset Controls
+                            Delete Assessment
                         </Button>
                     </DialogFooter>
                 </DialogContent>

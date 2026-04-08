@@ -4,6 +4,7 @@ import {
     BarChart3,
     Bell,
     ClipboardList,
+    Clock,
     FileCheck,
     FolderOpen,
     LayoutDashboard,
@@ -26,6 +27,7 @@ type SharedProps = {
     }
     notifications: {
         unread_count: number
+        pending_approvals_count: number
     }
 }
 
@@ -41,8 +43,9 @@ const mainNavigation = [
 ]
 
 const reviewNavigation = [
-    { name: "Audit Logs",     href: "/audit-logs",     icon: ScrollText, roles: ['admin', 'auditor'] },
-    { name: "Notifications",  href: "/notifications",  icon: Bell,       roles: ['admin', 'auditor', 'user'] },
+    { name: "Approval Queue", href: "/controls/approvals", icon: Clock,      roles: ['admin', 'auditor'] },
+    { name: "Audit Logs",     href: "/audit-logs",         icon: ScrollText, roles: ['admin', 'auditor'] },
+    { name: "Notifications",  href: "/notifications",      icon: Bell,       roles: ['admin', 'auditor', 'user'] },
 ]
 
 const adminNavigation = [
@@ -53,7 +56,8 @@ const adminNavigation = [
 
 export function AdminSidebar() {
     const { auth, notifications } = usePage<SharedProps>().props
-    const unreadCount = notifications?.unread_count ?? 0
+    const unreadCount       = notifications?.unread_count ?? 0
+    const pendingApprovals  = notifications?.pending_approvals_count ?? 0
     const url       = usePage().url as string
     const isAdmin   = auth.user.role === 'admin'
     const isAuditor = auth.user.role === 'auditor'
@@ -100,7 +104,13 @@ export function AdminSidebar() {
                                         key={item.name}
                                         item={item}
                                         currentUrl={url}
-                                        badge={item.href === '/notifications' && unreadCount > 0 ? unreadCount : undefined}
+                                        badge={
+                                            item.href === '/notifications' && unreadCount > 0
+                                                ? unreadCount
+                                                : item.href === '/controls/approvals' && pendingApprovals > 0
+                                                    ? pendingApprovals
+                                                    : undefined
+                                        }
                                     />
                                 ))
                             }

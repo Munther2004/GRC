@@ -238,7 +238,7 @@ export default function RisksIndex({ risks, stats, filters, frameworks }: Props)
                                                             📋 Plan
                                                         </Badge>
                                                     )}
-                                                    {risk.ai_validated && (
+                                                    {!!risk.ai_validated && (
                                                         <Badge className="text-xs bg-blue-100 text-blue-700 border-blue-200 shrink-0 px-1 py-0">
                                                             <Sparkles className="w-2.5 h-2.5 mr-0.5" />Validated
                                                         </Badge>

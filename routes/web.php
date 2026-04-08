@@ -8,6 +8,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\GapAnalysisController;
 use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\ControlHubController;
+use App\Http\Controllers\ControlStatusRequestController;
 use App\Http\Controllers\ComplianceChatbotController;
 use App\Http\Controllers\NotificationController;
 use App\Models\KriSnapshot;
@@ -44,14 +45,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/reports',      [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');
     Route::get('/gap-analysis', [GapAnalysisController::class, 'index'])->name('gap-analysis.index');
-    Route::get('/controls/hub', [ControlHubController::class, 'index'])->name('controls.hub');
+    Route::get('/controls/hub',       [ControlHubController::class, 'index'])->name('controls.hub');
+    Route::get('/controls/approvals', [ControlStatusRequestController::class, 'index'])->name('controls.approvals')->middleware('role:admin,auditor');
     Route::get('/controls/{control}/history', [ControlHubController::class, 'history'])->name('controls.history');
 
     // ── Risks — read-only for all, write for admin & user ────────────────────
     Route::get('/risks', [RiskController::class, 'index'])->name('risks.index');
 
     Route::middleware('role:admin,user')->group(function () {
-        Route::post('/controls/{control}/update-status', [ControlHubController::class, 'updateStatus'])->name('controls.update-status');
+        Route::post('/controls/{control}/request-status', [ControlStatusRequestController::class, 'store'])->name('controls.request-status');
         Route::get('/risks/create',           [RiskController::class, 'create'])->name('risks.create');
         Route::post('/risks/validate-scores', [RiskController::class, 'validateScores'])->name('risks.validate-scores');
         Route::post('/risks',                 [RiskController::class, 'store'])->name('risks.store');
@@ -97,6 +99,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/evidence/{evidence}/download', [EvidenceController::class, 'download'])->name('evidence.download');
 
     Route::middleware('role:admin,auditor')->group(function () {
+        Route::post('/controls/status-requests/{statusRequest}/approve',        [ControlStatusRequestController::class, 'approve'])->name('controls.status-requests.approve');
+        Route::post('/controls/status-requests/{statusRequest}/reject',         [ControlStatusRequestController::class, 'reject'])->name('controls.status-requests.reject');
+        Route::post('/controls/status-requests/{statusRequest}/review-evidence',[ControlStatusRequestController::class, 'reviewEvidence'])->name('controls.status-requests.review-evidence');
         Route::post('/evidence/{evidence}/approve',    [EvidenceController::class, 'approve'])->name('evidence.approve');
         Route::post('/evidence/{evidence}/reject',     [EvidenceController::class, 'reject'])->name('evidence.reject');
         Route::post('/evidence/{evidence}/ai-review',  [EvidenceController::class, 'aiReview'])->name('evidence.ai-review');

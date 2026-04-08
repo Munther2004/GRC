@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
@@ -41,6 +41,7 @@ interface ControlRow {
     has_weak_evidence: boolean;
     linked_evidence: EvidenceItem[];
     latest_history: { user_name: string; created_at: string; new_status: string } | null;
+    pending_request: { id: number; requested_status: string; requested_by: string; created_at: string } | null;
 }
 
 interface EvidenceItem {
@@ -170,6 +171,9 @@ function EvidenceBadge({ status }: { status: ControlRow['evidence_status'] }) {
 // ── Main component ───────────────────────────────────────────────────────────
 
 export default function ControlsHub({ controls, frameworks, filters, stats }: Props) {
+    const { auth } = usePage<{ auth: { user: { role: string; name: string } } }>().props;
+    const canReview = auth.user.role === 'admin' || auth.user.role === 'auditor';
+
     const [search, setSearch]       = useState(filters.search ?? '');
     const [status, setStatus]       = useState(filters.status ?? 'all');
     const [framework, setFramework] = useState(filters.framework ?? 'all');
@@ -217,8 +221,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
             if (evidenceFile) {
                 const fd = new FormData();
                 fd.append('new_status', updateForm.new_status);
-                if (updateForm.notes) fd.append('notes', updateForm.notes);
-                if (updateForm.evidence_id) fd.append('evidence_id', updateForm.evidence_id);
+                if (updateForm.notes) fd.append('justification', updateForm.notes);
                 fd.append('file', evidenceFile);
                 fd.append('evidence_title', evidenceTitle || evidenceFile.name);
                 if (evidenceDescription) fd.append('evidence_description', evidenceDescription);
@@ -226,34 +229,22 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                 config  = { headers: { 'Content-Type': 'multipart/form-data' } };
             } else {
                 payload = {
-                    new_status:  updateForm.new_status,
-                    notes:       updateForm.notes || null,
-                    evidence_id: (updateForm.evidence_id && updateForm.evidence_id !== 'none') ? updateForm.evidence_id : null,
+                    new_status:    updateForm.new_status,
+                    justification: updateForm.notes || null,
                 };
             }
-
-            const res = await axios.post(route('controls.update-status', updateModal.id), payload, config);
-            // Optimistic update in local state
+            const res = await axios.post(route('controls.request-status', { control: updateModal.id }), payload, config);
+            // Update local state: control stays at current status, pending_request is set
             setLocalControls(prev => prev.map(c => {
                 if (c.id !== updateModal.id) return c;
-                return {
-                    ...c,
-                    current_status:     res.data.current_status,
-                    last_remediated_at: res.data.last_remediated_at,
-                    latest_history:     res.data.history_entry
-                        ? {
-                            user_name:  res.data.history_entry.user_name,
-                            created_at: res.data.history_entry.created_at,
-                            new_status: res.data.history_entry.new_status,
-                          }
-                        : c.latest_history,
-                };
+                return { ...c, pending_request: res.data.pending_request };
             }));
-            const evidenceNote = res.data.evidence_uploaded ? ' · Evidence uploaded.' : '';
-            setToast({ type: 'success', text: `Status updated to ${STATUS_LABELS[res.data.current_status] ?? res.data.current_status}${evidenceNote}` });
+            const evidenceNote = res.data.evidence_uploaded ? ' Evidence uploaded for review.' : '';
+            setToast({ type: 'success', text: `Status change submitted for approval.${evidenceNote}` });
             setUpdateModal(null);
-        } catch {
-            setToast({ type: 'error', text: 'Failed to update status. Please try again.' });
+        } catch (err: any) {
+            const msg = err?.response?.data?.error ?? 'Failed to submit request. Please try again.';
+            setToast({ type: 'error', text: msg });
         } finally {
             setSubmitting(false);
         }
@@ -340,9 +331,19 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
             <div className="space-y-6">
 
                 {/* Header */}
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Controls Hub</h1>
-                    <p className="text-sm text-gray-500 mt-1">Live compliance status across all controls</p>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Controls Hub</h1>
+                        <p className="text-sm text-gray-500 mt-1">Live compliance status across all controls</p>
+                    </div>
+                    {canReview && (
+                        <Link href={route('controls.approvals')}>
+                            <Button variant="outline" className="gap-2 text-sm">
+                                <Clock className="w-4 h-4 text-amber-500" />
+                                Approval Queue
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 {/* Summary bar */}
@@ -469,7 +470,15 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
 
                                             {/* Status */}
                                             <td className="px-4 py-3">
-                                                <StatusBadge status={ctrl.current_status} />
+                                                <div className="flex flex-col gap-1">
+                                                    <StatusBadge status={ctrl.current_status} />
+                                                    {ctrl.pending_request && (
+                                                        <span className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded px-1.5 py-0.5 w-fit">
+                                                            <Clock className="w-2.5 h-2.5 shrink-0" />
+                                                            Pending: {STATUS_LABELS[ctrl.pending_request.requested_status] ?? ctrl.pending_request.requested_status}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
 
                                             {/* Risks */}
@@ -513,14 +522,27 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                             {/* Actions */}
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-1">
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        className="text-xs h-7 px-2"
-                                                        onClick={() => openUpdate(ctrl)}
-                                                    >
-                                                        Update
-                                                    </Button>
+                                                    {ctrl.pending_request ? (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="text-xs h-7 px-2 text-amber-600 border-amber-300 cursor-default"
+                                                            disabled
+                                                            title={`Pending approval — requested by ${ctrl.pending_request.requested_by}`}
+                                                        >
+                                                            <Clock className="w-3 h-3 mr-1" />
+                                                            Pending
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="text-xs h-7 px-2"
+                                                            onClick={() => openUpdate(ctrl)}
+                                                        >
+                                                            Update
+                                                        </Button>
+                                                    )}
                                                     <Button
                                                         size="sm"
                                                         variant="ghost"
@@ -573,7 +595,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
             <Dialog open={!!updateModal} onOpenChange={open => { if (!open) { setUpdateModal(null); setEvidenceFile(null); setEvidenceTitle(''); setEvidenceDescription(''); } }}>
                 <DialogContent className="max-w-md" aria-describedby={undefined}>
                     <DialogHeader>
-                        <DialogTitle>Update Control Status</DialogTitle>
+                        <DialogTitle>Request Status Change</DialogTitle>
                     </DialogHeader>
 
                     {updateModal && (
@@ -585,6 +607,13 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                     <span className="text-xs text-gray-500">Current:</span>
                                     <StatusBadge status={updateModal.current_status} />
                                 </div>
+                            </div>
+
+                            <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-700">
+                                <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                                <p className="text-xs text-amber-700 dark:text-amber-400">
+                                    Status changes require approval from an administrator or auditor before taking effect.
+                                </p>
                             </div>
 
                             <div className="space-y-1">
@@ -606,36 +635,15 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                             </div>
 
                             <div className="space-y-1">
-                                <Label>Notes</Label>
+                                <Label>Justification</Label>
                                 <Textarea
                                     value={updateForm.notes}
                                     onChange={e => setUpdateForm(f => ({ ...f, notes: e.target.value }))}
-                                    placeholder="Optional: describe what changed, remediation taken..."
+                                    placeholder="Reason for this status change (optional but recommended)..."
                                     rows={3}
                                 />
                             </div>
 
-                            {updateModal.linked_evidence.length > 0 && (
-                                <div className="space-y-1">
-                                    <Label>Attach Existing Evidence (optional)</Label>
-                                    <Select
-                                        value={updateForm.evidence_id}
-                                        onValueChange={v => setUpdateForm(f => ({ ...f, evidence_id: v }))}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select evidence..." />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="none">Select evidence (optional)</SelectItem>
-                                            {updateModal.linked_evidence.map(e => (
-                                                <SelectItem key={e.id} value={String(e.id)}>
-                                                    {e.title} {e.is_expired ? '(expired)' : e.expires_soon ? '(expiring)' : ''}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            )}
 
                             {/* Evidence Upload */}
                             <div className="space-y-2 pt-1 border-t border-gray-100 dark:border-gray-700">
@@ -712,7 +720,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                             onClick={submitUpdate}
                             className="gap-1"
                         >
-                            {submitting ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving...</> : 'Save Status'}
+                            {submitting ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Submitting...</> : 'Submit for Approval'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

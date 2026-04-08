@@ -39,4 +39,9 @@ class Control extends Model
     {
         return $this->hasMany(Evidence::class, 'control_id')->latest();
     }
+
+    public function statusRequests()
+    {
+        return $this->hasMany(ControlStatusRequest::class)->latest();
+    }
 }

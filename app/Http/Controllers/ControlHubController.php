@@ -2,15 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AuditLog;
 use App\Models\Control;
-use App\Models\ControlStatusHistory;
-use App\Models\Evidence;
 use App\Models\Framework;
-use App\Services\RulesEngine;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ControlHubController extends Controller
@@ -20,9 +14,10 @@ class ControlHubController extends Controller
         $query = Control::with([
             'framework',
             'risks',
-            'statusHistory' => fn ($q) => $q->with('user')->limit(1),
+            'statusHistory'  => fn ($q) => $q->with('user')->limit(1),
             'assessmentItems.evidence',
             'directEvidence',
+            'statusRequests' => fn ($q) => $q->where('status', 'pending')->with('requester')->limit(1),
         ])
         ->where('is_active', true)
         // Hide controls with no status, no risks, and no evidence
@@ -76,101 +71,6 @@ class ControlHubController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, Control $control)
-    {
-        $validated = $request->validate([
-            'new_status'           => 'required|in:compliant,partially_compliant,non_compliant,not_applicable',
-            'notes'                => 'nullable|string|max:2000',
-            'evidence_id'          => 'nullable|exists:evidence,id',
-            'file'                 => 'nullable|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
-            'evidence_title'       => 'nullable|string|max:255',
-            'evidence_description' => 'nullable|string',
-        ]);
-
-        $newStatus  = $request->input('new_status');
-        $notes      = $request->input('notes');
-        $evidenceId = $request->input('evidence_id');
-
-        $oldStatus = $control->current_status;
-
-        $control->update([
-            'current_status'     => $newStatus,
-            'last_remediated_at' => now(),
-            'remediation_notes'  => $notes ?? $control->remediation_notes,
-        ]);
-
-        // Handle optional evidence file upload
-        if ($request->hasFile('file')) {
-            $file          = $request->file('file');
-            $path          = $file->store("evidence/control-{$control->id}", 'public');
-            $uploadedEvidence = Evidence::create([
-                'user_id'     => Auth::id(),
-                'control_id'  => $control->id,
-                'title'       => $request->input('evidence_title') ?: $file->getClientOriginalName(),
-                'description' => $request->input('evidence_description'),
-                'file_path'   => $path,
-                'file_name'   => $file->getClientOriginalName(),
-                'file_type'   => $file->getMimeType(),
-                'status'      => 'pending',
-            ]);
-            $evidenceId = $uploadedEvidence->id;
-
-            AuditLog::record(
-                'uploaded',
-                'Evidence',
-                $control->id,
-                "Evidence '{$uploadedEvidence->title}' uploaded for control '{$control->control_id}' via Controls Hub"
-            );
-        }
-
-        $history = ControlStatusHistory::create([
-            'control_id'  => $control->id,
-            'user_id'     => Auth::id(),
-            'old_status'  => $oldStatus,
-            'new_status'  => $newStatus,
-            'notes'       => $notes,
-            'evidence_id' => $evidenceId,
-        ]);
-
-        // Fire rules engine — partially_compliant is middle ground; no rule triggered
-        $engine = new RulesEngine();
-        $control->load('risks');
-
-        if ($newStatus === 'non_compliant') {
-            $engine->applyRule1ForControl($control);
-        } elseif ($newStatus === 'compliant') {
-            $engine->applyRule2ForControl($control, $oldStatus ?? '');
-        }
-
-        AuditLog::record(
-            'updated',
-            'Control',
-            $control->id,
-            "Controls Hub: '{$control->control_id}' status changed from " .
-            ($oldStatus ?? 'not set') . " to {$newStatus}" .
-            ($notes ? " — {$notes}" : '')
-        );
-
-        return response()->json([
-            'success'            => true,
-            'current_status'     => $control->current_status,
-            'last_remediated_at' => $control->last_remediated_at->toDateTimeString(),
-            'evidence_uploaded'  => isset($uploadedEvidence) ? [
-                'id'        => $uploadedEvidence->id,
-                'title'     => $uploadedEvidence->title,
-                'file_name' => $uploadedEvidence->file_name,
-            ] : null,
-            'history_entry' => [
-                'id'         => $history->id,
-                'old_status' => $history->old_status,
-                'new_status' => $history->new_status,
-                'notes'      => $history->notes,
-                'user_name'  => Auth::user()->name,
-                'created_at' => $history->created_at->toDateTimeString(),
-            ],
-        ]);
-    }
-
     public function history(Control $control)
     {
         $entries = ControlStatusHistory::with('user')
@@ -213,7 +113,8 @@ class ControlHubController extends Controller
 
         $hasWeakEvidence = $linkedEvidence->contains(fn ($e) => $e['ai_verdict'] === 'Insufficient');
 
-        $latestHistory = $control->statusHistory->first();
+        $latestHistory  = $control->statusHistory->first();
+        $pendingRequest = $control->statusRequests->first();
 
         return [
             'id'                  => $control->id,
@@ -233,10 +134,16 @@ class ControlHubController extends Controller
             'evidence_status'     => $evidenceStatus,
             'has_weak_evidence'   => $hasWeakEvidence,
             'linked_evidence'     => $linkedEvidence,
-            'latest_history'      => $latestHistory ? [
+            'latest_history'  => $latestHistory ? [
                 'user_name'  => $latestHistory->user?->name ?? 'System',
                 'created_at' => $latestHistory->created_at->toDateTimeString(),
                 'new_status' => $latestHistory->new_status,
+            ] : null,
+            'pending_request' => $pendingRequest ? [
+                'id'               => $pendingRequest->id,
+                'requested_status' => $pendingRequest->requested_status,
+                'requested_by'     => $pendingRequest->requester->name,
+                'created_at'       => $pendingRequest->created_at->toDateTimeString(),
             ] : null,
         ];
     }

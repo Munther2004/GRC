@@ -6,8 +6,10 @@ use App\Models\AuditLog;
 use App\Models\Evidence;
 use App\Models\Framework;
 use App\Models\Assessment;
+use App\Models\ControlStatusHistory;
 use App\Services\AIService;
 use App\Services\EvidenceFileExtractor;
+use App\Services\RulesEngine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -22,6 +24,7 @@ class EvidenceController extends Controller
             'assessmentItem.control',
             'assessmentItem.assessment.framework',
             'assessmentItem.assessment.user',
+            'control.framework',
         ])
         ->when($request->search, fn($q) =>
             $q->where('title', 'like', "%{$request->search}%")
@@ -85,6 +88,86 @@ class EvidenceController extends Controller
             "Evidence '{$evidence->title}' rejected"
         );
 
+        // ── Control status revert logic ──────────────────────────────────────
+        $revertedTo      = null;
+        $controlReverted = false;
+
+        $evidence->loadMissing(['control', 'assessmentItem.control']);
+        $control = $evidence->control ?? $evidence->assessmentItem?->control;
+
+        if ($control) {
+            // Check whether any other non-rejected, adequately-reviewed evidence
+            // still supports this control (direct or via assessment item).
+            $hasSupportingEvidence = Evidence::where('id', '!=', $evidence->id)
+                ->where('status', '!=', 'rejected')
+                ->whereIn('ai_verdict', ['Adequate', 'Partially Adequate'])
+                ->where(function ($q) use ($control) {
+                    $q->where('control_id', $control->id)
+                      ->orWhereHas('assessmentItem', fn ($q2) =>
+                          $q2->where('control_id', $control->id)
+                      );
+                })
+                ->exists();
+
+            if (!$hasSupportingEvidence) {
+                // Find what the control status was just before this evidence was uploaded.
+                $historyBefore = ControlStatusHistory::where('control_id', $control->id)
+                    ->where('created_at', '<', $evidence->created_at)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+
+                // null means "Not Set"
+                $revertTo      = $historyBefore?->new_status === 'not_set'
+                    ? null
+                    : $historyBefore?->new_status;
+                $currentStatus = $control->current_status;
+
+                if ($revertTo !== $currentStatus) {
+                    $control->update(['current_status' => $revertTo]);
+
+                    ControlStatusHistory::create([
+                        'control_id'  => $control->id,
+                        'user_id'     => auth()->id(),
+                        'old_status'  => $currentStatus,
+                        'new_status'  => $revertTo ?? 'not_set',
+                        'notes'       => "Status reverted — evidence #{$evidence->id} rejected as irrelevant",
+                        'evidence_id' => $evidence->id,
+                    ]);
+
+                    // Trigger Rules Engine based on the direction of the status change.
+                    $rules = new RulesEngine();
+                    if ($revertTo === 'non_compliant') {
+                        // Control is now non-compliant → raise linked risk likelihoods
+                        $control->load('risks');
+                        $rules->applyRule1ForControl($control);
+                    } elseif ($currentStatus === 'non_compliant') {
+                        // Was non-compliant, now moving to compliant/unset → lower likelihoods
+                        $control->load('risks');
+                        $rules->applyRule2ForControl($control, 'non_compliant');
+                    }
+
+                    AuditLog::record(
+                        'updated',
+                        'Evidence',
+                        $evidence->id,
+                        "Evidence #{$evidence->id} rejected for control {$control->control_id} — control status reverted to " . ($revertTo ?? 'Not Set')
+                    );
+
+                    $revertedTo      = $revertTo;
+                    $controlReverted = true;
+                }
+            }
+        }
+        // ────────────────────────────────────────────────────────────────────
+
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success'          => true,
+                'reverted_to'      => $revertedTo,
+                'control_reverted' => $controlReverted,
+            ]);
+        }
+
         return back()->with('success', 'Evidence rejected.');
     }
 
@@ -135,6 +218,13 @@ class EvidenceController extends Controller
             'has_control' => $control !== null,
         ]);
 
+        // Require a linked control — without it Claude cannot assess against the right requirements
+        if (!$control) {
+            return response()->json([
+                'warning' => 'This evidence is not linked to any control. Please link it to a control before running AI Review for an accurate assessment.',
+            ]);
+        }
+
         // Extract file content
         $extractor = new EvidenceFileExtractor();
         $extracted = $extractor->extract(
@@ -148,8 +238,9 @@ class EvidenceController extends Controller
         ]);
 
         $evidenceData = [
-            'control_title'       => $control?->title          ?? 'N/A',
-            'control_description' => $control?->description    ?? 'N/A',
+            'control_id'          => $control->control_id,
+            'control_title'       => $control->title,
+            'control_description' => $control->description    ?? 'N/A',
             'framework'           => $framework?->name         ?? 'N/A',
             'evidence_title'      => $evidence->title,
             'evidence_description'=> $evidence->description    ?? '',
@@ -174,6 +265,7 @@ class EvidenceController extends Controller
             'ai_strengths'      => $result['strengths'],
             'ai_gaps'           => $result['gaps'],
             'ai_recommendation' => $result['recommendation'],
+            'ai_is_relevant'    => $result['is_relevant'],
             'ai_reviewed_at'    => now(),
         ]);
 

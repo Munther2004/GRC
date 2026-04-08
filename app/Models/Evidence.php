@@ -12,13 +12,14 @@ class Evidence extends Model
         'description', 'file_path', 'file_name',
         'file_type', 'status', 'expiry_date',
         'ai_review', 'ai_verdict', 'ai_confidence', 'ai_reviewed_at',
-        'ai_strengths', 'ai_gaps', 'ai_recommendation',
+        'ai_strengths', 'ai_gaps', 'ai_recommendation', 'ai_is_relevant',
     ];
 
     protected $casts = [
         'expiry_date'    => 'date',
         'ai_review'      => 'array',
         'ai_reviewed_at' => 'datetime',
+        'ai_is_relevant' => 'boolean',
     ];
 
     public function user()           { return $this->belongsTo(User::class); }

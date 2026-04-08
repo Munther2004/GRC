@@ -25,6 +25,7 @@ class AssessmentController extends Controller
     public function index(Request $request)
     {
         $query = Assessment::with(['user', 'framework'])
+            ->withCount('items')
             ->when($request->search, fn($q) =>
                 $q->where('title', 'like', "%{$request->search}%")
             )
@@ -324,6 +325,7 @@ class AssessmentController extends Controller
         Evidence::create([
             'user_id'            => Auth::id(),
             'assessment_item_id' => $item->id,
+            'control_id'         => $item->control_id,
             'title'              => $request->title,
             'description'        => $request->description,
             'file_path'          => $path,
@@ -392,6 +394,14 @@ class AssessmentController extends Controller
             ->where('assessment_id', $assessment->id)
             ->get();
 
+        // Fetch in one query which controls already have a history entry for this assessment
+        $alreadySyncedControlIds = ControlStatusHistory::where('notes', "Synced from assessment #{$assessment->id}")
+            ->pluck('control_id')
+            ->flip()
+            ->all();
+
+        $now = now();
+
         foreach ($items as $item) {
             $control = $item->control;
             if (!$control) continue;
@@ -401,16 +411,12 @@ class AssessmentController extends Controller
 
             $updates = ['current_status' => $newStatus];
             if (in_array($newStatus, ['compliant', 'partially_compliant'])) {
-                $updates['last_remediated_at'] = now();
+                $updates['last_remediated_at'] = $now;
             }
             $control->update($updates);
 
-            // Idempotency: only create history if not already synced from this assessment
-            $alreadySynced = ControlStatusHistory::where('control_id', $control->id)
-                ->where('notes', "Synced from assessment #{$assessment->id}")
-                ->exists();
-
-            if (!$alreadySynced) {
+            // Idempotency: skip history record if already created for this assessment
+            if (!isset($alreadySyncedControlIds[$control->id])) {
                 ControlStatusHistory::create([
                     'control_id' => $control->id,
                     'user_id'    => null,
@@ -422,37 +428,66 @@ class AssessmentController extends Controller
         }
     }
 
-    public function destroy(Assessment $assessment)
+    public function destroy(Request $request, Assessment $assessment)
     {
-        $title = $assessment->title;
-        $id    = $assessment->id;
+        $title         = $assessment->title;
+        $id            = $assessment->id;
+        $resetControls = $request->boolean('reset_controls');
 
-        // Get all control IDs from this assessment's items
-        $controlIds = AssessmentItem::where('assessment_id', $assessment->id)
-            ->pluck('control_id');
+        // Option B: reset control statuses before deleting items
+        if ($resetControls) {
+            $items = AssessmentItem::with('control')
+                ->where('assessment_id', $assessment->id)
+                ->get();
 
-        // Find all AI risks linked to those controls OR to this assessment directly
-        $riskIds = Risk::where('auto_generated', 1)
-            ->where(function ($q) use ($controlIds, $assessment) {
-                $q->whereIn('source_control_id', $controlIds)
-                  ->orWhere('assessment_id', $assessment->id);
-            })
-            ->pluck('id');
+            foreach ($items as $item) {
+                $control = $item->control;
+                if (!$control) continue;
 
-        if ($riskIds->isNotEmpty()) {
-            Notification::whereIn('url', $riskIds->map(fn ($rid) => '/risks/' . $rid)->toArray())->delete();
-            DB::table('control_risk')->whereIn('risk_id', $riskIds)->delete();
-            Risk::whereIn('id', $riskIds)->delete();
+                $oldStatus = $control->current_status;
+
+                $control->update([
+                    'current_status'     => null,
+                    'last_remediated_at' => null,
+                ]);
+
+                ControlStatusHistory::create([
+                    'control_id' => $control->id,
+                    'user_id'    => null,
+                    'old_status' => $oldStatus,
+                    'new_status' => 'not_set',
+                    'notes'      => "Status reset — linked assessment #{$id} was deleted",
+                ]);
+            }
         }
 
-        // Delete assessment items
+        // Delete evidence uploaded as part of this assessment (identified by assessment_item_id)
+        $itemIds = AssessmentItem::where('assessment_id', $assessment->id)->pluck('id');
+        $evidenceRecords = Evidence::whereIn('assessment_item_id', $itemIds)->get();
+        foreach ($evidenceRecords as $ev) {
+            if ($ev->file_path) {
+                Storage::disk('public')->delete($ev->file_path);
+            }
+            $ev->delete();
+        }
+
+        // Delete assessment items (assessment_id FK also has cascadeOnDelete, but explicit is fine)
         AssessmentItem::where('assessment_id', $assessment->id)->delete();
 
         $assessment->delete();
+        // Risks linked via assessment_id have nullOnDelete() and remain in the register
 
-        AuditLog::record('deleted', 'Assessment', $id, "Assessment '{$title}' deleted");
+        $auditNote = $resetControls
+            ? "Assessment '{$title}' deleted with control status reset"
+            : "Assessment '{$title}' deleted";
+
+        AuditLog::record('deleted', 'Assessment', $id, $auditNote);
+
+        $successMsg = $resetControls
+            ? "Assessment '{$title}' deleted and control statuses reset to Not Set."
+            : "Assessment '{$title}' deleted.";
 
         return redirect()->route('assessments.index')
-            ->with('success', 'Assessment deleted.');
+            ->with('success', $successMsg);
     }
 }

@@ -176,34 +176,34 @@ PROMPT;
             'strengths'      => '',
             'gaps'           => 'AI review could not be completed.',
             'recommendation' => 'Please retry the AI review.',
+            'is_relevant'    => true,
         ];
 
         try {
             $systemPrompt = <<<'PROMPT'
-You are a GRC audit expert reviewing evidence for compliance controls.
-You will be given:
-- The control title and description this evidence is meant to support
-- The framework reference (ISO 27001, NIST etc.)
-- The evidence metadata (title, description, type, upload date, expiry date)
-- The actual file content
+You are a GRC audit expert. Your task is to assess whether a piece of evidence adequately proves that a specific compliance control is implemented and operating effectively.
 
-Based on all of this, assess whether the evidence adequately proves the control is implemented.
+You will receive the control ID, title, and description (the exact requirement that must be proven), the framework reference, evidence metadata, and the actual file content.
 
-Return ONLY a JSON object with exactly these five fields: verdict, confidence, strengths, gaps, recommendation.
+Focus your entire assessment on whether this specific evidence proves the stated control is implemented. Evidence that is generic, vague, off-topic, or too brief to demonstrate control implementation should receive a lower verdict.
+
+Return ONLY a JSON object with exactly these six fields: verdict, confidence, strengths, gaps, recommendation, is_relevant.
 - verdict must be exactly one of: Adequate, Partially Adequate, Insufficient
 - confidence must be exactly one of: High, Medium, Low
-- strengths should describe what the evidence does well — if nothing is good, return an empty string ""
-- gaps should describe what is missing or inadequate — if nothing is missing, return an empty string ""
-- recommendation should give actionable advice to improve the evidence — if no improvement needed, return an empty string ""
-- Never return null for any field — always return a string, even if empty
-- Even for very short, vague, or clearly inadequate evidence (a single sentence, "hi there", or a blank file), still return a valid JSON with all five fields and a proper verdict
+- strengths should describe what the evidence does well to prove this specific control — if nothing supports it, return an empty string ""
+- gaps should describe what is missing to prove this control is implemented — if nothing is missing, return an empty string ""
+- recommendation should give actionable advice to improve this evidence for this specific control — if no improvement needed, return an empty string ""
+- is_relevant must be a boolean: true if the evidence is at least somewhat related to the stated control (even if weak or incomplete), false ONLY when the evidence has nothing to do with this control (e.g. an access control policy uploaded against a backup procedure control)
+- Never return null for any field — always return a string or boolean, never null
+- Even for very short, vague, or clearly inadequate evidence (a single sentence, "hi there", or a blank file), still return a valid JSON with all six fields and a proper verdict
 - Do not include any explanation, markdown fences, or text outside the JSON object
 PROMPT;
 
             $meta = implode("\n", [
-                'Control Title: '       . ($evidenceData['control_title']        ?? 'N/A'),
+                'Control ID: '          . ($evidenceData['control_id']            ?? 'N/A'),
+                'Control Title: '       . ($evidenceData['control_title']         ?? 'N/A'),
                 'Control Description: ' . ($evidenceData['control_description']   ?? 'N/A'),
-                'Framework: '          . ($evidenceData['framework']              ?? 'N/A'),
+                'Framework: '           . ($evidenceData['framework']             ?? 'N/A'),
                 'Evidence Title: '      . ($evidenceData['evidence_title']        ?? 'N/A'),
                 'Evidence Description: '. ($evidenceData['evidence_description']  ?? ''),
                 'File Name: '           . ($evidenceData['file_name']             ?? 'N/A'),
@@ -284,6 +284,7 @@ PROMPT;
                 'strengths'      => (string) ($parsed['strengths']      ?? ''),
                 'gaps'           => (string) ($parsed['gaps']           ?? ''),
                 'recommendation' => (string) ($parsed['recommendation'] ?? ''),
+                'is_relevant'    => isset($parsed['is_relevant']) ? (bool) $parsed['is_relevant'] : true,
             ];
 
         } catch (\Throwable $e) {

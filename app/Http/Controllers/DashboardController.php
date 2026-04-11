@@ -87,7 +87,9 @@ class DashboardController extends Controller
             'status'     => $r->status,
         ])->toArray();
 
-        $riskMetrics = (new RiskMetricsService())->calculateRiskExposure();
+        $metricsService = new RiskMetricsService();
+        $riskMetrics    = $metricsService->calculateRiskExposure();
+        $healthScore    = $metricsService->calculateHealthScore();
 
         $kpis = [
             'risk_exposure'          => $riskMetrics['risk_exposure'],
@@ -164,6 +166,7 @@ class DashboardController extends Controller
             'ruleAdjustments'    => $ruleAdjustments,
             'lastSchedulerRun'   => Cache::get('scheduler_last_run'),
             'kriSnapshots'       => $kriSnapshots,
+            'healthScore'        => $healthScore,
         ]);
     }
 }

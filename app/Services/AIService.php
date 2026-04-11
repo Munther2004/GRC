@@ -293,6 +293,168 @@ PROMPT;
         }
     }
 
+    /**
+     * Generate an AI-written executive summary narrative + prioritised recommendations
+     * from a structured GRC data snapshot.
+     *
+     * @param  array $data  Pre-gathered GRC metrics (compliance, risks, evidence, frameworks…)
+     * @return array{narrative: string, recommendations: string[]}
+     */
+    public function generateExecutiveSummary(array $data): array
+    {
+        $default = [
+            'narrative'       => 'The AI executive summary could not be generated at this time. Please review the data tables below for a manual assessment of the current security posture.',
+            'recommendations' => [
+                'Review all critical and high-severity risks immediately.',
+                'Ensure all pending evidence items are reviewed and approved.',
+                'Complete any overdue compliance assessments.',
+            ],
+        ];
+
+        try {
+            $systemPrompt = <<<'PROMPT'
+You are a senior information security consultant preparing a formal executive summary for C-level stakeholders.
+
+Return ONLY a valid JSON object with exactly two fields — no markdown fences, no extra text:
+{
+  "narrative": "<3–4 flowing paragraphs of professional executive summary text>",
+  "recommendations": ["<action 1>", "<action 2>", "<action 3>", "<action 4>", "<action 5>"]
+}
+
+Rules for "narrative":
+- Use formal business language suitable for a CISO or board presentation.
+- Do NOT use bullet points or numbered lists inside the narrative — flowing paragraphs only.
+- Be specific: cite the exact numbers provided in the data (risk counts, compliance %, evidence stats).
+- Highlight the most critical issues clearly, but remain professional and measured — not alarmist.
+- End the narrative with a forward-looking statement about priorities.
+
+Rules for "recommendations":
+- Provide exactly 3–5 items, ordered by urgency.
+- Each item must be a single concise action sentence (max 20 words).
+- Ground each recommendation in the actual data provided.
+PROMPT;
+
+            $contextJson = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            $userPrompt  = "Generate a professional executive summary based on the following GRC system data:\n\n{$contextJson}";
+
+            $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'x-api-key'         => config('services.anthropic.key'),
+                    'anthropic-version' => '2023-06-01',
+                    'Content-Type'      => 'application/json',
+                ])->post('https://api.anthropic.com/v1/messages', [
+                    'model'      => 'claude-sonnet-4-20250514',
+                    'max_tokens' => 2048,
+                    'system'     => $systemPrompt,
+                    'messages'   => [
+                        ['role' => 'user', 'content' => $userPrompt],
+                    ],
+                ]);
+
+            if ($response->failed()) {
+                Log::error('AIService::generateExecutiveSummary API error', [
+                    'status' => $response->status(),
+                    'body'   => $response->body(),
+                ]);
+                return $default;
+            }
+
+            $text = $response->json()['content'][0]['text'] ?? '';
+
+            // Strip markdown fences if model wraps despite instructions
+            $text = preg_replace('/^```json\s*/i', '', trim($text));
+            $text = preg_replace('/^```\s*/i',     '', trim($text));
+            $text = preg_replace('/```$/m',        '', trim($text));
+            $text = trim($text);
+
+            $parsed = json_decode($text, true);
+
+            if (!is_array($parsed) || empty($parsed['narrative'])) {
+                Log::warning('AIService::generateExecutiveSummary: invalid JSON', ['raw' => $text]);
+                return $default;
+            }
+
+            return [
+                'narrative'       => (string) ($parsed['narrative'] ?? $default['narrative']),
+                'recommendations' => is_array($parsed['recommendations'] ?? null)
+                    ? array_values(array_filter($parsed['recommendations'], 'is_string'))
+                    : $default['recommendations'],
+            ];
+
+        } catch (\Throwable $e) {
+            Log::error('AIService::generateExecutiveSummary exception', ['message' => $e->getMessage()]);
+            return $default;
+        }
+    }
+
+    public function generateGapAnalysis(array $data): array
+    {
+        $systemPrompt = <<<'SYS'
+You are a senior information security auditor generating a professional gap analysis report.
+You must return ONLY valid JSON (no markdown fences, no preamble) in exactly this structure:
+{
+  "executive_summary": "2–3 paragraph summary of the overall compliance posture",
+  "critical_gaps": [
+    {"control_id": "A.8.2", "framework": "ISO27001", "title": "...", "finding": "...", "recommendation": "..."}
+  ],
+  "category_analysis": [
+    {"category": "Access Control", "gap_count": 3, "partial_count": 2, "summary": "..."}
+  ],
+  "action_list": [
+    {"priority": "High", "action": "...", "control_ids": ["A.8.2", "AC-3"], "owner": "..."}
+  ],
+  "positive_highlights": ["..."],
+  "overall_risk_rating": "High"
+}
+overall_risk_rating must be one of: Critical, High, Medium, Low.
+Be specific. Cite control IDs. Keep findings concise but actionable.
+SYS;
+
+        $userPrompt = 'Generate a professional compliance gap analysis report based on this GRC system data: '
+            . json_encode($data, JSON_UNESCAPED_UNICODE);
+
+        try {
+            $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'x-api-key'         => config('services.anthropic.key'),
+                    'anthropic-version' => '2023-06-01',
+                    'Content-Type'      => 'application/json',
+                ])->post('https://api.anthropic.com/v1/messages', [
+                    'model'      => 'claude-sonnet-4-20250514',
+                    'max_tokens' => 3000,
+                    'system'     => $systemPrompt,
+                    'messages'   => [
+                        ['role' => 'user', 'content' => $userPrompt],
+                    ],
+                ]);
+
+            if ($response->failed()) {
+                Log::error('AIService::generateGapAnalysis API error', [
+                    'status' => $response->status(),
+                    'body'   => $response->body(),
+                ]);
+                throw new \RuntimeException('Claude API returned HTTP ' . $response->status());
+            }
+
+            $text = $response->json()['content'][0]['text'] ?? '';
+            $text = preg_replace('/^```json\s*/i', '', trim($text));
+            $text = preg_replace('/^```\s*/i',     '', trim($text));
+            $text = preg_replace('/```$/m',         '', trim($text));
+            $text = trim($text);
+
+            $parsed = json_decode($text, true);
+            if (!is_array($parsed)) {
+                Log::warning('AIService::generateGapAnalysis: invalid JSON', ['raw' => $text]);
+                throw new \RuntimeException('AI returned invalid JSON');
+            }
+
+            return $parsed;
+        } catch (\Throwable $e) {
+            Log::error('AIService::generateGapAnalysis exception', ['message' => $e->getMessage()]);
+            throw $e;
+        }
+    }
+
     public function callClaude(string $prompt): string
     {
         try {

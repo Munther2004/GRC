@@ -7,6 +7,7 @@ import {
     Clock,
     FileCheck,
     FolderOpen,
+    GitCompare,
     LayoutDashboard,
     LayoutGrid,
     ScrollText,
@@ -38,6 +39,7 @@ const mainNavigation = [
     { name: "Assessments",  href: "/assessments",  icon: ClipboardList,   roles: ['admin', 'auditor', 'user'] },
     { name: "Evidence",     href: "/evidence",     icon: FolderOpen,      roles: ['admin', 'auditor', 'user'] },
     { name: "Gap Analysis",  href: "/gap-analysis",  icon: FileCheck,    roles: ['admin', 'auditor', 'user'] },
+    { name: "Crosswalk",     href: "/crosswalk",     icon: GitCompare,   roles: ['admin', 'auditor', 'user'] },
     { name: "Controls Hub",  href: "/controls/hub",  icon: LayoutGrid,   roles: ['admin', 'auditor', 'user'] },
     { name: "Reports",       href: "/reports",        icon: BarChart3,    roles: ['admin', 'auditor', 'user'] },
 ]

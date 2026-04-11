@@ -7,7 +7,8 @@ import { RiskTrendChart } from "@/components/admin/risk-trend-chart"
 import { TopRisks } from "@/components/admin/top-risks"
 import AdminLayout from "@/layouts/admin-layout"
 import { Link, usePage } from "@inertiajs/react"
-import { AlertTriangle, Clock, FileCheck, Zap, ShieldAlert } from "lucide-react"
+import { AlertTriangle, Clock, FileCheck, Zap, ShieldAlert, Sparkles, Loader2, XCircle, Activity } from "lucide-react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -84,6 +85,25 @@ type KriSnapshot = {
     compliant_controls: number
 }
 
+type HealthScore = {
+    health_score: number
+    grade: 'A' | 'B' | 'C' | 'D' | 'F'
+    components: {
+        compliance: number
+        critical_risks: number
+        evidence_quality: number
+        overdue_items: number
+        open_risks: number
+    }
+    raw: {
+        critical_risks: number
+        open_risks: number
+        overdue_items: number
+        approval_rate: number
+        compliance_basis: 'evidence' | 'self_assessed'
+    }
+}
+
 type Props = {
     stats: Stats
     recentRisks: Risk[]
@@ -95,6 +115,7 @@ type Props = {
     ruleAdjustments: number
     lastSchedulerRun: string | null
     kriSnapshots: KriSnapshot[]
+    healthScore: HealthScore
 }
 
 function KpiCards({ kpis, stats }: { kpis: Kpis; stats: Stats }) {
@@ -314,7 +335,156 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
     )
 }
 
-export default function AdminDashboard({ stats, recentRisks, recentActivity, recentAssessments, trendData, heatmap, kpis, ruleAdjustments, lastSchedulerRun, kriSnapshots }: Props) {
+function ExecutiveSummaryButton() {
+    const [generating, setGenerating] = useState(false);
+    const [toast, setToast]           = useState<{ type: 'error'; text: string } | null>(null);
+
+    useEffect(() => {
+        if (!toast) return;
+        const t = setTimeout(() => setToast(null), 4000);
+        return () => clearTimeout(t);
+    }, [toast]);
+
+    const generate = async () => {
+        if (generating) return;
+        setGenerating(true);
+        try {
+            const res = await fetch('/reports/executive-summary', {
+                method:  'GET',
+                headers: { 'Accept': 'application/pdf' },
+            });
+            if (!res.ok) throw new Error();
+            const blob = await res.blob();
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href     = url;
+            a.download = `executive-summary-${new Date().toISOString().split('T')[0]}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch {
+            setToast({ type: 'error', text: 'Failed to generate report. Please try again.' });
+        } finally {
+            setGenerating(false);
+        }
+    };
+
+    return (
+        <>
+            <Card className="border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40">
+                <CardContent className="p-4 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center shrink-0">
+                            <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white">AI Executive Summary</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">One-click board-ready PDF with AI narrative</p>
+                        </div>
+                    </div>
+                    <Button
+                        size="sm"
+                        className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                        onClick={generate}
+                        disabled={generating}
+                    >
+                        {generating
+                            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating…</>
+                            : <><Sparkles className="w-3.5 h-3.5" /> Generate</>}
+                    </Button>
+                </CardContent>
+            </Card>
+
+            {/* Generating overlay */}
+            {generating && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
+                        <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-950 flex items-center justify-center">
+                            <Sparkles className="w-7 h-7 text-blue-600 animate-pulse" />
+                        </div>
+                        <div className="text-center">
+                            <p className="font-semibold text-gray-900 dark:text-white">Generating Executive Summary</p>
+                            <p className="text-sm text-gray-500 mt-1">AI is analysing your GRC data&hellip;</p>
+                        </div>
+                        <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                    </div>
+                </div>
+            )}
+
+            {/* Error toast */}
+            {toast && (
+                <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-sm font-medium bg-red-600 text-white">
+                    <XCircle className="w-4 h-4 shrink-0" />
+                    <span>{toast.text}</span>
+                </div>
+            )}
+        </>
+    );
+}
+
+const gradeColors: Record<string, { text: string; bg: string; border: string; bar: string }> = {
+    A: { text: 'text-green-600',  bg: 'bg-green-50 dark:bg-green-950/40',  border: 'border-green-200 dark:border-green-800',  bar: 'bg-green-500' },
+    B: { text: 'text-teal-600',   bg: 'bg-teal-50 dark:bg-teal-950/40',    border: 'border-teal-200 dark:border-teal-800',    bar: 'bg-teal-500' },
+    C: { text: 'text-amber-600',  bg: 'bg-amber-50 dark:bg-amber-950/40',  border: 'border-amber-200 dark:border-amber-800',  bar: 'bg-amber-500' },
+    D: { text: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/40',border: 'border-orange-200 dark:border-orange-800',bar: 'bg-orange-500' },
+    F: { text: 'text-red-600',    bg: 'bg-red-50 dark:bg-red-950/40',      border: 'border-red-200 dark:border-red-800',      bar: 'bg-red-500' },
+}
+
+function HealthScoreCard({ healthScore }: { healthScore: HealthScore }) {
+    const colors = gradeColors[healthScore.grade] ?? gradeColors['F']
+    const components = [
+        { label: 'Compliance',      value: healthScore.components.compliance,       max: 40, hint: `${healthScore.raw.compliance_basis === 'evidence' ? 'Evidence-weighted' : 'Self-assessed'} · 40 pts max` },
+        { label: 'Critical Risks',  value: healthScore.components.critical_risks,   max: 20, hint: `${healthScore.raw.critical_risks} critical risks · 20 pts max` },
+        { label: 'Evidence Quality',value: healthScore.components.evidence_quality, max: 20, hint: `${healthScore.raw.approval_rate}% approval rate · 20 pts max` },
+        { label: 'Overdue Items',   value: healthScore.components.overdue_items,    max: 10, hint: `${healthScore.raw.overdue_items} overdue · 10 pts max` },
+        { label: 'Open Risks',      value: healthScore.components.open_risks,       max: 10, hint: `${healthScore.raw.open_risks} open risks · 10 pts max` },
+    ]
+
+    return (
+        <Card className={`${colors.bg} ${colors.border}`}>
+            <CardContent className="p-5">
+                <div className="flex items-start gap-5">
+                    {/* Grade badge */}
+                    <div className="shrink-0 text-center">
+                        <div title="Blends compliance score, risk levels, evidence quality, and overdue items">
+                            <div className={`text-6xl font-extrabold leading-none ${colors.text}`}>{healthScore.grade}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">{healthScore.health_score} / 100</div>
+                        </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="w-px self-stretch bg-border" />
+
+                    {/* Details */}
+                    <div className="flex-1 space-y-2 min-w-0">
+                        <div className="flex items-center gap-2">
+                            <Activity className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">Compliance Health Score</span>
+                            <span className="text-xs text-gray-400 ml-auto">Score breakdown (100 pts total)</span>
+                        </div>
+                        {components.map(({ label, value, max, hint }) => (
+                            <div key={label}>
+                                <div className="flex justify-between text-xs mb-0.5">
+                                    <span className="text-gray-600 dark:text-gray-300">{label}</span>
+                                    <span className="text-gray-500">{value} / {max} pts</span>
+                                </div>
+                                <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden" title={hint}>
+                                    <div
+                                        className={`h-full rounded-full transition-all ${colors.bar}`}
+                                        style={{ width: `${(value / max) * 100}%` }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+export default function AdminDashboard({ stats, recentRisks, recentActivity, recentAssessments, trendData, heatmap, kpis, ruleAdjustments, lastSchedulerRun, kriSnapshots, healthScore }: Props) {
     const { notifications } = usePage<{ notifications: { unread_count: number; recent: NotificationItem[] } }>().props
     const unreadCount = notifications?.unread_count ?? 0
     const recent: NotificationItem[] = notifications?.recent ?? []
@@ -398,6 +568,10 @@ export default function AdminDashboard({ stats, recentRisks, recentActivity, rec
 
                 <MetricsCards stats={stats} />
                 <QuickActions />
+                <ExecutiveSummaryButton />
+
+                {/* Health Score */}
+                <HealthScoreCard healthScore={healthScore} />
 
                 {/* KPI Section */}
                 <KpiCards kpis={kpis} stats={stats} />

@@ -124,7 +124,7 @@ class RiskController extends Controller
 
     public function show(Risk $risk)
     {
-        $risk->load(['user', 'sourceControl.framework']);
+        $risk->load(['user', 'sourceControl.framework', 'treatmentPlans']);
 
         $linkedControls = $risk->controls()
             ->with('framework')
@@ -153,6 +153,20 @@ class RiskController extends Controller
                 'framework'  => $c->framework->short_name,
             ]);
 
+        $treatmentPlans = $risk->treatmentPlans->map(fn ($p) => [
+            'id'                   => $p->id,
+            'strategy'             => $p->strategy,
+            'description'          => $p->description,
+            'owner'                => $p->owner,
+            'due_date'             => $p->due_date?->format('Y-m-d'),
+            'progress'             => $p->progress,
+            'status'               => $p->status,
+            'residual_likelihood'  => $p->residual_likelihood,
+            'residual_impact'      => $p->residual_impact,
+            'residual_score'       => $p->residual_score,
+            'residual_level'       => $p->residual_level,
+        ])->toArray();
+
         return Inertia::render('risks/show', [
             'risk' => array_merge($risk->toArray(), [
                 'risk_score'     => $risk->risk_score,
@@ -164,6 +178,7 @@ class RiskController extends Controller
             ]),
             'linkedControls' => $linkedControls,
             'allControls'    => $allControls,
+            'treatmentPlans' => $treatmentPlans,
         ]);
     }
 

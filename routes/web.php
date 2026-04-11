@@ -11,6 +11,9 @@ use App\Http\Controllers\ControlHubController;
 use App\Http\Controllers\ControlStatusRequestController;
 use App\Http\Controllers\ComplianceChatbotController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ExecutiveSummaryController;
+use App\Http\Controllers\RiskTreatmentPlanController;
+use App\Http\Controllers\CrosswalkController;
 use App\Models\KriSnapshot;
 use App\Http\Controllers\Admin\AIController as AdminAIController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -44,7 +47,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     )->name('kri-snapshots.index');
     Route::get('/reports',      [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');
-    Route::get('/gap-analysis', [GapAnalysisController::class, 'index'])->name('gap-analysis.index');
+    Route::get('/reports/executive-summary', [ExecutiveSummaryController::class, 'generate'])->name('reports.executive-summary');
+    Route::get('/gap-analysis',        [GapAnalysisController::class, 'index'])->name('gap-analysis.index');
+    Route::get('/gap-analysis/report', [GapAnalysisController::class, 'generateReport'])->name('gap-analysis.report');
+    Route::get('/crosswalk',           [CrosswalkController::class, 'index'])->name('crosswalk.index');
     Route::get('/controls/hub',       [ControlHubController::class, 'index'])->name('controls.hub');
     Route::get('/controls/approvals', [ControlStatusRequestController::class, 'index'])->name('controls.approvals')->middleware('role:admin,auditor');
     Route::get('/controls/{control}/history', [ControlHubController::class, 'history'])->name('controls.history');
@@ -60,6 +66,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/risks/{risk}/edit',      [RiskController::class, 'edit'])->name('risks.edit');
         Route::put('/risks/{risk}',           [RiskController::class, 'update'])->name('risks.update');
         Route::delete('/risks/{risk}',        [RiskController::class, 'destroy'])->name('risks.destroy');
+        // Treatment plans
+        Route::post('/risks/{risk}/treatment-plans',                     [RiskTreatmentPlanController::class, 'store'])->name('risks.treatment-plans.store');
+        Route::put('/risks/{risk}/treatment-plans/{plan}',               [RiskTreatmentPlanController::class, 'update'])->name('risks.treatment-plans.update');
+        Route::delete('/risks/{risk}/treatment-plans/{plan}',            [RiskTreatmentPlanController::class, 'destroy'])->name('risks.treatment-plans.destroy');
     });
 
     Route::middleware('role:admin')->group(function () {

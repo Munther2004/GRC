@@ -10,8 +10,9 @@ import {
 } from 'recharts';
 import {
     Shield, AlertTriangle, ClipboardList, TrendingUp,
-    CheckCircle, XCircle, Clock, Eye, Download
+    CheckCircle, XCircle, Clock, Eye, Download, Sparkles, Loader2
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 interface Props {
     overallCompliance: number;
@@ -54,6 +55,65 @@ export default function ReportsIndex({
     overallCompliance, complianceByFramework, riskByLevel,
     riskByCategory, riskByStatus, assessmentHistory, monthlyTrend, stats
 }: Props) {
+    const [generating, setGenerating]         = useState(false);
+    const [generatingGap, setGeneratingGap]   = useState(false);
+    const [toast, setToast]                   = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+    useEffect(() => {
+        if (!toast) return;
+        const t = setTimeout(() => setToast(null), 4000);
+        return () => clearTimeout(t);
+    }, [toast]);
+
+    const generateExecutiveSummary = async () => {
+        if (generating) return;
+        setGenerating(true);
+        try {
+            const res = await fetch('/reports/executive-summary', {
+                method:  'GET',
+                headers: { 'Accept': 'application/pdf' },
+            });
+            if (!res.ok) throw new Error('Server error');
+            const blob = await res.blob();
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href     = url;
+            a.download = `executive-summary-${new Date().toISOString().split('T')[0]}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch {
+            setToast({ type: 'error', text: 'Failed to generate report. Please try again.' });
+        } finally {
+            setGenerating(false);
+        }
+    };
+
+    const generateGapReport = async () => {
+        if (generatingGap) return;
+        setGeneratingGap(true);
+        try {
+            const res = await fetch('/gap-analysis/report', {
+                method:  'GET',
+                headers: { 'Accept': 'application/pdf' },
+            });
+            if (!res.ok) throw new Error('Server error');
+            const blob = await res.blob();
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href     = url;
+            a.download = `gap-analysis-${new Date().toISOString().split('T')[0]}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch {
+            setToast({ type: 'error', text: 'Failed to generate gap analysis. Please try again.' });
+        } finally {
+            setGeneratingGap(false);
+        }
+    };
 
     const riskLevelData = [
         { name: 'Critical', value: riskByLevel.critical, color: RISK_COLORS.critical },
@@ -82,13 +142,35 @@ export default function ReportsIndex({
                         <p className="text-sm text-gray-500 mt-1">Organization security and compliance summary</p>
                     </div>
                     <div className="flex items-center gap-3">
-                    <p className="text-xs text-gray-400">Generated: {new Date().toLocaleDateString()}</p>
-                    <a href="/reports/export-pdf" target="_blank">
-                        <Button className="gap-2 text-sm">
-                            <Download className="w-4 h-4" /> Export PDF
+                        <p className="text-xs text-gray-400">Generated: {new Date().toLocaleDateString()}</p>
+                        <a href="/reports/export-pdf" target="_blank">
+                            <Button variant="outline" className="gap-2 text-sm">
+                                <Download className="w-4 h-4" /> Export PDF
+                            </Button>
+                        </a>
+                        <Button
+                            className="gap-2 text-sm bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white"
+                            onClick={generateGapReport}
+                            disabled={generatingGap}
+                        >
+                            {generatingGap ? (
+                                <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>
+                            ) : (
+                                <><Sparkles className="w-4 h-4" /> Gap Analysis</>
+                            )}
                         </Button>
-                    </a>
-                </div>
+                        <Button
+                            className="gap-2 text-sm bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                            onClick={generateExecutiveSummary}
+                            disabled={generating}
+                        >
+                            {generating ? (
+                                <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</>
+                            ) : (
+                                <><Sparkles className="w-4 h-4" /> Executive Summary</>
+                            )}
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Top Stats */}
@@ -334,6 +416,49 @@ export default function ReportsIndex({
                 </Card>
 
             </div>
+
+            {/* Gap Analysis overlay */}
+            {generatingGap && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
+                        <div className="w-14 h-14 rounded-full bg-violet-50 dark:bg-violet-950 flex items-center justify-center">
+                            <Sparkles className="w-7 h-7 text-violet-600 animate-pulse" />
+                        </div>
+                        <div className="text-center">
+                            <p className="font-semibold text-gray-900 dark:text-white">Generating Gap Analysis</p>
+                            <p className="text-sm text-gray-500 mt-1">AI is analysing your compliance gaps&hellip;</p>
+                        </div>
+                        <Loader2 className="w-5 h-5 animate-spin text-violet-500" />
+                    </div>
+                </div>
+            )}
+
+            {/* Executive Summary overlay */}
+            {generating && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
+                        <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-950 flex items-center justify-center">
+                            <Sparkles className="w-7 h-7 text-blue-600 animate-pulse" />
+                        </div>
+                        <div className="text-center">
+                            <p className="font-semibold text-gray-900 dark:text-white">Generating Executive Summary</p>
+                            <p className="text-sm text-gray-500 mt-1">AI is analysing your GRC data&hellip;</p>
+                        </div>
+                        <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                    </div>
+                </div>
+            )}
+
+            {/* Toast */}
+            {toast && (
+                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-sm font-medium
+                    ${toast.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+                    {toast.type === 'success'
+                        ? <CheckCircle className="w-4 h-4 shrink-0" />
+                        : <XCircle className="w-4 h-4 shrink-0" />}
+                    <span>{toast.text}</span>
+                </div>
+            )}
         </AdminLayout>
     );
 }

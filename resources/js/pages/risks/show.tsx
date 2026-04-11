@@ -4,8 +4,25 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Pencil, Trash2, AlertTriangle, User, Calendar, Tag, Shield, Link2, Unlink, Plus, Sparkles } from 'lucide-react';
+import {
+    ArrowLeft, Pencil, Trash2, AlertTriangle, User, Calendar, Tag, Shield,
+    Link2, Unlink, Plus, Sparkles, ShieldCheck, ChevronDown, ChevronUp, X, Save,
+} from 'lucide-react';
 import { useState } from 'react';
+
+interface TreatmentPlan {
+    id: number;
+    strategy: 'mitigate' | 'accept' | 'transfer' | 'avoid';
+    description: string;
+    owner: string;
+    due_date: string | null;
+    progress: number;
+    status: 'not_started' | 'in_progress' | 'completed';
+    residual_likelihood: number | null;
+    residual_impact: number | null;
+    residual_score: number | null;
+    residual_level: string | null;
+}
 
 interface Risk {
     id: number; title: string; description: string; category: string;
@@ -41,6 +58,7 @@ interface Props {
     risk: Risk;
     linkedControls: LinkedControl[];
     allControls: AllControl[];
+    treatmentPlans: TreatmentPlan[];
 }
 
 const levelColors: Record<string, string> = {
@@ -50,6 +68,19 @@ const levelColors: Record<string, string> = {
     low:      'text-green-600 bg-green-50 border-green-200',
 };
 
+const strategyColors: Record<string, string> = {
+    mitigate: 'bg-blue-100 text-blue-700 border-blue-200',
+    accept:   'bg-gray-100 text-gray-700 border-gray-200',
+    transfer: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+    avoid:    'bg-red-100 text-red-700 border-red-200',
+};
+
+const statusLabels: Record<string, string> = {
+    not_started: 'Not Started',
+    in_progress: 'In Progress',
+    completed:   'Completed',
+};
+
 const ScoreCell = ({ value, active, color }: { value: number; active: boolean; color: string }) => (
     <div className={`w-10 h-10 flex items-center justify-center rounded text-xs font-bold border
         ${active ? color : 'bg-gray-100 dark:bg-gray-800 text-gray-400 border-gray-200'}`}>
@@ -57,13 +88,29 @@ const ScoreCell = ({ value, active, color }: { value: number; active: boolean; c
     </div>
 );
 
-export default function RiskShow({ risk, linkedControls, allControls }: Props) {
+const emptyPlan = {
+    strategy: 'mitigate' as const,
+    description: '',
+    owner: '',
+    due_date: '',
+    progress: 0,
+    status: 'not_started' as const,
+    residual_likelihood: '' as any,
+    residual_impact: '' as any,
+};
+
+export default function RiskShow({ risk, linkedControls, allControls, treatmentPlans }: Props) {
     const { auth } = usePage().props as any;
     const isAdmin  = auth.user.role === 'admin';
     const canEdit  = auth.user.role === 'admin' || auth.user.role === 'user';
 
     const [selectedControlId, setSelectedControlId] = useState<number | ''>('');
     const [controlSearch, setControlSearch] = useState('');
+
+    // Treatment plan state
+    const [showPlanForm, setShowPlanForm] = useState(false);
+    const [editingPlanId, setEditingPlanId] = useState<number | null>(null);
+    const [planForm, setPlanForm] = useState({ ...emptyPlan });
 
     const deleteRisk = () => {
         if (!confirm(`Delete "${risk.title}"? This cannot be undone.`)) return;
@@ -89,6 +136,49 @@ export default function RiskShow({ risk, linkedControls, allControls }: Props) {
             c.title.toLowerCase().includes(controlSearch.toLowerCase()) ||
             c.framework.toLowerCase().includes(controlSearch.toLowerCase()))
     );
+
+    const submitPlan = () => {
+        const data = {
+            ...planForm,
+            residual_likelihood: planForm.residual_likelihood === '' ? null : planForm.residual_likelihood,
+            residual_impact: planForm.residual_impact === '' ? null : planForm.residual_impact,
+        };
+        if (editingPlanId) {
+            router.put(route('risks.treatment-plans.update', { risk: risk.id, plan: editingPlanId }), data, {
+                onSuccess: () => { setEditingPlanId(null); setShowPlanForm(false); },
+            });
+        } else {
+            router.post(route('risks.treatment-plans.store', risk.id), data, {
+                onSuccess: () => { setShowPlanForm(false); setPlanForm({ ...emptyPlan }); },
+            });
+        }
+    };
+
+    const startEdit = (p: TreatmentPlan) => {
+        setEditingPlanId(p.id);
+        setPlanForm({
+            strategy: p.strategy,
+            description: p.description,
+            owner: p.owner,
+            due_date: p.due_date ?? '',
+            progress: p.progress,
+            status: p.status,
+            residual_likelihood: p.residual_likelihood ?? ('' as any),
+            residual_impact: p.residual_impact ?? ('' as any),
+        });
+        setShowPlanForm(true);
+    };
+
+    const cancelForm = () => {
+        setShowPlanForm(false);
+        setEditingPlanId(null);
+        setPlanForm({ ...emptyPlan });
+    };
+
+    const deletePlan = (planId: number) => {
+        if (!confirm('Delete this treatment plan?')) return;
+        router.delete(route('risks.treatment-plans.destroy', { risk: risk.id, plan: planId }));
+    };
 
     const score = risk.likelihood * risk.impact;
     const levelColor = levelColors[risk.risk_level];
@@ -161,7 +251,7 @@ export default function RiskShow({ risk, linkedControls, allControls }: Props) {
 
                         {risk.treatment_plan && (
                             <Card>
-                                <CardHeader><CardTitle className="text-base">Treatment Plan</CardTitle></CardHeader>
+                                <CardHeader><CardTitle className="text-base">Treatment Notes</CardTitle></CardHeader>
                                 <CardContent>
                                     <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{risk.treatment_plan}</p>
                                 </CardContent>
@@ -239,6 +329,220 @@ export default function RiskShow({ risk, linkedControls, allControls }: Props) {
                         </Card>
                     </div>
                 </div>
+
+                {/* ── Treatment Plans ─────────────────────────────────────────── */}
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <CardTitle className="text-base flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4" />
+                            Treatment Plans
+                            <Badge variant="secondary" className="ml-1">{treatmentPlans.length}</Badge>
+                        </CardTitle>
+                        {canEdit && !showPlanForm && (
+                            <Button size="sm" variant="outline" className="gap-1" onClick={() => { setEditingPlanId(null); setPlanForm({ ...emptyPlan }); setShowPlanForm(true); }}>
+                                <Plus className="w-3.5 h-3.5" /> Add Plan
+                            </Button>
+                        )}
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {/* Inline form */}
+                        {showPlanForm && canEdit && (
+                            <div className="border rounded-lg p-4 bg-muted/30 space-y-3">
+                                <p className="text-sm font-semibold">{editingPlanId ? 'Edit Treatment Plan' : 'New Treatment Plan'}</p>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="text-xs font-medium text-gray-500 mb-1 block">Strategy</label>
+                                        <select
+                                            value={planForm.strategy}
+                                            onChange={e => setPlanForm(f => ({ ...f, strategy: e.target.value as any }))}
+                                            className="w-full text-sm border rounded-md px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                        >
+                                            <option value="mitigate">Mitigate</option>
+                                            <option value="accept">Accept</option>
+                                            <option value="transfer">Transfer</option>
+                                            <option value="avoid">Avoid</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-gray-500 mb-1 block">Status</label>
+                                        <select
+                                            value={planForm.status}
+                                            onChange={e => setPlanForm(f => ({ ...f, status: e.target.value as any }))}
+                                            className="w-full text-sm border rounded-md px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                        >
+                                            <option value="not_started">Not Started</option>
+                                            <option value="in_progress">In Progress</option>
+                                            <option value="completed">Completed</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-medium text-gray-500 mb-1 block">Owner</label>
+                                    <input
+                                        type="text"
+                                        value={planForm.owner}
+                                        onChange={e => setPlanForm(f => ({ ...f, owner: e.target.value }))}
+                                        placeholder="Responsible person or team"
+                                        className="w-full text-sm border rounded-md px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-medium text-gray-500 mb-1 block">Description</label>
+                                    <textarea
+                                        value={planForm.description}
+                                        onChange={e => setPlanForm(f => ({ ...f, description: e.target.value }))}
+                                        rows={3}
+                                        placeholder="Describe the treatment actions..."
+                                        className="w-full text-sm border rounded-md px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="text-xs font-medium text-gray-500 mb-1 block">Due Date</label>
+                                        <input
+                                            type="date"
+                                            value={planForm.due_date}
+                                            onChange={e => setPlanForm(f => ({ ...f, due_date: e.target.value }))}
+                                            className="w-full text-sm border rounded-md px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-gray-500 mb-1 block">Progress ({planForm.progress}%)</label>
+                                        <input
+                                            type="range"
+                                            min={0} max={100} step={5}
+                                            value={planForm.progress}
+                                            onChange={e => setPlanForm(f => ({ ...f, progress: Number(e.target.value) }))}
+                                            className="w-full mt-2"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p className="text-xs font-medium text-gray-500 mb-2">Residual Risk (after treatment)</p>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-xs text-gray-400 mb-1 block">Likelihood (1–5)</label>
+                                            <input
+                                                type="number"
+                                                min={1} max={5}
+                                                value={planForm.residual_likelihood}
+                                                onChange={e => setPlanForm(f => ({ ...f, residual_likelihood: e.target.value === '' ? '' as any : Number(e.target.value) }))}
+                                                placeholder="—"
+                                                className="w-full text-sm border rounded-md px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-gray-400 mb-1 block">Impact (1–5)</label>
+                                            <input
+                                                type="number"
+                                                min={1} max={5}
+                                                value={planForm.residual_impact}
+                                                onChange={e => setPlanForm(f => ({ ...f, residual_impact: e.target.value === '' ? '' as any : Number(e.target.value) }))}
+                                                placeholder="—"
+                                                className="w-full text-sm border rounded-md px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2 pt-1">
+                                    <Button size="sm" onClick={submitPlan} className="gap-1"><Save className="w-3.5 h-3.5" /> Save</Button>
+                                    <Button size="sm" variant="ghost" onClick={cancelForm} className="gap-1"><X className="w-3.5 h-3.5" /> Cancel</Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Plans list */}
+                        {treatmentPlans.length === 0 && !showPlanForm && (
+                            <p className="text-sm text-muted-foreground">No treatment plans yet. {canEdit ? 'Add one above.' : ''}</p>
+                        )}
+
+                        {treatmentPlans.map(plan => {
+                            const residualScore = plan.residual_score;
+                            const residualLevel = plan.residual_level;
+                            const residualColor = residualLevel ? levelColors[residualLevel] : '';
+
+                            return (
+                                <div key={plan.id} className="border rounded-lg p-4 space-y-3">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <Badge className={`capitalize border ${strategyColors[plan.strategy]}`}>{plan.strategy}</Badge>
+                                            <Badge variant="outline" className={`text-xs ${plan.status === 'completed' ? 'text-green-600 border-green-200 bg-green-50' : plan.status === 'in_progress' ? 'text-blue-600 border-blue-200 bg-blue-50' : 'text-gray-500'}`}>
+                                                {statusLabels[plan.status]}
+                                            </Badge>
+                                        </div>
+                                        {canEdit && (
+                                            <div className="flex gap-1 shrink-0">
+                                                <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => startEdit(plan)}>
+                                                    <Pencil className="w-3.5 h-3.5" />
+                                                </Button>
+                                                <Button size="sm" variant="ghost" className="h-7 px-2 text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => deletePlan(plan.id)}>
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <p className="text-sm text-gray-700 dark:text-gray-300">{plan.description}</p>
+
+                                    <div className="grid grid-cols-2 gap-3 text-xs text-gray-500">
+                                        <div className="flex items-center gap-1">
+                                            <User className="w-3.5 h-3.5" />
+                                            <span>{plan.owner}</span>
+                                        </div>
+                                        {plan.due_date && (
+                                            <div className="flex items-center gap-1">
+                                                <Calendar className="w-3.5 h-3.5" />
+                                                <span>{new Date(plan.due_date).toLocaleDateString()}</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Progress bar */}
+                                    <div>
+                                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                                            <span>Progress</span>
+                                            <span>{plan.progress}%</span>
+                                        </div>
+                                        <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                                            <div
+                                                className={`h-full rounded-full transition-all ${plan.progress === 100 ? 'bg-green-500' : plan.progress >= 50 ? 'bg-blue-500' : 'bg-yellow-500'}`}
+                                                style={{ width: `${plan.progress}%` }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Before vs After risk score */}
+                                    {residualScore !== null && (
+                                        <div className="grid grid-cols-2 gap-3 pt-1 border-t">
+                                            <div>
+                                                <p className="text-xs text-gray-400 mb-1">Current Risk</p>
+                                                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold border ${levelColors[risk.risk_level]}`}>
+                                                    <AlertTriangle className="w-3 h-3" />
+                                                    {score}/25 <span className="capitalize">({risk.risk_level})</span>
+                                                </div>
+                                                <p className="text-xs text-gray-400 mt-0.5">{risk.likelihood}L × {risk.impact}I</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-400 mb-1">After Treatment</p>
+                                                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold border ${residualColor}`}>
+                                                    <ShieldCheck className="w-3 h-3" />
+                                                    {residualScore}/25 <span className="capitalize">({residualLevel})</span>
+                                                </div>
+                                                <p className="text-xs text-gray-400 mt-0.5">{plan.residual_likelihood}L × {plan.residual_impact}I</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </CardContent>
+                </Card>
 
                 {/* Linked Controls */}
                 <Card>

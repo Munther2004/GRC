@@ -33,7 +33,14 @@
       "Bash(where php:*)",
       "Read(//c/laragon/bin/php/**)",
       "Read(//c/laragon/bin/php//**)",
-      "Bash(\"C:/laragon/bin/php/php-8.4.12-nts-Win32-vs17-x64/php.exe\" artisan:*)"
+      "Bash(\"C:/laragon/bin/php/php-8.4.12-nts-Win32-vs17-x64/php.exe\" artisan:*)",
+      "Bash(npm run:*)",
+      "Bash(export PATH=\"/c/laragon/bin/php/php-8.4.12-nts-Win32-vs17-x64:$PATH\")",
+      "Bash(php c:/laragon/www/GRC/artisan db:query \"SELECT short_name FROM frameworks WHERE is_active=1\")",
+      "Bash(php c:/laragon/www/GRC/artisan tinker --execute=\"echo Framework::pluck\\('short_name'\\)->join\\(', '\\);\")",
+      "Bash(php c:/laragon/www/GRC/artisan tinker '--execute=:*)",
+      "Bash(php c:/laragon/www/GRC/artisan migrate)",
+      "Bash(php c:/laragon/www/GRC/artisan db:seed --class=ControlCrosswalkSeeder)"
     ]
   }
 }

@@ -25,6 +25,11 @@ class Risk extends Model
         return $this->belongsTo(Assessment::class);
     }
 
+    public function treatmentPlans()
+    {
+        return $this->hasMany(RiskTreatmentPlan::class);
+    }
+
     public function getRiskLevelAttribute(): string
     {
         $score = $this->likelihood * $this->impact;

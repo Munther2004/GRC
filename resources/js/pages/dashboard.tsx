@@ -7,7 +7,7 @@ import { RiskTrendChart } from "@/components/admin/risk-trend-chart"
 import { TopRisks } from "@/components/admin/top-risks"
 import AdminLayout from "@/layouts/admin-layout"
 import { Link, usePage } from "@inertiajs/react"
-import { AlertTriangle, TrendingUp, TrendingDown, Clock, FileCheck, Zap } from "lucide-react"
+import { AlertTriangle, Clock, FileCheck, Zap, ShieldAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -51,6 +51,8 @@ type HeatmapRisk = {
 }
 
 type Kpis = {
+    risk_exposure: number
+    avg_risk_score: number
     evidence_approval_rate: number
     open_risks_by_level: { critical: number; high: number; medium: number; low: number }
     assessments_due_soon: number
@@ -94,19 +96,47 @@ type Props = {
     kriSnapshots: KriSnapshot[]
 }
 
-function KpiCards({ kpis }: { kpis: Kpis }) {
-    const approvalRate   = kpis.evidence_approval_rate
-    const complianceDelta = +(kpis.compliance_this_week - kpis.compliance_last_week).toFixed(1)
-    const isUp           = complianceDelta >= 0
+function KpiCards({ kpis, stats }: { kpis: Kpis; stats: Stats }) {
+    const approvalRate    = kpis.evidence_approval_rate
+    const exposure        = kpis.risk_exposure
+    const compliance      = stats.compliance_score
 
     const approvalColor =
         approvalRate >= 70 ? 'text-green-500' :
         approvalRate >= 40 ? 'text-yellow-500' : 'text-red-500'
 
+    const exposureColor =
+        exposure > 50 ? 'text-red-500' :
+        exposure >= 20 ? 'text-amber-500' : 'text-green-500'
+
+    const exposureBarColor =
+        exposure > 50 ? 'bg-red-500' :
+        exposure >= 20 ? 'bg-amber-500' : 'bg-green-500'
+
     return (
         <div className="space-y-3">
             <h2 className="text-base font-semibold tracking-tight">Key Performance Indicators</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+
+                {/* Card 0 — Risk Exposure */}
+                <Card>
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide flex items-center gap-1.5">
+                            <ShieldAlert className="w-3.5 h-3.5" />
+                            Risk Exposure
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <p className={`text-3xl font-bold ${exposureColor}`}>{exposure}%</p>
+                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                            <div
+                                className={`h-full rounded-full transition-all ${exposureBarColor}`}
+                                style={{ width: `${Math.min(exposure, 100)}%` }}
+                            />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Avg Risk Score: {kpis.avg_risk_score} / 25</p>
+                    </CardContent>
+                </Card>
 
                 {/* Card 1 — Evidence Approval Rate */}
                 <Card>
@@ -137,15 +167,20 @@ function KpiCards({ kpis }: { kpis: Kpis }) {
                     </CardContent>
                 </Card>
 
-                {/* Card 3 — Compliance Trend */}
+                {/* Card 3 — Live Compliance Score */}
                 <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Avg Compliance This Week</CardTitle></CardHeader>
-                    <CardContent className="space-y-1">
-                        <p className="text-3xl font-bold">{kpis.compliance_this_week}%</p>
-                        <div className={`flex items-center gap-1 text-xs font-medium ${isUp ? 'text-green-500' : 'text-red-500'}`}>
-                            {isUp ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-                            {isUp ? '+' : ''}{complianceDelta}% vs last week
+                    <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Compliance Score</CardTitle></CardHeader>
+                    <CardContent className="space-y-2">
+                        <p className={`text-3xl font-bold ${compliance >= 70 ? 'text-green-500' : compliance >= 40 ? 'text-amber-500' : 'text-red-500'}`}>
+                            {compliance}%
+                        </p>
+                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                            <div
+                                className={`h-full rounded-full transition-all ${compliance >= 70 ? 'bg-green-500' : compliance >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                                style={{ width: `${compliance}%` }}
+                            />
                         </div>
+                        <p className="text-xs text-muted-foreground">live from controls table</p>
                     </CardContent>
                 </Card>
 
@@ -345,7 +380,7 @@ export default function AdminDashboard({ stats, recentRisks, recentActivity, rec
                 <QuickActions />
 
                 {/* KPI Section */}
-                <KpiCards kpis={kpis} />
+                <KpiCards kpis={kpis} stats={stats} />
 
                 {/* KRI Trends */}
                 <KriTrends snapshots={kriSnapshots} />

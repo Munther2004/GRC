@@ -34,6 +34,13 @@ interface Risk {
     user: { name: string };
 }
 
+interface RiskExposure {
+    risk_exposure: number;
+    avg_risk_score: number;
+    total_risks: number;
+    critical_risks: number;
+}
+
 interface Props {
     risks: {
         data: Risk[];
@@ -41,6 +48,7 @@ interface Props {
         total: number;
     };
     stats: { total: number; open: number; critical: number; overdue: number };
+    riskExposure: RiskExposure;
     filters: { search?: string; status?: string; level?: string; category?: string; has_plan?: string; framework?: string };
     frameworks: { id: number; short_name: string; name: string }[];
 }
@@ -59,7 +67,7 @@ const statusColors: Record<string, string> = {
     closed:       'bg-gray-500/10 text-gray-500 border-gray-500/20',
 };
 
-export default function RisksIndex({ risks, stats, filters, frameworks }: Props) {
+export default function RisksIndex({ risks, stats, riskExposure, filters, frameworks }: Props) {
     const { auth } = usePage().props as any;
     const isAdmin  = auth.user.role === 'admin';
     const canEdit  = auth.user.role === 'admin' || auth.user.role === 'user';
@@ -116,7 +124,7 @@ export default function RisksIndex({ risks, stats, filters, frameworks }: Props)
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     {[
                         { label: 'Total Risks',     value: stats.total,    icon: Shield,        color: 'text-blue-500' },
                         { label: 'Open Risks',      value: stats.open,     icon: AlertTriangle, color: 'text-orange-500' },
@@ -133,6 +141,26 @@ export default function RisksIndex({ risks, stats, filters, frameworks }: Props)
                             </CardContent>
                         </Card>
                     ))}
+
+                    {/* Risk Exposure Index card */}
+                    {(() => {
+                        const e = riskExposure.risk_exposure;
+                        const borderColor = e > 50 ? 'border-red-300 dark:border-red-700' : e >= 20 ? 'border-amber-300 dark:border-amber-700' : 'border-green-300 dark:border-green-700';
+                        const valueColor  = e > 50 ? 'text-red-500' : e >= 20 ? 'text-amber-500' : 'text-green-500';
+                        return (
+                            <Card className={`border-2 ${borderColor}`}>
+                                <CardContent className="p-4">
+                                    <p className="text-xs text-gray-500 mb-1">Risk Exposure Index</p>
+                                    <p className={`text-2xl font-bold ${valueColor}`}>{e}%</p>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                        Avg Score: {riskExposure.avg_risk_score}/25
+                                        {' · '}Critical: {riskExposure.critical_risks}
+                                        {' · '}Total: {riskExposure.total_risks}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        );
+                    })()}
                 </div>
 
                 {/* Filters */}

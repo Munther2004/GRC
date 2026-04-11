@@ -9,6 +9,7 @@ use App\Models\Risk;
 use App\Models\AuditLog;
 use App\Services\AIControlLinker;
 use App\Services\AIService;
+use App\Services\RiskMetricsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -67,11 +68,14 @@ class RiskController extends Controller
             ->orderBy('short_name')
             ->get(['id', 'short_name', 'name']);
 
+        $riskExposure = (new RiskMetricsService())->calculateRiskExposure();
+
         return Inertia::render('risks/index', [
-            'risks'      => $paginator,
-            'stats'      => $stats,
-            'filters'    => $request->only(['search', 'status', 'level', 'category', 'has_plan', 'framework']),
-            'frameworks' => $frameworks,
+            'risks'        => $paginator,
+            'stats'        => $stats,
+            'riskExposure' => $riskExposure,
+            'filters'      => $request->only(['search', 'status', 'level', 'category', 'has_plan', 'framework']),
+            'frameworks'   => $frameworks,
         ]);
     }
 

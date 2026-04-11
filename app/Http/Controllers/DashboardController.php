@@ -7,6 +7,7 @@ use App\Models\Control;
 use App\Models\Evidence;
 use App\Models\KriSnapshot;
 use App\Models\Risk;
+use App\Services\RiskMetricsService;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
@@ -88,7 +89,11 @@ class DashboardController extends Controller
             'status'     => $r->status,
         ])->toArray();
 
+        $riskMetrics = (new RiskMetricsService())->calculateRiskExposure();
+
         $kpis = [
+            'risk_exposure'          => $riskMetrics['risk_exposure'],
+            'avg_risk_score'         => $riskMetrics['avg_risk_score'],
             'evidence_approval_rate' => Evidence::count() > 0
                 ? round((Evidence::where('status', 'approved')->count() / Evidence::count()) * 100, 1)
                 : 0,

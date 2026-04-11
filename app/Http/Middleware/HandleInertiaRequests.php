@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\ControlStatusRequest;
 use App\Models\Notification;
+use App\Models\RemediationTask;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -45,10 +46,15 @@ class HandleInertiaRequests extends Middleware
                     ? ControlStatusRequest::where('status', 'pending')->count()
                     : 0;
 
+                $openRemediationTasks = in_array($user->role, ['admin', 'user'])
+                    ? RemediationTask::whereIn('status', ['open', 'in_progress'])->count()
+                    : 0;
+
                 return [
-                    'unread_count'           => (clone $base)->count(),
-                    'recent'                 => (clone $base)->orderBy('created_at', 'desc')->take(5)->get(),
-                    'pending_approvals_count' => $pendingApprovals,
+                    'unread_count'              => (clone $base)->count(),
+                    'recent'                    => (clone $base)->orderBy('created_at', 'desc')->take(5)->get(),
+                    'pending_approvals_count'   => $pendingApprovals,
+                    'open_remediation_tasks'    => $openRemediationTasks,
                 ];
             },
         ];

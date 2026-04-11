@@ -455,6 +455,108 @@ SYS;
         }
     }
 
+    /**
+     * Explain a compliance control in plain language for use during an assessment.
+     *
+     * @param  array  $controlData  Keys: code, name, description, framework, domain
+     * @return string  Raw JSON string with explanation fields
+     */
+    public function explainControl(array $controlData): string
+    {
+        $default = json_encode([
+            'plain_english'        => 'This control requires your organization to implement appropriate measures as defined by the framework.',
+            'what_it_requires'     => [
+                'Review the control description and understand its scope',
+                'Implement appropriate policies and procedures',
+                'Assign ownership and accountability for the control',
+                'Maintain documented evidence of compliance',
+            ],
+            'evidence_examples'    => [
+                'Policy document signed by management',
+                'Procedure documentation',
+                'Audit or review records',
+                'System configuration screenshots',
+            ],
+            'compliant_looks_like' => 'A compliant organization has documented policies, implemented procedures, and maintains evidence that the control is operating effectively.',
+            'non_compliant_risks'  => 'Failure to implement this control may expose the organization to compliance violations and security risks.',
+        ]);
+
+        try {
+            $code        = $controlData['code']        ?? '';
+            $name        = $controlData['name']        ?? '';
+            $description = $controlData['description'] ?? '';
+            $framework   = $controlData['framework']   ?? '';
+            $domain      = $controlData['domain']      ?? '';
+
+            $prompt = <<<PROMPT
+You are a GRC expert helping an organization understand their compliance controls during a self-assessment.
+
+Control: [{$code}] {$name}
+Framework: {$framework}
+Domain: {$domain}
+Description: {$description}
+
+Provide a practical explanation in this exact JSON format:
+{
+  "plain_english": "2-3 sentence explanation of what this control means in simple terms, avoiding jargon",
+  "what_it_requires": [
+    "Specific thing the organization must have or do",
+    "Another specific requirement",
+    "Add 3-5 bullet points total"
+  ],
+  "evidence_examples": [
+    "Example of evidence that would prove compliance",
+    "Another evidence example",
+    "Add 3-5 examples total"
+  ],
+  "compliant_looks_like": "1-2 sentences describing what a fully compliant implementation looks like in practice",
+  "non_compliant_risks": "1 sentence on the main risk if this control is not implemented"
+}
+
+Be specific and practical. Write as if explaining to an IT manager, not a security expert. Return only valid JSON, no markdown, no extra text.
+PROMPT;
+
+            $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'x-api-key'         => config('services.anthropic.key'),
+                    'anthropic-version' => '2023-06-01',
+                    'Content-Type'      => 'application/json',
+                ])->post('https://api.anthropic.com/v1/messages', [
+                    'model'      => 'claude-sonnet-4-20250514',
+                    'max_tokens' => 1024,
+                    'messages'   => [
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                ]);
+
+            if ($response->failed()) {
+                Log::error('AIService::explainControl API error', [
+                    'status' => $response->status(),
+                    'body'   => $response->body(),
+                ]);
+                return $default;
+            }
+
+            $text = $response->json()['content'][0]['text'] ?? '';
+            $text = preg_replace('/^```json\s*/i', '', trim($text));
+            $text = preg_replace('/^```\s*/i',     '', trim($text));
+            $text = preg_replace('/```$/m',        '', trim($text));
+            $text = trim($text);
+
+            $parsed = json_decode($text, true);
+            if (!is_array($parsed)) {
+                Log::warning('AIService::explainControl: invalid JSON', ['raw' => $text]);
+                return $default;
+            }
+
+            return json_encode($parsed);
+
+        } catch (\Throwable $e) {
+            Log::error('AIService::explainControl exception', ['message' => $e->getMessage()]);
+            return $default;
+        }
+    }
+
     public function callClaude(string $prompt): string
     {
         try {

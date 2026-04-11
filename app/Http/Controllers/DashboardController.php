@@ -7,6 +7,7 @@ use App\Models\Control;
 use App\Models\Evidence;
 use App\Models\KriSnapshot;
 use App\Models\Risk;
+use App\Models\RiskAppetite;
 use App\Services\RiskMetricsService;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
@@ -86,6 +87,30 @@ class DashboardController extends Controller
             'score'      => $r->likelihood * $r->impact,
             'status'     => $r->status,
         ])->toArray();
+
+        // Appetite band counts
+        $appetite        = RiskAppetite::getActive();
+        $appetiteCounts  = null;
+        if ($appetite) {
+            $escalated = 0; $review = 0; $acceptable = 0;
+            foreach ($risks as $r) {
+                $band = $appetite->classifyRisk($r)['band'];
+                if ($band === 'escalated')  $escalated++;
+                elseif ($band === 'review') $review++;
+                else                        $acceptable++;
+            }
+            $appetiteCounts = [
+                'name'       => $appetite->name,
+                'escalated'  => $escalated,
+                'review'     => $review,
+                'acceptable' => $acceptable,
+                'labels'     => [
+                    'escalated'  => $appetite->escalated_label,
+                    'review'     => $appetite->review_label,
+                    'acceptable' => $appetite->acceptable_label,
+                ],
+            ];
+        }
 
         $metricsService = new RiskMetricsService();
         $riskMetrics    = $metricsService->calculateRiskExposure();
@@ -167,6 +192,7 @@ class DashboardController extends Controller
             'lastSchedulerRun'   => Cache::get('scheduler_last_run'),
             'kriSnapshots'       => $kriSnapshots,
             'healthScore'        => $healthScore,
+            'appetiteCounts'     => $appetiteCounts,
         ]);
     }
 }

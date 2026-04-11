@@ -28,9 +28,10 @@ export const route = (name: string, params?: any): string => {
         'assessments.destroy':       `/assessments/${id}`,
         'assessments.questionnaire': `/assessments/${id}/questionnaire`,
         'assessments.export-pdf':    `/assessments/${id}/export-pdf`,
-        'assessments.save-answers':  `/assessments/${id}/save-answers`,
-        'assessments.submit':        `/assessments/${id}/submit`,
-        'assessments.auto-fill':     `/assessments/${id}/auto-fill`,
+        'assessments.save-answers':    `/assessments/${id}/save-answers`,
+        'assessments.submit':          `/assessments/${id}/submit`,
+        'assessments.auto-fill':       `/assessments/${id}/auto-fill`,
+        'assessments.explain-control': '/assessments/explain-control',
 
         // Admin — Users
         'admin.users.index':   '/admin/users',

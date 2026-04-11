@@ -6,13 +6,30 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, Plus, Search, Shield, TrendingUp, Clock, Eye, Pencil, Trash2, Sparkles } from 'lucide-react';
+import { AlertTriangle, Plus, Search, Shield, TrendingUp, Clock, Eye, Pencil, Trash2, Sparkles, Sliders } from 'lucide-react';
 import { useState } from 'react';
 import { RouteName, RouteParams } from 'ziggy-js';
 
 
 declare global {
     function route(name: RouteName, params?: RouteParams<RouteName>, absolute?: boolean): string;
+}
+
+interface AppetiteBand {
+    band: 'acceptable' | 'review' | 'escalated';
+    label: string;
+    color: string;
+}
+
+interface RiskAppetiteConfig {
+    id: number;
+    name: string;
+    acceptable_max_score: number;
+    review_max_score: number;
+    escalated_min_score: number;
+    acceptable_label: string;
+    review_label: string;
+    escalated_label: string;
 }
 
 interface Risk {
@@ -31,6 +48,7 @@ interface Risk {
     auto_generated: number;
     ai_validated: boolean;
     framework_name: string | null;
+    appetite_band: AppetiteBand | null;
     user: { name: string };
 }
 
@@ -49,8 +67,9 @@ interface Props {
     };
     stats: { total: number; open: number; critical: number; overdue: number };
     riskExposure: RiskExposure;
-    filters: { search?: string; status?: string; level?: string; category?: string; has_plan?: string; framework?: string };
+    filters: { search?: string; status?: string; level?: string; category?: string; has_plan?: string; framework?: string; escalated_only?: string };
     frameworks: { id: number; short_name: string; name: string }[];
+    appetite: RiskAppetiteConfig | null;
 }
 
 const getLevel = (score: number) => {
@@ -67,26 +86,50 @@ const statusColors: Record<string, string> = {
     closed:       'bg-gray-500/10 text-gray-500 border-gray-500/20',
 };
 
-export default function RisksIndex({ risks, stats, riskExposure, filters, frameworks }: Props) {
+function AppetiteBadge({ band }: { band: AppetiteBand }) {
+    if (band.band === 'acceptable') {
+        return (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700">
+                {band.label}
+            </span>
+        );
+    }
+    if (band.band === 'review') {
+        return (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700">
+                {band.label}
+            </span>
+        );
+    }
+    return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700">
+            ⚠️ {band.label}
+        </span>
+    );
+}
+
+export default function RisksIndex({ risks, stats, riskExposure, filters, frameworks, appetite }: Props) {
     const { auth } = usePage().props as any;
     const isAdmin  = auth.user.role === 'admin';
     const canEdit  = auth.user.role === 'admin' || auth.user.role === 'user';
 
-    const [search, setSearch]       = useState(filters.search ?? '');
-    const [status, setStatus]       = useState(filters.status ?? 'all');
-    const [level, setLevel]         = useState(filters.level ?? 'all');
-    const [category, setCategory]   = useState(filters.category ?? 'all');
-    const [framework, setFramework] = useState(filters.framework ?? 'all');
-    const [hasPlan, setHasPlan]     = useState(!!filters.has_plan);
+    const [search, setSearch]             = useState(filters.search ?? '');
+    const [status, setStatus]             = useState(filters.status ?? 'all');
+    const [level, setLevel]               = useState(filters.level ?? 'all');
+    const [category, setCategory]         = useState(filters.category ?? 'all');
+    const [framework, setFramework]       = useState(filters.framework ?? 'all');
+    const [hasPlan, setHasPlan]           = useState(!!filters.has_plan);
+    const [escalatedOnly, setEscalatedOnly] = useState(!!filters.escalated_only);
 
     const applyFilters = (overrides: Record<string, string> = {}) => {
         router.get(route('risks.index'), {
             search,
-            status:    status    === 'all' ? '' : status,
-            level:     level     === 'all' ? '' : level,
-            category:  category  === 'all' ? '' : category,
-            framework: framework === 'all' ? '' : framework,
-            has_plan:  hasPlan ? '1' : '',
+            status:         status    === 'all' ? '' : status,
+            level:          level     === 'all' ? '' : level,
+            category:       category  === 'all' ? '' : category,
+            framework:      framework === 'all' ? '' : framework,
+            has_plan:       hasPlan ? '1' : '',
+            escalated_only: escalatedOnly ? '1' : '',
             ...overrides,
         }, { preserveState: true, replace: true });
     };
@@ -95,6 +138,12 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
         const next = !hasPlan;
         setHasPlan(next);
         applyFilters({ has_plan: next ? '1' : '' });
+    };
+
+    const toggleEscalatedOnly = () => {
+        const next = !escalatedOnly;
+        setEscalatedOnly(next);
+        applyFilters({ escalated_only: next ? '1' : '' });
     };
 
     const deleteRisk = (id: number, title: string) => {
@@ -223,6 +272,15 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                             >
                                 📋 Has Remediation Plan
                             </Button>
+                            {appetite && (
+                                <Button
+                                    variant="outline"
+                                    onClick={toggleEscalatedOnly}
+                                    className={`gap-1.5 ${escalatedOnly ? 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-700' : ''}`}
+                                >
+                                    <Sliders className="w-3.5 h-3.5" /> Escalated Only
+                                </Button>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -239,7 +297,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                             <table className="w-full text-sm">
                                 <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
                                     <tr>
-                                        {['Risk', 'Category', 'Owner', 'Score', 'Level', 'Status', 'Treatment', 'Due Date', 'Actions'].map(h => (
+                                        {['Risk', 'Category', 'Owner', 'Score', 'Level', ...(appetite ? ['Appetite Band'] : []), 'Status', 'Treatment', 'Due Date', 'Actions'].map(h => (
                                             <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
                                         ))}
                                     </tr>
@@ -247,7 +305,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                                     {risks.data.length === 0 ? (
                                         <tr>
-                                            <td colSpan={9} className="px-4 py-12 text-center text-gray-400">
+                                            <td colSpan={appetite ? 10 : 9} className="px-4 py-12 text-center text-gray-400">
                                                 No risks found. <Link href={route('risks.create')} className="text-blue-500 hover:underline">Add the first one.</Link>
                                             </td>
                                         </tr>
@@ -297,6 +355,14 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                     </span>
                                                 ); })()}
                                             </td>
+                                            {appetite && (
+                                                <td className="px-4 py-3">
+                                                    {risk.appetite_band
+                                                        ? <AppetiteBadge band={risk.appetite_band} />
+                                                        : <span className="text-gray-400 text-xs">—</span>
+                                                    }
+                                                </td>
+                                            )}
                                             <td className="px-4 py-3">
                                                 <Badge variant="outline" className={`capitalize ${statusColors[risk.status]}`}>
                                                     {risk.status.replace('_', ' ')}

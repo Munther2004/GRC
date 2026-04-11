@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, ClipboardList, CheckCircle, Clock, TrendingUp, Eye, Trash2, PlayCircle, AlertTriangle } from 'lucide-react';
+import { Plus, Search, ClipboardList, CheckCircle, Clock, TrendingUp, Eye, Trash2, PlayCircle, AlertTriangle, GitCompare } from 'lucide-react';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
@@ -89,11 +89,18 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Compliance Assessments</h1>
                         <p className="text-sm text-gray-500 mt-1">Self-assessment questionnaires per framework</p>
                     </div>
-                    {canEdit && (
-                        <Link href={route('assessments.create')}>
-                            <Button className="gap-2"><Plus className="w-4 h-4" /> New Assessment</Button>
+                    <div className="flex items-center gap-2">
+                        <Link href="/assessments/compare">
+                            <Button variant="outline" className="gap-2">
+                                <GitCompare className="w-4 h-4" /> Compare Assessments
+                            </Button>
                         </Link>
-                    )}
+                        {canEdit && (
+                            <Link href={route('assessments.create')}>
+                                <Button className="gap-2"><Plus className="w-4 h-4" /> New Assessment</Button>
+                            </Link>
+                        )}
+                    </div>
                 </div>
 
                 {/* Stats */}

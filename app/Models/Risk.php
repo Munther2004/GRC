@@ -43,4 +43,10 @@ class Risk extends Model
     {
         return $this->likelihood * $this->impact;
     }
+
+    public function getAppetiteBandAttribute(): ?array
+    {
+        $appetite = RiskAppetite::getActive();
+        return $appetite?->classifyRisk($this);
+    }
 }

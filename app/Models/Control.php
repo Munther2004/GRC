@@ -44,4 +44,9 @@ class Control extends Model
     {
         return $this->hasMany(ControlStatusRequest::class)->latest();
     }
+
+    public function remediationTasks()
+    {
+        return $this->hasMany(RemediationTask::class)->latest();
+    }
 }

@@ -14,6 +14,10 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ExecutiveSummaryController;
 use App\Http\Controllers\RiskTreatmentPlanController;
 use App\Http\Controllers\CrosswalkController;
+use App\Http\Controllers\RemediationTaskController;
+use App\Http\Controllers\AssessmentComparisonController;
+use App\Http\Controllers\ExecutiveDashboardController;
+use App\Http\Controllers\RiskAppetiteController;
 use App\Models\KriSnapshot;
 use App\Http\Controllers\Admin\AIController as AdminAIController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -39,7 +43,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/notifications',               [NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
 
     // ── Everyone ──────────────────────────────────────────────────────────────
-    Route::get('/dashboard',    [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard',           [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/executive-dashboard',     [ExecutiveDashboardController::class, 'index'])->name('executive-dashboard');
+    Route::get('/executive-dashboard/pdf', [ExecutiveDashboardController::class, 'export'])->name('executive-dashboard.pdf');
     Route::get('/chatbot',       [ComplianceChatbotController::class, 'index'])->name('chatbot.index');
     Route::post('/chatbot/chat', [ComplianceChatbotController::class, 'chat'])->name('chatbot.chat');
     Route::get('/kri-snapshots', fn () =>
@@ -70,6 +76,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/risks/{risk}/treatment-plans',                     [RiskTreatmentPlanController::class, 'store'])->name('risks.treatment-plans.store');
         Route::put('/risks/{risk}/treatment-plans/{plan}',               [RiskTreatmentPlanController::class, 'update'])->name('risks.treatment-plans.update');
         Route::delete('/risks/{risk}/treatment-plans/{plan}',            [RiskTreatmentPlanController::class, 'destroy'])->name('risks.treatment-plans.destroy');
+        // Remediation tasks
+        Route::get('/remediation-tasks',                          [RemediationTaskController::class, 'index'])->name('remediation-tasks.index');
+        Route::post('/remediation-tasks',                         [RemediationTaskController::class, 'store'])->name('remediation-tasks.store');
+        Route::put('/remediation-tasks/{task}',                   [RemediationTaskController::class, 'update'])->name('remediation-tasks.update');
+        Route::delete('/remediation-tasks/{task}',                [RemediationTaskController::class, 'destroy'])->name('remediation-tasks.destroy');
+        Route::post('/remediation-tasks/{task}/complete',         [RemediationTaskController::class, 'complete'])->name('remediation-tasks.complete');
     });
 
     Route::middleware('role:admin')->group(function () {
@@ -100,7 +112,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/assessments/{assessment}/submit',               [AssessmentController::class, 'submit'])->name('assessments.submit');
         Route::post('/assessments/{assessment}/auto-fill',            [AssessmentController::class, 'autoFill'])->name('assessments.auto-fill');
         Route::post('/assessments/{assessment}/items/{item}/evidence',[AssessmentController::class, 'uploadEvidence'])->name('assessments.upload-evidence');
+        Route::post('/assessments/explain-control', [AssessmentController::class, 'explainControl'])->name('assessments.explain-control')->middleware('throttle:30,1');
     });
+
+    // ── Assessment Comparison ─────────────────────────────────────────────────
+    Route::get('/assessments/compare',        [AssessmentComparisonController::class, 'index'])->name('assessments.compare');
+    Route::get('/assessments/compare/result', [AssessmentComparisonController::class, 'compare'])->name('assessments.compare.result');
+    Route::get('/assessments/compare/export', [AssessmentComparisonController::class, 'exportPdf'])->name('assessments.compare.export');
 
     Route::get('/assessments/{assessment}', [AssessmentController::class, 'show'])->name('assessments.show');
 
@@ -133,6 +151,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('frameworks/{framework}/toggle', [AdminFrameworkController::class, 'toggle'])->name('frameworks.toggle');
         Route::resource('frameworks', AdminFrameworkController::class)->only(['index', 'edit', 'update']);
         Route::resource('controls',   AdminControlController::class)->only(['index', 'edit', 'update', 'destroy']);
+    });
+
+    // ── Risk Appetite — admin only ────────────────────────────────────────────
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/risk-appetite',                     [RiskAppetiteController::class, 'index'])->name('risk-appetite.index');
+        Route::post('/risk-appetite',                    [RiskAppetiteController::class, 'store'])->name('risk-appetite.store');
+        Route::put('/risk-appetite/{appetite}',          [RiskAppetiteController::class, 'update'])->name('risk-appetite.update');
+        Route::delete('/risk-appetite/{appetite}',       [RiskAppetiteController::class, 'destroy'])->name('risk-appetite.destroy');
+        Route::post('/risk-appetite/{appetite}/activate',[RiskAppetiteController::class, 'activate'])->name('risk-appetite.activate');
     });
 });
 

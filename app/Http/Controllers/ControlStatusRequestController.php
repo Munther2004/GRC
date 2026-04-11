@@ -8,6 +8,7 @@ use App\Models\ControlStatusHistory;
 use App\Models\ControlStatusRequest;
 use App\Models\Evidence;
 use App\Models\Notification;
+use App\Models\RemediationTask;
 use App\Models\Risk;
 use App\Models\User;
 use App\Services\RulesEngine;
@@ -214,6 +215,38 @@ class ControlStatusRequestController extends Controller
                     "Control '{$control->control_id}' marked Compliant — {$removedCount} AI-generated risk" .
                     ($removedCount !== 1 ? 's' : '') . " removed"
                 );
+            }
+
+            // Auto-close any open/in_progress remediation tasks for this control
+            $openTasks = RemediationTask::where('control_id', $control->id)
+                ->whereIn('status', ['open', 'in_progress'])
+                ->get();
+
+            foreach ($openTasks as $remTask) {
+                $remTask->update([
+                    'status'           => 'completed',
+                    'auto_closed'      => true,
+                    'closed_at'        => now(),
+                    'completion_notes' => "Auto-closed: control {$control->control_id} became compliant.",
+                ]);
+
+                AuditLog::record(
+                    'remediation_task_auto_closed',
+                    'RemediationTask',
+                    $remTask->id,
+                    "Remediation task '{$remTask->title}' auto-closed — control {$control->control_id} became compliant"
+                );
+
+                if ($remTask->created_by) {
+                    Notification::create([
+                        'user_id' => $remTask->created_by,
+                        'type'    => 'remediation_task_auto_closed',
+                        'title'   => 'Remediation Task Auto-Closed',
+                        'message' => "Your remediation task \"{$remTask->title}\" was automatically closed because {$control->control_id} is now compliant.",
+                        'url'     => '/remediation-tasks',
+                        'is_read' => false,
+                    ]);
+                }
             }
         }
 

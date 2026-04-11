@@ -12,6 +12,7 @@ use App\Models\Evidence;
 use App\Models\Framework;
 use App\Models\Notification;
 use App\Models\Risk;
+use App\Services\AIService;
 use App\Services\EvidenceScoringService;
 use App\Services\RulesEngine;
 use Illuminate\Http\Request;
@@ -432,6 +433,31 @@ class AssessmentController extends Controller
                 ]);
             }
         }
+    }
+
+    public function explainControl(Request $request)
+    {
+        $validated = $request->validate([
+            'control_id' => 'required|exists:controls,id',
+        ]);
+
+        $control = Control::with('framework')->findOrFail($validated['control_id']);
+
+        $aiService  = new AIService();
+        $jsonString = $aiService->explainControl([
+            'code'        => $control->control_id,
+            'name'        => $control->title,
+            'description' => $control->description ?? '',
+            'framework'   => $control->framework?->name ?? '',
+            'domain'      => $control->category ?? '',
+        ]);
+
+        $explanation = json_decode($jsonString, true);
+
+        return response()->json([
+            'success'     => true,
+            'explanation' => $explanation,
+        ]);
     }
 
     public function destroy(Request $request, Assessment $assessment)

@@ -4,8 +4,9 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ArrowRight, Save, CheckCircle, Upload, ChevronRight, FlaskConical } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, CheckCircle, Upload, ChevronRight, FlaskConical, Sparkles, X, Loader2 } from 'lucide-react';
 import { useState, useRef } from 'react';
+import axios from 'axios';
 
 interface Control {
     id: number;
@@ -36,6 +37,14 @@ interface Assessment {
     title: string;
     status: string;
     framework: { name: string; short_name: string };
+}
+
+interface ExplanationData {
+    plain_english: string;
+    what_it_requires: string[];
+    evidence_examples: string[];
+    compliant_looks_like: string;
+    non_compliant_risks: string;
 }
 
 interface Props {
@@ -73,6 +82,12 @@ export default function Questionnaire({ assessment, items, pagination, progress,
     const [expiryDate, setExpiryDate] = useState('');
     const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
+    // AI Help state
+    const [activeHelpControlId, setActiveHelpControlId] = useState<number | null>(null);
+    const [helpData, setHelpData] = useState<Record<number, ExplanationData>>({});
+    const [helpLoading, setHelpLoading] = useState<Record<number, boolean>>({});
+    const [helpError, setHelpError] = useState<Record<number, string | null>>({});
+
     const updateAnswer = (itemId: number, field: string, value: string) => {
         setAnswers(prev => ({ ...prev, [itemId]: { ...prev[itemId], [field]: value } }));
     };
@@ -107,6 +122,45 @@ export default function Questionnaire({ assessment, items, pagination, progress,
     const qaAutoFill = () => {
         if (!confirm('[QA] Auto-fill ALL controls with random statuses and submit? This will complete the assessment immediately.')) return;
         router.post(route('assessments.auto-fill', assessment.id));
+    };
+
+    const fetchControlHelp = async (controlId: number) => {
+        // Toggle off if already active
+        if (activeHelpControlId === controlId) {
+            setActiveHelpControlId(null);
+            return;
+        }
+
+        setActiveHelpControlId(controlId);
+
+        // Use cached result if available
+        if (helpData[controlId]) return;
+
+        setHelpLoading(prev => ({ ...prev, [controlId]: true }));
+        setHelpError(prev => ({ ...prev, [controlId]: null }));
+
+        try {
+            const response = await axios.post('/assessments/explain-control', { control_id: controlId });
+            if (response.data?.success && response.data?.explanation) {
+                setHelpData(prev => ({ ...prev, [controlId]: response.data.explanation }));
+            } else {
+                setHelpError(prev => ({ ...prev, [controlId]: 'Could not load AI guidance. Please try again.' }));
+            }
+        } catch (err: any) {
+            if (err?.response?.status === 429) {
+                setHelpError(prev => ({ ...prev, [controlId]: 'Too many requests. Please wait a moment before asking for more guidance.' }));
+            } else {
+                setHelpError(prev => ({ ...prev, [controlId]: 'Could not load AI guidance. Please try again.' }));
+            }
+        } finally {
+            setHelpLoading(prev => ({ ...prev, [controlId]: false }));
+        }
+    };
+
+    const retryControlHelp = (controlId: number) => {
+        setHelpData(prev => { const next = { ...prev }; delete next[controlId]; return next; });
+        setHelpError(prev => ({ ...prev, [controlId]: null }));
+        fetchControlHelp(controlId);
     };
 
     const handleFileSelect = (itemId: number, file: File) => {
@@ -243,6 +297,23 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                             )}
                                             <button
                                                 type="button"
+                                                onClick={() => fetchControlHelp(item.control_id)}
+                                                disabled={helpLoading[item.control_id]}
+                                                className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium border transition-all ${
+                                                    activeHelpControlId === item.control_id
+                                                        ? 'bg-purple-100 dark:bg-purple-900/40 border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300'
+                                                        : 'border-purple-200 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40'
+                                                }`}
+                                                title="Get AI explanation for this control"
+                                            >
+                                                {helpLoading[item.control_id]
+                                                    ? <Loader2 className="w-3 h-3 animate-spin" />
+                                                    : <Sparkles className="w-3 h-3" />
+                                                }
+                                                {helpLoading[item.control_id] ? 'Loading...' : 'AI Help'}
+                                            </button>
+                                            <button
+                                                type="button"
                                                 onClick={() => setExpanded(isExpanded ? null : item.id)}
                                                 className="text-gray-400 hover:text-gray-600"
                                             >
@@ -255,6 +326,98 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                 <CardContent className="space-y-4">
                                     {/* Description */}
                                     <p className="text-sm text-gray-600 dark:text-gray-300">{item.control.description}</p>
+
+                                    {/* AI Help Panel */}
+                                    {activeHelpControlId === item.control_id && (
+                                        <div className="rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/20 overflow-hidden transition-all duration-200">
+                                            {/* Panel header */}
+                                            <div className="flex items-center justify-between px-4 py-2.5 border-b border-purple-200 dark:border-purple-800 bg-purple-100/60 dark:bg-purple-900/30">
+                                                <div className="flex items-center gap-2">
+                                                    <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                                                    <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">
+                                                        AI Guidance — {item.control.control_id} {item.control.title}
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setActiveHelpControlId(null)}
+                                                    className="text-purple-400 hover:text-purple-600 dark:hover:text-purple-300 transition-colors"
+                                                >
+                                                    <X className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+
+                                            {/* Loading state */}
+                                            {helpLoading[item.control_id] && (
+                                                <div className="flex items-center gap-2 px-4 py-4 text-sm text-purple-600 dark:text-purple-400">
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                    Asking Claude for guidance...
+                                                </div>
+                                            )}
+
+                                            {/* Error state */}
+                                            {!helpLoading[item.control_id] && helpError[item.control_id] && (
+                                                <div className="px-4 py-3 space-y-2">
+                                                    <p className="text-xs text-red-600 dark:text-red-400">{helpError[item.control_id]}</p>
+                                                    {helpError[item.control_id] !== 'Too many requests. Please wait a moment before asking for more guidance.' && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => retryControlHelp(item.control_id)}
+                                                            className="text-xs text-purple-600 dark:text-purple-400 underline hover:no-underline"
+                                                        >
+                                                            Retry
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Content */}
+                                            {!helpLoading[item.control_id] && helpData[item.control_id] && (() => {
+                                                const ex = helpData[item.control_id];
+                                                return (
+                                                    <div className="px-4 py-3 space-y-3 text-xs">
+                                                        {/* Plain English */}
+                                                        <div>
+                                                            <p className="font-semibold text-purple-700 dark:text-purple-300 mb-1">💬 What this means</p>
+                                                            <p className="text-gray-700 dark:text-gray-300">{ex.plain_english}</p>
+                                                        </div>
+
+                                                        {/* What it requires */}
+                                                        <div>
+                                                            <p className="font-semibold text-purple-700 dark:text-purple-300 mb-1">✅ What it requires</p>
+                                                            <ul className="space-y-0.5 text-gray-700 dark:text-gray-300">
+                                                                {ex.what_it_requires.map((req, i) => (
+                                                                    <li key={i} className="flex gap-1.5"><span className="text-purple-400 flex-shrink-0">•</span>{req}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+
+                                                        {/* Evidence examples */}
+                                                        <div>
+                                                            <p className="font-semibold text-purple-700 dark:text-purple-300 mb-1">📎 Evidence examples</p>
+                                                            <ul className="space-y-0.5 text-gray-700 dark:text-gray-300">
+                                                                {ex.evidence_examples.map((ev, i) => (
+                                                                    <li key={i} className="flex gap-1.5"><span className="text-purple-400 flex-shrink-0">•</span>{ev}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+
+                                                        {/* Compliant looks like */}
+                                                        <div>
+                                                            <p className="font-semibold text-purple-700 dark:text-purple-300 mb-1">✔ Compliant implementation looks like</p>
+                                                            <p className="text-gray-700 dark:text-gray-300">{ex.compliant_looks_like}</p>
+                                                        </div>
+
+                                                        {/* Risk */}
+                                                        <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 px-3 py-2">
+                                                            <p className="font-semibold text-amber-700 dark:text-amber-400 mb-0.5">⚠ Risk if not implemented</p>
+                                                            <p className="text-gray-700 dark:text-gray-300">{ex.non_compliant_risks}</p>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })()}
+                                        </div>
+                                    )}
 
                                     {/* Guidance — expandable */}
                                     {isExpanded && item.control.implementation_guidance && (

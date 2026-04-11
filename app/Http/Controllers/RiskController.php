@@ -6,6 +6,7 @@ use App\Models\Control;
 use App\Models\Framework;
 use App\Models\Notification;
 use App\Models\Risk;
+use App\Models\RiskAppetite;
 use App\Models\AuditLog;
 use App\Services\AIControlLinker;
 use App\Services\AIService;
@@ -51,8 +52,26 @@ class RiskController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        $appetite = RiskAppetite::getActive();
+
+        // Client filter: escalated_only — collect escalated IDs if appetite active
+        if ($request->escalated_only && $appetite) {
+            $allRisks      = Risk::all();
+            $escalatedIds  = $allRisks
+                ->filter(fn ($r) => $appetite->classifyRisk($r)['band'] === 'escalated')
+                ->pluck('id')
+                ->toArray();
+            $paginator = Risk::with(['user', 'sourceControl.framework'])
+                ->whereIn('id', $escalatedIds)
+                ->orderByRaw('likelihood * impact DESC')
+                ->paginate(15)
+                ->withQueryString();
+        }
+
         $paginator->through(fn($risk) => array_merge($risk->toArray(), [
             'framework_name' => $risk->sourceControl?->framework?->short_name ?? null,
+            'risk_score'     => $risk->risk_score,
+            'appetite_band'  => $appetite?->classifyRisk($risk),
         ]));
 
         $stats = [
@@ -74,8 +93,9 @@ class RiskController extends Controller
             'risks'        => $paginator,
             'stats'        => $stats,
             'riskExposure' => $riskExposure,
-            'filters'      => $request->only(['search', 'status', 'level', 'category', 'has_plan', 'framework']),
+            'filters'      => $request->only(['search', 'status', 'level', 'category', 'has_plan', 'framework', 'escalated_only']),
             'frameworks'   => $frameworks,
+            'appetite'     => $appetite,
         ]);
     }
 

@@ -13,6 +13,7 @@ import {
     ScrollText,
     Settings,
     Shield,
+    Sliders,
     Sparkles,
     Users,
 } from "lucide-react"
@@ -29,42 +30,54 @@ type SharedProps = {
     notifications: {
         unread_count: number
         pending_approvals_count: number
+        open_remediation_tasks: number
     }
 }
 
 const mainNavigation = [
-    { name: "Dashboard",    href: "/dashboard",    icon: LayoutDashboard, roles: ['admin', 'auditor', 'user'] },
-    { name: "AI Assistant", href: "/chatbot",      icon: Sparkles,        roles: ['admin', 'auditor', 'user'] },
-    { name: "Risk Register",href: "/risks",        icon: AlertTriangle,   roles: ['admin', 'auditor', 'user'] },
-    { name: "Assessments",  href: "/assessments",  icon: ClipboardList,   roles: ['admin', 'auditor', 'user'] },
-    { name: "Evidence",     href: "/evidence",     icon: FolderOpen,      roles: ['admin', 'auditor', 'user'] },
-    { name: "Gap Analysis",  href: "/gap-analysis",  icon: FileCheck,    roles: ['admin', 'auditor', 'user'] },
-    { name: "Crosswalk",     href: "/crosswalk",     icon: GitCompare,   roles: ['admin', 'auditor', 'user'] },
-    { name: "Controls Hub",  href: "/controls/hub",  icon: LayoutGrid,   roles: ['admin', 'auditor', 'user'] },
-    { name: "Reports",       href: "/reports",        icon: BarChart3,    roles: ['admin', 'auditor', 'user'] },
+    { name: "Dashboard",         href: "/dashboard",         icon: LayoutDashboard, roles: ['admin', 'auditor', 'user'] },
+    { name: "AI Assistant",      href: "/chatbot",            icon: Sparkles,        roles: ['admin', 'auditor', 'user'] },
+    { name: "Risk Register",     href: "/risks",              icon: AlertTriangle,   roles: ['admin', 'auditor', 'user'] },
+    { name: "Assessments",       href: "/assessments",        icon: ClipboardList,   roles: ['admin', 'auditor', 'user'] },
+    { name: "Evidence",          href: "/evidence",           icon: FolderOpen,      roles: ['admin', 'auditor', 'user'] },
+    { name: "Gap Analysis",      href: "/gap-analysis",       icon: FileCheck,       roles: ['admin', 'auditor', 'user'] },
+    { name: "Crosswalk",         href: "/crosswalk",          icon: GitCompare,      roles: ['admin', 'auditor', 'user'] },
+    { name: "Controls Hub",      href: "/controls/hub",       icon: LayoutGrid,      roles: ['admin', 'auditor', 'user'] },
+    { name: "Remediation Tasks", href: "/remediation-tasks",  icon: ClipboardList,   roles: ['admin', 'user'], badgeKey: 'remediation' },
+    { name: "Reports",           href: "/reports",            icon: BarChart3,       roles: ['admin', 'auditor', 'user'] },
 ]
 
 const reviewNavigation = [
-    { name: "Approval Queue", href: "/controls/approvals", icon: Clock,      roles: ['admin', 'auditor'] },
+    { name: "Approval Queue", href: "/controls/approvals", icon: Clock,      roles: ['admin', 'auditor'], badgeKey: 'approvals' },
     { name: "Audit Logs",     href: "/audit-logs",         icon: ScrollText, roles: ['admin', 'auditor'] },
-    { name: "Notifications",  href: "/notifications",      icon: Bell,       roles: ['admin', 'auditor', 'user'] },
+    { name: "Notifications",  href: "/notifications",      icon: Bell,       roles: ['admin', 'auditor', 'user'], badgeKey: 'notifications' },
 ]
 
 const adminNavigation = [
     { name: "Users & Roles",    href: "/admin/users",      icon: Users },
     { name: "Frameworks",       href: "/admin/frameworks", icon: Shield },
     { name: "Controls Library", href: "/admin/controls",   icon: Settings },
+    { name: "Risk Appetite",    href: "/risk-appetite",    icon: Sliders },
 ]
 
 export function AdminSidebar() {
     const { auth, notifications } = usePage<SharedProps>().props
-    const unreadCount       = notifications?.unread_count ?? 0
-    const pendingApprovals  = notifications?.pending_approvals_count ?? 0
+    const unreadCount          = notifications?.unread_count ?? 0
+    const pendingApprovals     = notifications?.pending_approvals_count ?? 0
+    const openRemediationTasks = notifications?.open_remediation_tasks ?? 0
     const url       = usePage().url as string
     const isAdmin   = auth.user.role === 'admin'
     const isAuditor = auth.user.role === 'auditor'
     const initials  = auth.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
     const roleName  = isAdmin ? 'Administrator' : isAuditor ? 'Auditor' : 'User'
+
+    const getBadge = (badgeKey?: string): number | undefined => {
+        if (!badgeKey) return undefined
+        if (badgeKey === 'notifications' && unreadCount > 0)          return unreadCount
+        if (badgeKey === 'approvals'     && pendingApprovals > 0)     return pendingApprovals
+        if (badgeKey === 'remediation'   && openRemediationTasks > 0) return openRemediationTasks
+        return undefined
+    }
 
     return (
         <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
@@ -88,7 +101,12 @@ export function AdminSidebar() {
                         {mainNavigation
                             .filter(item => item.roles.includes(auth.user.role))
                             .map((item) => (
-                                <NavItem key={item.name} item={item} currentUrl={url} />
+                                <NavItem
+                                    key={item.name}
+                                    item={item}
+                                    currentUrl={url}
+                                    badge={getBadge((item as any).badgeKey)}
+                                />
                             ))
                         }
                     </ul>
@@ -106,13 +124,7 @@ export function AdminSidebar() {
                                         key={item.name}
                                         item={item}
                                         currentUrl={url}
-                                        badge={
-                                            item.href === '/notifications' && unreadCount > 0
-                                                ? unreadCount
-                                                : item.href === '/controls/approvals' && pendingApprovals > 0
-                                                    ? pendingApprovals
-                                                    : undefined
-                                        }
+                                        badge={getBadge((item as any).badgeKey)}
                                     />
                                 ))
                             }

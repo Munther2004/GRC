@@ -7,7 +7,7 @@ import { RiskTrendChart } from "@/components/admin/risk-trend-chart"
 import { TopRisks } from "@/components/admin/top-risks"
 import AdminLayout from "@/layouts/admin-layout"
 import { Link, usePage } from "@inertiajs/react"
-import { AlertTriangle, Clock, FileCheck, Zap, ShieldAlert, Sparkles, Loader2, XCircle, Activity } from "lucide-react"
+import { AlertTriangle, Clock, FileCheck, Zap, ShieldAlert, Sparkles, Loader2, XCircle, Activity, Sliders } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -104,6 +104,14 @@ type HealthScore = {
     }
 }
 
+type AppetiteCounts = {
+    name: string
+    escalated: number
+    review: number
+    acceptable: number
+    labels: { escalated: string; review: string; acceptable: string }
+}
+
 type Props = {
     stats: Stats
     recentRisks: Risk[]
@@ -116,6 +124,7 @@ type Props = {
     lastSchedulerRun: string | null
     kriSnapshots: KriSnapshot[]
     healthScore: HealthScore
+    appetiteCounts: AppetiteCounts | null
 }
 
 function KpiCards({ kpis, stats }: { kpis: Kpis; stats: Stats }) {
@@ -484,7 +493,7 @@ function HealthScoreCard({ healthScore }: { healthScore: HealthScore }) {
     )
 }
 
-export default function AdminDashboard({ stats, recentRisks, recentActivity, recentAssessments, trendData, heatmap, kpis, ruleAdjustments, lastSchedulerRun, kriSnapshots, healthScore }: Props) {
+export default function AdminDashboard({ stats, recentRisks, recentActivity, recentAssessments, trendData, heatmap, kpis, ruleAdjustments, lastSchedulerRun, kriSnapshots, healthScore, appetiteCounts }: Props) {
     const { notifications } = usePage<{ notifications: { unread_count: number; recent: NotificationItem[] } }>().props
     const unreadCount = notifications?.unread_count ?? 0
     const recent: NotificationItem[] = notifications?.recent ?? []
@@ -570,11 +579,59 @@ export default function AdminDashboard({ stats, recentRisks, recentActivity, rec
                 <QuickActions />
                 <ExecutiveSummaryButton />
 
+                {/* Executive Dashboard entry point */}
+                <Link href="/executive-dashboard">
+                    <Card className="border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 hover:shadow-md transition-shadow cursor-pointer">
+                        <CardContent className="p-4 flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center shrink-0">
+                                    <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Executive Dashboard</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Printable one-page compliance &amp; risk summary for stakeholders</p>
+                                </div>
+                            </div>
+                            <Button size="sm" className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 pointer-events-none">
+                                <Activity className="w-3.5 h-3.5" /> Open
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </Link>
+
                 {/* Health Score */}
                 <HealthScoreCard healthScore={healthScore} />
 
                 {/* KPI Section */}
                 <KpiCards kpis={kpis} stats={stats} />
+
+                {/* Risk Appetite Summary */}
+                {appetiteCounts && (
+                    <Link href="/risk-appetite">
+                        <div className="flex flex-wrap items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
+                            <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
+                                <Sliders className="w-4 h-4 text-gray-500" />
+                                <span>{appetiteCounts.name}:</span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                {appetiteCounts.escalated > 0 && (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700">
+                                        ⚠️ {appetiteCounts.escalated} {appetiteCounts.labels.escalated}
+                                    </span>
+                                )}
+                                {appetiteCounts.review > 0 && (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700">
+                                        {appetiteCounts.review} {appetiteCounts.labels.review}
+                                    </span>
+                                )}
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700">
+                                    {appetiteCounts.acceptable} {appetiteCounts.labels.acceptable}
+                                </span>
+                            </div>
+                            <span className="ml-auto text-xs text-gray-400 shrink-0">Configure →</span>
+                        </div>
+                    </Link>
+                )}
 
                 {/* KRI Trends */}
                 <KriTrends snapshots={kriSnapshots} />

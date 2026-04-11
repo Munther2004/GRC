@@ -27,10 +27,8 @@ class DashboardController extends Controller
             'compliance_score'  => (function () {
                 // Exclude not_applicable — they don't factor into compliance %
                 $applicable = Control::where('is_active', true)
-                    ->where(function ($q) {
-                        $q->whereNull('current_status')
-                          ->orWhere('current_status', '!=', 'not_applicable');
-                    });
+                    ->where('current_status', '!=', 'not_applicable');
+
                 $total     = (clone $applicable)->count();
                 $compliant = (clone $applicable)->where('current_status', 'compliant')->count();
                 $partial   = (clone $applicable)->where('current_status', 'partially_compliant')->count();
@@ -119,6 +117,14 @@ class DashboardController extends Controller
                     ->whereBetween('updated_at', [now()->subWeeks(2), now()->subWeek()])
                     ->avg('compliance_percentage') ?? 0, 1
             ),
+            // Average evidence-weighted score across completed assessments (null when none reviewed yet)
+            'evidence_weighted_compliance' => Assessment::where('status', 'completed')
+                ->whereNotNull('evidence_weighted_score')
+                ->avg('evidence_weighted_score') !== null
+                    ? round(Assessment::where('status', 'completed')
+                        ->whereNotNull('evidence_weighted_score')
+                        ->avg('evidence_weighted_score'), 1)
+                    : null,
         ];
 
         $ruleAdjustments = AuditLog::where(function ($q) {

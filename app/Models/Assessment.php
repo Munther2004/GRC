@@ -9,11 +9,13 @@ class Assessment extends Model
     protected $fillable = [
         'user_id', 'framework_id', 'title', 'scope', 'period',
         'due_date', 'status', 'compliance_percentage', 'description',
+        'evidence_weighted_score',
     ];
 
     protected $casts = [
-        'due_date'              => 'date',
-        'compliance_percentage' => 'float',
+        'due_date'                => 'date',
+        'compliance_percentage'   => 'float',
+        'evidence_weighted_score' => 'float',
     ];
 
     public function user()       { return $this->belongsTo(User::class); }
@@ -35,5 +37,11 @@ class Assessment extends Model
 
         $percentage = round(($compliant / $items->count()) * 100, 1);
         $this->update(['compliance_percentage' => $percentage]);
+    }
+
+    public function recalculateEvidenceWeightedScore(): void
+    {
+        $scoring = (new \App\Services\EvidenceScoringService())->calculateEvidenceWeightedScore($this);
+        $this->update(['evidence_weighted_score' => $scoring['weighted_score']]);
     }
 }

@@ -12,6 +12,7 @@ use App\Models\Evidence;
 use App\Models\Framework;
 use App\Models\Notification;
 use App\Models\Risk;
+use App\Services\EvidenceScoringService;
 use App\Services\RulesEngine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -143,11 +144,14 @@ class AssessmentController extends Controller
             ];
         });
 
+        $evidenceScore = (new EvidenceScoringService())->calculateEvidenceWeightedScore($assessment);
+
         return Inertia::render('assessments/show', [
-            'assessment' => $assessment,
-            'breakdown'  => $breakdown,
-            'byCategory' => $byCategory,
-            'items'      => $items,
+            'assessment'     => $assessment,
+            'breakdown'      => $breakdown,
+            'byCategory'     => $byCategory,
+            'items'          => $items,
+            'evidenceScore'  => $evidenceScore,
         ]);
     }
 
@@ -245,6 +249,7 @@ class AssessmentController extends Controller
         });
 
         $assessment->recalculateCompliance();
+        $assessment->recalculateEvidenceWeightedScore();
         $assessment->update(['status' => 'completed']);
 
         AuditLog::record(
@@ -279,6 +284,7 @@ class AssessmentController extends Controller
     public function submit(Assessment $assessment)
     {
         $assessment->recalculateCompliance();
+        $assessment->recalculateEvidenceWeightedScore();
         $assessment->update(['status' => 'completed']);
 
         AuditLog::record(

@@ -59,6 +59,7 @@ type Kpis = {
     pending_evidence: number
     compliance_this_week: number
     compliance_last_week: number
+    evidence_weighted_compliance: number | null
 }
 
 type NotificationItem = {
@@ -167,20 +168,39 @@ function KpiCards({ kpis, stats }: { kpis: Kpis; stats: Stats }) {
                     </CardContent>
                 </Card>
 
-                {/* Card 3 — Live Compliance Score */}
+                {/* Card 3 — Compliance Score (evidence-weighted primary) */}
                 <Card>
                     <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Compliance Score</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
-                        <p className={`text-3xl font-bold ${compliance >= 70 ? 'text-green-500' : compliance >= 40 ? 'text-amber-500' : 'text-red-500'}`}>
-                            {compliance}%
-                        </p>
-                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                            <div
-                                className={`h-full rounded-full transition-all ${compliance >= 70 ? 'bg-green-500' : compliance >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
-                                style={{ width: `${compliance}%` }}
-                            />
-                        </div>
-                        <p className="text-xs text-muted-foreground">live from controls table</p>
+                        {kpis.evidence_weighted_compliance !== null ? (
+                            <>
+                                <p className={`text-3xl font-bold ${kpis.evidence_weighted_compliance >= 70 ? 'text-green-500' : kpis.evidence_weighted_compliance >= 40 ? 'text-amber-500' : 'text-red-500'}`}>
+                                    {kpis.evidence_weighted_compliance}%
+                                </p>
+                                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                                    <div
+                                        className={`h-full rounded-full transition-all ${kpis.evidence_weighted_compliance >= 70 ? 'bg-green-500' : kpis.evidence_weighted_compliance >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                                        style={{ width: `${kpis.evidence_weighted_compliance}%` }}
+                                    />
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    evidence-backed &middot; self-assessed: {compliance}%
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                <p className={`text-3xl font-bold ${compliance >= 70 ? 'text-green-500' : compliance >= 40 ? 'text-amber-500' : 'text-red-500'}`}>
+                                    {compliance}%
+                                </p>
+                                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                                    <div
+                                        className={`h-full rounded-full transition-all ${compliance >= 70 ? 'bg-green-500' : compliance >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                                        style={{ width: `${compliance}%` }}
+                                    />
+                                </div>
+                                <p className="text-xs text-muted-foreground">live from controls · no evidence reviews yet</p>
+                            </>
+                        )}
                     </CardContent>
                 </Card>
 

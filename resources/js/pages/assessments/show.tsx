@@ -13,6 +13,7 @@ import axios from 'axios';
 
 interface Assessment {
     id: number; title: string; status: string; compliance_percentage: number;
+    evidence_weighted_score: number | null;
     period: string; scope: string; description: string | null;
     due_date: string | null; created_at: string;
     user: { name: string };
@@ -26,11 +27,21 @@ interface Item {
     control: { control_id: string; title: string; category: string };
 }
 
+interface EvidenceScore {
+    weighted_score: number;
+    raw_score: number;
+    fully_evidenced: number;
+    weak_evidence: number;
+    no_evidence: number;
+    total_applicable: number;
+}
+
 interface Props {
     assessment: Assessment;
     breakdown: { compliant: number; partially_compliant: number; non_compliant: number; not_applicable: number };
     byCategory: Record<string, { total: number; compliant: number; percentage: number }>;
     items: Item[];
+    evidenceScore: EvidenceScore;
 }
 
 interface KeyFinding {
@@ -61,6 +72,19 @@ const complianceBg = (pct: number) => {
     return 'bg-red-500';
 };
 
+// Evidence-backed score uses tighter thresholds (≥70 green, 40-69 amber, <40 red)
+const evidenceScoreColor = (pct: number) => {
+    if (pct >= 70) return 'text-green-600';
+    if (pct >= 40) return 'text-amber-500';
+    return 'text-red-500';
+};
+
+const evidenceScoreBg = (pct: number) => {
+    if (pct >= 70) return 'bg-green-500';
+    if (pct >= 40) return 'bg-amber-500';
+    return 'bg-red-500';
+};
+
 const STATUS_STYLES: Record<string, string> = {
     'Strong':             'bg-green-100 text-green-700 border-green-300',
     'Adequate':           'bg-blue-100 text-blue-700 border-blue-300',
@@ -83,7 +107,7 @@ const SEVERITY_STYLES: Record<string, string> = {
     'Low':    'bg-green-100 text-green-700 border-green-200',
 };
 
-export default function AssessmentShow({ assessment, breakdown, byCategory, items }: Props) {
+export default function AssessmentShow({ assessment, breakdown, byCategory, items, evidenceScore }: Props) {
     const { auth } = usePage().props as any;
     const canEdit  = auth.user.role === 'admin' || auth.user.role === 'user';
 
@@ -167,25 +191,60 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                         {/* Compliance Score */}
                         <Card>
                             <CardHeader><CardTitle className="text-base">Compliance Score</CardTitle></CardHeader>
-                            <CardContent>
-                                <div className="flex items-end gap-4 mb-4">
-                                    <span className={`text-6xl font-bold ${complianceColor(assessment.compliance_percentage)}`}>
-                                        {assessment.compliance_percentage}%
-                                    </span>
-                                    <div className="mb-2">
-                                        <p className="text-sm text-gray-500">{assessment.framework.name}</p>
-                                        <p className="text-xs text-gray-400">{total} controls assessed</p>
+                            <CardContent className="space-y-5">
+
+                                {/* ── Evidence-Backed Score (primary) ──────────────── */}
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Evidence-Backed Score</p>
+                                    <div className="flex items-end gap-4 mb-3">
+                                        <span className={`text-6xl font-bold ${evidenceScoreColor(evidenceScore.weighted_score)}`}>
+                                            {evidenceScore.weighted_score}%
+                                        </span>
+                                        <div className="mb-2">
+                                            <p className="text-sm text-gray-500">{assessment.framework.name}</p>
+                                            <p className="text-xs text-gray-400">{total} controls assessed</p>
+                                        </div>
+                                    </div>
+                                    <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full rounded-full transition-all ${evidenceScoreBg(evidenceScore.weighted_score)}`}
+                                            style={{ width: `${evidenceScore.weighted_score}%` }}
+                                        />
                                     </div>
                                 </div>
-                                <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
-                                    <div
-                                        className={`h-full rounded-full transition-all ${complianceBg(assessment.compliance_percentage)}`}
-                                        style={{ width: `${assessment.compliance_percentage}%` }}
-                                    />
+
+                                {/* ── Self-Assessment Score (secondary) ────────────── */}
+                                <div className="flex items-center gap-3">
+                                    <div>
+                                        <span className={`text-2xl font-semibold ${complianceColor(assessment.compliance_percentage)}`}>
+                                            {assessment.compliance_percentage}%
+                                        </span>
+                                        <span className="ml-2 text-xs text-gray-400">Self-assessed</span>
+                                    </div>
                                 </div>
 
-                                {/* Breakdown */}
-                                <div className="grid grid-cols-4 gap-3 mt-4">
+                                {/* ── Evidence quality breakdown ────────────────────── */}
+                                <div className="flex flex-wrap gap-4 pt-1 border-t border-gray-100 dark:border-gray-700">
+                                    <span className="flex items-center gap-1.5 text-sm text-green-600">
+                                        <CheckCircle className="w-4 h-4" />
+                                        <strong>{evidenceScore.fully_evidenced}</strong> Fully evidenced
+                                    </span>
+                                    <span className="flex items-center gap-1.5 text-sm text-amber-500">
+                                        <AlertTriangle className="w-4 h-4" />
+                                        <strong>{evidenceScore.weak_evidence}</strong> Weak evidence
+                                    </span>
+                                    <span className="flex items-center gap-1.5 text-sm text-red-500">
+                                        <XCircle className="w-4 h-4" />
+                                        <strong>{evidenceScore.no_evidence}</strong> No evidence
+                                    </span>
+                                </div>
+
+                                <p className="text-xs text-gray-400 italic">
+                                    Score reflects both self-assessment answers and uploaded evidence quality.
+                                </p>
+
+                                {/* ── Status breakdown ─────────────────────────────── */}
+                                <div className="grid grid-cols-4 gap-3">
                                     {[
                                         { label: 'Compliant',     value: breakdown.compliant,           icon: CheckCircle,   color: 'text-green-500' },
                                         { label: 'Partial',       value: breakdown.partially_compliant, icon: AlertTriangle, color: 'text-yellow-500' },

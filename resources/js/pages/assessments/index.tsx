@@ -15,6 +15,7 @@ interface Assessment {
     title: string;
     status: string;
     compliance_percentage: number;
+    evidence_weighted_score: number | null;
     period: string;
     due_date: string | null;
     created_at: string;
@@ -162,7 +163,7 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
                             <table className="w-full text-sm">
                                 <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
                                     <tr>
-                                        {['Assessment', 'Framework', 'Period', 'Compliance', 'Status', 'Due Date', 'Actions'].map(h => (
+                                        {['Assessment', 'Framework', 'Period', 'Self-Assessed', 'Evidence Score', 'Status', 'Due Date', 'Actions'].map(h => (
                                             <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
                                         ))}
                                     </tr>
@@ -170,7 +171,7 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
                                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                                     {assessments.data.length === 0 ? (
                                         <tr>
-                                            <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
+                                            <td colSpan={8} className="px-4 py-12 text-center text-gray-400">
                                                 No assessments found. <Link href={route('assessments.create')} className="text-blue-500 hover:underline">Create one.</Link>
                                             </td>
                                         </tr>
@@ -184,6 +185,7 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
                                                 <Badge variant="outline" className="text-xs">{a.framework?.short_name}</Badge>
                                             </td>
                                             <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{a.period}</td>
+                                            {/* Self-Assessed column */}
                                             <td className="px-4 py-3">
                                                 {a.status === 'draft' ? (
                                                     <span className="text-gray-400 text-xs">Not started</span>
@@ -199,6 +201,25 @@ export default function AssessmentsIndex({ assessments, frameworks, stats, filte
                                                             {a.compliance_percentage}%
                                                         </span>
                                                     </div>
+                                                )}
+                                            </td>
+
+                                            {/* Evidence Score column */}
+                                            <td className="px-4 py-3">
+                                                {a.evidence_weighted_score !== null ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                            <div
+                                                                className={`h-full rounded-full ${a.evidence_weighted_score >= 70 ? 'bg-green-500' : a.evidence_weighted_score >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                                                                style={{ width: `${a.evidence_weighted_score}%` }}
+                                                            />
+                                                        </div>
+                                                        <span className={`text-sm font-semibold ${a.evidence_weighted_score >= 70 ? 'text-green-600' : a.evidence_weighted_score >= 40 ? 'text-amber-500' : 'text-red-500'}`}>
+                                                            {a.evidence_weighted_score}%
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-xs text-gray-400">Pending review</span>
                                                 )}
                                             </td>
                                             <td className="px-4 py-3">

@@ -9,6 +9,7 @@ use App\Models\Assessment;
 use App\Models\ControlStatusHistory;
 use App\Services\AIService;
 use App\Services\EvidenceFileExtractor;
+use App\Services\EvidenceScoringService;
 use App\Services\RulesEngine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -73,6 +74,8 @@ class EvidenceController extends Controller
             $evidence->id,
             "Evidence '{$evidence->title}' approved"
         );
+
+        $this->recalculateLinkedAssessmentScore($evidence);
 
         return back()->with('success', 'Evidence approved.');
     }
@@ -159,6 +162,8 @@ class EvidenceController extends Controller
             }
         }
         // ────────────────────────────────────────────────────────────────────
+
+        $this->recalculateLinkedAssessmentScore($evidence);
 
         if (request()->wantsJson()) {
             return response()->json([
@@ -276,6 +281,24 @@ class EvidenceController extends Controller
             "AI reviewed evidence '{$evidence->title}' — verdict: {$result['verdict']}"
         );
 
+        // Refresh the model so getBestVerdict sees the new ai_verdict
+        $evidence->refresh();
+        $this->recalculateLinkedAssessmentScore($evidence);
+
         return response()->json($result);
+    }
+
+    /**
+     * If the evidence is linked to an assessment item, recalculate the parent
+     * assessment's evidence-weighted score so the stored value stays in sync.
+     */
+    private function recalculateLinkedAssessmentScore(Evidence $evidence): void
+    {
+        $evidence->loadMissing('assessmentItem.assessment');
+        $assessment = $evidence->assessmentItem?->assessment;
+
+        if ($assessment) {
+            $assessment->recalculateEvidenceWeightedScore();
+        }
     }
 }

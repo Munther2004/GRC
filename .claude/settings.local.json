@@ -28,7 +28,12 @@
       "Bash(php -l app/Http/Controllers/DashboardController.php)",
       "Bash(php artisan tinker 2)",
       "Bash(1:*)",
-      "Bash(php artisan risks:link-controls)"
+      "Bash(php artisan risks:link-controls)",
+      "Bash(php artisan:*)",
+      "Bash(where php:*)",
+      "Read(//c/laragon/bin/php/**)",
+      "Read(//c/laragon/bin/php//**)",
+      "Bash(\"C:/laragon/bin/php/php-8.4.12-nts-Win32-vs17-x64/php.exe\" artisan:*)"
     ]
   }
 }

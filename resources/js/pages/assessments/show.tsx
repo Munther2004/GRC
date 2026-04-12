@@ -1,4 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import type { SharedProps } from '@/types';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
@@ -108,7 +109,7 @@ const SEVERITY_STYLES: Record<string, string> = {
 };
 
 export default function AssessmentShow({ assessment, breakdown, byCategory, items, evidenceScore }: Props) {
-    const { auth } = usePage().props as any;
+    const { auth } = usePage<SharedProps>().props;
     const canEdit  = auth.user.role === 'admin' || auth.user.role === 'user';
 
     const [aiSummary, setAiSummary]       = useState<AISummary | null>(null);
@@ -424,8 +425,8 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                                         : <><Copy className="w-3.5 h-3.5" /> Copy Summary</>
                                     }
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={copySummary} className="gap-1.5">
-                                    <Download className="w-3.5 h-3.5" /> Export
+                                <Button variant="outline" size="sm" onClick={() => window.open(route('assessments.export-pdf', assessment.id), '_blank')} className="gap-1.5">
+                                    <Download className="w-3.5 h-3.5" /> Export PDF
                                 </Button>
                             </div>
                         </div>

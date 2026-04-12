@@ -7,6 +7,97 @@ use Illuminate\Support\Facades\Log;
 
 class AIService
 {
+    // ── Model constants ────────────────────────────────────────────────────────
+    // Single source of truth for every model reference in this service.
+    // Rationale for each choice:
+    //   MODEL_DEFAULT    — complex reasoning tasks (risk scoring, evidence review, chatbot)
+    //   MODEL_ANALYTICAL — long-form structured reports (executive summaries, gap analysis,
+    //                      control explanations) where prose quality matters most
+    private const MODEL_DEFAULT    = 'claude-opus-4-5';
+    private const MODEL_ANALYTICAL = 'claude-sonnet-4-20250514';
+
+    // ── API constants ──────────────────────────────────────────────────────────
+    private const API_URL     = 'https://api.anthropic.com/v1/messages';
+    private const API_VERSION = '2023-06-01';
+
+    // ── Canonical verdict values ───────────────────────────────────────────────
+    // All AI methods that return an evidence verdict MUST use exactly these strings.
+    // Consumers (EvidenceScoringService, AssessmentComparisonController, frontend)
+    // must match these values exactly — do not lowercase or underscore them.
+    public const VERDICT_ADEQUATE  = 'Adequate';
+    public const VERDICT_PARTIAL   = 'Partially Adequate';
+    public const VERDICT_INSUFFICIENT = 'Insufficient';
+
+    public const VERDICTS = [
+        self::VERDICT_ADEQUATE,
+        self::VERDICT_PARTIAL,
+        self::VERDICT_INSUFFICIENT,
+    ];
+
+    // ── Private HTTP transport ─────────────────────────────────────────────────
+
+    /**
+     * Single raw Anthropic API call. Every public AI method routes through here.
+     *
+     * @param  array        $messages   Array of {role, content} turns.
+     *                                  Content may be a plain string or an array of
+     *                                  content blocks (multimodal: image, document, text).
+     * @param  string       $model      Use one of the MODEL_* class constants.
+     * @param  int          $maxTokens  Max completion tokens.
+     * @param  string|null  $system     Optional system prompt.
+     * @return string  Raw response text with markdown fences already stripped.
+     *                 Returns '' on any API or network failure (callers handle that).
+     *
+     * TODO(perf): Move long-running callers (reviewEvidence, generateGapAnalysis,
+     *             generateExecutiveSummary) to queued Laravel jobs so HTTP requests
+     *             are not held open during AI inference. See finding #3.
+     */
+    private function callClaudeApi(
+        array   $messages,
+        string  $model     = self::MODEL_DEFAULT,
+        int     $maxTokens = 1024,
+        ?string $system    = null,
+    ): string {
+        try {
+            $body = [
+                'model'      => $model,
+                'max_tokens' => $maxTokens,
+                'messages'   => $messages,
+            ];
+
+            if ($system !== null) {
+                $body['system'] = $system;
+            }
+
+            $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'x-api-key'         => config('services.anthropic.key'),
+                    'anthropic-version' => self::API_VERSION,
+                    'Content-Type'      => 'application/json',
+                ])->post(self::API_URL, $body);
+
+            if ($response->failed()) {
+                Log::error('AIService: API error', [
+                    'status' => $response->status(),
+                    'body'   => $response->body(),
+                    'model'  => $model,
+                ]);
+                return '';
+            }
+
+            return $this->stripFences($response->json()['content'][0]['text'] ?? '');
+
+        } catch (\Throwable $e) {
+            Log::error('AIService: API exception', [
+                'message' => $e->getMessage(),
+                'model'   => $model,
+            ]);
+            return '';
+        }
+    }
+
+    // ── Public API ─────────────────────────────────────────────────────────────
+
     public function validateRiskScores(string $title, string $description, int $likelihood, int $impact): array
     {
         try {
@@ -128,31 +219,21 @@ PROMPT;
             }
             $messages[] = ['role' => 'user', 'content' => $userMessage];
 
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'x-api-key'         => config('services.anthropic.key'),
-                    'anthropic-version' => '2023-06-01',
-                    'Content-Type'      => 'application/json',
-                ])->post('https://api.anthropic.com/v1/messages', [
-                    'model'      => 'claude-opus-4-5',
-                    'max_tokens' => 2048,
-                    'system'     => $systemPrompt,
-                    'messages'   => $messages,
-                ]);
+            $reply = $this->callClaudeApi(
+                messages:  $messages,
+                model:     self::MODEL_DEFAULT,
+                maxTokens: 2048,
+                system:    $systemPrompt,
+            );
 
-            if ($response->failed()) {
-                Log::error('ComplianceChatbot API error', [
-                    'status' => $response->status(),
-                    'body'   => $response->body(),
-                ]);
-                return '';
+            if (empty($reply)) {
+                Log::error('AIService::complianceChatbot: empty response');
             }
 
-            $data = $response->json();
-            return trim($data['content'][0]['text'] ?? '');
+            return $reply;
 
         } catch (\Throwable $e) {
-            Log::error('ComplianceChatbot exception', ['message' => $e->getMessage()]);
+            Log::error('AIService::complianceChatbot exception', ['message' => $e->getMessage()]);
             return '';
         }
     }
@@ -171,7 +252,7 @@ PROMPT;
     public function reviewEvidence(array $evidenceData, string $fileContent, string $contentType): array
     {
         $default = [
-            'verdict'        => 'Insufficient',
+            'verdict'        => self::VERDICT_INSUFFICIENT,
             'confidence'     => 'Low',
             'strengths'      => '',
             'gaps'           => 'AI review could not be completed.',
@@ -238,36 +319,17 @@ PROMPT;
                 $userContent = $meta . "\n\n--- FILE CONTENT ---\n" . $fileContent;
             }
 
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'x-api-key'         => config('services.anthropic.key'),
-                    'anthropic-version' => '2023-06-01',
-                    'Content-Type'      => 'application/json',
-                ])->post('https://api.anthropic.com/v1/messages', [
-                    'model'      => 'claude-opus-4-5',
-                    'max_tokens' => 1024,
-                    'system'     => $systemPrompt,
-                    'messages'   => [
-                        ['role' => 'user', 'content' => $userContent],
-                    ],
-                ]);
+            $text = $this->callClaudeApi(
+                messages:  [['role' => 'user', 'content' => $userContent]],
+                model:     self::MODEL_DEFAULT,
+                maxTokens: 1024,
+                system:    $systemPrompt,
+            );
 
-            if ($response->failed()) {
-                Log::error('AIService::reviewEvidence API error', [
-                    'status' => $response->status(),
-                    'body'   => $response->body(),
-                ]);
+            if (empty($text)) {
+                Log::error('AIService::reviewEvidence: empty response');
                 return $default;
             }
-
-            $data = $response->json();
-            $text = $data['content'][0]['text'] ?? '';
-
-            // Strip markdown fences (same pattern used throughout this service)
-            $text = preg_replace('/^```json\s*/i', '', trim($text));
-            $text = preg_replace('/^```\s*/i',     '', trim($text));
-            $text = preg_replace('/```$/m',        '', trim($text));
-            $text = trim($text);
 
             $parsed = json_decode($text, true);
 
@@ -277,8 +339,8 @@ PROMPT;
             }
 
             return [
-                'verdict'        => in_array($parsed['verdict'] ?? '', ['Adequate', 'Partially Adequate', 'Insufficient'], true)
-                    ? $parsed['verdict'] : 'Insufficient',
+                'verdict'        => in_array($parsed['verdict'] ?? '', self::VERDICTS, true)
+                    ? $parsed['verdict'] : self::VERDICT_INSUFFICIENT,
                 'confidence'     => in_array($parsed['confidence'] ?? '', ['High', 'Medium', 'Low'], true)
                     ? $parsed['confidence'] : 'Medium',
                 'strengths'      => (string) ($parsed['strengths']      ?? ''),
@@ -337,35 +399,17 @@ PROMPT;
             $contextJson = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             $userPrompt  = "Generate a professional executive summary based on the following GRC system data:\n\n{$contextJson}";
 
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'x-api-key'         => config('services.anthropic.key'),
-                    'anthropic-version' => '2023-06-01',
-                    'Content-Type'      => 'application/json',
-                ])->post('https://api.anthropic.com/v1/messages', [
-                    'model'      => 'claude-sonnet-4-20250514',
-                    'max_tokens' => 2048,
-                    'system'     => $systemPrompt,
-                    'messages'   => [
-                        ['role' => 'user', 'content' => $userPrompt],
-                    ],
-                ]);
+            $text = $this->callClaudeApi(
+                messages:  [['role' => 'user', 'content' => $userPrompt]],
+                model:     self::MODEL_ANALYTICAL,
+                maxTokens: 2048,
+                system:    $systemPrompt,
+            );
 
-            if ($response->failed()) {
-                Log::error('AIService::generateExecutiveSummary API error', [
-                    'status' => $response->status(),
-                    'body'   => $response->body(),
-                ]);
+            if (empty($text)) {
+                Log::error('AIService::generateExecutiveSummary: empty response');
                 return $default;
             }
-
-            $text = $response->json()['content'][0]['text'] ?? '';
-
-            // Strip markdown fences if model wraps despite instructions
-            $text = preg_replace('/^```json\s*/i', '', trim($text));
-            $text = preg_replace('/^```\s*/i',     '', trim($text));
-            $text = preg_replace('/```$/m',        '', trim($text));
-            $text = trim($text);
 
             $parsed = json_decode($text, true);
 
@@ -414,33 +458,16 @@ SYS;
             . json_encode($data, JSON_UNESCAPED_UNICODE);
 
         try {
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'x-api-key'         => config('services.anthropic.key'),
-                    'anthropic-version' => '2023-06-01',
-                    'Content-Type'      => 'application/json',
-                ])->post('https://api.anthropic.com/v1/messages', [
-                    'model'      => 'claude-sonnet-4-20250514',
-                    'max_tokens' => 3000,
-                    'system'     => $systemPrompt,
-                    'messages'   => [
-                        ['role' => 'user', 'content' => $userPrompt],
-                    ],
-                ]);
+            $text = $this->callClaudeApi(
+                messages:  [['role' => 'user', 'content' => $userPrompt]],
+                model:     self::MODEL_ANALYTICAL,
+                maxTokens: 3000,
+                system:    $systemPrompt,
+            );
 
-            if ($response->failed()) {
-                Log::error('AIService::generateGapAnalysis API error', [
-                    'status' => $response->status(),
-                    'body'   => $response->body(),
-                ]);
-                throw new \RuntimeException('Claude API returned HTTP ' . $response->status());
+            if (empty($text)) {
+                throw new \RuntimeException('AI returned empty response for gap analysis');
             }
-
-            $text = $response->json()['content'][0]['text'] ?? '';
-            $text = preg_replace('/^```json\s*/i', '', trim($text));
-            $text = preg_replace('/^```\s*/i',     '', trim($text));
-            $text = preg_replace('/```$/m',         '', trim($text));
-            $text = trim($text);
 
             $parsed = json_decode($text, true);
             if (!is_array($parsed)) {
@@ -449,6 +476,7 @@ SYS;
             }
 
             return $parsed;
+
         } catch (\Throwable $e) {
             Log::error('AIService::generateGapAnalysis exception', ['message' => $e->getMessage()]);
             throw $e;
@@ -516,32 +544,16 @@ Provide a practical explanation in this exact JSON format:
 Be specific and practical. Write as if explaining to an IT manager, not a security expert. Return only valid JSON, no markdown, no extra text.
 PROMPT;
 
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'x-api-key'         => config('services.anthropic.key'),
-                    'anthropic-version' => '2023-06-01',
-                    'Content-Type'      => 'application/json',
-                ])->post('https://api.anthropic.com/v1/messages', [
-                    'model'      => 'claude-sonnet-4-20250514',
-                    'max_tokens' => 1024,
-                    'messages'   => [
-                        ['role' => 'user', 'content' => $prompt],
-                    ],
-                ]);
+            $text = $this->callClaudeApi(
+                messages:  [['role' => 'user', 'content' => $prompt]],
+                model:     self::MODEL_ANALYTICAL,
+                maxTokens: 1024,
+            );
 
-            if ($response->failed()) {
-                Log::error('AIService::explainControl API error', [
-                    'status' => $response->status(),
-                    'body'   => $response->body(),
-                ]);
+            if (empty($text)) {
+                Log::error('AIService::explainControl: empty response');
                 return $default;
             }
-
-            $text = $response->json()['content'][0]['text'] ?? '';
-            $text = preg_replace('/^```json\s*/i', '', trim($text));
-            $text = preg_replace('/^```\s*/i',     '', trim($text));
-            $text = preg_replace('/```$/m',        '', trim($text));
-            $text = trim($text);
 
             $parsed = json_decode($text, true);
             if (!is_array($parsed)) {
@@ -557,40 +569,32 @@ PROMPT;
         }
     }
 
+    /**
+     * Simple single-turn Claude call. Public for callers that need a raw AI completion
+     * without building a full messages array (e.g. validateRiskScores).
+     *
+     * Uses MODEL_DEFAULT and strips markdown fences from the response.
+     */
     public function callClaude(string $prompt): string
     {
-        try {
-            $response = Http::withoutVerifying()
-            ->withHeaders([
-                'x-api-key'         => config('services.anthropic.key'),
-                'anthropic-version' => '2023-06-01',
-                'Content-Type'      => 'application/json',
-            ])->post('https://api.anthropic.com/v1/messages', [
-                'model'      => 'claude-opus-4-5',
-                'max_tokens' => 1024,
-                'messages'   => [
-                    ['role' => 'user', 'content' => $prompt],
-                ],
-            ]);
+        return $this->callClaudeApi(
+            messages:  [['role' => 'user', 'content' => $prompt]],
+            model:     self::MODEL_DEFAULT,
+            maxTokens: 1024,
+        );
+    }
 
-            if ($response->failed()) {
-                Log::error('Claude API error', [
-                    'status' => $response->status(),
-                    'body'   => $response->body(),
-                ]);
-                return '';
-            }
+    // ── Private helpers ────────────────────────────────────────────────────────
 
-            $data = $response->json();
-
-            $text = $data['content'][0]['text'] ?? '';
-            $text = preg_replace('/^```json\s*/i', '', trim($text));
-            $text = preg_replace('/^```\s*/i', '', trim($text));
-            $text = preg_replace('/```$/m', '', trim($text));
-            return trim($text);
-        } catch (\Throwable $e) {
-            Log::error('Claude API exception', ['message' => $e->getMessage()]);
-            return '';
-        }
+    /**
+     * Strip markdown code fences that models sometimes emit despite instructions.
+     * Handles ```json ... ```, ``` ... ```, and bare closing fences.
+     */
+    private function stripFences(string $text): string
+    {
+        $text = preg_replace('/^```json\s*/i', '', trim($text));
+        $text = preg_replace('/^```\s*/i',     '', trim($text));
+        $text = preg_replace('/```$/m',        '', trim($text));
+        return trim($text);
     }
 }

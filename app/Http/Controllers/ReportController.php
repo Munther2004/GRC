@@ -4,54 +4,74 @@ namespace App\Http\Controllers;
 
 use App\Models\Assessment;
 use App\Models\AssessmentItem;
-use App\Models\Framework;
 use App\Models\Risk;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\GrcMetricsService;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ReportController extends Controller
 {
     private function gatherReportData(): array
     {
-        // Compliance per framework
-        $frameworks = Framework::with(['assessments' => function ($q) {
-            $q->where('status', 'completed')->orderBy('created_at', 'desc');
-        }])->where('is_active', true)->get();
+        $grc = new GrcMetricsService();
 
-        $complianceByFramework = $frameworks->map(function ($framework) {
-            $latest = $framework->assessments->first();
-            $all    = $framework->assessments;
-            return [
-                'id'                => $framework->id,
-                'name'              => $framework->name,
-                'short_name'        => $framework->short_name,
-                'latest_score'      => $latest?->compliance_percentage ?? null,
-                'assessments_count' => $all->count(),
-                'trend'             => $all->take(5)->pluck('compliance_percentage')->reverse()->values(),
-            ];
-        });
+        // Compliance per framework (assessment-based scores)
+        $fwScores = $grc->frameworkAssessmentScores();
+
+        $complianceByFramework = $fwScores->map(fn ($fw) => [
+            'id'                => $fw['id'],
+            'name'              => $fw['full_name'],
+            'short_name'        => $fw['name'],
+            'latest_score'      => $fw['latest_score'],
+            'assessments_count' => $fw['assessments_count'],
+            'trend'             => $fw['trend'],
+        ]);
 
         $overallCompliance = round(
             $complianceByFramework->whereNotNull('latest_score')->avg('latest_score') ?? 0, 1
         );
 
-        // Risk summary
-        $risks = Risk::all();
-        $riskByLevel = [
-            'critical' => $risks->filter(fn($r) => $r->likelihood * $r->impact >= 20)->count(),
-            'high'     => $risks->filter(fn($r) => ($s = $r->likelihood * $r->impact) >= 13 && $s <= 19)->count(),
-            'medium'   => $risks->filter(fn($r) => ($s = $r->likelihood * $r->impact) >= 7  && $s <= 12)->count(),
-            'low'      => $risks->filter(fn($r) => $r->likelihood * $r->impact <= 6)->count(),
-        ];
+        // Risk summary — one aggregate query using canonical level thresholds
+        $t      = Risk::levelThresholds();
+        $riskRow = DB::table('risks')->selectRaw("
+            COUNT(*)                                                                                      AS total,
+            SUM(CASE WHEN likelihood * impact >= {$t['critical']}                             THEN 1 ELSE 0 END) AS critical,
+            SUM(CASE WHEN likelihood * impact >= {$t['high']}   AND likelihood * impact < {$t['critical']} THEN 1 ELSE 0 END) AS high,
+            SUM(CASE WHEN likelihood * impact >= {$t['medium']} AND likelihood * impact < {$t['high']}     THEN 1 ELSE 0 END) AS medium,
+            SUM(CASE WHEN likelihood * impact <  {$t['medium']}                               THEN 1 ELSE 0 END) AS low,
+            SUM(CASE WHEN status = 'open'                                                     THEN 1 ELSE 0 END) AS open,
+            SUM(CASE WHEN status = 'in_progress'                                              THEN 1 ELSE 0 END) AS in_progress,
+            SUM(CASE WHEN status = 'under_review'                                             THEN 1 ELSE 0 END) AS under_review,
+            SUM(CASE WHEN status = 'closed'                                                   THEN 1 ELSE 0 END) AS closed
+        ")->first();
 
-        $riskByCategory = $risks->groupBy('category')->map(fn($g) => $g->count())->sortDesc();
+        $riskByLevel = [
+            'critical' => (int) ($riskRow->critical    ?? 0),
+            'high'     => (int) ($riskRow->high        ?? 0),
+            'medium'   => (int) ($riskRow->medium      ?? 0),
+            'low'      => (int) ($riskRow->low         ?? 0),
+        ];
 
         $riskByStatus = [
-            'open'         => $risks->where('status', 'open')->count(),
-            'in_progress'  => $risks->where('status', 'in_progress')->count(),
-            'under_review' => $risks->where('status', 'under_review')->count(),
-            'closed'       => $risks->where('status', 'closed')->count(),
+            'open'         => (int) ($riskRow->open         ?? 0),
+            'in_progress'  => (int) ($riskRow->in_progress  ?? 0),
+            'under_review' => (int) ($riskRow->under_review ?? 0),
+            'closed'       => (int) ($riskRow->closed       ?? 0),
         ];
+
+        $riskTotals = [
+            'total_risks' => (int) ($riskRow->total ?? 0),
+            'open_risks'  => (int) ($riskRow->open  ?? 0),
+        ];
+
+        // Risk by category — single grouped query
+        $riskByCategory = DB::table('risks')
+            ->selectRaw('category, COUNT(*) as count')
+            ->whereNotNull('category')
+            ->groupBy('category')
+            ->orderByDesc('count')
+            ->pluck('count', 'category');
 
         // Assessment history
         $assessmentHistory = Assessment::with(['framework', 'user'])
@@ -77,9 +97,11 @@ class ReportController extends Controller
             ->map(fn($score, $month) => ['month' => $month, 'score' => $score])
             ->values();
 
+        $totalFrameworks = $complianceByFramework->count();
+
         return compact(
-            'frameworks', 'complianceByFramework', 'overallCompliance',
-            'risks', 'riskByLevel', 'riskByCategory', 'riskByStatus',
+            'complianceByFramework', 'overallCompliance', 'totalFrameworks',
+            'riskByLevel', 'riskByCategory', 'riskByStatus', 'riskTotals',
             'assessmentHistory', 'monthlyTrend'
         );
     }
@@ -97,10 +119,10 @@ class ReportController extends Controller
             'assessmentHistory'     => $data['assessmentHistory'],
             'monthlyTrend'          => $data['monthlyTrend'],
             'stats' => [
-                'total_risks'       => $data['risks']->count(),
-                'open_risks'        => $data['risks']->where('status', 'open')->count(),
+                'total_risks'       => $data['riskTotals']['total_risks'],
+                'open_risks'        => $data['riskTotals']['open_risks'],
                 'total_assessments' => Assessment::where('status', 'completed')->count(),
-                'total_frameworks'  => $data['frameworks']->count(),
+                'total_frameworks'  => $data['totalFrameworks'],
             ],
         ]);
     }

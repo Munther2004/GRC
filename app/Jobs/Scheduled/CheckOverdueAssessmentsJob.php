@@ -15,29 +15,27 @@ class CheckOverdueAssessmentsJob implements ShouldQueue
 
     public function handle(): void
     {
-        $overdue = Assessment::whereNotNull('due_date')
+        Assessment::whereNotNull('due_date')
             ->where('due_date', '<', Carbon::today())
-            ->whereNotIn('status', ['completed', 'overdue'])
-            ->get();
+            ->whereNotIn('status', ['completed'])
+            ->chunkById(100, function ($chunk) {
+                foreach ($chunk as $assessment) {
+                    $url = "/assessments/{$assessment->id}";
+                    Notification::firstOrCreate(
+                        ['type' => 'overdue_assessment', 'url' => $url, 'is_read' => false],
+                        ['user_id' => null, 'title' => 'Assessment Overdue', 'message' => "Assessment '{$assessment->title}' is overdue since {$assessment->due_date->format('Y-m-d')}"]
+                    );
 
-        foreach ($overdue as $assessment) {
-            $assessment->update(['status' => 'overdue']);
-
-            $url = "/assessments/{$assessment->id}";
-            Notification::firstOrCreate(
-                ['type' => 'overdue_assessment', 'url' => $url, 'is_read' => false],
-                ['user_id' => null, 'title' => 'Assessment Overdue', 'message' => "Assessment '{$assessment->title}' is overdue since {$assessment->due_date->format('Y-m-d')}"]
-            );
-
-            AuditLog::create([
-                'user_id'    => null,
-                'user_name'  => 'System',
-                'action'     => 'updated',
-                'model_type' => 'Assessment',
-                'model_id'   => $assessment->id,
-                'description'=> "Scheduler: Assessment #{$assessment->id} marked as overdue",
-                'ip_address' => null,
-            ]);
-        }
+                    AuditLog::create([
+                        'user_id'     => null,
+                        'user_name'   => 'System',
+                        'action'      => 'updated',
+                        'model_type'  => 'Assessment',
+                        'model_id'    => $assessment->id,
+                        'description' => "Scheduler: Assessment #{$assessment->id} marked as overdue",
+                        'ip_address'  => null,
+                    ]);
+                }
+            });
     }
 }

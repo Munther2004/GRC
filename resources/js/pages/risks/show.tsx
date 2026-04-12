@@ -1,4 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import type { SharedProps } from '@/types';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
@@ -61,6 +62,17 @@ interface Props {
     treatmentPlans: TreatmentPlan[];
 }
 
+interface PlanFormState {
+    strategy: 'mitigate' | 'accept' | 'transfer' | 'avoid';
+    description: string;
+    owner: string;
+    due_date: string;
+    progress: number;
+    status: 'not_started' | 'in_progress' | 'completed';
+    residual_likelihood: number | '';
+    residual_impact: number | '';
+}
+
 const levelColors: Record<string, string> = {
     critical: 'text-red-500 bg-red-50 border-red-200',
     high:     'text-orange-500 bg-orange-50 border-orange-200',
@@ -88,19 +100,19 @@ const ScoreCell = ({ value, active, color }: { value: number; active: boolean; c
     </div>
 );
 
-const emptyPlan = {
-    strategy: 'mitigate' as const,
+const emptyPlan: PlanFormState = {
+    strategy: 'mitigate',
     description: '',
     owner: '',
     due_date: '',
     progress: 0,
-    status: 'not_started' as const,
-    residual_likelihood: '' as any,
-    residual_impact: '' as any,
+    status: 'not_started',
+    residual_likelihood: '',
+    residual_impact: '',
 };
 
 export default function RiskShow({ risk, linkedControls, allControls, treatmentPlans }: Props) {
-    const { auth } = usePage().props as any;
+    const { auth } = usePage<SharedProps>().props;
     const isAdmin  = auth.user.role === 'admin';
     const canEdit  = auth.user.role === 'admin' || auth.user.role === 'user';
 
@@ -110,7 +122,7 @@ export default function RiskShow({ risk, linkedControls, allControls, treatmentP
     // Treatment plan state
     const [showPlanForm, setShowPlanForm] = useState(false);
     const [editingPlanId, setEditingPlanId] = useState<number | null>(null);
-    const [planForm, setPlanForm] = useState({ ...emptyPlan });
+    const [planForm, setPlanForm] = useState<PlanFormState>({ ...emptyPlan });
 
     const deleteRisk = () => {
         if (!confirm(`Delete "${risk.title}"? This cannot be undone.`)) return;
@@ -163,8 +175,8 @@ export default function RiskShow({ risk, linkedControls, allControls, treatmentP
             due_date: p.due_date ?? '',
             progress: p.progress,
             status: p.status,
-            residual_likelihood: p.residual_likelihood ?? ('' as any),
-            residual_impact: p.residual_impact ?? ('' as any),
+            residual_likelihood: p.residual_likelihood ?? '',
+            residual_impact: p.residual_impact ?? '',
         });
         setShowPlanForm(true);
     };

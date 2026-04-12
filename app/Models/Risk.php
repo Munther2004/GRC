@@ -6,6 +6,10 @@ class Risk extends Model
 {
     protected $fillable = ['user_id', 'title', 'description', 'category', 'owner', 'likelihood', 'impact', 'status', 'treatment', 'treatment_plan', 'due_date', 'auto_generated', 'source_control_id', 'assessment_id', 'mitigation_steps', 'ai_validated'];
 
+    protected $casts = [
+        'due_date' => 'date',
+    ];
+
     public function user() { return $this->belongsTo(User::class); }
 
     public function controls()
@@ -30,12 +34,31 @@ class Risk extends Model
         return $this->hasMany(RiskTreatmentPlan::class);
     }
 
+    public function getIsOverdueAttribute(): bool
+    {
+        return $this->due_date !== null
+            && $this->due_date->isPast()
+            && ! in_array($this->status, ['closed'], true);
+    }
+
+    /**
+     * Canonical risk-level thresholds used by the model accessor and GrcMetricsService.
+     * Centralised here so SQL aggregate queries and PHP code stay in sync.
+     *
+     * @return array{critical: int, high: int, medium: int}
+     */
+    public static function levelThresholds(): array
+    {
+        return ['critical' => 15, 'high' => 10, 'medium' => 5];
+    }
+
     public function getRiskLevelAttribute(): string
     {
+        $t     = self::levelThresholds();
         $score = $this->likelihood * $this->impact;
-        if ($score >= 15) return 'critical';
-        if ($score >= 10) return 'high';
-        if ($score >= 5)  return 'medium';
+        if ($score >= $t['critical']) return 'critical';
+        if ($score >= $t['high'])     return 'high';
+        if ($score >= $t['medium'])   return 'medium';
         return 'low';
     }
 

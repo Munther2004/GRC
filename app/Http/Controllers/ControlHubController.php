@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Control;
 use App\Models\Framework;
+use App\Services\GrcMetricsService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -52,16 +53,15 @@ class ControlHubController extends Controller
             ->orderBy('short_name')
             ->get(['id', 'short_name', 'name']);
 
-        // Summary stats (unfiltered)
-        $allActive        = Control::where('is_active', true);
-        $total            = (clone $allActive)->count();
-        $compliant        = (clone $allActive)->where('current_status', 'compliant')->count();
-        $partiallyCompliant = (clone $allActive)->where('current_status', 'partially_compliant')->count();
-        $nonCompliant     = (clone $allActive)->where('current_status', 'non_compliant')->count();
-        $notApplicable    = (clone $allActive)->where('current_status', 'not_applicable')->count();
-        $notSet           = $total - $compliant - $partiallyCompliant - $nonCompliant - $notApplicable;
-        // Partial counts as 0.5 toward compliance
-        $compliancePct = $total > 0 ? round((($compliant + ($partiallyCompliant * 0.5)) / $total) * 100) : 0;
+        // Summary stats (unfiltered) — one SQL aggregate query via service
+        $cs = (new GrcMetricsService())->complianceSummary();
+        $total              = $cs['total_active'];
+        $compliant          = $cs['compliant'];
+        $partiallyCompliant = $cs['partial'];
+        $nonCompliant       = $cs['non_compliant'];
+        $notApplicable      = $cs['not_applicable'];
+        $notSet             = $cs['not_set'];
+        $compliancePct      = (int) $cs['overall_pct'];
 
         return Inertia::render('controls/hub', [
             'controls'  => $query,

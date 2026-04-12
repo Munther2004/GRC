@@ -7,10 +7,11 @@ use App\Models\AssessmentItem;
 use App\Models\AuditLog;
 use App\Models\Control;
 use App\Models\Framework;
-use App\Models\Risk;
 use App\Services\AIService;
+use App\Services\GrcMetricsService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
@@ -54,22 +55,30 @@ class GapAnalysisController extends Controller
             ->sort()
             ->values();
 
+        // Single grouped query replaces N×2 per-framework AssessmentItem::count() calls
+        $byFrameworkRaw = DB::table('assessment_items')
+            ->join('assessments', 'assessment_items.assessment_id', '=', 'assessments.id')
+            ->where('assessments.status', 'completed')
+            ->whereIn('assessment_items.compliance_status', ['non_compliant', 'partially_compliant'])
+            ->selectRaw("
+                assessments.framework_id,
+                SUM(CASE WHEN assessment_items.compliance_status = 'non_compliant'       THEN 1 ELSE 0 END) AS non_compliant,
+                SUM(CASE WHEN assessment_items.compliance_status = 'partially_compliant' THEN 1 ELSE 0 END) AS partially_compliant
+            ")
+            ->groupBy('assessments.framework_id')
+            ->get()
+            ->keyBy('framework_id');
+
         $stats = [
             'non_compliant'       => AssessmentItem::where('compliance_status', 'non_compliant')
                 ->whereHas('assessment', fn($q) => $q->where('status', 'completed'))->count(),
             'partially_compliant' => AssessmentItem::where('compliance_status', 'partially_compliant')
                 ->whereHas('assessment', fn($q) => $q->where('status', 'completed'))->count(),
-            'by_framework'        => $frameworks->map(function ($f) {
-                return [
-                    'name'       => $f->short_name,
-                    'non_compliant' => AssessmentItem::where('compliance_status', 'non_compliant')
-                        ->whereHas('assessment', fn($q) => $q->where('status', 'completed')->where('framework_id', $f->id))
-                        ->count(),
-                    'partially_compliant' => AssessmentItem::where('compliance_status', 'partially_compliant')
-                        ->whereHas('assessment', fn($q) => $q->where('status', 'completed')->where('framework_id', $f->id))
-                        ->count(),
-                ];
-            }),
+            'by_framework'        => $frameworks->map(fn ($f) => [
+                'name'                => $f->short_name,
+                'non_compliant'       => (int) ($byFrameworkRaw[$f->id]->non_compliant       ?? 0),
+                'partially_compliant' => (int) ($byFrameworkRaw[$f->id]->partially_compliant ?? 0),
+            ]),
         ];
 
         return Inertia::render('gap-analysis/index', [
@@ -84,7 +93,9 @@ class GapAnalysisController extends Controller
     public function generateReport(Request $request)
     {
         // ── Gather gap data ──────────────────────────────────────────────────
+        // withCount('evidence') avoids N+1 evidence()->count() inside the map
         $gapItems = AssessmentItem::with(['control.framework', 'assessment.framework'])
+            ->withCount('evidence')
             ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
             ->whereHas('assessment', fn ($q) => $q->where('status', 'completed'))
             ->when($request->framework_id, fn ($q) =>
@@ -101,36 +112,32 @@ class GapAnalysisController extends Controller
             'framework'         => $item->assessment->framework->short_name,
             'compliance_status' => $item->compliance_status,
             'notes'             => $item->notes,
-            'evidence_count'    => $item->evidence()->count(),
+            'evidence_count'    => $item->evidence_count,
         ])->toArray();
 
-        // Summary stats for AI context
-        $allControls  = Control::where('is_active', true)->get();
-        $totalAppl    = $allControls->where('current_status', '!=', 'not_applicable')
-                                    ->whereNotNull('current_status')->count();
-        $compliantCnt = $allControls->where('current_status', 'compliant')->count();
-        $partialCnt   = $allControls->where('current_status', 'partially_compliant')->count();
-        $compliancePct = $totalAppl > 0
-            ? round((($compliantCnt + ($partialCnt * 0.5)) / $totalAppl) * 100, 1)
-            : 0;
+        // Summary stats — one aggregate query replaces Control::get() + Risk::all()
+        $grc           = new GrcMetricsService();
+        $cs            = $grc->complianceSummary();
+        $compliancePct = $cs['overall_pct'];
 
-        $risks = Risk::all();
+        $rc = $grc->riskCounts();
+
         $aiData = [
-            'report_date'          => now()->format('Y-m-d'),
-            'overall_compliance'   => $compliancePct,
-            'gap_items'            => $gapData,
-            'gap_summary'          => [
+            'report_date'        => now()->format('Y-m-d'),
+            'overall_compliance' => $compliancePct,
+            'gap_items'          => $gapData,
+            'gap_summary'        => [
                 'non_compliant'       => $gapItems->where('compliance_status', 'non_compliant')->count(),
                 'partially_compliant' => $gapItems->where('compliance_status', 'partially_compliant')->count(),
                 'total_gaps'          => $gapItems->count(),
             ],
-            'risk_summary'         => [
-                'total'    => $risks->count(),
-                'critical' => $risks->filter(fn ($r) => $r->risk_level === 'critical')->count(),
-                'high'     => $risks->filter(fn ($r) => $r->risk_level === 'high')->count(),
-                'open'     => $risks->whereIn('status', ['open', 'in_progress'])->count(),
+            'risk_summary'       => [
+                'total'    => $rc['total'],
+                'critical' => $rc['critical'],
+                'high'     => $rc['high'],
+                'open'     => $rc['open'],
             ],
-            'categories'           => $gapItems->groupBy(fn ($i) => $i->control->category ?? 'Uncategorised')
+            'categories'         => $gapItems->groupBy(fn ($i) => $i->control->category ?? 'Uncategorised')
                 ->map(fn ($g) => [
                     'non_compliant'       => $g->where('compliance_status', 'non_compliant')->count(),
                     'partially_compliant' => $g->where('compliance_status', 'partially_compliant')->count(),
@@ -157,11 +164,11 @@ class GapAnalysisController extends Controller
 
         // ── Render PDF ───────────────────────────────────────────────────────
         $pdf = Pdf::loadView('reports.gap-analysis', [
-            'result'       => $result,
-            'gapData'      => $gapData,
-            'gapSummary'   => $aiData['gap_summary'],
-            'compliancePct'=> $compliancePct,
-            'generatedAt'  => now()->format('Y-m-d H:i'),
+            'result'        => $result,
+            'gapData'       => $gapData,
+            'gapSummary'    => $aiData['gap_summary'],
+            'compliancePct' => $compliancePct,
+            'generatedAt'   => now()->format('Y-m-d H:i'),
         ]);
 
         $pdf->setPaper('A4', 'portrait');

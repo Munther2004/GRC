@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Assessment;
 use App\Models\AuditLog;
 use App\Models\Control;
-use App\Models\Evidence;
-use App\Models\Framework;
-use App\Models\Risk;
 use App\Services\AIService;
+use App\Services\GrcMetricsService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 
@@ -18,92 +15,81 @@ class ExecutiveSummaryController extends Controller
     {
         // ── 1. Gather data ────────────────────────────────────────────────────
 
-        // Overall self-assessed compliance (excludes not_applicable)
-        $applicable    = Control::where('is_active', true)->where('current_status', '!=', 'not_applicable');
-        $totalAppl     = (clone $applicable)->count();
-        $compliantCnt  = (clone $applicable)->where('current_status', 'compliant')->count();
-        $partialCnt    = (clone $applicable)->where('current_status', 'partially_compliant')->count();
-        $selfAssessed  = $totalAppl > 0
-            ? round((($compliantCnt + ($partialCnt * 0.5)) / $totalAppl) * 100, 1)
-            : 0;
+        $grc = new GrcMetricsService();
 
-        // Evidence-weighted compliance (average across completed assessments)
-        $evidenceWeighted = Assessment::where('status', 'completed')
-            ->whereNotNull('evidence_weighted_score')
-            ->avg('evidence_weighted_score');
-        $evidenceWeighted = $evidenceWeighted !== null ? round($evidenceWeighted, 1) : null;
+        // Compliance (one SQL aggregate query)
+        $cs           = $grc->complianceSummary();
+        $selfAssessed = $cs['overall_pct'];
 
-        // Controls breakdown (all active controls)
-        $allControls   = Control::where('is_active', true)->get();
-        $controlStats  = [
-            'total'               => $allControls->count(),
-            'compliant'           => $allControls->where('current_status', 'compliant')->count(),
-            'partially_compliant' => $allControls->where('current_status', 'partially_compliant')->count(),
-            'non_compliant'       => $allControls->where('current_status', 'non_compliant')->count(),
-            'not_set'             => $allControls->filter(fn ($c) => is_null($c->current_status))->count(),
-            'not_applicable'      => $allControls->where('current_status', 'not_applicable')->count(),
+        // Assessment counts + evidence-weighted compliance (service aggregate queries)
+        $agg              = $grc->assessmentSummary();
+        $evidenceWeighted = $agg['evidence_weighted_avg'];
+
+        // Controls breakdown (from compliance summary — no full table load)
+        $controlStats = [
+            'total'               => $cs['total_active'],
+            'compliant'           => $cs['compliant'],
+            'partially_compliant' => $cs['partial'],
+            'non_compliant'       => $cs['non_compliant'],
+            'not_set'             => $cs['not_set'],
+            'not_applicable'      => $cs['not_applicable'],
         ];
 
-        // Risks
-        $risks    = Risk::all();
+        // Risk counts (one SQL aggregate query)
+        $rc = $grc->riskCounts();
         $riskStats = [
-            'total'    => $risks->count(),
-            'critical' => $risks->filter(fn ($r) => $r->risk_level === 'critical')->count(),
-            'high'     => $risks->filter(fn ($r) => $r->risk_level === 'high')->count(),
-            'medium'   => $risks->filter(fn ($r) => $r->risk_level === 'medium')->count(),
-            'low'      => $risks->filter(fn ($r) => $r->risk_level === 'low')->count(),
-            'open'     => $risks->whereIn('status', ['open', 'in_progress'])->count(),
-            'closed'   => $risks->where('status', 'closed')->count(),
+            'total'    => $rc['total'],
+            'critical' => $rc['critical'],
+            'high'     => $rc['high'],
+            'medium'   => $rc['medium'],
+            'low'      => $rc['low'],
+            'open'     => $rc['open'],
+            'closed'   => $rc['closed'],
         ];
 
         // Top 5 highest-scoring risks (risk_level is an accessor, not a DB column)
-        $topRisks = Risk::orderByRaw('likelihood * impact DESC')
+        $topRisks = \App\Models\Risk::orderByRaw('likelihood * impact DESC')
             ->limit(5)
             ->get(['title', 'category', 'likelihood', 'impact', 'status'])
             ->map(fn ($r) => [
                 'title'      => $r->title,
                 'category'   => $r->category,
                 'score'      => $r->likelihood * $r->impact,
-                'risk_level' => $r->risk_level,  // computed via getRiskLevelAttribute()
+                'risk_level' => $r->risk_level,
                 'status'     => $r->status,
             ])->toArray();
 
-        // Evidence stats
+        // Evidence stats (one SQL aggregate query)
+        $ev = $grc->evidenceCounts();
         $evidenceStats = [
-            'total'    => Evidence::count(),
-            'approved' => Evidence::where('status', 'approved')->count(),
-            'pending'  => Evidence::where('status', 'pending')->count(),
-            'rejected' => Evidence::where('status', 'rejected')->count(),
+            'total'    => $ev['total'],
+            'approved' => $ev['approved'],
+            'pending'  => $ev['pending'],
+            'rejected' => $ev['rejected'],
         ];
 
         // Recent activity count (last 7 days)
         $recentActivityCount = AuditLog::where('created_at', '>=', now()->subDays(7))->count();
 
-        // Assessments
+        // Assessments (from aggregate query computed above)
         $assessmentStats = [
-            'total'     => Assessment::count(),
-            'completed' => Assessment::where('status', 'completed')->count(),
-            'overdue'   => Assessment::where('status', '!=', 'completed')
-                ->whereNotNull('due_date')
-                ->where('due_date', '<', now())
-                ->count(),
-            'in_progress' => Assessment::where('status', 'in_progress')->count(),
+            'total'       => $agg['total'],
+            'completed'   => $agg['completed'],
+            'overdue'     => $agg['overdue'],
+            'in_progress' => $agg['in_progress'],
         ];
 
         // Framework breakdown (latest completed assessment per framework)
-        $frameworks        = Framework::with(['assessments' => fn ($q) =>
-            $q->where('status', 'completed')->orderBy('created_at', 'desc')
-        ])->where('is_active', true)->get();
+        $frameworkBreakdown = $grc->frameworkAssessmentScores()
+            ->map(fn ($fw) => [
+                'name'              => $fw['name'],
+                'full_name'         => $fw['full_name'],
+                'compliance'        => $fw['latest_score'],
+                'evidence_score'    => $fw['evidence_score'],
+                'assessments_count' => $fw['assessments_count'],
+            ])->toArray();
 
-        $frameworkBreakdown = $frameworks->map(fn ($fw) => [
-            'name'              => $fw->short_name,
-            'full_name'         => $fw->name,
-            'compliance'        => $fw->assessments->first()?->compliance_percentage,
-            'evidence_score'    => $fw->assessments->first()?->evidence_weighted_score,
-            'assessments_count' => $fw->assessments->count(),
-        ])->toArray();
-
-        // Most non-compliant control categories (top 5)
+        // Most non-compliant control categories (top 5) — targeted query, no full load
         $nonCompliantCategories = Control::where('current_status', 'non_compliant')
             ->where('is_active', true)
             ->whereNotNull('category')
@@ -116,19 +102,19 @@ class ExecutiveSummaryController extends Controller
 
         // ── 2. Build AI context ───────────────────────────────────────────────
         $aiData = [
-            'report_date'             => now()->format('Y-m-d'),
-            'overall_compliance'      => [
+            'report_date'              => now()->format('Y-m-d'),
+            'overall_compliance'       => [
                 'self_assessed_pct'     => $selfAssessed,
                 'evidence_weighted_pct' => $evidenceWeighted,
             ],
-            'controls'                => $controlStats,
-            'risks'                   => $riskStats,
-            'top_5_risks'             => $topRisks,
-            'evidence'                => $evidenceStats,
-            'assessments'             => $assessmentStats,
-            'frameworks'              => $frameworkBreakdown,
-            'non_compliant_categories'=> $nonCompliantCategories,
-            'recent_activity_7d'      => $recentActivityCount,
+            'controls'                 => $controlStats,
+            'risks'                    => $riskStats,
+            'top_5_risks'              => $topRisks,
+            'evidence'                 => $evidenceStats,
+            'assessments'              => $assessmentStats,
+            'frameworks'               => $frameworkBreakdown,
+            'non_compliant_categories' => $nonCompliantCategories,
+            'recent_activity_7d'       => $recentActivityCount,
         ];
 
         // ── 3. Generate AI narrative ──────────────────────────────────────────

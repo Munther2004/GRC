@@ -311,14 +311,14 @@
                     'removed'   => '✕ Removed',
                 ];
                 $verdictBadgeClass = [
-                    'adequate'           => 'badge-adequate',
-                    'partially_adequate' => 'badge-part-ev',
-                    'insufficient'       => 'badge-insuff',
+                    'Adequate'          => 'badge-adequate',
+                    'Partially Adequate'=> 'badge-part-ev',
+                    'Insufficient'      => 'badge-insuff',
                 ];
                 $verdictLabel = [
-                    'adequate'           => 'Adequate',
-                    'partially_adequate' => 'Partial',
-                    'insufficient'       => 'Insufficient',
+                    'Adequate'          => 'Adequate',
+                    'Partially Adequate'=> 'Partial',
+                    'Insufficient'      => 'Insufficient',
                 ];
             @endphp
             <tr class="{{ $rowClass }}">

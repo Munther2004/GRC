@@ -1,4 +1,5 @@
 import { Head, router, usePage } from '@inertiajs/react';
+import type { SharedProps } from '@/types';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -379,7 +380,7 @@ function AppetiteModal({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function RiskAppetiteIndex({ appetites, active_appetite }: Props) {
-    const { errors: pageErrors } = usePage().props as any;
+    const { errors: pageErrors } = usePage<SharedProps>().props;
     const [addOpen,    setAddOpen]    = useState(false);
     const [editTarget, setEditTarget] = useState<RiskAppetite | null>(null);
     const [saving,     setSaving]     = useState(false);

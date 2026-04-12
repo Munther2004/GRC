@@ -23,6 +23,13 @@ class Assessment extends Model
     public function items()      { return $this->hasMany(AssessmentItem::class); }
     public function risks()      { return $this->hasMany(Risk::class); }
 
+    public function getIsOverdueAttribute(): bool
+    {
+        return $this->due_date !== null
+            && $this->due_date->isPast()
+            && ! in_array($this->status, ['completed'], true);
+    }
+
     public function recalculateCompliance(): void
     {
         $items = $this->items()->where('compliance_status', '!=', 'not_applicable')->get();

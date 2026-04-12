@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\RemediationTask;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -43,11 +44,15 @@ class HandleInertiaRequests extends Middleware
                 }
 
                 $pendingApprovals = in_array($user->role, ['admin', 'auditor'])
-                    ? ControlStatusRequest::where('status', 'pending')->count()
+                    ? Cache::remember('badge:pending_approvals', 60, fn() =>
+                        ControlStatusRequest::where('status', 'pending')->count()
+                      )
                     : 0;
 
                 $openRemediationTasks = in_array($user->role, ['admin', 'user'])
-                    ? RemediationTask::whereIn('status', ['open', 'in_progress'])->count()
+                    ? Cache::remember('badge:open_remediation_tasks', 60, fn() =>
+                        RemediationTask::whereIn('status', ['open', 'in_progress'])->count()
+                      )
                     : 0;
 
                 return [

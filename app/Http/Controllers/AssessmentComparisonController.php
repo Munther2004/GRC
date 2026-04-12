@@ -7,6 +7,7 @@ use App\Models\AssessmentItem;
 use App\Models\AuditLog;
 use App\Models\Control;
 use App\Models\Evidence;
+use App\Services\AIService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -218,7 +219,12 @@ class AssessmentComparisonController extends Controller
     {
         if (empty($controlIds)) return [];
 
-        $rank = ['adequate' => 3, 'partially_adequate' => 2, 'insufficient' => 1];
+        // Keys match AIService::VERDICT_* constants — the canonical DB-stored format.
+        $rank = [
+            AIService::VERDICT_ADEQUATE   => 3,
+            AIService::VERDICT_PARTIAL    => 2,
+            AIService::VERDICT_INSUFFICIENT => 1,
+        ];
 
         $evidences = Evidence::whereIn('control_id', $controlIds)
             ->whereNotNull('ai_verdict')
@@ -239,12 +245,12 @@ class AssessmentComparisonController extends Controller
     }
 
     /**
-     * Percentage of total controls that have an "adequate" evidence verdict.
+     * Percentage of total controls that have an "Adequate" evidence verdict.
      */
     private function calcEvidenceQuality(array $verdicts, int $total): int
     {
         if ($total === 0) return 0;
-        $adequate = collect($verdicts)->filter(fn ($v) => $v === 'adequate')->count();
+        $adequate = collect($verdicts)->filter(fn ($v) => $v === AIService::VERDICT_ADEQUATE)->count();
         return (int) round($adequate / $total * 100);
     }
 }

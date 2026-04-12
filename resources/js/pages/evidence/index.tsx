@@ -1,4 +1,5 @@
 import { Head, router, usePage } from '@inertiajs/react';
+import type { SharedProps } from '@/types';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,6 @@ import { useState, useMemo, useEffect } from 'react';
 import axios from 'axios';
 import {
     AiReview, EvidenceItem, EvidenceRowProps,
-    statusColors, verdictConfig, CONFIDENCE_BADGE,
     EvidenceRow, getReviewFromItem,
 } from '@/components/evidence-row';
 
@@ -52,7 +52,7 @@ function getGroupStatus(items: EvidenceItem[], liveReviews: Record<number, AiRev
 }
 
 export default function EvidenceIndex({ evidence, frameworks, assessments, stats, filters }: Props) {
-    const { auth } = usePage().props as any;
+    const { auth } = usePage<SharedProps>().props;
     const isAdmin   = auth.user.role === 'admin';
     const isAuditor = auth.user.role === 'auditor';
     const canReview = isAdmin || isAuditor;

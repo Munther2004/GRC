@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -146,7 +146,7 @@ export default function CrosswalkIndex({ frameworks, controlData, stats, filters
         if (search) params.search = search;
         if (frameworkId) params.framework_id = frameworkId;
         const qs = new URLSearchParams(params).toString();
-        window.location.href = route('crosswalk.index') + (qs ? `?${qs}` : '');
+        router.visit(route('crosswalk.index') + (qs ? `?${qs}` : ''));
     };
 
     const handleKey = (e: React.KeyboardEvent) => {
@@ -236,7 +236,7 @@ export default function CrosswalkIndex({ frameworks, controlData, stats, filters
                     </button>
                     {(search || frameworkId) && (
                         <button
-                            onClick={() => { setSearch(''); setFrameworkId(''); window.location.href = route('crosswalk.index'); }}
+                            onClick={() => { setSearch(''); setFrameworkId(''); router.visit(route('crosswalk.index')); }}
                             className="px-4 py-2 text-sm border rounded-md hover:bg-muted transition-colors"
                         >
                             Clear

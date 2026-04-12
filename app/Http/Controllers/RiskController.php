@@ -29,11 +29,12 @@ class RiskController extends Controller
                 $q->where('status', $request->status)
             )
             ->when($request->level, function($q) use ($request) {
+                $t = Risk::levelThresholds();
                 match($request->level) {
-                    'critical' => $q->whereRaw('likelihood * impact >= 20'),
-                    'high'     => $q->whereRaw('likelihood * impact BETWEEN 13 AND 19'),
-                    'medium'   => $q->whereRaw('likelihood * impact BETWEEN 7 AND 12'),
-                    'low'      => $q->whereRaw('likelihood * impact BETWEEN 1 AND 6'),
+                    'critical' => $q->whereRaw("likelihood * impact >= {$t['critical']}"),
+                    'high'     => $q->whereRaw("likelihood * impact >= {$t['high']} AND likelihood * impact < {$t['critical']}"),
+                    'medium'   => $q->whereRaw("likelihood * impact >= {$t['medium']} AND likelihood * impact < {$t['high']}"),
+                    'low'      => $q->whereRaw("likelihood * impact < {$t['medium']}"),
                     default    => null
                 };
             })
@@ -74,10 +75,11 @@ class RiskController extends Controller
             'appetite_band'  => $appetite?->classifyRisk($risk),
         ]));
 
+        $tc    = Risk::levelThresholds();
         $stats = [
             'total'    => Risk::count(),
             'open'     => Risk::where('status', 'open')->count(),
-            'critical' => Risk::whereRaw('likelihood * impact >= 20')->count(),
+            'critical' => Risk::whereRaw("likelihood * impact >= {$tc['critical']}")->count(),
             'overdue'  => Risk::where('due_date', '<', now())
                               ->whereNotIn('status', ['closed'])
                               ->count(),
@@ -165,6 +167,7 @@ class RiskController extends Controller
         $allControls = Control::with('framework')
             ->orderBy('framework_id')
             ->orderBy('control_id')
+            ->limit(500)
             ->get(['id', 'control_id', 'title', 'framework_id'])
             ->map(fn($c) => [
                 'id'         => $c->id,

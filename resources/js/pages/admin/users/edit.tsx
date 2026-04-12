@@ -1,4 +1,5 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import type { SharedProps } from '@/types';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
@@ -116,10 +117,7 @@ function EditForm({ user }: { user: any }) {
 
 // Outer component — handles the guard safely
 export default function UserEdit() {
-    const props = usePage().props as any;
-    console.log('ALL PROPS:', props);
-    console.log('USER:', props.user);
-    const { user } = props;
+    const { user } = usePage<SharedProps & { user: Record<string, unknown> | null }>().props;
     
     return (
         <AdminLayout>

@@ -1,4 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import type { SharedProps } from '@/types';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
@@ -109,7 +110,7 @@ function AppetiteBadge({ band }: { band: AppetiteBand }) {
 }
 
 export default function RisksIndex({ risks, stats, riskExposure, filters, frameworks, appetite }: Props) {
-    const { auth } = usePage().props as any;
+    const { auth } = usePage<SharedProps>().props;
     const isAdmin  = auth.user.role === 'admin';
     const canEdit  = auth.user.role === 'admin' || auth.user.role === 'user';
 

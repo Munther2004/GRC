@@ -1,4 +1,5 @@
 import { Head, router, usePage } from '@inertiajs/react';
+import type { SharedProps } from '@/types';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ import {
     ClipboardList, Plus, Search, AlertTriangle, CheckCircle2, Clock,
     Pencil, Trash2, CheckCheck, Calendar, User, Sparkles, X,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -298,7 +299,7 @@ function TaskForm({
 // ── Main Page ──────────────────────────────────────────────────────────────────
 
 export default function RemediationTasksIndex({ tasks, stats, controls, assessments, filters }: Props) {
-    const { auth } = usePage().props as any;
+    const { auth } = usePage<SharedProps>().props;
     const canEdit  = auth.user.role === 'admin' || auth.user.role === 'user';
 
     // Filter state
@@ -317,19 +318,17 @@ export default function RemediationTasksIndex({ tasks, stats, controls, assessme
     const [form, setForm] = useState({ ...emptyForm });
 
     // Flash
-    const { flash } = usePage().props as any;
+    const { flash } = usePage<SharedProps>().props;
 
-    const applyFilters = () => {
+    const applyFilters = (overrides: { status?: string; priority?: string } = {}) => {
+        const resolvedStatus   = overrides.status   ?? status;
+        const resolvedPriority = overrides.priority ?? priority;
         const params: Record<string, string> = {};
-        if (search)              params.search   = search;
-        if (status !== 'all')   params.status   = status;
-        if (priority !== 'all') params.priority = priority;
+        if (search)                          params.search   = search;
+        if (resolvedStatus !== 'all')        params.status   = resolvedStatus;
+        if (resolvedPriority !== 'all')      params.priority = resolvedPriority;
         router.get(route('remediation-tasks.index'), params, { preserveState: true, replace: true });
     };
-
-    useEffect(() => {
-        applyFilters();
-    }, [status, priority]);
 
     const openAdd = () => {
         setForm({ ...emptyForm });
@@ -479,7 +478,7 @@ export default function RemediationTasksIndex({ tasks, stats, controls, assessme
                         />
                     </div>
 
-                    <Select value={status} onValueChange={v => setStatus(v)}>
+                    <Select value={status} onValueChange={v => { setStatus(v); applyFilters({ status: v }); }}>
                         <SelectTrigger className="w-40">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
@@ -492,7 +491,7 @@ export default function RemediationTasksIndex({ tasks, stats, controls, assessme
                         </SelectContent>
                     </Select>
 
-                    <Select value={priority} onValueChange={v => setPriority(v)}>
+                    <Select value={priority} onValueChange={v => { setPriority(v); applyFilters({ priority: v }); }}>
                         <SelectTrigger className="w-40">
                             <SelectValue placeholder="Priority" />
                         </SelectTrigger>
@@ -505,7 +504,7 @@ export default function RemediationTasksIndex({ tasks, stats, controls, assessme
                         </SelectContent>
                     </Select>
 
-                    <Button variant="outline" onClick={applyFilters}>Filter</Button>
+                    <Button variant="outline" onClick={() => applyFilters()}>Filter</Button>
 
                     {(search || status !== 'all' || priority !== 'all') && (
                         <Button

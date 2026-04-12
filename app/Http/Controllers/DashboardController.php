@@ -3,11 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Assessment;
 use App\Models\AuditLog;
-use App\Models\Control;
-use App\Models\Evidence;
 use App\Models\KriSnapshot;
 use App\Models\Risk;
 use App\Models\RiskAppetite;
+use App\Services\GrcMetricsService;
 use App\Services\RiskMetricsService;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
@@ -16,28 +15,23 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $risks = Risk::all();
+        $grc               = new GrcMetricsService();
+        $riskStats         = $grc->riskCounts();
+        $complianceData    = $grc->complianceSummary();
+        $evidenceStats     = $grc->evidenceCounts();
+        $assessmentSummary = $grc->assessmentSummary();
 
         $stats = [
-            'total_risks'       => $risks->count(),
-            'critical_risks'    => $risks->filter(fn($r) => $r->risk_level === 'critical')->count(),
-            'high_risks'        => $risks->filter(fn($r) => $r->risk_level === 'high')->count(),
-            'medium_risks'      => $risks->filter(fn($r) => $r->risk_level === 'medium')->count(),
-            'low_risks'         => $risks->filter(fn($r) => $r->risk_level === 'low')->count(),
-            'open_risks'        => $risks->whereIn('status', ['open', 'in_progress'])->count(),
-            'compliance_score'  => (function () {
-                // Exclude not_applicable — they don't factor into compliance %
-                $applicable = Control::where('is_active', true)
-                    ->where('current_status', '!=', 'not_applicable');
-
-                $total     = (clone $applicable)->count();
-                $compliant = (clone $applicable)->where('current_status', 'compliant')->count();
-                $partial   = (clone $applicable)->where('current_status', 'partially_compliant')->count();
-                return $total > 0 ? round((($compliant + ($partial * 0.5)) / $total) * 100) : 0;
-            })(),
-            'total_assessments' => Assessment::count(),
-            'evidence_files'    => Evidence::count(),
-            'pending_evidence'  => Evidence::where('status', 'pending')->count(),
+            'total_risks'       => $riskStats['total'],
+            'critical_risks'    => $riskStats['critical'],
+            'high_risks'        => $riskStats['high'],
+            'medium_risks'      => $riskStats['medium'],
+            'low_risks'         => $riskStats['low'],
+            'open_risks'        => $riskStats['open'],
+            'compliance_score'  => (int) $complianceData['overall_pct'],
+            'total_assessments' => $assessmentSummary['total'],
+            'evidence_files'    => $evidenceStats['total'],
+            'pending_evidence'  => $evidenceStats['pending'],
         ];
 
         $recentRisks = Risk::latest()->limit(5)->get()->map(fn($r) => [
@@ -60,24 +54,19 @@ class DashboardController extends Controller
             'created_at'  => $l->created_at->diffForHumans(),
         ]);
 
-        $recentAssessments = Assessment::with('framework')->latest()->limit(5)->get()->map(fn($a) => [
-            'id'                    => $a->id,
-            'title'                 => $a->title,
-            'status'                => $a->status,
-            'compliance_percentage' => $a->compliance_percentage,
-            'created_at'            => $a->created_at->diffForHumans(),
-            'framework'             => ['short_name' => $a->framework->short_name],
-        ]);
-
-        // Risk trend - group by month
-        $trendData = Risk::selectRaw('DATE_FORMAT(created_at, "%b") as month, 
-        SUM(CASE WHEN likelihood * impact >= 15 THEN 1 ELSE 0 END) as critical,
-        SUM(CASE WHEN likelihood * impact >= 10 AND likelihood * impact < 15 THEN 1 ELSE 0 END) as high,
-        SUM(CASE WHEN likelihood * impact >= 5 AND likelihood * impact < 10 THEN 1 ELSE 0 END) as medium,
-        SUM(CASE WHEN likelihood * impact < 5 THEN 1 ELSE 0 END) as low')
+        // Risk trend - group by month, using canonical thresholds
+        $t         = Risk::levelThresholds();
+        $trendData = Risk::selectRaw("DATE_FORMAT(created_at, '%b') as month,
+        SUM(CASE WHEN likelihood * impact >= {$t['critical']} THEN 1 ELSE 0 END) as critical,
+        SUM(CASE WHEN likelihood * impact >= {$t['high']}     AND likelihood * impact < {$t['critical']} THEN 1 ELSE 0 END) as high,
+        SUM(CASE WHEN likelihood * impact >= {$t['medium']}   AND likelihood * impact < {$t['high']}     THEN 1 ELSE 0 END) as medium,
+        SUM(CASE WHEN likelihood * impact <  {$t['medium']} THEN 1 ELSE 0 END) as low")
         ->groupByRaw('DATE_FORMAT(created_at, "%b"), MONTH(created_at)')
         ->orderByRaw('MONTH(created_at)')
         ->get();
+
+        // Slim risk load — only columns needed for heatmap and appetite classification
+        $risks = Risk::select(['id', 'title', 'likelihood', 'impact', 'status'])->get();
 
         $heatmap = $risks->map(fn($r) => [
             'id'         => $r->id,
@@ -119,21 +108,14 @@ class DashboardController extends Controller
         $kpis = [
             'risk_exposure'          => $riskMetrics['risk_exposure'],
             'avg_risk_score'         => $riskMetrics['avg_risk_score'],
-            'evidence_approval_rate' => Evidence::count() > 0
-                ? round((Evidence::where('status', 'approved')->count() / Evidence::count()) * 100, 1)
-                : 0,
-            'open_risks_by_level' => [
-                'critical' => Risk::where('status', 'open')->whereRaw('likelihood * impact >= 20')->count(),
-                'high'     => Risk::where('status', 'open')->whereRaw('likelihood * impact >= 13')->whereRaw('likelihood * impact < 20')->count(),
-                'medium'   => Risk::where('status', 'open')->whereRaw('likelihood * impact >= 7')->whereRaw('likelihood * impact < 13')->count(),
-                'low'      => Risk::where('status', 'open')->whereRaw('likelihood * impact < 7')->count(),
-            ],
+            'evidence_approval_rate' => $evidenceStats['approval_rate'],
+            'open_risks_by_level' => $grc->openRisksByLevel(),
             'assessments_due_soon' => Assessment::where('status', '!=', 'completed')
                 ->whereNotNull('due_date')
                 ->where('due_date', '<=', now()->addDays(7))
                 ->where('due_date', '>=', now())
                 ->count(),
-            'pending_evidence' => Evidence::where('status', 'pending')->count(),
+            'pending_evidence' => $evidenceStats['pending'],
             'compliance_this_week' => round(
                 Assessment::where('status', 'completed')
                     ->where('updated_at', '>=', now()->subWeek())
@@ -145,13 +127,7 @@ class DashboardController extends Controller
                     ->avg('compliance_percentage') ?? 0, 1
             ),
             // Average evidence-weighted score across completed assessments (null when none reviewed yet)
-            'evidence_weighted_compliance' => Assessment::where('status', 'completed')
-                ->whereNotNull('evidence_weighted_score')
-                ->avg('evidence_weighted_score') !== null
-                    ? round(Assessment::where('status', 'completed')
-                        ->whereNotNull('evidence_weighted_score')
-                        ->avg('evidence_weighted_score'), 1)
-                    : null,
+            'evidence_weighted_compliance' => $assessmentSummary['evidence_weighted_avg'],
         ];
 
         $ruleAdjustments = AuditLog::where(function ($q) {
@@ -184,7 +160,6 @@ class DashboardController extends Controller
             'stats'              => $stats,
             'recentRisks'        => $recentRisks,
             'recentActivity'     => $recentActivity,
-            'recentAssessments'  => $recentAssessments,
             'trendData'          => $trendData,
             'heatmap'            => $heatmap,
             'kpis'               => $kpis,

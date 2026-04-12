@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ArrowLeft, Save, AlertTriangle, Sparkles, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
-
+import { levelColors, levelFromScore, ValidationResult } from '@/lib/risk-utils';
 
 interface Risk {
     id: number; title: string; description: string; category: string;
@@ -20,35 +20,12 @@ interface Risk {
     ai_validated: boolean;
 }
 
-interface ValidationResult {
-    error?:                 boolean;
-    valid:                  boolean;
-    recommended_likelihood: number;
-    recommended_impact:     number;
-    reasoning:              string;
-    confidence:             string;
-}
-
-const levelColors: Record<number, string> = {
-    1: 'bg-green-100 text-green-700',
-    2: 'bg-lime-100 text-lime-700',
-    3: 'bg-yellow-100 text-yellow-700',
-    4: 'bg-orange-100 text-orange-700',
-    5: 'bg-red-100 text-red-700',
-};
 interface Props {
     risk: Risk;
     categories: string[];
     statuses:   { value: string; label: string }[];
     treatments: { value: string; label: string }[];
 }
-
-const levelFromScore = (score: number) => {
-    if (score >= 20) return { label: 'Critical', color: 'text-red-500 bg-red-50 border-red-200' };
-    if (score >= 13) return { label: 'High',     color: 'text-orange-500 bg-orange-50 border-orange-200' };
-    if (score >= 7)  return { label: 'Medium',   color: 'text-yellow-600 bg-yellow-50 border-yellow-200' };
-    return                   { label: 'Low',     color: 'text-green-600 bg-green-50 border-green-200' };
-};
 
 export default function RiskEdit({ risk, categories, statuses, treatments }: Props) {
     const { data, setData, put, processing, errors } = useForm({

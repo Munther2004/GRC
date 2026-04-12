@@ -13,6 +13,7 @@ import {
     CheckCircle, XCircle, Clock, Eye, Download, Sparkles, Loader2
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { downloadPdf } from '@/lib/download-pdf';
 
 interface Props {
     overallCompliance: number;
@@ -69,20 +70,10 @@ export default function ReportsIndex({
         if (generating) return;
         setGenerating(true);
         try {
-            const res = await fetch('/reports/executive-summary', {
-                method:  'GET',
-                headers: { 'Accept': 'application/pdf' },
-            });
-            if (!res.ok) throw new Error('Server error');
-            const blob = await res.blob();
-            const url  = URL.createObjectURL(blob);
-            const a    = document.createElement('a');
-            a.href     = url;
-            a.download = `executive-summary-${new Date().toISOString().split('T')[0]}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+            await downloadPdf(
+                '/reports/executive-summary',
+                `executive-summary-${new Date().toISOString().split('T')[0]}.pdf`
+            );
         } catch {
             setToast({ type: 'error', text: 'Failed to generate report. Please try again.' });
         } finally {

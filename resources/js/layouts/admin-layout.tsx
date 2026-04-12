@@ -1,23 +1,23 @@
 import { AdminHeader } from "@/components/admin/header"
 import { AdminSidebar } from "@/components/admin/sidebar"
 import { usePage } from "@inertiajs/react"
-import { useEffect, useState } from "react"
+import type { SharedProps } from "@/types"
+import { useEffect, useRef, useState } from "react"
 import { CheckCircle, XCircle, X } from "lucide-react"
 
 function FlashToast() {
-    const { flash } = usePage().props as any
-    const [visible, setVisible] = useState(false)
-    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+    const { flash } = usePage<SharedProps>().props
+    const text      = (flash?.success ?? flash?.error ?? null) as string | null
+    const isSuccess = !!flash?.success
 
-    useEffect(() => {
-        if (flash?.success) {
-            setMessage({ type: 'success', text: flash.success })
-            setVisible(true)
-        } else if (flash?.error) {
-            setMessage({ type: 'error', text: flash.error })
-            setVisible(true)
-        }
-    }, [flash])
+    const [visible, setVisible] = useState(!!text)
+    const prevTextRef = useRef<string | null>(text)
+
+    // Derive visibility from props synchronously — avoids setState-in-effect anti-pattern
+    if (text !== prevTextRef.current) {
+        prevTextRef.current = text
+        setVisible(!!text)
+    }
 
     useEffect(() => {
         if (!visible) return
@@ -25,9 +25,7 @@ function FlashToast() {
         return () => clearTimeout(t)
     }, [visible])
 
-    if (!visible || !message) return null
-
-    const isSuccess = message.type === 'success'
+    if (!visible || !text) return null
 
     return (
         <div className={`fixed bottom-6 right-6 z-50 flex items-start gap-3 rounded-lg border px-4 py-3 shadow-lg text-sm max-w-sm
@@ -39,7 +37,7 @@ function FlashToast() {
                 ? <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-600" />
                 : <XCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-600" />
             }
-            <span className="flex-1">{message.text}</span>
+            <span className="flex-1">{text}</span>
             <button onClick={() => setVisible(false)} className="flex-shrink-0 opacity-60 hover:opacity-100">
                 <X className="w-3.5 h-3.5" />
             </button>

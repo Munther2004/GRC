@@ -79,10 +79,11 @@ const directionConfig: Record<string, { label: string; cls: string }> = {
     removed:   { label: '✕ Removed',   cls: 'bg-gray-100 text-gray-500 border-gray-200' },
 };
 
+// Keys match AIService::VERDICT_* canonical values stored in the DB.
 const verdictConfig: Record<string, { label: string; cls: string }> = {
-    adequate:           { label: 'Adequate',      cls: 'bg-green-100 text-green-700 border-green-200' },
-    partially_adequate: { label: 'Partial',       cls: 'bg-amber-100 text-amber-700 border-amber-200' },
-    insufficient:       { label: 'Insufficient',  cls: 'bg-red-100 text-red-700 border-red-200' },
+    'Adequate':          { label: 'Adequate',     cls: 'bg-green-100 text-green-700 border-green-200' },
+    'Partially Adequate':{ label: 'Partial',      cls: 'bg-amber-100 text-amber-700 border-amber-200' },
+    'Insufficient':      { label: 'Insufficient', cls: 'bg-red-100 text-red-700 border-red-200' },
 };
 
 // ── Helper components ──────────────────────────────────────────────────────

@@ -9,6 +9,7 @@ use App\Models\Framework;
 use App\Models\RemediationTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class RemediationTaskController extends Controller
@@ -38,26 +39,29 @@ class RemediationTaskController extends Controller
                     ELSE 1
                 END ASC
             ")
-            ->orderByRaw("due_date ASC NULLS LAST")
+            ->orderByRaw('due_date IS NULL, due_date ASC')
             ->orderByRaw("FIELD(priority, 'critical','high','medium','low')")
             ->paginate(25)
             ->withQueryString();
 
         $tasks = $query->through(fn ($task) => $this->mapTask($task));
 
-        // KPI counts
-        $allTasks = RemediationTask::all();
+        // KPI counts — one aggregate query replaces RemediationTask::all() + PHP filtering
+        $statsRow = DB::table('remediation_tasks')->selectRaw("
+            COUNT(*) AS total,
+            SUM(CASE WHEN status IN ('open', 'in_progress') THEN 1 ELSE 0 END) AS open_in_progress
+        ")->first();
         $stats = [
-            'total'              => $allTasks->count(),
-            'open_in_progress'   => $allTasks->whereIn('status', ['open', 'in_progress'])->count(),
-            'overdue'            => RemediationTask::whereNotIn('status', ['completed', 'cancelled'])
-                                        ->whereNotNull('due_date')
-                                        ->where('due_date', '<', $today)
-                                        ->count(),
+            'total'                => (int) ($statsRow->total           ?? 0),
+            'open_in_progress'     => (int) ($statsRow->open_in_progress ?? 0),
+            'overdue'              => RemediationTask::whereNotIn('status', ['completed', 'cancelled'])
+                                          ->whereNotNull('due_date')
+                                          ->where('due_date', '<', $today)
+                                          ->count(),
             'completed_this_month' => RemediationTask::where('status', 'completed')
-                                        ->whereMonth('closed_at', now()->month)
-                                        ->whereYear('closed_at', now()->year)
-                                        ->count(),
+                                          ->whereMonth('closed_at', now()->month)
+                                          ->whereYear('closed_at', now()->year)
+                                          ->count(),
         ];
 
         // Controls for the "Add Task" form — grouped by framework
@@ -65,6 +69,7 @@ class RemediationTaskController extends Controller
             ->where('is_active', true)
             ->orderBy('framework_id')
             ->orderBy('control_id')
+            ->limit(500)
             ->get(['id', 'control_id', 'title', 'framework_id'])
             ->map(fn ($c) => [
                 'id'         => $c->id,

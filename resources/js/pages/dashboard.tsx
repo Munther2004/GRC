@@ -7,8 +7,10 @@ import { RiskTrendChart } from "@/components/admin/risk-trend-chart"
 import { TopRisks } from "@/components/admin/top-risks"
 import AdminLayout from "@/layouts/admin-layout"
 import { Link, usePage } from "@inertiajs/react"
+import type { SharedProps } from "@/types"
 import { AlertTriangle, Clock, FileCheck, Zap, ShieldAlert, Sparkles, Loader2, XCircle, Activity, Sliders } from "lucide-react"
 import { useState, useEffect } from "react"
+import { downloadPdf } from "@/lib/download-pdf"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -116,7 +118,6 @@ type Props = {
     stats: Stats
     recentRisks: Risk[]
     recentActivity: any[]
-    recentAssessments: any[]
     trendData: any[]
     heatmap: HeatmapRisk[]
     kpis: Kpis
@@ -303,7 +304,7 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
                                     <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.1} />
                                     <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                                     <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" />
-                                    <Tooltip formatter={(v: number) => [`${v}%`, 'Compliance']} />
+                                    <Tooltip formatter={(v) => [`${v}%`, 'Compliance']} />
                                     <Line
                                         type="monotone"
                                         dataKey="compliance"
@@ -358,20 +359,10 @@ function ExecutiveSummaryButton() {
         if (generating) return;
         setGenerating(true);
         try {
-            const res = await fetch('/reports/executive-summary', {
-                method:  'GET',
-                headers: { 'Accept': 'application/pdf' },
-            });
-            if (!res.ok) throw new Error();
-            const blob = await res.blob();
-            const url  = URL.createObjectURL(blob);
-            const a    = document.createElement('a');
-            a.href     = url;
-            a.download = `executive-summary-${new Date().toISOString().split('T')[0]}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+            await downloadPdf(
+                '/reports/executive-summary',
+                `executive-summary-${new Date().toISOString().split('T')[0]}.pdf`
+            );
         } catch {
             setToast({ type: 'error', text: 'Failed to generate report. Please try again.' });
         } finally {
@@ -493,8 +484,8 @@ function HealthScoreCard({ healthScore }: { healthScore: HealthScore }) {
     )
 }
 
-export default function AdminDashboard({ stats, recentRisks, recentActivity, recentAssessments, trendData, heatmap, kpis, ruleAdjustments, lastSchedulerRun, kriSnapshots, healthScore, appetiteCounts }: Props) {
-    const { notifications } = usePage<{ notifications: { unread_count: number; recent: NotificationItem[] } }>().props
+export default function AdminDashboard({ stats, recentRisks, recentActivity, trendData, heatmap, kpis, ruleAdjustments, lastSchedulerRun, kriSnapshots, healthScore, appetiteCounts }: Props) {
+    const { notifications } = usePage<SharedProps>().props
     const unreadCount = notifications?.unread_count ?? 0
     const recent: NotificationItem[] = notifications?.recent ?? []
 

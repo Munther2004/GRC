@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Assessment;
 use App\Models\AuditLog;
-use App\Models\Control;
-use App\Models\Evidence;
-use App\Models\Framework;
+use App\Models\Assessment;
 use App\Models\KriSnapshot;
 use App\Models\Risk;
+use App\Services\GrcMetricsService;
 use App\Services\RiskMetricsService;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ExecutiveDashboardController extends Controller
@@ -40,32 +37,25 @@ class ExecutiveDashboardController extends Controller
     private function buildData(): array
     {
         $metrics = new RiskMetricsService();
+        $grc     = new GrcMetricsService();
 
         // 1. Health Score
         $healthScore = $metrics->calculateHealthScore();
 
-        // 2. Compliance Summary (live from controls table)
-        $applicable   = Control::where('is_active', true)->where('current_status', '!=', 'not_applicable');
-        $total        = (clone $applicable)->count();
-        $compliant    = (clone $applicable)->where('current_status', 'compliant')->count();
-        $partial      = (clone $applicable)->where('current_status', 'partially_compliant')->count();
-        $nonCompliant = (clone $applicable)->where('current_status', 'non_compliant')->count();
-        $compliancePct = $total > 0
-            ? round((($compliant + ($partial * 0.5)) / $total) * 100, 1)
-            : 0;
-
+        // 2. Compliance Summary (one SQL aggregate query)
+        $cs = $grc->complianceSummary();
         $complianceSummary = [
-            'overall_pct'    => $compliancePct,
-            'compliant'      => $compliant,
-            'partial'        => $partial,
-            'non_compliant'  => $nonCompliant,
-            'not_applicable' => Control::where('is_active', true)
-                ->where('current_status', 'not_applicable')->count(),
-            'total_controls' => $total,
+            'overall_pct'    => $cs['overall_pct'],
+            'compliant'      => $cs['compliant'],
+            'partial'        => $cs['partial'],
+            'non_compliant'  => $cs['non_compliant'],
+            'not_applicable' => $cs['not_applicable'],
+            'total_controls' => $cs['total_applicable'],
         ];
 
-        // 3. Risk Summary
-        $allRisks = Risk::all();
+        // 3. Risk Summary (one SQL aggregate query + top-5 targeted query)
+        $rc = $grc->riskCounts();
+
         $topRisks = Risk::with('treatmentPlans')
             ->orderByRaw('likelihood * impact DESC')
             ->limit(5)
@@ -81,41 +71,35 @@ class ExecutiveDashboardController extends Controller
             ]);
 
         $riskSummary = [
-            'total_open' => $allRisks->whereIn('status', ['open', 'in_progress'])->count(),
-            'critical'   => $allRisks->filter(fn ($r) => $r->risk_level === 'critical')->count(),
-            'high'       => $allRisks->filter(fn ($r) => $r->risk_level === 'high')->count(),
-            'medium'     => $allRisks->filter(fn ($r) => $r->risk_level === 'medium')->count(),
-            'low'        => $allRisks->filter(fn ($r) => $r->risk_level === 'low')->count(),
-            'avg_score'  => round($allRisks->avg(fn ($r) => $r->risk_score) ?? 0, 1),
+            'total_open' => $rc['open'],
+            'critical'   => $rc['critical'],
+            'high'       => $rc['high'],
+            'medium'     => $rc['medium'],
+            'low'        => $rc['low'],
+            'avg_score'  => $rc['avg_score'],
             'top_risks'  => $topRisks,
         ];
 
-        // 4. Evidence Summary
-        $now = now();
+        // 4. Evidence Summary (one SQL aggregate query + service for expiry counts)
+        $ev     = $grc->evidenceCounts();
+        $expiry = $grc->evidenceExpiry();
         $evidenceSummary = [
-            'total'         => Evidence::count(),
-            'approved'      => Evidence::where('status', 'approved')->count(),
-            'pending'       => Evidence::where('status', 'pending')->count(),
-            'rejected'      => Evidence::where('status', 'rejected')->count(),
-            'expiring_soon' => Evidence::whereNotNull('expiry_date')
-                ->where('expiry_date', '>=', $now)
-                ->where('expiry_date', '<=', $now->copy()->addDays(14))
-                ->count(),
-            'expired' => Evidence::whereNotNull('expiry_date')
-                ->where('expiry_date', '<', $now)
-                ->count(),
+            'total'         => $ev['total'],
+            'approved'      => $ev['approved'],
+            'pending'       => $ev['pending'],
+            'rejected'      => $ev['rejected'],
+            'expiring_soon' => $expiry['expiring_soon'],
+            'expired'       => $expiry['expired'],
         ];
 
-        // 5. Assessment Summary
+        // 5. Assessment Summary (aggregate counts from service + latest record for display)
+        $agg              = $grc->assessmentSummary();
         $latestAssessment = Assessment::with('framework')->latest()->first();
         $assessmentSummary = [
-            'total'            => Assessment::count(),
-            'completed'        => Assessment::where('status', 'completed')->count(),
-            'in_progress'      => Assessment::where('status', 'in_progress')->count(),
-            'overdue'          => Assessment::where('status', '!=', 'completed')
-                ->whereNotNull('due_date')
-                ->where('due_date', '<', $now)
-                ->count(),
+            'total'            => $agg['total'],
+            'completed'        => $agg['completed'],
+            'in_progress'      => $agg['in_progress'],
+            'overdue'          => $agg['overdue'],
             'latest_title'     => $latestAssessment?->title,
             'latest_date'      => $latestAssessment?->created_at?->format('Y-m-d'),
             'latest_score'     => $latestAssessment?->compliance_percentage,
@@ -134,35 +118,8 @@ class ExecutiveDashboardController extends Controller
                 'critical_risks'   => $s->open_risks_critical,
             ]);
 
-        // 7. Framework Breakdown (compliance per framework via controls table)
-        $frameworkBreakdown = Framework::where('is_active', true)
-            ->with(['controls' => fn ($q) => $q->where('is_active', true)])
-            ->get()
-            ->map(function ($fw) {
-                $controls   = $fw->controls;
-                $applicable = $controls->filter(
-                    fn ($c) => !in_array($c->current_status, [null, 'not_applicable'])
-                );
-                $compliantC    = $applicable->where('current_status', 'compliant')->count();
-                $partialC      = $applicable->where('current_status', 'partially_compliant')->count();
-                $nonCompliantC = $applicable->where('current_status', 'non_compliant')->count();
-                $totalAppl     = $applicable->count();
-                $pct           = $totalAppl > 0
-                    ? round((($compliantC + ($partialC * 0.5)) / $totalAppl) * 100, 1)
-                    : 0;
-
-                return [
-                    'name'           => $fw->short_name,
-                    'full_name'      => $fw->name,
-                    'total_controls' => $controls->count(),
-                    'compliant'      => $compliantC,
-                    'partial'        => $partialC,
-                    'non_compliant'  => $nonCompliantC,
-                    'compliance_pct' => $pct,
-                ];
-            })
-            ->filter(fn ($fw) => $fw['total_controls'] > 0)
-            ->values();
+        // 7. Framework Breakdown (control-based compliance via SQL aggregate)
+        $frameworkBreakdown = $grc->frameworkCompliance();
 
         return [
             'healthScore'        => $healthScore,

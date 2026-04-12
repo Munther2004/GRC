@@ -10,6 +10,9 @@ class EvidenceScoringService
     /**
      * Verdict priority for "best verdict" selection.
      * Higher number = better quality.
+     *
+     * Keys are strtolower(AIService::VERDICT_*) — this service normalises raw DB
+     * values via strtolower() before lookup so Title-Case DB values match here.
      */
     private const VERDICT_PRIORITY = [
         'insufficient'       => 1,
@@ -19,6 +22,8 @@ class EvidenceScoringService
 
     /**
      * Evidence quality multipliers (keyed on normalised verdict).
+     *
+     * Same normalisation convention as VERDICT_PRIORITY above.
      */
     private const EVIDENCE_MULTIPLIERS = [
         'adequate'           => 1.0,

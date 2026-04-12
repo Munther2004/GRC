@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { usePage } from '@inertiajs/react';
+import type { SharedProps } from '@/types';
 import axios from 'axios';
 import { EvidenceItem, AiReview, EvidenceRow, getReviewFromItem } from '@/components/evidence-row';
 
@@ -67,8 +68,7 @@ function StatusBadge({ status }: { status: string | null }) {
 // ── Main component ───────────────────────────────────────────────────────────
 
 export default function ApprovalQueue({ requests: initial }: Props) {
-    const { auth } = usePage().props as any;
-    const isAdmin   = auth.user.role === 'admin';
+    const { auth } = usePage<SharedProps>().props;
     const isAuditor = auth.user.role === 'auditor';
 
     const [requests, setRequests] = useState<StatusRequest[]>(initial);
@@ -253,7 +253,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
                                                     warning={reviewWarning[req.evidence.id]}
                                                     canReview={true}
                                                     isAdmin={false}
-                                                    isAuditor={true}
+                                                    isAuditor={isAuditor}
                                                     liveReviewExists={!!liveReviews[req.evidence.id]}
                                                     onRunReview={() => runAiReview(req.evidence!.id)}
                                                     onTogglePanel={() => setExpanded(prev => ({ ...prev, [req.evidence!.id]: !prev[req.evidence!.id] }))}

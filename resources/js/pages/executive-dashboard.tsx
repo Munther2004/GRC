@@ -561,7 +561,7 @@ export default function ExecutiveDashboard({
                                             tickFormatter={(v) => `${v}%`}
                                         />
                                         <Tooltip
-                                            formatter={(value: number) => [`${value}%`, 'Compliance']}
+                                            formatter={(value) => [`${value}%`, 'Compliance']}
                                             contentStyle={{
                                                 fontSize: 12,
                                                 borderRadius: 8,

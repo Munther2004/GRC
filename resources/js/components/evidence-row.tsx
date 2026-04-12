@@ -201,6 +201,96 @@ export function AiReviewPanel({ review, onRejectForRelevance }: {
     );
 }
 
+// ── EvidenceActions ───────────────────────────────────────────────────────────
+
+interface EvidenceActionsProps {
+    ev:           EvidenceItem;
+    review:       AiReview | null;
+    isExpanded:   boolean;
+    isLoading:    boolean;
+    canReview:    boolean;
+    isAdmin:      boolean;
+    isAuditor:    boolean;
+    onRunReview:          () => void;
+    onTogglePanel:        () => void;
+    onApprove:            () => void;
+    onReject:             () => void;
+    onRejectForRelevance?: () => void;
+    onDestroy:            () => void;
+    onDownload:           () => void;
+}
+
+function EvidenceActions({
+    ev, review, isExpanded, isLoading,
+    canReview, isAdmin, isAuditor,
+    onRunReview, onTogglePanel, onApprove, onReject, onDestroy, onDownload,
+}: EvidenceActionsProps) {
+    const hasReview = review !== null;
+    return (
+        <div className="flex items-center gap-1 flex-shrink-0 flex-wrap justify-end">
+            {canReview && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/30 text-xs gap-1"
+                    onClick={() => hasReview ? onTogglePanel() : onRunReview()}
+                    disabled={isLoading}
+                    title={hasReview ? 'Toggle AI review' : 'Run AI review'}
+                >
+                    {isLoading
+                        ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Reviewing...</>
+                        : hasReview
+                            ? <>{isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}<Sparkles className="w-3.5 h-3.5" /> AI Review</>
+                            : <><Sparkles className="w-3.5 h-3.5" /> AI Review</>
+                    }
+                </Button>
+            )}
+
+            <Button
+                variant="ghost" size="icon"
+                className="h-8 w-8 text-blue-500 hover:bg-blue-50"
+                title="Download"
+                onClick={onDownload}
+            >
+                <Download className="w-4 h-4" />
+            </Button>
+
+            {(isAdmin || isAuditor) && ev.status !== 'approved' && (
+                <Button
+                    variant="ghost" size="icon"
+                    className="h-8 w-8 text-green-500 hover:bg-green-50"
+                    title="Approve"
+                    onClick={onApprove}
+                >
+                    <CheckCircle className="w-4 h-4" />
+                </Button>
+            )}
+
+            {(isAdmin || isAuditor) && ev.status !== 'rejected' && (
+                <Button
+                    variant="ghost" size="icon"
+                    className="h-8 w-8 text-orange-500 hover:bg-orange-50"
+                    title="Reject"
+                    onClick={onReject}
+                >
+                    <XCircle className="w-4 h-4" />
+                </Button>
+            )}
+
+            {isAdmin && (
+                <Button
+                    variant="ghost" size="icon"
+                    className="h-8 w-8 text-red-500 hover:bg-red-50"
+                    title="Delete"
+                    onClick={onDestroy}
+                >
+                    <Trash2 className="w-4 h-4" />
+                </Button>
+            )}
+        </div>
+    );
+}
+
 // ── EvidenceRow ───────────────────────────────────────────────────────────────
 
 export function EvidenceRow({
@@ -295,67 +385,14 @@ export function EvidenceRow({
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-1 flex-shrink-0 flex-wrap justify-end">
-                    {canReview && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/30 text-xs gap-1"
-                            onClick={() => hasReview ? onTogglePanel() : onRunReview()}
-                            disabled={isLoading}
-                            title={hasReview ? 'Toggle AI review' : 'Run AI review'}
-                        >
-                            {isLoading
-                                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Reviewing...</>
-                                : hasReview
-                                    ? <>{isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}<Sparkles className="w-3.5 h-3.5" /> AI Review</>
-                                    : <><Sparkles className="w-3.5 h-3.5" /> AI Review</>
-                            }
-                        </Button>
-                    )}
-
-                    <Button
-                        variant="ghost" size="icon"
-                        className="h-8 w-8 text-blue-500 hover:bg-blue-50"
-                        title="Download"
-                        onClick={onDownload}
-                    >
-                        <Download className="w-4 h-4" />
-                    </Button>
-
-                    {(isAdmin || isAuditor) && ev.status !== 'approved' && (
-                        <Button
-                            variant="ghost" size="icon"
-                            className="h-8 w-8 text-green-500 hover:bg-green-50"
-                            title="Approve"
-                            onClick={onApprove}
-                        >
-                            <CheckCircle className="w-4 h-4" />
-                        </Button>
-                    )}
-
-                    {(isAdmin || isAuditor) && ev.status !== 'rejected' && (
-                        <Button
-                            variant="ghost" size="icon"
-                            className="h-8 w-8 text-orange-500 hover:bg-orange-50"
-                            title="Reject"
-                            onClick={onReject}
-                        >
-                            <XCircle className="w-4 h-4" />
-                        </Button>
-                    )}
-
-                    {isAdmin && (
-                        <Button
-                            variant="ghost" size="icon"
-                            className="h-8 w-8 text-red-500 hover:bg-red-50"
-                            title="Delete"
-                            onClick={onDestroy}
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </Button>
-                    )}
-                </div>
+                <EvidenceActions
+                    ev={ev} review={review} isExpanded={isExpanded} isLoading={isLoading}
+                    canReview={canReview} isAdmin={isAdmin} isAuditor={isAuditor}
+                    onRunReview={onRunReview} onTogglePanel={onTogglePanel}
+                    onApprove={onApprove} onReject={onReject}
+                    onRejectForRelevance={onRejectForRelevance}
+                    onDestroy={onDestroy} onDownload={onDownload}
+                />
             </div>
         </div>
     );

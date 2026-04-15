@@ -24,11 +24,11 @@ export function RiskTrendChart({ trendData = [] }: Props) {
     const hasData = trendData.length > 0
 
     return (
-        <Card className="bg-card border-border">
-            <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-medium">Risk Trend</CardTitle>
-                <p className="text-xs text-muted-foreground mt-1">
-                    Risk levels over time — based on ISO/IEC 27005 scoring
+        <Card>
+            <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">Risk Trend</CardTitle>
+                <p className="text-[11px] text-muted-foreground">
+                    Risk levels over time — ISO/IEC 27005 scoring
                 </p>
             </CardHeader>
             <CardContent>
@@ -42,7 +42,7 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                         </div>
                     </div>
                 ) : (
-                    <div className="h-70">
+                    <div className="h-[280px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <defs>
@@ -71,12 +71,13 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                                 />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: '#1a1a1a',
-                                        border: '1px solid #333',
-                                        borderRadius: '8px',
-                                        fontSize: '12px',
+                                        backgroundColor: 'oklch(0.06 0 0)',
+                                        border: '1px solid oklch(0.18 0 0)',
+                                        borderRadius: '6px',
+                                        fontSize: '11px',
+                                        padding: '6px 10px',
                                     }}
-                                    labelStyle={{ color: '#fff' }}
+                                    labelStyle={{ color: '#fafafa' }}
                                 />
                                 <Legend
                                     iconType="circle"

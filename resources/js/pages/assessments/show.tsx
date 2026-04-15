@@ -62,8 +62,8 @@ interface AISummary {
 }
 
 const complianceColor = (pct: number) => {
-    if (pct >= 80) return 'text-green-600';
-    if (pct >= 50) return 'text-yellow-600';
+    if (pct >= 80) return 'text-emerald-400';
+    if (pct >= 50) return 'text-amber-400';
     return 'text-red-500';
 };
 
@@ -75,7 +75,7 @@ const complianceBg = (pct: number) => {
 
 // Evidence-backed score uses tighter thresholds (≥70 green, 40-69 amber, <40 red)
 const evidenceScoreColor = (pct: number) => {
-    if (pct >= 70) return 'text-green-600';
+    if (pct >= 70) return 'text-emerald-400';
     if (pct >= 40) return 'text-amber-500';
     return 'text-red-500';
 };
@@ -87,25 +87,25 @@ const evidenceScoreBg = (pct: number) => {
 };
 
 const STATUS_STYLES: Record<string, string> = {
-    'Strong':             'bg-green-100 text-green-700 border-green-300',
-    'Adequate':           'bg-blue-100 text-blue-700 border-blue-300',
-    'Needs Improvement':  'bg-yellow-100 text-yellow-700 border-yellow-300',
-    'At Risk':            'bg-orange-100 text-orange-700 border-orange-300',
-    'Critical':           'bg-red-100 text-red-700 border-red-300',
+    'Strong':             'bg-emerald-950 text-emerald-400 border-green-300',
+    'Adequate':           'bg-blue-950 text-blue-400 border-blue-300',
+    'Needs Improvement':  'bg-amber-950 text-amber-400 border-yellow-300',
+    'At Risk':            'bg-orange-950 text-orange-400 border-orange-300',
+    'Critical':           'bg-red-950 text-red-400 border-red-300',
 };
 
 const RATING_STYLES: Record<string, string> = {
-    'Excellent': 'bg-green-100 text-green-700 border-green-300',
-    'Good':      'bg-blue-100 text-blue-700 border-blue-300',
-    'Fair':      'bg-yellow-100 text-yellow-700 border-yellow-300',
-    'Poor':      'bg-orange-100 text-orange-700 border-orange-300',
-    'Critical':  'bg-red-100 text-red-700 border-red-300',
+    'Excellent': 'bg-emerald-950 text-emerald-400 border-green-300',
+    'Good':      'bg-blue-950 text-blue-400 border-blue-300',
+    'Fair':      'bg-amber-950 text-amber-400 border-yellow-300',
+    'Poor':      'bg-orange-950 text-orange-400 border-orange-300',
+    'Critical':  'bg-red-950 text-red-400 border-red-300',
 };
 
 const SEVERITY_STYLES: Record<string, string> = {
-    'High':   'bg-red-100 text-red-700 border-red-200',
-    'Medium': 'bg-yellow-100 text-yellow-700 border-yellow-200',
-    'Low':    'bg-green-100 text-green-700 border-green-200',
+    'High':   'bg-red-950 text-red-400 border-red-200',
+    'Medium': 'bg-amber-950 text-amber-400 border-yellow-200',
+    'Low':    'bg-emerald-950 text-emerald-400 border-green-200',
 };
 
 export default function AssessmentShow({ assessment, breakdown, byCategory, items, evidenceScore }: Props) {
@@ -153,11 +153,11 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                             <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
                         </Link>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{assessment.title}</h1>
+                            <h1 className="text-2xl font-bold text-foreground">{assessment.title}</h1>
                             <div className="flex items-center gap-2 mt-1">
                                 <Badge variant="outline">{assessment.framework.short_name}</Badge>
                                 <span className="text-sm text-gray-500">{assessment.period}</span>
-                                <span className="text-sm text-gray-400">by {assessment.user?.name}</span>
+                                <span className="text-sm text-muted-foreground/60">by {assessment.user?.name}</span>
                             </div>
                         </div>
                     </div>
@@ -226,7 +226,7 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
 
                                 {/* ── Evidence quality breakdown ────────────────────── */}
                                 <div className="flex flex-wrap gap-4 pt-1 border-t border-gray-100 dark:border-gray-700">
-                                    <span className="flex items-center gap-1.5 text-sm text-green-600">
+                                    <span className="flex items-center gap-1.5 text-sm text-emerald-400">
                                         <CheckCircle className="w-4 h-4" />
                                         <strong>{evidenceScore.fully_evidenced}</strong> Fully evidenced
                                     </span>
@@ -252,7 +252,7 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                                         { label: 'Non-Compliant', value: breakdown.non_compliant,       icon: XCircle,       color: 'text-red-500' },
                                         { label: 'N/A',           value: breakdown.not_applicable,      icon: MinusCircle,   color: 'text-gray-400' },
                                     ].map(({ label, value, icon: Icon, color }) => (
-                                        <div key={label} className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                        <div key={label} className="text-center p-3 bg-muted/30 rounded-lg">
                                             <Icon className={`w-5 h-5 ${color} mx-auto mb-1`} />
                                             <p className="text-xl font-bold">{value}</p>
                                             <p className="text-xs text-gray-500">{label}</p>
@@ -289,7 +289,7 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                         {nonCompliantItems.length > 0 && (
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-base text-red-600">
+                                    <CardTitle className="text-base text-red-400">
                                         Gap Analysis — {nonCompliantItems.length} controls require attention
                                     </CardTitle>
                                 </CardHeader>
@@ -307,13 +307,13 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                                                     </span>
                                                     <span className="font-medium">{item.control.title}</span>
                                                     {item.comments && (
-                                                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{item.comments}</p>
+                                                        <p className="text-xs text-foreground/80 mt-1">{item.comments}</p>
                                                     )}
                                                 </div>
-                                                <Badge variant="outline" className={`text-xs flex-shrink-0 ${
+                                                <Badge variant="outline" className={`text-xs shrink-0 ${
                                                     item.compliance_status === 'non_compliant'
-                                                        ? 'bg-red-50 text-red-600 border-red-200'
-                                                        : 'bg-yellow-50 text-yellow-600 border-yellow-200'
+                                                        ? 'bg-red-950 text-red-400 border-red-200'
+                                                        : 'bg-amber-950 text-amber-400 border-yellow-200'
                                                 }`}>
                                                     {item.compliance_status === 'non_compliant' ? 'Non-Compliant' : 'Partial'}
                                                 </Badge>
@@ -345,7 +345,7 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400">Scope</p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-300">{assessment.scope}</p>
+                                    <p className="text-sm text-foreground/80">{assessment.scope}</p>
                                 </div>
                                 {assessment.due_date && (
                                     <div>
@@ -378,8 +378,8 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                 {loadingSummary && (
                     <Card className="border-purple-200 dark:border-purple-800">
                         <CardContent className="p-8 flex flex-col items-center gap-3 text-center">
-                            <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
-                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Analyzing assessment data...</p>
+                            <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
+                            <p className="text-sm font-medium text-foreground/85">Analyzing assessment data...</p>
                             <p className="text-xs text-gray-400">This may take a few seconds</p>
                         </CardContent>
                     </Card>
@@ -388,8 +388,8 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                 {/* Error state */}
                 {summaryError && !loadingSummary && (
                     <Card className="border-red-200">
-                        <CardContent className="p-4 flex items-center gap-3 text-red-600">
-                            <XCircle className="w-5 h-5 flex-shrink-0" />
+                        <CardContent className="p-4 flex items-center gap-3 text-red-400">
+                            <XCircle className="w-5 h-5 shrink-0" />
                             <span className="text-sm">{summaryError}</span>
                         </CardContent>
                     </Card>
@@ -421,7 +421,7 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                             <div className="flex items-center gap-2">
                                 <Button variant="outline" size="sm" onClick={copySummary} className="gap-1.5">
                                     {copied
-                                        ? <><CheckCheck className="w-3.5 h-3.5 text-green-600" /> Copied!</>
+                                        ? <><CheckCheck className="w-3.5 h-3.5 text-emerald-400" /> Copied!</>
                                         : <><Copy className="w-3.5 h-3.5" /> Copy Summary</>
                                     }
                                 </Button>
@@ -437,7 +437,7 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                                 <CardTitle className="text-base text-purple-700 dark:text-purple-400">Executive Summary</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                                <div className="prose prose-sm dark:prose-invert max-w-none text-foreground/85 leading-relaxed whitespace-pre-line">
                                     {aiSummary.executive_summary}
                                 </div>
                             </CardContent>
@@ -449,23 +449,23 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                             {/* Key Findings */}
                             <Card>
                                 <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-semibold text-red-600 dark:text-red-400">
+                                    <CardTitle className="text-sm font-semibold text-red-400 dark:text-red-400">
                                         🔴 Key Findings
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3">
                                     {aiSummary.key_findings.map((f, i) => (
-                                        <div key={i} className="p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                                        <div key={i} className="p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-accent/30">
                                             <div className="flex items-start justify-between gap-2 mb-1">
-                                                <p className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">{f.finding}</p>
+                                                <p className="text-sm font-semibold text-foreground leading-tight">{f.finding}</p>
                                                 <Badge
                                                     variant="outline"
-                                                    className={`text-xs flex-shrink-0 px-1.5 py-0 ${SEVERITY_STYLES[f.severity] ?? SEVERITY_STYLES['Medium']}`}
+                                                    className={`text-xs shrink-0 px-1.5 py-0 ${SEVERITY_STYLES[f.severity] ?? SEVERITY_STYLES['Medium']}`}
                                                 >
                                                     {f.severity}
                                                 </Badge>
                                             </div>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">{f.detail}</p>
+                                            <p className="text-xs text-muted-foreground">{f.detail}</p>
                                         </div>
                                     ))}
                                 </CardContent>
@@ -474,17 +474,17 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                             {/* Immediate Priorities */}
                             <Card>
                                 <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+                                    <CardTitle className="text-sm font-semibold text-orange-400 dark:text-orange-400">
                                         ⚡ Immediate Priorities
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-2">
                                     {aiSummary.immediate_priorities.map((p, i) => (
                                         <div key={i} className="flex gap-3 p-2.5 border-l-2 border-orange-400 bg-orange-50 dark:bg-orange-900/10 rounded-r-lg">
-                                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 text-xs font-bold flex items-center justify-center">
+                                            <span className="shrink-0 w-5 h-5 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 text-xs font-bold flex items-center justify-center">
                                                 {i + 1}
                                             </span>
-                                            <p className="text-sm text-gray-700 dark:text-gray-300">{p}</p>
+                                            <p className="text-sm text-foreground/85">{p}</p>
                                         </div>
                                     ))}
                                 </CardContent>
@@ -493,15 +493,15 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                             {/* Positive Observations */}
                             <Card>
                                 <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-semibold text-green-600 dark:text-green-400">
+                                    <CardTitle className="text-sm font-semibold text-emerald-400 dark:text-green-400">
                                         ✅ Positive Observations
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-2">
                                     {aiSummary.positive_observations.map((obs, i) => (
                                         <div key={i} className="flex gap-2 items-start">
-                                            <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                                            <p className="text-sm text-gray-700 dark:text-gray-300">{obs}</p>
+                                            <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                                            <p className="text-sm text-foreground/85">{obs}</p>
                                         </div>
                                     ))}
                                 </CardContent>
@@ -516,17 +516,17 @@ export default function AssessmentShow({ assessment, breakdown, byCategory, item
                             <CardContent className="space-y-3">
                                 {aiSummary.recommended_next_steps.map((step, i) => (
                                     <div key={i} className="flex gap-4 p-3 border-l-4 border-purple-400 bg-purple-50 dark:bg-purple-900/10 rounded-r-lg">
-                                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-sm font-bold flex items-center justify-center">
+                                        <span className="shrink-0 w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-sm font-bold flex items-center justify-center">
                                             {i + 1}
                                         </span>
-                                        <p className="text-sm text-gray-700 dark:text-gray-300 pt-1">{step}</p>
+                                        <p className="text-sm text-foreground/85 pt-1">{step}</p>
                                     </div>
                                 ))}
                             </CardContent>
                         </Card>
 
                         {/* Disclaimer */}
-                        <p className="text-xs text-gray-400 dark:text-gray-500 italic text-center pb-2">
+                        <p className="text-xs text-muted-foreground/60 italic text-center pb-2">
                             This summary was generated by AI based on assessment data. Review findings with your compliance team before acting.
                         </p>
                     </div>

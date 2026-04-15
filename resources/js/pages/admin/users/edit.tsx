@@ -33,7 +33,7 @@ function EditForm({ user }: { user: any }) {
                         <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit User</h1>
+                        <h1 className="text-2xl font-bold text-foreground">Edit User</h1>
                         <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                 </div>

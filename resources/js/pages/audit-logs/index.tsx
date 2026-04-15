@@ -1,11 +1,10 @@
 import { Head, router } from '@inertiajs/react';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
 import { Search, ScrollText, Activity, Calendar, Clock } from 'lucide-react';
 import { useState } from 'react';
 
@@ -36,18 +35,18 @@ interface Props {
 const actionColors: Record<string, string> = {
     created:   'bg-green-50 text-green-700 border-green-200',
     updated:   'bg-blue-50 text-blue-700 border-blue-200',
-    deleted:   'bg-red-50 text-red-600 border-red-200',
+    deleted:   'bg-red-950 text-red-400 border-red-200',
     submitted: 'bg-purple-50 text-purple-700 border-purple-200',
     uploaded:  'bg-yellow-50 text-yellow-700 border-yellow-200',
 };
 
 const modelColors: Record<string, string> = {
-    Assessment: 'bg-blue-100 text-blue-700',
-    Risk:       'bg-orange-100 text-orange-700',
+    Assessment: 'bg-blue-950 text-blue-400',
+    Risk:       'bg-orange-950 text-orange-400',
     User:       'bg-purple-100 text-purple-700',
-    Evidence:   'bg-yellow-100 text-yellow-700',
-    Framework:  'bg-green-100 text-green-700',
-    Control:    'bg-gray-100 text-gray-700',
+    Evidence:   'bg-amber-950 text-amber-400',
+    Framework:  'bg-emerald-950 text-emerald-400',
+    Control:    'bg-muted text-foreground',
 };
 
 export default function AuditLogsIndex({ logs, actions, modelTypes, stats, filters }: Props) {
@@ -81,8 +80,8 @@ export default function AuditLogsIndex({ logs, actions, modelTypes, stats, filte
 
                 {/* Header */}
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Audit Logs</h1>
-                    <p className="text-sm text-gray-500 mt-1">Complete trail of all system activity</p>
+                    <h1 className="text-2xl font-bold text-foreground">Audit Logs</h1>
+                    <p className="text-sm text-muted-foreground">Complete trail of all system activity</p>
                 </div>
 
                 {/* Stats */}
@@ -177,14 +176,14 @@ export default function AuditLogsIndex({ logs, actions, modelTypes, stats, filte
                     <CardContent className="p-0 mt-4">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
+                                <thead className="bg-muted/30 border-y border-border">
                                     <tr>
                                         {['Time', 'User', 'Action', 'Module', 'Description', 'IP'].map(h => (
-                                            <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                                            <th key={h} className="px-4 py-3 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                <tbody className="divide-y divide-border">
                                     {logs.data.length === 0 ? (
                                         <tr>
                                             <td colSpan={6} className="px-4 py-12 text-center text-gray-400">
@@ -192,12 +191,12 @@ export default function AuditLogsIndex({ logs, actions, modelTypes, stats, filte
                                             </td>
                                         </tr>
                                     ) : logs.data.map(log => (
-                                        <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                        <tr key={log.id} className="hover:bg-accent/30 transition-colors">
                                             <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
                                                 {formatDate(log.created_at)}
                                             </td>
                                             <td className="px-4 py-3">
-                                                <p className="font-medium text-gray-900 dark:text-white text-xs">
+                                                <p className="font-medium text-foreground text-xs">
                                                     {log.user?.name ?? log.user_name ?? 'System'}
                                                 </p>
                                             </td>
@@ -211,7 +210,7 @@ export default function AuditLogsIndex({ logs, actions, modelTypes, stats, filte
                                                     {log.model_type}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-300 max-w-xs truncate">
+                                            <td className="px-4 py-3 text-foreground/80 max-w-xs truncate">
                                                 {log.description}
                                             </td>
                                             <td className="px-4 py-3 text-xs text-gray-400 font-mono">

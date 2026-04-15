@@ -13,9 +13,9 @@ export default function Error500() {
                             <ServerCrash className="w-10 h-10 text-orange-500" />
                         </div>
                     </div>
-                    <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-2">500</h1>
+                    <h1 className="text-6xl font-bold text-foreground mb-2">500</h1>
                     <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3">Server Error</h2>
-                    <p className="text-gray-500 dark:text-gray-400 mb-8">
+                    <p className="text-muted-foreground mb-8">
                         Something went wrong on our end. Please try again later or contact support if the problem persists.
                     </p>
                     <Link href="/">

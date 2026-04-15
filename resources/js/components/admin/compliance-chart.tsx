@@ -23,12 +23,12 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
     const data = frameworkScores ?? defaultFrameworks
 
     return (
-        <Card className="bg-card border-border">
-            <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-medium">Compliance Status by Framework</CardTitle>
+        <Card>
+            <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">Compliance by Framework</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="w-full" style={{ height: 280, position: 'relative' }}>
+                <div className="w-full h-[280px] relative">
                     <ResponsiveContainer width="100%" height="100%">
                         <RadialBarChart
                             cx="50%"

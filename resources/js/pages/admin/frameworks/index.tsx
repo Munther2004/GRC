@@ -1,9 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
 import { Shield, Pencil, ToggleLeft, ToggleRight, BookOpen } from 'lucide-react';
 
 interface Framework {
@@ -38,8 +40,8 @@ export default function FrameworksIndex({ frameworks }: Props) {
 
                 {/* Header */}
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Frameworks</h1>
-                    <p className="text-sm text-gray-500 mt-1">Manage compliance frameworks and their associated controls</p>
+                    <h1 className="text-2xl font-bold text-foreground">Frameworks</h1>
+                    <p className="text-sm text-muted-foreground">Manage compliance frameworks and their associated controls</p>
                 </div>
 
                 {/* Stats */}
@@ -69,29 +71,29 @@ export default function FrameworksIndex({ frameworks }: Props) {
                     <CardContent className="p-0 mt-4">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
+                                <thead className="bg-muted/30 border-y border-border">
                                     <tr>
                                         {['Framework', 'Version', 'Controls', 'Status', 'Actions'].map(h => (
-                                            <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                                            <th key={h} className="px-4 py-3 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                <tbody className="divide-y divide-border">
                                     {frameworks.length === 0 ? (
                                         <tr>
                                             <td colSpan={5} className="px-4 py-12 text-center text-gray-400">No frameworks found.</td>
                                         </tr>
                                     ) : frameworks.map(framework => (
-                                        <tr key={framework.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                        <tr key={framework.id} className="hover:bg-accent/30 transition-colors">
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                                                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                                                    <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                                                        <span className="text-xs font-bold text-blue-400 dark:text-blue-400">
                                                             {framework.short_name.substring(0, 4)}
                                                         </span>
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-gray-900 dark:text-white">{framework.name}</p>
+                                                        <p className="font-medium text-foreground">{framework.name}</p>
                                                         {framework.description && (
                                                             <p className="text-xs text-gray-400 truncate max-w-xs">{framework.description}</p>
                                                         )}
@@ -102,7 +104,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                                 {framework.version ?? <span className="text-gray-300">—</span>}
                                             </td>
                                             <td className="px-4 py-3">
-                                                <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+                                                <div className="flex items-center gap-1.5 text-foreground/80">
                                                     <BookOpen className="w-4 h-4 text-gray-400" />
                                                     {framework.controls_count}
                                                 </div>
@@ -112,7 +114,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                                     variant="outline"
                                                     className={framework.is_active
                                                         ? 'bg-green-50 text-green-700 border-green-200'
-                                                        : 'bg-gray-100 text-gray-500 border-gray-200'}
+                                                        : 'bg-muted text-muted-foreground border-border'}
                                                 >
                                                     {framework.is_active ? 'Active' : 'Inactive'}
                                                 </Badge>

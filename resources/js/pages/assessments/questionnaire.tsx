@@ -65,8 +65,8 @@ const statusOptions = [
 const statusBadgeColors: Record<string, string> = {
     compliant:           'bg-green-50 text-green-700 border-green-200',
     partially_compliant: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    non_compliant:       'bg-red-50 text-red-600 border-red-200',
-    not_applicable:      'bg-gray-100 text-gray-500 border-gray-200',
+    non_compliant:       'bg-red-950 text-red-400 border-red-200',
+    not_applicable:      'bg-muted text-muted-foreground border-border',
 };
 
 export default function Questionnaire({ assessment, items, pagination, progress, prefilledCount }: Props) {
@@ -213,7 +213,7 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                             <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
                         </Link>
                         <div>
-                            <h1 className="text-xl font-bold text-gray-900 dark:text-white">{assessment.title}</h1>
+                            <h1 className="text-xl font-bold text-foreground">{assessment.title}</h1>
                             <div className="flex items-center gap-2 mt-1">
                                 <Badge variant="outline" className="text-xs">{assessment.framework.short_name}</Badge>
                                 <span className="text-xs text-gray-400">
@@ -226,7 +226,7 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                         <Button
                             onClick={qaAutoFill}
                             variant="outline"
-                            className="gap-2 border-orange-400 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950"
+                            className="gap-2 border-orange-400 text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950"
                             disabled={saving}
                             title="QA: randomly fills all controls and submits the assessment"
                         >
@@ -251,7 +251,7 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                             <span className="text-sm font-medium">Overall Progress</span>
                             <span className="text-sm text-gray-500">{progress.answered} / {progress.total} answered</span>
                         </div>
-                        <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                             <div
                                 className="h-full bg-blue-500 rounded-full transition-all duration-500"
                                 style={{ width: `${progress.percent}%` }}
@@ -278,10 +278,10 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                 <CardHeader className="pb-3">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex items-start gap-3 flex-1">
-                                            <span className="text-xs text-gray-400 font-mono mt-0.5 w-6 flex-shrink-0">{globalIndex}</span>
+                                            <span className="text-xs text-gray-400 font-mono mt-0.5 w-6 shrink-0">{globalIndex}</span>
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 flex-wrap">
-                                                    <span className="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300">
+                                                    <span className="text-xs font-mono bg-muted/50 px-2 py-0.5 rounded text-foreground/80">
                                                         {item.control.control_id}
                                                     </span>
                                                     <span className="text-xs text-gray-400">{item.control.category}</span>
@@ -289,7 +289,7 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                                 <CardTitle className="text-sm font-semibold mt-1">{item.control.title}</CardTitle>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                        <div className="flex items-center gap-2 shrink-0">
                                             {answer?.compliance_status && (
                                                 <Badge variant="outline" className={`text-xs capitalize ${statusBadgeColors[answer.compliance_status]}`}>
                                                     {answer.compliance_status.replace('_', ' ')}
@@ -325,7 +325,7 @@ export default function Questionnaire({ assessment, items, pagination, progress,
 
                                 <CardContent className="space-y-4">
                                     {/* Description */}
-                                    <p className="text-sm text-gray-600 dark:text-gray-300">{item.control.description}</p>
+                                    <p className="text-sm text-foreground/80">{item.control.description}</p>
 
                                     {/* AI Help Panel */}
                                     {activeHelpControlId === item.control_id && (
@@ -358,7 +358,7 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                             {/* Error state */}
                                             {!helpLoading[item.control_id] && helpError[item.control_id] && (
                                                 <div className="px-4 py-3 space-y-2">
-                                                    <p className="text-xs text-red-600 dark:text-red-400">{helpError[item.control_id]}</p>
+                                                    <p className="text-xs text-red-400 dark:text-red-400">{helpError[item.control_id]}</p>
                                                     {helpError[item.control_id] !== 'Too many requests. Please wait a moment before asking for more guidance.' && (
                                                         <button
                                                             type="button"
@@ -379,15 +379,15 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                                         {/* Plain English */}
                                                         <div>
                                                             <p className="font-semibold text-purple-700 dark:text-purple-300 mb-1">💬 What this means</p>
-                                                            <p className="text-gray-700 dark:text-gray-300">{ex.plain_english}</p>
+                                                            <p className="text-foreground/85">{ex.plain_english}</p>
                                                         </div>
 
                                                         {/* What it requires */}
                                                         <div>
                                                             <p className="font-semibold text-purple-700 dark:text-purple-300 mb-1">✅ What it requires</p>
-                                                            <ul className="space-y-0.5 text-gray-700 dark:text-gray-300">
+                                                            <ul className="space-y-0.5 text-foreground/85">
                                                                 {ex.what_it_requires.map((req, i) => (
-                                                                    <li key={i} className="flex gap-1.5"><span className="text-purple-400 flex-shrink-0">•</span>{req}</li>
+                                                                    <li key={i} className="flex gap-1.5"><span className="text-purple-400 shrink-0">•</span>{req}</li>
                                                                 ))}
                                                             </ul>
                                                         </div>
@@ -395,9 +395,9 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                                         {/* Evidence examples */}
                                                         <div>
                                                             <p className="font-semibold text-purple-700 dark:text-purple-300 mb-1">📎 Evidence examples</p>
-                                                            <ul className="space-y-0.5 text-gray-700 dark:text-gray-300">
+                                                            <ul className="space-y-0.5 text-foreground/85">
                                                                 {ex.evidence_examples.map((ev, i) => (
-                                                                    <li key={i} className="flex gap-1.5"><span className="text-purple-400 flex-shrink-0">•</span>{ev}</li>
+                                                                    <li key={i} className="flex gap-1.5"><span className="text-purple-400 shrink-0">•</span>{ev}</li>
                                                                 ))}
                                                             </ul>
                                                         </div>
@@ -405,13 +405,13 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                                         {/* Compliant looks like */}
                                                         <div>
                                                             <p className="font-semibold text-purple-700 dark:text-purple-300 mb-1">✔ Compliant implementation looks like</p>
-                                                            <p className="text-gray-700 dark:text-gray-300">{ex.compliant_looks_like}</p>
+                                                            <p className="text-foreground/85">{ex.compliant_looks_like}</p>
                                                         </div>
 
                                                         {/* Risk */}
-                                                        <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 px-3 py-2">
+                                                        <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 border border-border dark:border-amber-800 px-3 py-2">
                                                             <p className="font-semibold text-amber-700 dark:text-amber-400 mb-0.5">⚠ Risk if not implemented</p>
-                                                            <p className="text-gray-700 dark:text-gray-300">{ex.non_compliant_risks}</p>
+                                                            <p className="text-foreground/85">{ex.non_compliant_risks}</p>
                                                         </div>
                                                     </div>
                                                 );
@@ -429,7 +429,7 @@ export default function Questionnaire({ assessment, items, pagination, progress,
 
                                     {/* Compliance Status Buttons */}
                                     <div>
-                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Compliance Status</p>
+                                        <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Compliance Status</p>
                                         <div className="flex flex-wrap gap-2">
                                             {statusOptions.map(opt => (
                                                 <button
@@ -439,7 +439,7 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
                                                         answer?.compliance_status === opt.value
                                                             ? `${opt.color} text-white border-transparent`
-                                                            : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                                                            : 'bg-white dark:bg-gray-800 text-foreground/80 border-border hover:border-gray-300'
                                                     }`}
                                                 >
                                                     {opt.label}
@@ -451,13 +451,13 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                     {/* Comments */}
                                     {!isNA && (
                                         <div>
-                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Comments</p>
+                                            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">Comments</p>
                                             <textarea
                                                 value={answer?.comments ?? ''}
                                                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateAnswer(item.id, 'comments', e.target.value)}
                                                 rows={2}
                                                 placeholder="Add implementation notes, findings, or observations..."
-                                                className="w-full text-sm rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                                className="w-full text-sm rounded-md border border-border bg-white dark:bg-gray-800 px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                                             />
                                         </div>
                                     )}
@@ -466,11 +466,11 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                     {!isNA && (
                                         <div>
                                             <div className="flex items-center justify-between mb-1">
-                                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Evidence</p>
+                                                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Evidence</p>
                                                 <button
                                                     type="button"
                                                     onClick={() => fileInputRefs.current[item.id]?.click()}
-                                                    className="text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1"
+                                                    className="text-xs text-blue-500 hover:text-blue-400 flex items-center gap-1"
                                                 >
                                                     <Upload className="w-3 h-3" /> Upload file
                                                 </button>
@@ -500,7 +500,7 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                                                 value={expiryDate}
                                                                 min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
                                                                 onChange={(e) => setExpiryDate(e.target.value)}
-                                                                className="text-xs rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                className="text-xs rounded border border-border bg-white dark:bg-gray-800 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                             />
                                                         </div>
                                                         <div className="flex gap-2 pt-4">
@@ -518,10 +518,10 @@ export default function Questionnaire({ assessment, items, pagination, progress,
                                             {item.evidence && item.evidence.length > 0 ? (
                                                 <div className="space-y-1 mt-2">
                                                     {item.evidence.map(ev => (
-                                                        <div key={ev.id} className="flex items-center gap-2 text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 p-2 rounded">
-                                                            <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
+                                                        <div key={ev.id} className="flex items-center gap-2 text-xs text-gray-500 bg-muted/30 p-2 rounded">
+                                                            <CheckCircle className="w-3 h-3 text-green-500 shrink-0" />
                                                             <span className="truncate">{ev.title}</span>
-                                                            <span className="text-gray-400 flex-shrink-0">({ev.file_name})</span>
+                                                            <span className="text-gray-400 shrink-0">({ev.file_name})</span>
                                                         </div>
                                                     ))}
                                                 </div>

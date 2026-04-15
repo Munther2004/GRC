@@ -136,12 +136,12 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                     </Link>
                     <div className="flex-1">
                         <div className="flex items-center gap-3">
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Risk</h1>
+                            <h1 className="text-2xl font-bold text-foreground">Add New Risk</h1>
                             <Badge className="bg-purple-100 text-purple-700 border-purple-200 text-xs">
                                 <Sparkles className="w-3 h-3 mr-1" />AI Powered
                             </Badge>
                         </div>
-                        <p className="text-sm text-gray-500">ISO/IEC 27005 risk assessment</p>
+                        <p className="text-sm text-muted-foreground">ISO/IEC 27005 risk assessment</p>
                     </div>
                 </div>
 
@@ -230,11 +230,11 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                             </div>
                             <div className="grid grid-cols-1 gap-3">
                                 {threats.map((t, i) => (
-                                    <Card key={i} className="border-purple-200 bg-purple-50/30">
+                                    <Card key={i} className="border-purple-200 bg-muted/20">
                                         <CardContent className="p-4">
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="flex-1 space-y-1.5">
-                                                    <p className="font-medium text-sm text-gray-900 dark:text-white">{t.threat}</p>
+                                                    <p className="font-medium text-sm text-foreground">{t.threat}</p>
                                                     <p className="text-xs text-gray-600">{t.explanation}</p>
                                                     <div className="flex items-center gap-2 pt-1">
                                                         <Badge className={`text-xs ${levelColors[t.likelihood]}`}>
@@ -272,7 +272,7 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                                     <CardDescription>ISO/IEC 27005 — Likelihood × Impact matrix (1–5 scale)</CardDescription>
                                 </div>
                                 {data.ai_validated && (
-                                    <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-xs">
+                                    <Badge className="bg-blue-950 text-blue-400 border-blue-200 text-xs">
                                         <Sparkles className="w-3 h-3 mr-1" />AI Validated
                                     </Badge>
                                 )}
@@ -287,7 +287,7 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('likelihood', e.target.value)}
                                         className="w-full accent-blue-600"
                                     />
-                                    <div className="flex justify-between text-xs text-gray-400">
+                                    <div className="flex justify-between text-xs text-muted-foreground/70">
                                         <span>Rare</span><span>Unlikely</span><span>Possible</span><span>Likely</span><span>Almost Certain</span>
                                     </div>
                                 </div>
@@ -298,7 +298,7 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('impact', e.target.value)}
                                         className="w-full accent-blue-600"
                                     />
-                                    <div className="flex justify-between text-xs text-gray-400">
+                                    <div className="flex justify-between text-xs text-muted-foreground/70">
                                         <span>Negligible</span><span>Minor</span><span>Moderate</span><span>Major</span><span>Catastrophic</span>
                                     </div>
                                 </div>
@@ -332,7 +332,7 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                             {validationResult && validationResult.error === true && (
                                 <div className="rounded-lg border border-red-200 bg-red-50">
                                     <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-red-100">
-                                        <XCircle className="w-4 h-4 text-red-600" />
+                                        <XCircle className="w-4 h-4 text-red-400" />
                                         <span className="text-sm font-semibold text-red-800">Validation Unavailable</span>
                                     </div>
                                     <div className="px-4 py-3">
@@ -344,7 +344,7 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                             {validationResult && !validationResult.error && validationResult.valid && (
                                 <div className="rounded-lg border border-green-200 bg-green-50">
                                     <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-green-100">
-                                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                                         <span className="text-sm font-semibold text-green-800">Scores Validated — Looks Good</span>
                                         <span className={`ml-auto text-xs px-1.5 py-0.5 rounded capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}>
                                             {validationResult.confidence} confidence
@@ -357,9 +357,9 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                             )}
 
                             {validationResult && !validationResult.error && !validationResult.valid && (
-                                <div className="rounded-lg border border-amber-200 bg-amber-50">
+                                <div className="rounded-lg border border-border bg-amber-50">
                                     <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-amber-100">
-                                        <AlertTriangle className="w-4 h-4 text-amber-600" />
+                                        <AlertTriangle className="w-4 h-4 text-amber-400" />
                                         <span className="text-sm font-semibold text-amber-800">Scores Adjusted — Recommendations Available</span>
                                         <span className={`ml-auto text-xs px-1.5 py-0.5 rounded capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}>
                                             {validationResult.confidence} confidence
@@ -376,7 +376,7 @@ export default function RiskCreate({ categories, statuses, treatments }: Props) 
                                             <Button
                                                 type="button"
                                                 size="sm"
-                                                className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white"
+                                                className="shrink-0 bg-amber-500 hover:bg-amber-700 text-white"
                                                 onClick={applyRecommendations}
                                             >
                                                 Apply Recommendations

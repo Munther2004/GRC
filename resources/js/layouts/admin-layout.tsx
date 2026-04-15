@@ -1,5 +1,6 @@
 import { AdminHeader } from "@/components/admin/header"
 import { AdminSidebar } from "@/components/admin/sidebar"
+import { CommandPalette } from "@/components/ui/command-palette"
 import { usePage } from "@inertiajs/react"
 import type { SharedProps } from "@/types"
 import { useEffect, useRef, useState } from "react"
@@ -28,17 +29,15 @@ function FlashToast() {
     if (!visible || !text) return null
 
     return (
-        <div className={`fixed bottom-6 right-6 z-50 flex items-start gap-3 rounded-lg border px-4 py-3 shadow-lg text-sm max-w-sm
-            ${isSuccess
-                ? 'bg-green-50 border-green-200 text-green-800'
-                : 'bg-red-50 border-red-200 text-red-800'
-            }`}>
+        <div className={`fixed bottom-6 right-6 z-50 flex items-start gap-3 rounded-lg border bg-popover px-4 py-3 text-sm max-w-sm backdrop-blur-xl
+            ${isSuccess ? 'border-emerald-500/20' : 'border-red-500/20'}`}
+            style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.04), 0 8px 32px rgba(0,0,0,0.5)' }}>
             {isSuccess
-                ? <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-600" />
-                : <XCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-600" />
+                ? <CheckCircle className="w-4 h-4 mt-0.5 shrink-0 text-emerald-400" />
+                : <XCircle className="w-4 h-4 mt-0.5 shrink-0 text-red-400" />
             }
-            <span className="flex-1">{text}</span>
-            <button onClick={() => setVisible(false)} className="flex-shrink-0 opacity-60 hover:opacity-100">
+            <span className="flex-1 text-foreground">{text}</span>
+            <button onClick={() => setVisible(false)} className="shrink-0 text-muted-foreground hover:text-foreground transition-colors">
                 <X className="w-3.5 h-3.5" />
             </button>
         </div>
@@ -52,10 +51,11 @@ export default function AdminLayout({
 }) {
   return (
     <div className="min-h-screen bg-background dark">
+      <CommandPalette />
       <AdminSidebar />
-      <div className="lg:pl-64">
+      <div className="lg:pl-60">
         <AdminHeader />
-        <main className="p-6">
+        <main className="px-6 py-8 max-w-[1400px] mx-auto">
           {children}
         </main>
       </div>

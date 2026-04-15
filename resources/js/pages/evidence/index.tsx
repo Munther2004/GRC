@@ -7,6 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
+import { FilterBar } from '@/components/ui/filter-bar';
 import {
     Search, FolderOpen, CheckCircle, XCircle, Clock,
     LayoutList, Layers, X, AlertTriangle,
@@ -35,10 +38,10 @@ interface Props {
 type GroupStatus = 'adequate' | 'partial' | 'insufficient' | 'unreviewed';
 
 const GROUP_STATUS: Record<GroupStatus, { dot: string; label: string; text: string }> = {
-    adequate:     { dot: 'bg-green-500', label: 'Adequate',          text: 'text-green-700 dark:text-green-400' },
-    partial:      { dot: 'bg-amber-500', label: 'Partially Adequate', text: 'text-amber-700 dark:text-amber-400' },
-    insufficient: { dot: 'bg-red-500',   label: 'Insufficient',       text: 'text-red-700 dark:text-red-400' },
-    unreviewed:   { dot: 'bg-gray-400',  label: 'No AI Review',       text: 'text-gray-500 dark:text-gray-400' },
+    adequate:     { dot: 'bg-emerald-500', label: 'Adequate',          text: 'text-emerald-400' },
+    partial:      { dot: 'bg-amber-500',   label: 'Partially Adequate', text: 'text-amber-400' },
+    insufficient: { dot: 'bg-red-500',     label: 'Insufficient',       text: 'text-red-400' },
+    unreviewed:   { dot: 'bg-muted-foreground/40', label: 'No AI Review', text: 'text-muted-foreground' },
 };
 
 function getGroupStatus(items: EvidenceItem[], liveReviews: Record<number, AiReview>): GroupStatus {
@@ -210,82 +213,63 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
 
             <div className="space-y-6">
 
-                {/* Header */}
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Evidence</h1>
-                    <p className="text-sm text-gray-500 mt-1">All uploaded compliance evidence files</p>
-                </div>
+                <PageHeader
+                    title="Evidence"
+                    description="All uploaded compliance evidence files"
+                />
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {[
-                        { label: 'Total Files', value: stats.total,    icon: FolderOpen,  color: 'text-blue-500' },
-                        { label: 'Pending',     value: stats.pending,  icon: Clock,       color: 'text-yellow-500' },
-                        { label: 'Approved',    value: stats.approved, icon: CheckCircle, color: 'text-green-500' },
-                        { label: 'Rejected',    value: stats.rejected, icon: XCircle,     color: 'text-red-500' },
-                    ].map(({ label, value, icon: Icon, color }) => (
-                        <Card key={label}>
-                            <CardContent className="p-4 flex items-center gap-3">
-                                <Icon className={`w-8 h-8 ${color}`} />
-                                <div>
-                                    <p className="text-2xl font-bold">{value}</p>
-                                    <p className="text-xs text-gray-500">{label}</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                <StatStrip stats={[
+                    { label: 'Total Files', value: stats.total,    tone: 'neutral' },
+                    { label: 'Pending',     value: stats.pending,  tone: stats.pending  > 0 ? 'warn'    : 'neutral' },
+                    { label: 'Approved',    value: stats.approved, tone: stats.approved > 0 ? 'ok'      : 'neutral' },
+                    { label: 'Rejected',    value: stats.rejected, tone: stats.rejected > 0 ? 'bad'     : 'neutral' },
+                ]} />
 
-                {/* Filters */}
-                <Card>
-                    <CardContent className="p-4">
-                        <div className="flex flex-wrap gap-3">
-                            <div className="relative flex-1 min-w-[200px]">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                <Input
-                                    placeholder="Search evidence..."
-                                    value={search}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-                                    onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && applyFilters({ search })}
-                                    className="pl-9"
-                                />
-                            </div>
-                            <Select value={status} onValueChange={(v: string) => { setStatus(v); applyFilters({ status: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[150px]"><SelectValue placeholder="Status" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Statuses</SelectItem>
-                                    <SelectItem value="pending">Pending</SelectItem>
-                                    <SelectItem value="approved">Approved</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Select value={frameworkId} onValueChange={(v: string) => { setFramework(v); applyFilters({ framework_id: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[160px]"><SelectValue placeholder="Framework" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Frameworks</SelectItem>
-                                    {frameworks.map(f => (
-                                        <SelectItem key={f.id} value={String(f.id)}>{f.short_name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Select value={assessmentId} onValueChange={(v: string) => { setAssessment(v); applyFilters({ assessment_id: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[200px]"><SelectValue placeholder="Assessment" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Assessments</SelectItem>
-                                    {assessments.map(a => (
-                                        <SelectItem key={a.id} value={String(a.id)}>{a.title}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Button variant="outline" onClick={() => applyFilters({ search })}>Search</Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                <FilterBar>
+                    <div className="relative flex-1 min-w-48">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                        <Input
+                            placeholder="Search evidence..."
+                            value={search}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                            onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && applyFilters({ search })}
+                            className="pl-9 h-8 text-sm"
+                        />
+                    </div>
+                    <Select value={status} onValueChange={(v: string) => { setStatus(v); applyFilters({ status: v === 'all' ? '' : v }); }}>
+                        <SelectTrigger className="w-36 h-8 text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="approved">Approved</SelectItem>
+                            <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Select value={frameworkId} onValueChange={(v: string) => { setFramework(v); applyFilters({ framework_id: v === 'all' ? '' : v }); }}>
+                        <SelectTrigger className="w-40 h-8 text-sm"><SelectValue placeholder="Framework" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Frameworks</SelectItem>
+                            {frameworks.map(f => (
+                                <SelectItem key={f.id} value={String(f.id)}>{f.short_name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select value={assessmentId} onValueChange={(v: string) => { setAssessment(v); applyFilters({ assessment_id: v === 'all' ? '' : v }); }}>
+                        <SelectTrigger className="w-48 h-8 text-sm"><SelectValue placeholder="Assessment" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Assessments</SelectItem>
+                            {assessments.map(a => (
+                                <SelectItem key={a.id} value={String(a.id)}>{a.title}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Button variant="outline" size="sm" onClick={() => applyFilters({ search })}>Search</Button>
+                </FilterBar>
 
                 {/* View Toggle + Evidence */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <p className="text-sm text-gray-500">{evidence.total} file{evidence.total !== 1 ? 's' : ''}</p>
+                        <p className="text-sm text-muted-foreground">{evidence.total} file{evidence.total !== 1 ? 's' : ''}</p>
                         <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
                             <Button
                                 variant={viewMode === 'list' ? 'default' : 'ghost'}
@@ -319,7 +303,7 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
                                         <p className="text-gray-400 text-sm mt-1">Upload evidence from within a questionnaire.</p>
                                     </div>
                                 ) : (
-                                    <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                                    <div className="divide-y divide-border">
                                         {evidence.data.map(ev => (
                                             <EvidenceRow key={ev.id} {...rowProps(ev)} />
                                         ))}
@@ -359,20 +343,20 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
 
                             {/* Unlinked evidence */}
                             {unlinked.length > 0 && (
-                                <Card className="border-amber-200 dark:border-amber-800">
+                                <Card className="border-amber-500/30">
                                     <CardHeader className="pb-2 pt-4 px-4">
                                         <div className="flex items-center gap-2">
-                                            <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                                            <CardTitle className="text-sm font-semibold text-amber-700 dark:text-amber-400">
+                                            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                                            <CardTitle className="text-sm font-semibold text-amber-400">
                                                 Unlinked Evidence ({unlinked.length} file{unlinked.length !== 1 ? 's' : ''})
                                             </CardTitle>
                                         </div>
-                                        <p className="text-xs text-amber-600 dark:text-amber-500 mt-1">
+                                        <p className="text-xs text-amber-400/70 mt-1">
                                             These files are not linked to any control and will not count toward compliance. Link them to a control from within a questionnaire.
                                         </p>
                                     </CardHeader>
                                     <CardContent className="p-0">
-                                        <div className="divide-y divide-amber-100 dark:divide-amber-900/30">
+                                        <div className="divide-y divide-amber-500/20">
                                             {unlinked.map(ev => (
                                                 <EvidenceRow key={ev.id} {...rowProps(ev)} />
                                             ))}
@@ -391,13 +375,13 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
                                         <CardHeader className="pb-2 pt-4 px-4">
                                             <div className="flex items-center justify-between gap-3 flex-wrap">
                                                 <div className="flex items-center gap-2 min-w-0">
-                                                    <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${sc.dot}`} />
-                                                    <CardTitle className="text-sm font-semibold text-gray-900 dark:text-white">
-                                                        <span className="font-mono text-gray-400 dark:text-gray-500 mr-1.5">{group.controlId}</span>
+                                                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${sc.dot}`} />
+                                                    <CardTitle className="text-sm font-semibold text-foreground">
+                                                        <span className="font-mono text-muted-foreground/60 mr-1.5">{group.controlId}</span>
                                                         {group.controlTitle}
                                                     </CardTitle>
                                                 </div>
-                                                <div className="flex items-center gap-2 flex-shrink-0">
+                                                <div className="flex items-center gap-2 shrink-0">
                                                     <Badge variant="outline" className="text-xs">{group.framework}</Badge>
                                                     <Badge variant="outline" className="text-xs text-gray-500">
                                                         {group.items.length} file{group.items.length !== 1 ? 's' : ''}
@@ -407,7 +391,7 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
                                             </div>
                                         </CardHeader>
                                         <CardContent className="p-0">
-                                            <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                                            <div className="divide-y divide-border">
                                                 {group.items.map(ev => (
                                                     <EvidenceRow key={ev.id} {...rowProps(ev)} />
                                                 ))}
@@ -423,17 +407,17 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
 
             {/* Toast notification */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-start gap-3 rounded-lg border px-4 py-3 shadow-lg text-sm max-w-sm
+                <div className={`fixed bottom-6 right-6 z-50 flex items-start gap-3 rounded-lg border px-4 py-3 shadow-xl text-sm max-w-sm backdrop-blur-xl
                     ${toast.type === 'success'
-                        ? 'bg-green-50 border-green-200 text-green-800'
-                        : 'bg-red-50 border-red-200 text-red-800'
+                        ? 'bg-popover border-emerald-500/30 text-foreground'
+                        : 'bg-popover border-red-500/30 text-foreground'
                     }`}>
                     {toast.type === 'success'
-                        ? <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-600" />
-                        : <XCircle    className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-600" />
+                        ? <CheckCircle className="w-4 h-4 mt-0.5 shrink-0 text-emerald-400" />
+                        : <XCircle    className="w-4 h-4 mt-0.5 shrink-0 text-red-400" />
                     }
                     <span className="flex-1">{toast.text}</span>
-                    <button onClick={() => setToast(null)} className="flex-shrink-0 opacity-60 hover:opacity-100">
+                    <button onClick={() => setToast(null)} className="shrink-0 opacity-60 hover:opacity-100">
                         <X className="w-3.5 h-3.5" />
                     </button>
                 </div>

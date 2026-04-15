@@ -121,7 +121,7 @@ function UserBubble({ content }: { content: string }) {
                 <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-sm px-4 py-2.5 text-sm">
                     {content}
                 </div>
-                <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mb-0.5">
+                <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center shrink-0 mb-0.5">
                     <User className="w-3.5 h-3.5 text-muted-foreground" />
                 </div>
             </div>
@@ -133,7 +133,7 @@ function AssistantBubble({ content, error }: { content: string; error?: boolean 
     return (
         <div className="flex justify-start">
             <div className="flex items-end gap-2 max-w-[85%]">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mb-0.5 ${
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mb-0.5 ${
                     error ? "bg-destructive/10" : "bg-primary/10"
                 }`}>
                     {error
@@ -157,7 +157,7 @@ function TypingIndicator() {
     return (
         <div className="flex justify-start">
             <div className="flex items-end gap-2">
-                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <Sparkles className="w-3.5 h-3.5 text-primary" />
                 </div>
                 <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1">
@@ -280,7 +280,7 @@ export default function ChatbotIndex({ context }: Props) {
                             variant="outline"
                             size="sm"
                             onClick={clearChat}
-                            className="flex items-center gap-1.5 flex-shrink-0"
+                            className="flex items-center gap-1.5 shrink-0"
                         >
                             <RotateCcw className="w-3.5 h-3.5" />
                             Clear
@@ -367,7 +367,7 @@ export default function ChatbotIndex({ context }: Props) {
                             size="icon"
                             onClick={() => sendMessage(input)}
                             disabled={isLoading || !input.trim()}
-                            className="flex-shrink-0 h-10 w-10"
+                            className="shrink-0 h-10 w-10"
                         >
                             <Send className="w-4 h-4" />
                         </Button>

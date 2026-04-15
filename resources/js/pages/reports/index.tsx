@@ -4,6 +4,8 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend
@@ -40,8 +42,8 @@ const complianceColor = (pct: number) => {
 };
 
 const complianceTextColor = (pct: number) => {
-    if (pct >= 80) return 'text-green-600';
-    if (pct >= 50) return 'text-yellow-600';
+    if (pct >= 80) return 'text-emerald-400';
+    if (pct >= 50) return 'text-amber-400';
     return 'text-red-500';
 };
 
@@ -126,14 +128,14 @@ export default function ReportsIndex({
 
             <div className="space-y-8">
 
-                {/* Header */}
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reports</h1>
-                        <p className="text-sm text-gray-500 mt-1">Organization security and compliance summary</p>
-                    </div>
+                    <PageHeader
+                        icon={TrendingUp}
+                        title="Reports"
+                        description="Organization security and compliance summary"
+                    />
                     <div className="flex items-center gap-3">
-                        <p className="text-xs text-gray-400">Generated: {new Date().toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground/70">Generated: {new Date().toLocaleDateString()}</p>
                         <a href="/reports/export-pdf" target="_blank">
                             <Button variant="outline" className="gap-2 text-sm">
                                 <Download className="w-4 h-4" /> Export PDF
@@ -164,25 +166,12 @@ export default function ReportsIndex({
                     </div>
                 </div>
 
-                {/* Top Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {[
-                        { label: 'Overall Compliance', value: `${overallCompliance}%`, icon: TrendingUp,    color: 'text-blue-500' },
-                        { label: 'Total Risks',         value: stats.total_risks,       icon: AlertTriangle, color: 'text-orange-500' },
-                        { label: 'Open Risks',          value: stats.open_risks,        icon: Shield,        color: 'text-red-500' },
-                        { label: 'Assessments Done',    value: stats.total_assessments, icon: ClipboardList, color: 'text-green-500' },
-                    ].map(({ label, value, icon: Icon, color }) => (
-                        <Card key={label}>
-                            <CardContent className="p-4 flex items-center gap-3">
-                                <Icon className={`w-8 h-8 ${color}`} />
-                                <div>
-                                    <p className="text-2xl font-bold">{value}</p>
-                                    <p className="text-xs text-gray-500">{label}</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                <StatStrip stats={[
+                    { label: 'Overall Compliance', value: `${overallCompliance}%`, variant: 'primary' },
+                    { label: 'Total Risks',         value: stats.total_risks,       variant: 'warning' },
+                    { label: 'Open Risks',          value: stats.open_risks,        variant: 'danger' },
+                    { label: 'Assessments Done',    value: stats.total_assessments, variant: 'success' },
+                ]} />
 
                 {/* Compliance Overview */}
                 <div className="grid grid-cols-3 gap-6">
@@ -195,8 +184,8 @@ export default function ReportsIndex({
                                 <span className={`text-7xl font-bold ${complianceTextColor(overallCompliance)}`}>
                                     {overallCompliance}%
                                 </span>
-                                <p className="text-sm text-gray-500 mt-2">Across all frameworks</p>
-                                <div className="w-full h-3 bg-gray-200 rounded-full mt-4 overflow-hidden">
+                                <p className="text-sm text-muted-foreground mt-2">Across all frameworks</p>
+                                <div className="w-full h-2 bg-muted rounded-full mt-4 overflow-hidden">
                                     <div
                                         className="h-full rounded-full transition-all"
                                         style={{ width: `${overallCompliance}%`, backgroundColor: complianceColor(overallCompliance) }}
@@ -210,7 +199,7 @@ export default function ReportsIndex({
                     <Card className="col-span-2">
                         <CardHeader><CardTitle className="text-base">Compliance by Framework</CardTitle></CardHeader>
                         <CardContent>
-                            <div style={{ height: 200 }}>
+                            <div className="w-full h-[200px]">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={frameworkChartData} barSize={40}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -253,7 +242,7 @@ export default function ReportsIndex({
                     <Card>
                         <CardHeader><CardTitle className="text-base">Compliance Trend — Last 6 Months</CardTitle></CardHeader>
                         <CardContent>
-                            <div style={{ height: 200 }}>
+                            <div className="w-full h-[200px]">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={monthlyTrend}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -279,7 +268,7 @@ export default function ReportsIndex({
                     <Card>
                         <CardHeader><CardTitle className="text-base">Risks by Level</CardTitle></CardHeader>
                         <CardContent>
-                            <div style={{ height: 200 }}>
+                            <div className="w-full h-[200px]">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
@@ -300,8 +289,8 @@ export default function ReportsIndex({
                             <div className="grid grid-cols-2 gap-2 mt-2">
                                 {riskLevelData.map(r => (
                                     <div key={r.name} className="flex items-center gap-2 text-sm">
-                                        <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: r.color }} />
-                                        <span className="text-gray-600 dark:text-gray-300">{r.name}: <strong>{r.value}</strong></span>
+                                        <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: r.color }} />
+                                        <span className="text-foreground/80">{r.name}: <strong>{r.value}</strong></span>
                                     </div>
                                 ))}
                             </div>
@@ -312,7 +301,7 @@ export default function ReportsIndex({
                     <Card>
                         <CardHeader><CardTitle className="text-base">Risks by Category</CardTitle></CardHeader>
                         <CardContent>
-                            <div style={{ height: 260 }}>
+                            <div className="w-full h-[260px]">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={riskCategoryData} layout="vertical" barSize={14}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -361,16 +350,16 @@ export default function ReportsIndex({
                             </div>
                         ) : (
                             <table className="w-full text-sm">
-                                <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
+                                <thead className="bg-muted/30 border-y border-border">
                                     <tr>
                                         {['Assessment', 'Framework', 'Period', 'Score', 'Completed', 'By'].map(h => (
-                                            <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                                            <th key={h} className="px-4 py-3 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                <tbody className="divide-y divide-border">
                                     {assessmentHistory.map(a => (
-                                        <tr key={a.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                        <tr key={a.id} className="hover:bg-accent/30">
                                             <td className="px-4 py-3">
                                                 <Link href={route('assessments.show', a.id)} className="font-medium text-blue-500 hover:underline">
                                                     {a.title}
@@ -379,7 +368,7 @@ export default function ReportsIndex({
                                             <td className="px-4 py-3">
                                                 <Badge variant="outline" className="text-xs">{a.framework}</Badge>
                                             </td>
-                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{a.period}</td>
+                                            <td className="px-4 py-3 text-foreground/80">{a.period}</td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -411,13 +400,13 @@ export default function ReportsIndex({
             {/* Gap Analysis overlay */}
             {generatingGap && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
+                    <div className="bg-background rounded-xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
                         <div className="w-14 h-14 rounded-full bg-violet-50 dark:bg-violet-950 flex items-center justify-center">
                             <Sparkles className="w-7 h-7 text-violet-600 animate-pulse" />
                         </div>
                         <div className="text-center">
-                            <p className="font-semibold text-gray-900 dark:text-white">Generating Gap Analysis</p>
-                            <p className="text-sm text-gray-500 mt-1">AI is analysing your compliance gaps&hellip;</p>
+                            <p className="font-semibold text-foreground">Generating Gap Analysis</p>
+                            <p className="text-sm text-muted-foreground">AI is analysing your compliance gaps&hellip;</p>
                         </div>
                         <Loader2 className="w-5 h-5 animate-spin text-violet-500" />
                     </div>
@@ -427,13 +416,13 @@ export default function ReportsIndex({
             {/* Executive Summary overlay */}
             {generating && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
+                    <div className="bg-background rounded-xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
                         <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-950 flex items-center justify-center">
-                            <Sparkles className="w-7 h-7 text-blue-600 animate-pulse" />
+                            <Sparkles className="w-7 h-7 text-blue-400 animate-pulse" />
                         </div>
                         <div className="text-center">
-                            <p className="font-semibold text-gray-900 dark:text-white">Generating Executive Summary</p>
-                            <p className="text-sm text-gray-500 mt-1">AI is analysing your GRC data&hellip;</p>
+                            <p className="font-semibold text-foreground">Generating Executive Summary</p>
+                            <p className="text-sm text-muted-foreground">AI is analysing your GRC data&hellip;</p>
                         </div>
                         <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
                     </div>

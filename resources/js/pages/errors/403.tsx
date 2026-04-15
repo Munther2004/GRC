@@ -13,9 +13,9 @@ export default function Error403() {
                             <ShieldOff className="w-10 h-10 text-red-500" />
                         </div>
                     </div>
-                    <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-2">403</h1>
+                    <h1 className="text-6xl font-bold text-foreground mb-2">403</h1>
                     <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3">Access Denied</h2>
-                    <p className="text-gray-500 dark:text-gray-400 mb-8">
+                    <p className="text-muted-foreground mb-8">
                         You don't have permission to access this page. Contact your administrator if you believe this is a mistake.
                     </p>
                     <Link href="/">

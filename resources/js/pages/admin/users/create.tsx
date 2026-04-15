@@ -32,7 +32,7 @@ export default function UserCreate() {
                         <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Add User</h1>
+                        <h1 className="text-2xl font-bold text-foreground">Add User</h1>
                         <p className="text-sm text-gray-500">Create a new user account</p>
                     </div>
                 </div>

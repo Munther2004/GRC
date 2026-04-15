@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
+import { FilterBar } from '@/components/ui/filter-bar';
 import { Search, XCircle, AlertTriangle, Eye, Loader2, X, ChevronRight, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
@@ -62,10 +65,10 @@ interface Props {
 }
 
 const PRIORITY_STYLES: Record<string, string> = {
-    Critical: 'bg-red-100 text-red-700 border-red-300',
-    High:     'bg-orange-100 text-orange-700 border-orange-300',
-    Medium:   'bg-yellow-100 text-yellow-700 border-yellow-300',
-    Low:      'bg-green-100 text-green-700 border-green-300',
+    Critical: 'bg-red-500/15 text-red-400 border-red-500/30',
+    High:     'bg-orange-500/15 text-orange-400 border-orange-500/30',
+    Medium:   'bg-amber-500/15 text-amber-400 border-amber-500/30',
+    Low:      'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
 };
 
 function formatPlanAsText(item: Item, plan: RemediationPlan): string {
@@ -163,76 +166,45 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
 
             <div className="space-y-6">
 
-                {/* Header */}
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Gap Analysis</h1>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Non-compliant and partially compliant controls across all completed assessments
-                    </p>
-                </div>
+                <PageHeader
+                    title="Gap Analysis"
+                    description="Non-compliant and partially compliant controls across all completed assessments"
+                />
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Card>
-                        <CardContent className="p-4 flex items-center gap-3">
-                            <XCircle className="w-8 h-8 text-red-500" />
-                            <div>
-                                <p className="text-2xl font-bold">{stats.non_compliant}</p>
-                                <p className="text-xs text-gray-500">Non-Compliant</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardContent className="p-4 flex items-center gap-3">
-                            <AlertTriangle className="w-8 h-8 text-yellow-500" />
-                            <div>
-                                <p className="text-2xl font-bold">{stats.partially_compliant}</p>
-                                <p className="text-xs text-gray-500">Partially Compliant</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    {stats.by_framework.slice(0, 2).map(f => (
-                        <Card key={f.name}>
-                            <CardContent className="p-4">
-                                <p className="text-xs font-semibold text-gray-500 mb-1">{f.name}</p>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-red-500 font-bold">{f.non_compliant}</span>
-                                    <span className="text-gray-400 text-xs">non-compliant</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-yellow-500 font-bold">{f.partially_compliant}</span>
-                                    <span className="text-gray-400 text-xs">partial</span>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                <StatStrip stats={[
+                    { label: 'Non-Compliant',      value: stats.non_compliant,      tone: stats.non_compliant      > 0 ? 'bad'  : 'ok' },
+                    { label: 'Partially Compliant', value: stats.partially_compliant, tone: stats.partially_compliant > 0 ? 'warn' : 'ok' },
+                    { label: 'Total Gaps',          value: total,                    tone: total > 0 ? 'warn' : 'ok' },
+                    { label: 'Frameworks Affected', value: stats.by_framework.length, tone: 'neutral' },
+                ]} />
 
                 {/* Framework breakdown */}
                 {stats.by_framework.length > 0 && (
                     <Card>
-                        <CardHeader><CardTitle className="text-base">Gaps by Framework</CardTitle></CardHeader>
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">Gaps by Framework</CardTitle>
+                        </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 {stats.by_framework.map(f => {
                                     const fTotal = f.non_compliant + f.partially_compliant;
                                     return (
-                                        <div key={f.name} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                            <p className="font-semibold text-sm mb-2">{f.name}</p>
+                                        <div key={f.name} className="p-3 bg-muted/30 rounded-lg border border-border">
+                                            <p className="font-medium text-xs text-muted-foreground mb-2 truncate">{f.name}</p>
                                             <div className="space-y-1">
                                                 <div className="flex justify-between text-xs">
-                                                    <span className="text-red-500">Non-Compliant</span>
-                                                    <span className="font-bold">{f.non_compliant}</span>
+                                                    <span className="text-red-400">Non-Compliant</span>
+                                                    <span className="font-mono tabular-nums">{f.non_compliant}</span>
                                                 </div>
                                                 <div className="flex justify-between text-xs">
-                                                    <span className="text-yellow-600">Partial</span>
-                                                    <span className="font-bold">{f.partially_compliant}</span>
+                                                    <span className="text-amber-400">Partial</span>
+                                                    <span className="font-mono tabular-nums">{f.partially_compliant}</span>
                                                 </div>
-                                                <div className="w-full h-1.5 bg-gray-200 rounded-full mt-2 overflow-hidden flex">
+                                                <div className="w-full h-1 bg-border rounded-full mt-2 overflow-hidden flex">
                                                     {fTotal > 0 && (
                                                         <>
                                                             <div className="h-full bg-red-500" style={{ width: `${(f.non_compliant / fTotal) * 100}%` }} />
-                                                            <div className="h-full bg-yellow-400" style={{ width: `${(f.partially_compliant / fTotal) * 100}%` }} />
+                                                            <div className="h-full bg-amber-400" style={{ width: `${(f.partially_compliant / fTotal) * 100}%` }} />
                                                         </>
                                                     )}
                                                 </div>
@@ -245,50 +217,45 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                     </Card>
                 )}
 
-                {/* Filters */}
-                <Card>
-                    <CardContent className="p-4">
-                        <div className="flex flex-wrap gap-3">
-                            <div className="relative flex-1 min-w-[200px]">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                <Input
-                                    placeholder="Search controls..."
-                                    value={search}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-                                    onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && applyFilters({ search })}
-                                    className="pl-9"
-                                />
-                            </div>
-                            <Select value={frameworkId} onValueChange={(v: string) => { setFramework(v); applyFilters({ framework_id: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[160px]"><SelectValue placeholder="Framework" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Frameworks</SelectItem>
-                                    {frameworks.map(f => (
-                                        <SelectItem key={f.id} value={String(f.id)}>{f.short_name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Select value={status} onValueChange={(v: string) => { setStatus(v); applyFilters({ status: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[180px]"><SelectValue placeholder="Status" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Gaps</SelectItem>
-                                    <SelectItem value="non_compliant">Non-Compliant</SelectItem>
-                                    <SelectItem value="partially_compliant">Partially Compliant</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Select value={category} onValueChange={(v: string) => { setCategory(v); applyFilters({ category: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[180px]"><SelectValue placeholder="Category" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Categories</SelectItem>
-                                    {categories.map(c => (
-                                        <SelectItem key={c} value={c}>{c}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Button variant="outline" onClick={() => applyFilters({ search })}>Search</Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                <FilterBar>
+                    <div className="relative flex-1 min-w-48">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                        <Input
+                            placeholder="Search controls..."
+                            value={search}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                            onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && applyFilters({ search })}
+                            className="pl-9 h-8 text-sm"
+                        />
+                    </div>
+                    <Select value={frameworkId} onValueChange={(v: string) => { setFramework(v); applyFilters({ framework_id: v === 'all' ? '' : v }); }}>
+                        <SelectTrigger className="w-40 h-8 text-sm"><SelectValue placeholder="Framework" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Frameworks</SelectItem>
+                            {frameworks.map(f => (
+                                <SelectItem key={f.id} value={String(f.id)}>{f.short_name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select value={status} onValueChange={(v: string) => { setStatus(v); applyFilters({ status: v === 'all' ? '' : v }); }}>
+                        <SelectTrigger className="w-45 h-8 text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Gaps</SelectItem>
+                            <SelectItem value="non_compliant">Non-Compliant</SelectItem>
+                            <SelectItem value="partially_compliant">Partially Compliant</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Select value={category} onValueChange={(v: string) => { setCategory(v); applyFilters({ category: v === 'all' ? '' : v }); }}>
+                        <SelectTrigger className="w-45 h-8 text-sm"><SelectValue placeholder="Category" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Categories</SelectItem>
+                            {categories.map(c => (
+                                <SelectItem key={c} value={c}>{c}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Button variant="outline" size="sm" onClick={() => applyFilters({ search })}>Search</Button>
+                </FilterBar>
 
                 {/* Gaps Table */}
                 <Card>
@@ -298,9 +265,9 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                     <CardContent className="p-0 mt-4">
                         {items.data.length === 0 ? (
                             <div className="p-12 text-center">
-                                <XCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                                <p className="text-gray-400 font-medium">No gaps found</p>
-                                <p className="text-gray-400 text-sm mt-1">
+                                <XCircle className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                                <p className="text-muted-foreground font-medium">No gaps found</p>
+                                <p className="text-muted-foreground/60 text-sm mt-1">
                                     {total === 0
                                         ? 'Complete assessments to identify compliance gaps.'
                                         : 'No gaps match your current filters.'
@@ -308,11 +275,11 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                                 </p>
                             </div>
                         ) : (
-                            <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                            <div className="divide-y divide-border">
                                 {items.data.map(item => (
                                     <div
                                         key={item.id}
-                                        className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${
+                                        className={`p-4 hover:bg-accent/30 transition-colors ${
                                             item.compliance_status === 'non_compliant'
                                                 ? 'border-l-4 border-red-400'
                                                 : 'border-l-4 border-yellow-400'
@@ -321,7 +288,7 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                                                    <span className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300">
+                                                    <span className="font-mono text-xs bg-muted/50 px-2 py-0.5 rounded text-foreground/80">
                                                         {item.control.control_id}
                                                     </span>
                                                     <Badge variant="outline" className="text-xs">
@@ -329,14 +296,14 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                                                     </Badge>
                                                     <span className="text-xs text-gray-400">{item.control.category}</span>
                                                 </div>
-                                                <p className="font-semibold text-gray-900 dark:text-white text-sm">
+                                                <p className="font-semibold text-foreground text-sm">
                                                     {item.control.title}
                                                 </p>
                                                 <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                                                     {item.control.description}
                                                 </p>
                                                 {item.comments && (
-                                                    <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-300">
+                                                    <div className="mt-2 p-2 bg-muted/30 rounded text-xs text-foreground/80">
                                                         <span className="font-semibold">Notes: </span>{item.comments}
                                                     </div>
                                                 )}
@@ -345,11 +312,11 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                                                     {' '}· {item.assessment.user.name}
                                                 </p>
                                             </div>
-                                            <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                                            <div className="flex flex-col items-end gap-2 shrink-0">
                                                 <Badge variant="outline" className={
                                                     item.compliance_status === 'non_compliant'
-                                                        ? 'bg-red-50 text-red-600 border-red-200'
-                                                        : 'bg-yellow-50 text-yellow-600 border-yellow-200'
+                                                        ? 'bg-red-950 text-red-400 border-red-200'
+                                                        : 'bg-amber-950 text-amber-400 border-yellow-200'
                                                 }>
                                                     {item.compliance_status === 'non_compliant' ? 'Non-Compliant' : 'Partial'}
                                                 </Badge>
@@ -404,26 +371,26 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                     className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
                     onClick={(e) => e.target === e.currentTarget && setPlanModal(null)}
                 >
-                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-purple-200 dark:border-purple-800">
+                    <div className="bg-popover rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-border backdrop-blur-xl">
 
                         {/* Modal Header */}
-                        <div className="flex items-start justify-between p-5 border-b border-gray-100 dark:border-gray-800">
+                        <div className="flex items-start justify-between p-5 border-b border-border">
                             <div className="flex items-start gap-2 flex-1 min-w-0">
-                                <span className="text-purple-600 text-lg leading-none mt-0.5">✨</span>
+                                <span className="text-violet-400 text-lg leading-none mt-0.5">✨</span>
                                 <div className="min-w-0">
-                                    <h2 className="font-bold text-gray-900 dark:text-white text-sm leading-snug">
+                                    <h2 className="font-semibold text-foreground text-sm leading-snug">
                                         AI Remediation Plan
                                     </h2>
-                                    <p className="text-xs text-gray-500 mt-0.5 truncate">
+                                    <p className="text-xs text-muted-foreground mt-0.5 truncate">
                                         {planModal.item.control.control_id}: {planModal.item.control.title}
                                     </p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setPlanModal(null)}
-                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 ml-3 flex-shrink-0"
+                                className="text-muted-foreground hover:text-foreground ml-3 shrink-0 transition-colors"
                             >
-                                <X className="w-5 h-5" />
+                                <X className="w-4 h-4" />
                             </button>
                         </div>
 
@@ -431,7 +398,7 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                         <div className="overflow-y-auto flex-1 p-5 space-y-5">
 
                             {/* Summary */}
-                            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300">
+                            <div className="p-3 bg-muted/30 rounded-lg text-sm text-foreground/85 border border-border">
                                 {planModal.plan.summary}
                             </div>
 
@@ -443,20 +410,20 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                                 >
                                     {planModal.plan.priority} Priority
                                 </Badge>
-                                <span className="text-xs text-gray-500">
-                                    Estimated effort: <span className="font-medium text-gray-700 dark:text-gray-300">{planModal.plan.estimated_effort}</span>
+                                <span className="text-xs text-muted-foreground">
+                                    Estimated effort: <span className="font-medium text-foreground/85">{planModal.plan.estimated_effort}</span>
                                 </span>
                             </div>
 
                             {/* Quick Wins */}
                             {planModal.plan.quick_wins.length > 0 && (
                                 <div>
-                                    <p className="text-xs font-semibold text-green-700 dark:text-green-400 mb-2">⚡ Quick Wins — Do These First</p>
+                                    <p className="text-xs font-medium text-emerald-400 mb-2">⚡ Quick Wins — Do These First</p>
                                     <div className="space-y-1.5">
                                         {planModal.plan.quick_wins.map((win, i) => (
-                                            <div key={i} className="flex items-start gap-2 p-2.5 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                                                <ChevronRight className="w-3.5 h-3.5 text-green-600 flex-shrink-0 mt-0.5" />
-                                                <span className="text-xs text-green-800 dark:text-green-300">{win}</span>
+                                            <div key={i} className="flex items-start gap-2 p-2.5 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                                                <ChevronRight className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                                                <span className="text-xs text-foreground/80">{win}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -466,17 +433,17 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                             {/* Remediation Steps */}
                             {planModal.plan.remediation_steps.length > 0 && (
                                 <div>
-                                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3">Remediation Steps</p>
+                                    <p className="text-xs font-medium text-foreground/85 mb-3">Remediation Steps</p>
                                     <div className="space-y-3">
                                         {planModal.plan.remediation_steps.map((s) => (
                                             <div key={s.step} className="flex gap-3">
-                                                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center justify-center">
+                                                <div className="shrink-0 w-6 h-6 rounded-full bg-violet-500/20 text-violet-400 text-xs font-bold flex items-center justify-center">
                                                     {s.step}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{s.action}</p>
-                                                    <p className="text-xs text-gray-500 mt-0.5">{s.detail}</p>
-                                                    <div className="mt-1.5 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs text-gray-500">
+                                                    <p className="text-sm font-medium text-foreground">{s.action}</p>
+                                                    <p className="text-xs text-muted-foreground mt-0.5">{s.detail}</p>
+                                                    <div className="mt-1.5 px-2 py-1 bg-muted/50 rounded text-xs text-muted-foreground border border-border">
                                                         Evidence needed: {s.evidence_needed}
                                                     </div>
                                                 </div>
@@ -489,11 +456,11 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                             {/* Resources Needed */}
                             {planModal.plan.resources_needed.length > 0 && (
                                 <div>
-                                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Resources Needed</p>
+                                    <p className="text-xs font-medium text-foreground/85 mb-2">Resources Needed</p>
                                     <ul className="space-y-1">
                                         {planModal.plan.resources_needed.map((r, i) => (
-                                            <li key={i} className="text-xs text-gray-500 flex items-start gap-1.5">
-                                                <span className="text-gray-400 flex-shrink-0">•</span>{r}
+                                            <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                                                <span className="text-muted-foreground/60 shrink-0">·</span>{r}
                                             </li>
                                         ))}
                                     </ul>
@@ -502,26 +469,26 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                         </div>
 
                         {/* Footer */}
-                        <div className="p-4 border-t border-gray-100 dark:border-gray-800">
+                        <div className="p-4 border-t border-border">
                             {savedRisk ? (
                                 <div className="flex flex-col items-center gap-3 py-1">
-                                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                                    <div className="flex items-center gap-2 text-emerald-400">
                                         <CheckCircle2 className="w-5 h-5" />
                                         <span className="font-semibold text-sm">Remediation plan saved!</span>
                                     </div>
                                     <Button
                                         onClick={() => { router.visit(`/risks/${savedRisk.id}`); setPlanModal(null); setSavedRisk(null); }}
-                                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 gap-2 text-sm"
+                                        className="w-full font-semibold py-2.5 gap-2 text-sm"
                                     >
                                         View Risk Record <ArrowRight className="w-4 h-4" />
                                     </Button>
-                                    <p className="text-xs text-gray-400 dark:text-gray-500">Risk: {savedRisk.title}</p>
+                                    <p className="text-xs text-muted-foreground">Risk: {savedRisk.title}</p>
                                 </div>
                             ) : (
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="text-xs">
-                                        {saveError && <span className="text-red-500">{saveError}</span>}
-                                        {saving && <span className="text-gray-400">Creating risk and saving...</span>}
+                                        {saveError && <span className="text-red-400">{saveError}</span>}
+                                        {saving && <span className="text-muted-foreground">Creating risk and saving...</span>}
                                     </div>
                                     <div className="flex gap-2">
                                         <Button variant="outline" size="sm" onClick={() => setPlanModal(null)}>
@@ -531,7 +498,7 @@ export default function GapAnalysisIndex({ items, frameworks, categories, stats,
                                             size="sm"
                                             disabled={saving}
                                             onClick={handleSave}
-                                            className="bg-purple-600 hover:bg-purple-700 text-white gap-1"
+                                            className="gap-1"
                                         >
                                             {saving ? <><Loader2 className="w-3 h-3 animate-spin" /> Saving...</> : 'Save to Risk Notes'}
                                         </Button>

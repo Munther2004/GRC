@@ -14,24 +14,18 @@ type Props = {
     risks: HeatmapRisk[];
 };
 
-function getCellColor(score: number): string {
-    if (score >= 15) return 'bg-red-600';
-    if (score >= 10) return 'bg-orange-500';
-    if (score >= 5)  return 'bg-yellow-500';
-    return 'bg-green-600';
-}
-
-function getCellLabel(score: number): string {
-    if (score >= 15) return 'Critical';
-    if (score >= 10) return 'High';
-    if (score >= 5)  return 'Medium';
-    return 'Low';
+function getCellStyle(score: number, count: number): { bg: string; ring: string; label: string } {
+    if (score >= 20) return { bg: 'bg-red-500/90',   ring: 'ring-red-400/40',    label: 'Critical' };
+    if (score >= 15) return { bg: 'bg-red-500/70',   ring: 'ring-red-400/30',    label: 'Critical' };
+    if (score >= 10) return { bg: 'bg-orange-500/60',ring: 'ring-orange-400/30', label: 'High'     };
+    if (score >= 5)  return { bg: 'bg-amber-500/40', ring: 'ring-amber-400/20',  label: 'Medium'   };
+    return                  { bg: 'bg-emerald-500/25', ring: 'ring-emerald-400/20', label: 'Low'    };
 }
 
 export function RiskHeatmap({ risks }: Props) {
     const [highlighted, setHighlighted] = useState<number[] | null>(null);
+    const [hovered, setHovered] = useState<{ l: number; i: number } | null>(null);
 
-    // Build 5x5 grid indexed as [likelihood 1-5][impact 1-5]
     const grid: HeatmapRisk[][][] = Array.from({ length: 5 }, () =>
         Array.from({ length: 5 }, () => [])
     );
@@ -50,114 +44,160 @@ export function RiskHeatmap({ risks }: Props) {
         );
     };
 
-    // Render rows from likelihood 5 (top) down to 1 (bottom)
     const likelihoodRows = [5, 4, 3, 2, 1];
+    const totalPlotted = risks.length;
+    const criticalCount = risks.filter(r => r.score >= 15).length;
 
     return (
-        <Card className="bg-card border-border">
-            <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-medium">Risk Heat Map</CardTitle>
-                <p className="text-xs text-muted-foreground">
-                    Likelihood × Impact — {risks.length} risk{risks.length !== 1 ? 's' : ''} plotted
-                </p>
+        <Card className="overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
+            <CardHeader className="pb-4 flex-row items-start justify-between gap-4">
+                <div className="space-y-1">
+                    <CardTitle className="text-sm font-medium tracking-tight">Risk Heat Map</CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                        <span className="font-mono tabular-nums text-foreground/80">{totalPlotted}</span> plotted
+                        <span className="mx-1.5 text-muted-foreground/30">·</span>
+                        <span className="font-mono tabular-nums text-red-400/90">{criticalCount}</span> critical
+                    </p>
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-muted-foreground/60">
+                    L × I
+                </div>
             </CardHeader>
             <CardContent>
-                <div className="flex gap-3">
-                    {/* Y-axis label */}
-                    <div className="flex items-center justify-center w-5">
-                        <span className="text-xs text-muted-foreground -rotate-90 whitespace-nowrap">
-                            ↑ Likelihood
+                <div className="flex gap-4">
+                    {/* Y axis label */}
+                    <div className="flex flex-col items-center justify-center w-4">
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/50 -rotate-90 whitespace-nowrap">
+                            Likelihood
                         </span>
                     </div>
 
-                    <div className="flex-1 space-y-1">
-                        {/* Y-axis values + grid rows */}
-                        {likelihoodRows.map(likelihood => (
-                            <div key={likelihood} className="flex items-center gap-1">
-                                <span className="text-xs text-muted-foreground w-4 text-center flex-shrink-0">{likelihood}</span>
-                                <div className="flex-1 grid grid-cols-5 gap-1">
-                                    {[1, 2, 3, 4, 5].map(impact => {
-                                        const cellRisks = grid[likelihood - 1][impact - 1];
-                                        const score = likelihood * impact;
-                                        const colorClass = getCellColor(score);
-                                        const isHighlighted = highlighted && cellRisks.some(r => highlighted.includes(r.id));
+                    <div className="flex-1">
+                        {/* Grid */}
+                        <div className="space-y-1.5">
+                            {likelihoodRows.map((likelihood, rowIdx) => (
+                                <div key={likelihood} className="flex items-center gap-2 animate-in slide-in-from-left" style={{ animationDelay: `${rowIdx * 50}ms` }}>
+                                    <span className="text-[10px] font-mono tabular-nums text-muted-foreground/50 w-3 text-right">
+                                        {likelihood}
+                                    </span>
+                                    <div className="flex-1 grid grid-cols-5 gap-1.5">
+                                        {[1, 2, 3, 4, 5].map((impact, colIdx) => {
+                                            const cellRisks = grid[likelihood - 1][impact - 1];
+                                            const score = likelihood * impact;
+                                            const style = getCellStyle(score, cellRisks.length);
+                                            const isHighlighted = highlighted && cellRisks.some(r => highlighted.includes(r.id));
+                                            const isEmpty = cellRisks.length === 0;
+                                            const isHovered = hovered?.l === likelihood && hovered?.i === impact;
 
-                                        return (
-                                            <div
-                                                key={impact}
-                                                className={`
-                                                    aspect-square rounded flex items-center justify-center
-                                                    cursor-pointer transition-all relative group
-                                                    ${colorClass}
-                                                    ${cellRisks.length === 0 ? 'opacity-20' : 'opacity-80 hover:opacity-100'}
-                                                    ${isHighlighted ? 'ring-2 ring-white opacity-100 scale-105' : ''}
-                                                `}
-                                                onClick={() => handleCellClick(cellRisks)}
-                                                title={`L${likelihood}×I${impact} = ${score} (${getCellLabel(score)})${cellRisks.length > 0 ? '\n' + cellRisks.map(r => r.title).join('\n') : ''}`}
-                                            >
-                                                {cellRisks.length > 0 && (
-                                                    <span className="text-xs font-bold text-white drop-shadow">
-                                                        {cellRisks.length}
-                                                    </span>
-                                                )}
+                                            return (
+                                                <button
+                                                    key={impact}
+                                                    type="button"
+                                                    onClick={() => handleCellClick(cellRisks)}
+                                                    onMouseEnter={() => setHovered({ l: likelihood, i: impact })}
+                                                    onMouseLeave={() => setHovered(null)}
+                                                    className={`
+                                                        relative aspect-square rounded-md transition-all duration-200 cursor-pointer
+                                                        ${style.bg} ${isEmpty ? 'opacity-20 cursor-default' : 'cursor-pointer hover:scale-[1.06] hover:shadow-lg hover:shadow-black/40'}
+                                                        ${isHighlighted ? `ring-2 ring-offset-2 ring-offset-background ${style.ring} scale-[1.04]` : ''}
+                                                        animate-in zoom-in-95
+                                                    `}
+                                                    style={{ 
+                                                        animationDelay: `${rowIdx * 50 + colIdx * 30}ms`,
+                                                        animationFillMode: 'both'
+                                                    }}
+                                                    disabled={isEmpty}
+                                                    title={isEmpty ? 'No risks' : `${cellRisks.length} risk${cellRisks.length > 1 ? 's' : ''}`}
+                                                >
+                                                    {!isEmpty && (
+                                                        <span className="absolute inset-0 flex items-center justify-center font-mono text-xs font-semibold text-white tabular-nums">
+                                                            {cellRisks.length}
+                                                        </span>
+                                                    )}
 
-                                                {/* Tooltip */}
-                                                {cellRisks.length > 0 && (
-                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-10 hidden group-hover:block w-max max-w-[200px]">
-                                                        <div className="bg-gray-900 text-white text-xs rounded p-2 shadow-lg">
-                                                            <p className="font-semibold mb-1">Score {score} — {getCellLabel(score)}</p>
-                                                            {cellRisks.map(r => (
-                                                                <p key={r.id} className="truncate">• {r.title}</p>
-                                                            ))}
+                                                    {/* Floating tooltip */}
+                                                    {isHovered && !isEmpty && (
+                                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-20 w-max max-w-[220px] pointer-events-none">
+                                                            <div className="rounded-md border border-border bg-popover/95 backdrop-blur-xl p-2.5 text-left shadow-xl">
+                                                                <div className="flex items-center justify-between gap-3 pb-1.5 mb-1.5 border-b border-border/60">
+                                                                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                                                                        L{likelihood} · I{impact}
+                                                                    </span>
+                                                                    <span className="font-mono text-xs font-semibold text-foreground tabular-nums">
+                                                                        {score}
+                                                                    </span>
+                                                                </div>
+                                                                {cellRisks.slice(0, 4).map(r => (
+                                                                    <p key={r.id} className="text-[11px] text-foreground/80 truncate leading-tight py-0.5">
+                                                                        {r.title}
+                                                                    </p>
+                                                                ))}
+                                                                {cellRisks.length > 4 && (
+                                                                    <p className="text-[10px] text-muted-foreground mt-1">
+                                                                        +{cellRisks.length - 4} more
+                                                                    </p>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* X axis */}
+                            <div className="flex items-center gap-2 pt-1">
+                                <div className="w-3" />
+                                <div className="flex-1 grid grid-cols-5 gap-1.5">
+                                    {[1, 2, 3, 4, 5].map(i => (
+                                        <span key={i} className="text-[10px] font-mono tabular-nums text-muted-foreground/50 text-center">
+                                            {i}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
-                        ))}
+                            <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/50 text-center pt-1">
+                                Impact
+                            </p>
+                        </div>
 
-                        {/* X-axis values */}
-                        <div className="flex items-center gap-1 pt-1">
-                            <div className="w-4" />
-                            <div className="flex-1 grid grid-cols-5 gap-1">
-                                {[1, 2, 3, 4, 5].map(i => (
-                                    <span key={i} className="text-xs text-muted-foreground text-center">{i}</span>
-                                ))}
+                        {/* Legend */}
+                        <div className="mt-5 pt-4 border-t border-border">
+                            <div className="flex items-center justify-between gap-2">
+                                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Low</span>
+                                <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-emerald-500/25 via-amber-500/50 to-red-500/90" />
+                                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Critical</span>
                             </div>
                         </div>
-                        <p className="text-xs text-muted-foreground text-center">Impact →</p>
+
+                        {/* Selected risks */}
+                        {highlighted && highlighted.length > 0 && (
+                            <div className="mt-4 rounded-md border border-border bg-muted/30 p-3 animate-in slide-in-from-bottom-4">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                                        Selected · {highlighted.length}
+                                    </span>
+                                    <button
+                                        onClick={() => setHighlighted(null)}
+                                        className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                        Clear
+                                    </button>
+                                </div>
+                                <ul className="space-y-1">
+                                    {risks.filter(r => highlighted.includes(r.id)).map(r => (
+                                        <li key={r.id} className="flex items-center justify-between gap-3 text-xs">
+                                            <span className="text-foreground/85 truncate">{r.title}</span>
+                                            <span className="font-mono tabular-nums text-muted-foreground shrink-0">{r.score}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </div>
                 </div>
-
-                {/* Legend */}
-                <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-border flex-wrap">
-                    {[
-                        { color: 'bg-green-600',  label: 'Low (1–4)' },
-                        { color: 'bg-yellow-500', label: 'Medium (5–9)' },
-                        { color: 'bg-orange-500', label: 'High (10–14)' },
-                        { color: 'bg-red-600',    label: 'Critical (15–25)' },
-                    ].map(({ color, label }) => (
-                        <div key={label} className="flex items-center gap-1.5">
-                            <div className={`w-3 h-3 rounded ${color}`} />
-                            <span className="text-xs text-muted-foreground">{label}</span>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Highlighted risk list */}
-                {highlighted && highlighted.length > 0 && (
-                    <div className="mt-3 p-2 bg-muted rounded text-xs">
-                        <p className="font-semibold mb-1">Selected risks:</p>
-                        {risks.filter(r => highlighted.includes(r.id)).map(r => (
-                            <p key={r.id} className="text-muted-foreground truncate">
-                                • {r.title} <span className="opacity-60">(score: {r.score})</span>
-                            </p>
-                        ))}
-                    </div>
-                )}
             </CardContent>
         </Card>
     );

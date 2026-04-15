@@ -92,41 +92,26 @@ export function AdminHeader() {
     }
 
     return (
-        <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/95 backdrop-blur px-6">
+        <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-4 border-b border-border bg-background/70 backdrop-blur-xl px-6">
             <button className="lg:hidden p-2 -ml-2" aria-label="Open menu">
                 <Menu className="h-5 w-5" />
             </button>
 
-            <div className="flex flex-1 items-center gap-4">
-                <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="flex flex-1 items-center">
+                <div className="relative w-full max-w-sm">
+                    <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                     <Input
                         type="search"
-                        placeholder="Search risks, controls, assessments..."
-                        className="pl-10 bg-muted border-0 focus-visible:ring-accent"
+                        placeholder="Search..."
+                        className="h-8 pl-9 pr-12 bg-muted/40 border-border text-sm placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-ring/40"
                     />
+                    <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex h-5 items-center gap-1 rounded border border-border bg-background px-1.5 font-mono text-[10px] text-muted-foreground">
+                        ⌘K
+                    </kbd>
                 </div>
             </div>
 
-            <div className="flex items-center gap-3">
-                {/* Role Badge */}
-                <span className={`hidden sm:inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
-                    auth.user.role === 'admin'
-                        ? 'bg-purple-500/10 text-purple-400'
-                        : auth.user.role === 'auditor'
-                        ? 'bg-blue-500/10 text-blue-400'
-                        : 'bg-green-500/10 text-green-400'
-                }`}>
-                    {auth.user.role === 'admin' ? 'Administrator'
-                        : auth.user.role === 'auditor' ? 'Auditor'
-                        : 'User'}
-                </span>
-
-                {/* User name */}
-                <span className="hidden md:block text-sm text-muted-foreground">
-                    {auth.user.name}
-                </span>
-
+            <div className="flex items-center gap-1">
                 {/* Notifications bell */}
                 <div className="relative" ref={dropdownRef}>
                     <Button

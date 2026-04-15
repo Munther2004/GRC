@@ -3,14 +3,15 @@ import type { SharedProps } from '@/types';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, Plus, Search, Shield, TrendingUp, Clock, Eye, Pencil, Trash2, Sparkles, Sliders } from 'lucide-react';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
+import { FilterBar } from '@/components/ui/filter-bar';
+import { ArrowUpRight, Eye, Pencil, Plus, Search, Sliders, Sparkles, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { RouteName, RouteParams } from 'ziggy-js';
-
 
 declare global {
     function route(name: RouteName, params?: RouteParams<RouteName>, absolute?: boolean): string;
@@ -23,41 +24,22 @@ interface AppetiteBand {
 }
 
 interface RiskAppetiteConfig {
-    id: number;
-    name: string;
-    acceptable_max_score: number;
-    review_max_score: number;
-    escalated_min_score: number;
-    acceptable_label: string;
-    review_label: string;
-    escalated_label: string;
+    id: number; name: string;
+    acceptable_max_score: number; review_max_score: number; escalated_min_score: number;
+    acceptable_label: string; review_label: string; escalated_label: string;
 }
 
 interface Risk {
-    id: number;
-    title: string;
-    category: string;
-    owner: string;
-    likelihood: number;
-    impact: number;
-    risk_score: number;
-    risk_level: string;
-    status: string;
-    treatment: string;
-    treatment_plan: string | null;
-    due_date: string | null;
-    auto_generated: number;
-    ai_validated: boolean;
-    framework_name: string | null;
-    appetite_band: AppetiteBand | null;
+    id: number; title: string; category: string; owner: string;
+    likelihood: number; impact: number; risk_score: number; risk_level: string;
+    status: string; treatment: string; treatment_plan: string | null;
+    due_date: string | null; auto_generated: number; ai_validated: boolean;
+    framework_name: string | null; appetite_band: AppetiteBand | null;
     user: { name: string };
 }
 
 interface RiskExposure {
-    risk_exposure: number;
-    avg_risk_score: number;
-    total_risks: number;
-    critical_risks: number;
+    risk_exposure: number; avg_risk_score: number; total_risks: number; critical_risks: number;
 }
 
 interface Props {
@@ -73,347 +55,281 @@ interface Props {
     appetite: RiskAppetiteConfig | null;
 }
 
-const getLevel = (score: number) => {
-    if (score >= 19) return { label: 'Critical', bg: 'bg-red-600',    text: 'text-white' }
-    if (score >= 13) return { label: 'High',     bg: 'bg-orange-500', text: 'text-white' }
-    if (score >= 7)  return { label: 'Medium',   bg: 'bg-yellow-500', text: 'text-black' }
-    return                   { label: 'Low',      bg: 'bg-green-600',  text: 'text-white' }
+const levelDot = (level: string) => ({
+    critical: 'text-red-400',
+    high:     'text-orange-400',
+    medium:   'text-amber-400',
+    low:      'text-emerald-400',
+}[level] ?? 'text-muted-foreground');
+
+const levelBg = (score: number) => {
+    if (score >= 19) return { bg: 'bg-red-500/15 text-red-400',    dot: 'bg-red-400' };
+    if (score >= 13) return { bg: 'bg-orange-500/15 text-orange-400', dot: 'bg-orange-400' };
+    if (score >= 7)  return { bg: 'bg-amber-500/15 text-amber-400',  dot: 'bg-amber-400' };
+    return                   { bg: 'bg-emerald-500/15 text-emerald-400', dot: 'bg-emerald-400' };
 };
 
-const statusColors: Record<string, string> = {
-    open:         'bg-blue-500/10 text-blue-600 border-blue-500/20',
-    in_progress:  'bg-purple-500/10 text-purple-600 border-purple-500/20',
-    under_review: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
-    closed:       'bg-gray-500/10 text-gray-500 border-gray-500/20',
+const statusText: Record<string, string> = {
+    open:         'text-blue-400',
+    in_progress:  'text-purple-400',
+    under_review: 'text-amber-400',
+    closed:       'text-muted-foreground',
 };
 
-function AppetiteBadge({ band }: { band: AppetiteBand }) {
-    if (band.band === 'acceptable') {
-        return (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700">
-                {band.label}
-            </span>
-        );
-    }
-    if (band.band === 'review') {
-        return (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700">
-                {band.label}
-            </span>
-        );
-    }
-    return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700">
-            ⚠️ {band.label}
-        </span>
-    );
+function AppetiteDot({ band }: { band: AppetiteBand }) {
+    const cls = band.band === 'escalated' ? 'text-red-400' : band.band === 'review' ? 'text-amber-400' : 'text-emerald-400';
+    return <span className={`text-xs font-medium ${cls}`}>{band.label}</span>;
 }
 
 export default function RisksIndex({ risks, stats, riskExposure, filters, frameworks, appetite }: Props) {
     const { auth } = usePage<SharedProps>().props;
-    const isAdmin  = auth.user.role === 'admin';
     const canEdit  = auth.user.role === 'admin' || auth.user.role === 'user';
 
-    const [search, setSearch]             = useState(filters.search ?? '');
-    const [status, setStatus]             = useState(filters.status ?? 'all');
-    const [level, setLevel]               = useState(filters.level ?? 'all');
-    const [category, setCategory]         = useState(filters.category ?? 'all');
-    const [framework, setFramework]       = useState(filters.framework ?? 'all');
-    const [hasPlan, setHasPlan]           = useState(!!filters.has_plan);
+    const [search, setSearch]               = useState(filters.search ?? '');
+    const [status, setStatus]               = useState(filters.status ?? 'all');
+    const [level, setLevel]                 = useState(filters.level ?? 'all');
+    const [category, setCategory]           = useState(filters.category ?? 'all');
+    const [framework, setFramework]         = useState(filters.framework ?? 'all');
+    const [hasPlan, setHasPlan]             = useState(!!filters.has_plan);
     const [escalatedOnly, setEscalatedOnly] = useState(!!filters.escalated_only);
 
     const applyFilters = (overrides: Record<string, string> = {}) => {
         router.get(route('risks.index'), {
-            search,
-            status:         status    === 'all' ? '' : status,
-            level:          level     === 'all' ? '' : level,
-            category:       category  === 'all' ? '' : category,
-            framework:      framework === 'all' ? '' : framework,
-            has_plan:       hasPlan ? '1' : '',
+            search, status: status === 'all' ? '' : status,
+            level: level === 'all' ? '' : level,
+            category: category === 'all' ? '' : category,
+            framework: framework === 'all' ? '' : framework,
+            has_plan: hasPlan ? '1' : '',
             escalated_only: escalatedOnly ? '1' : '',
             ...overrides,
         }, { preserveState: true, replace: true });
     };
 
     const toggleHasPlan = () => {
-        const next = !hasPlan;
-        setHasPlan(next);
+        const next = !hasPlan; setHasPlan(next);
         applyFilters({ has_plan: next ? '1' : '' });
     };
-
     const toggleEscalatedOnly = () => {
-        const next = !escalatedOnly;
-        setEscalatedOnly(next);
+        const next = !escalatedOnly; setEscalatedOnly(next);
         applyFilters({ escalated_only: next ? '1' : '' });
     };
-
     const deleteRisk = (id: number, title: string) => {
         if (!confirm(`Delete risk "${title}"? This cannot be undone.`)) return;
         router.delete(route('risks.destroy', id));
     };
+
+    const exposure = riskExposure.risk_exposure;
 
     return (
         <AdminLayout>
             <Head title="Risk Register" />
 
             <div className="space-y-6">
-
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Risk Register</h1>
-                        <p className="text-sm text-gray-500 mt-1">ISO/IEC 27005 — Likelihood × Impact risk management</p>
-                    </div>
+                <PageHeader
+                    title="Risk Register"
+                    description="ISO/IEC 27005 — Likelihood × Impact management"
+                >
                     {canEdit && (
                         <Link href={route('risks.create')}>
-                            <Button className="gap-2">
-                                <Plus className="w-4 h-4" /> Add Risk
+                            <Button size="sm" className="gap-2">
+                                <Plus className="w-3.5 h-3.5" /> New Risk
                             </Button>
                         </Link>
                     )}
-                </div>
+                </PageHeader>
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    {[
-                        { label: 'Total Risks',     value: stats.total,    icon: Shield,        color: 'text-blue-500' },
-                        { label: 'Open Risks',      value: stats.open,     icon: AlertTriangle, color: 'text-orange-500' },
-                        { label: 'Critical',        value: stats.critical, icon: TrendingUp,    color: 'text-red-500' },
-                        { label: 'Overdue',         value: stats.overdue,  icon: Clock,         color: 'text-yellow-500' },
-                    ].map(({ label, value, icon: Icon, color }) => (
-                        <Card key={label}>
-                            <CardContent className="p-4 flex items-center gap-3">
-                                <Icon className={`w-8 h-8 ${color}`} />
-                                <div>
-                                    <p className="text-2xl font-bold">{value}</p>
-                                    <p className="text-xs text-gray-500">{label}</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
+                <StatStrip stats={[
+                    { label: 'Total',    value: stats.total,    tone: 'neutral' },
+                    { label: 'Open',     value: stats.open,     tone: stats.open > 0 ? 'warn' : 'ok' },
+                    { label: 'Critical', value: stats.critical, tone: stats.critical > 0 ? 'bad' : 'ok' },
+                    { label: 'Overdue',  value: stats.overdue,  tone: stats.overdue > 0 ? 'bad' : 'ok' },
+                    {
+                        label: 'Exposure', value: `${exposure}%`,
+                        tone: exposure > 50 ? 'bad' : exposure >= 20 ? 'warn' : 'ok',
+                        hint: `avg ${riskExposure.avg_risk_score}/25`,
+                    },
+                ]} />
 
-                    {/* Risk Exposure Index card */}
-                    {(() => {
-                        const e = riskExposure.risk_exposure;
-                        const borderColor = e > 50 ? 'border-red-300 dark:border-red-700' : e >= 20 ? 'border-amber-300 dark:border-amber-700' : 'border-green-300 dark:border-green-700';
-                        const valueColor  = e > 50 ? 'text-red-500' : e >= 20 ? 'text-amber-500' : 'text-green-500';
-                        return (
-                            <Card className={`border-2 ${borderColor}`}>
-                                <CardContent className="p-4">
-                                    <p className="text-xs text-gray-500 mb-1">Risk Exposure Index</p>
-                                    <p className={`text-2xl font-bold ${valueColor}`}>{e}%</p>
-                                    <p className="text-xs text-gray-400 mt-1">
-                                        Avg Score: {riskExposure.avg_risk_score}/25
-                                        {' · '}Critical: {riskExposure.critical_risks}
-                                        {' · '}Total: {riskExposure.total_risks}
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        );
-                    })()}
-                </div>
+                <FilterBar>
+                    <div className="relative flex-1 min-w-[180px]">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                        <Input
+                            placeholder="Search risks..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && applyFilters({ search })}
+                            className="pl-9 h-8 text-sm"
+                        />
+                    </div>
+                    <Select value={status} onValueChange={v => { setStatus(v); applyFilters({ status: v === 'all' ? '' : v }); }}>
+                        <SelectTrigger className="w-[130px] h-8 text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="open">Open</SelectItem>
+                            <SelectItem value="in_progress">In Progress</SelectItem>
+                            <SelectItem value="under_review">Under Review</SelectItem>
+                            <SelectItem value="closed">Closed</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Select value={level} onValueChange={v => { setLevel(v); applyFilters({ level: v === 'all' ? '' : v }); }}>
+                        <SelectTrigger className="w-[120px] h-8 text-sm"><SelectValue placeholder="Level" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Levels</SelectItem>
+                            <SelectItem value="critical">Critical</SelectItem>
+                            <SelectItem value="high">High</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="low">Low</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Select value={category} onValueChange={v => { setCategory(v); applyFilters({ category: v === 'all' ? '' : v }); }}>
+                        <SelectTrigger className="w-[160px] h-8 text-sm"><SelectValue placeholder="Category" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Categories</SelectItem>
+                            {['Information Security','Operational','Compliance','Financial','Strategic','Technical','Human Resources','Third Party','Physical','Legal'].map(c => (
+                                <SelectItem key={c} value={c}>{c}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    {frameworks.length > 0 && (
+                        <Select value={framework} onValueChange={v => { setFramework(v); applyFilters({ framework: v === 'all' ? '' : v }); }}>
+                            <SelectTrigger className="w-[130px] h-8 text-sm"><SelectValue placeholder="Framework" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Frameworks</SelectItem>
+                                {frameworks.map(f => <SelectItem key={f.id} value={f.short_name}>{f.short_name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    )}
+                    <button
+                        onClick={toggleHasPlan}
+                        className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-xs font-medium border transition-colors ${
+                            hasPlan ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30'
+                        }`}
+                    >
+                        Has Plan
+                    </button>
+                    {appetite && (
+                        <button
+                            onClick={toggleEscalatedOnly}
+                            className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-xs font-medium border transition-colors ${
+                                escalatedOnly ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30'
+                            }`}
+                        >
+                            <Sliders className="w-3 h-3" /> Escalated
+                        </button>
+                    )}
+                    <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => applyFilters({ search })}>
+                        Search
+                    </Button>
+                </FilterBar>
 
-                {/* Filters */}
                 <Card>
-                    <CardContent className="p-4">
-                        <div className="flex flex-wrap gap-3">
-                            <div className="relative flex-1 min-w-[200px]">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                <Input
-                                    placeholder="Search risks..."
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
-                                    onKeyDown={e => e.key === 'Enter' && applyFilters({ search })}
-                                    className="pl-9"
-                                />
-                            </div>
-                            <Select value={status} onValueChange={v => { setStatus(v); applyFilters({ status: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[150px]"><SelectValue placeholder="Status" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Statuses</SelectItem>
-                                    <SelectItem value="open">Open</SelectItem>
-                                    <SelectItem value="in_progress">In Progress</SelectItem>
-                                    <SelectItem value="under_review">Under Review</SelectItem>
-                                    <SelectItem value="closed">Closed</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Select value={level} onValueChange={v => { setLevel(v); applyFilters({ level: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[150px]"><SelectValue placeholder="Risk Level" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Levels</SelectItem>
-                                    <SelectItem value="critical">Critical</SelectItem>
-                                    <SelectItem value="high">High</SelectItem>
-                                    <SelectItem value="medium">Medium</SelectItem>
-                                    <SelectItem value="low">Low</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Select value={category} onValueChange={v => { setCategory(v); applyFilters({ category: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[180px]"><SelectValue placeholder="Category" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Categories</SelectItem>
-                                    {['Information Security','Operational','Compliance','Financial','Strategic','Technical','Human Resources','Third Party','Physical','Legal'].map(c => (
-                                        <SelectItem key={c} value={c}>{c}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Select value={framework} onValueChange={v => { setFramework(v); applyFilters({ framework: v === 'all' ? '' : v }); }}>
-                                <SelectTrigger className="w-[160px]"><SelectValue placeholder="Framework" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Frameworks</SelectItem>
-                                    {frameworks.map(f => (
-                                        <SelectItem key={f.id} value={f.short_name}>{f.short_name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Button variant="outline" onClick={() => applyFilters({ search })}>Search</Button>
-                            <Button
-                                variant="outline"
-                                onClick={toggleHasPlan}
-                                className={hasPlan ? 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700' : ''}
-                            >
-                                📋 Has Remediation Plan
-                            </Button>
-                            {appetite && (
-                                <Button
-                                    variant="outline"
-                                    onClick={toggleEscalatedOnly}
-                                    className={`gap-1.5 ${escalatedOnly ? 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-700' : ''}`}
-                                >
-                                    <Sliders className="w-3.5 h-3.5" /> Escalated Only
-                                </Button>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Table */}
-                <Card>
-                    <CardHeader className="pb-0">
-                        <CardTitle className="text-base font-semibold">
-                            {risks.total} risk{risks.total !== 1 ? 's' : ''} found
+                    <CardHeader className="pb-0 flex-row items-center justify-between">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            <span className="text-foreground font-semibold tabular-nums">{risks.total}</span> risk{risks.total !== 1 ? 's' : ''}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-0 mt-4">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
+                                <thead className="bg-muted/30 border-y border-border">
                                     <tr>
-                                        {['Risk', 'Category', 'Owner', 'Score', 'Level', ...(appetite ? ['Appetite Band'] : []), 'Status', 'Treatment', 'Due Date', 'Actions'].map(h => (
-                                            <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                                        {['Risk', 'Category', 'Owner', 'Score', 'Level', ...(appetite ? ['Appetite'] : []), 'Status', 'Treatment', 'Due', ''].map(h => (
+                                            <th key={h} className="px-4 py-2.5 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                <tbody className="divide-y divide-border">
                                     {risks.data.length === 0 ? (
                                         <tr>
-                                            <td colSpan={appetite ? 10 : 9} className="px-4 py-12 text-center text-gray-400">
-                                                No risks found. <Link href={route('risks.create')} className="text-blue-500 hover:underline">Add the first one.</Link>
+                                            <td colSpan={appetite ? 10 : 9} className="px-4 py-12 text-center text-muted-foreground text-sm">
+                                                No risks found.{' '}
+                                                <Link href={route('risks.create')} className="text-foreground hover:underline">Add the first one.</Link>
                                             </td>
                                         </tr>
-                                    ) : risks.data.map(risk => (
-                                        <tr key={risk.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-1.5">
-                                                    <p className="font-medium text-gray-900 dark:text-white max-w-[200px] truncate">{risk.title}</p>
-                                                    {risk.auto_generated === 1 && (
-                                                        <Badge className="text-xs bg-purple-100 text-purple-700 border-purple-200 shrink-0 px-1 py-0">
-                                                            <Sparkles className="w-2.5 h-2.5 mr-0.5" />AI
-                                                        </Badge>
-                                                    )}
-                                                    {risk.treatment_plan && (
-                                                        <Badge className="text-xs bg-green-100 text-green-700 border-green-200 shrink-0 px-1 py-0">
-                                                            📋 Plan
-                                                        </Badge>
-                                                    )}
-                                                    {!!risk.ai_validated && (
-                                                        <Badge className="text-xs bg-blue-100 text-blue-700 border-blue-200 shrink-0 px-1 py-0">
-                                                            <Sparkles className="w-2.5 h-2.5 mr-0.5" />Validated
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center gap-1.5 mt-0.5">
-                                                    <p className="text-xs text-gray-400">{risk.user?.name}</p>
-                                                    {risk.framework_name && (
-                                                        <span className="px-1.5 py-0.5 rounded text-xs bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 font-medium">
-                                                            {risk.framework_name}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{risk.category}</td>
-                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{risk.owner}</td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-1">
-                                                    <span className="font-bold text-lg">{risk.likelihood * risk.impact}</span>
-                                                    <span className="text-xs text-gray-400">/ 25</span>
-                                                </div>
-                                                <p className="text-xs text-gray-400">{risk.likelihood}×{risk.impact}</p>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                {(() => { const level = getLevel(risk.likelihood * risk.impact); return (
-                                                    <span className={`px-3 py-1 rounded-md text-xs font-bold ${level.bg} ${level.text}`}>
-                                                        {level.label}
-                                                    </span>
-                                                ); })()}
-                                            </td>
-                                            {appetite && (
-                                                <td className="px-4 py-3">
-                                                    {risk.appetite_band
-                                                        ? <AppetiteBadge band={risk.appetite_band} />
-                                                        : <span className="text-gray-400 text-xs">—</span>
-                                                    }
+                                    ) : risks.data.map(risk => {
+                                        const lv = levelBg(risk.likelihood * risk.impact);
+                                        return (
+                                            <tr key={risk.id} className="hover:bg-accent/30 transition-colors">
+                                                <td className="px-4 py-3 max-w-[240px]">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <p className="font-medium text-foreground truncate">{risk.title}</p>
+                                                        {risk.auto_generated === 1 && (
+                                                            <span className="shrink-0 inline-flex items-center gap-0.5 text-[10px] font-medium text-purple-400">
+                                                                <Sparkles className="w-2.5 h-2.5" />AI
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5 mt-0.5">
+                                                        <span className="text-[11px] text-muted-foreground">{risk.user?.name}</span>
+                                                        {risk.framework_name && (
+                                                            <span className="font-mono text-[10px] text-muted-foreground/60">{risk.framework_name}</span>
+                                                        )}
+                                                    </div>
                                                 </td>
-                                            )}
-                                            <td className="px-4 py-3">
-                                                <Badge variant="outline" className={`capitalize ${statusColors[risk.status]}`}>
-                                                    {risk.status.replace('_', ' ')}
-                                                </Badge>
-                                            </td>
-                                            <td className="px-4 py-3 capitalize text-gray-600 dark:text-gray-300">{risk.treatment}</td>
-                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                                                {risk.due_date ? new Date(risk.due_date).toLocaleDateString() : '—'}
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center gap-1">
-                                                    <Link href={route('risks.show', risk.id)}>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                            <Eye className="w-4 h-4" />
-                                                        </Button>
-                                                    </Link>
-                                                    {canEdit && (
-                                                        <Link href={route('risks.edit', risk.id)}>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                                <Pencil className="w-4 h-4" />
-                                                            </Button>
+                                                <td className="px-4 py-3 text-foreground/80 text-sm">{risk.category}</td>
+                                                <td className="px-4 py-3 text-foreground/80 text-sm">{risk.owner}</td>
+                                                <td className="px-4 py-3">
+                                                    <span className="font-mono font-semibold text-sm tabular-nums">{risk.likelihood * risk.impact}</span>
+                                                    <span className="text-[10px] text-muted-foreground">/25</span>
+                                                    <p className="text-[10px] text-muted-foreground font-mono">{risk.likelihood}×{risk.impact}</p>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md ${lv.bg}`}>
+                                                        <span className={`w-1 h-1 rounded-full ${lv.dot}`} />
+                                                        <span className="capitalize">{risk.risk_level}</span>
+                                                    </span>
+                                                </td>
+                                                {appetite && (
+                                                    <td className="px-4 py-3">
+                                                        {risk.appetite_band
+                                                            ? <AppetiteDot band={risk.appetite_band} />
+                                                            : <span className="text-muted-foreground">—</span>}
+                                                    </td>
+                                                )}
+                                                <td className="px-4 py-3">
+                                                    <span className={`text-xs capitalize font-medium ${statusText[risk.status] ?? 'text-muted-foreground'}`}>
+                                                        {risk.status.replace('_', ' ')}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-3 text-foreground/80 text-sm capitalize">{risk.treatment}</td>
+                                                <td className="px-4 py-3 text-sm text-foreground/80 font-mono">
+                                                    {risk.due_date ? new Date(risk.due_date).toLocaleDateString() : '—'}
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-1">
+                                                        <Link href={route('risks.show', risk.id)}>
+                                                            <button className="p-1.5 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
+                                                                <Eye className="w-3.5 h-3.5" />
+                                                            </button>
                                                         </Link>
-                                                    )}
-                                                    {canEdit && (
-                                                        <Button
-                                                            variant="ghost" size="icon"
-                                                            className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                                            onClick={() => deleteRisk(risk.id, risk.title)}
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                        {canEdit && (
+                                                            <Link href={route('risks.edit', risk.id)}>
+                                                                <button className="p-1.5 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
+                                                                    <Pencil className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </Link>
+                                                        )}
+                                                        {canEdit && (
+                                                            <button
+                                                                className="p-1.5 rounded-md hover:bg-red-500/10 transition-colors text-muted-foreground hover:text-red-400"
+                                                                onClick={() => deleteRisk(risk.id, risk.title)}
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>
-
-                        {/* Pagination */}
                         {risks.links.length > 3 && (
-                            <div className="flex items-center justify-center gap-1 p-4 border-t">
+                            <div className="flex items-center justify-center gap-1 p-4 border-t border-border">
                                 {risks.links.map((link, i) => (
-                                    <Button
-                                        key={i}
-                                        variant={link.active ? 'default' : 'outline'}
-                                        size="sm"
-                                        disabled={!link.url}
-                                        onClick={() => link.url && router.get(link.url)}
+                                    <Button key={i} variant={link.active ? 'default' : 'outline'} size="sm"
+                                        disabled={!link.url} onClick={() => link.url && router.get(link.url)}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />
                                 ))}

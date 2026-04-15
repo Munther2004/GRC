@@ -46,10 +46,10 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_BADGE: Record<string, string> = {
     compliant:            'bg-green-50 text-green-700 border-green-200',
-    partially_compliant:  'bg-amber-50 text-amber-700 border-amber-200',
-    non_compliant:        'bg-red-50 text-red-600 border-red-200',
-    not_applicable:       'bg-gray-100 text-gray-500 border-gray-200',
-    not_set:              'bg-gray-50 text-gray-400 border-gray-200',
+    partially_compliant:  'bg-amber-50 text-amber-700 border-border',
+    non_compliant:        'bg-red-950 text-red-400 border-red-200',
+    not_applicable:       'bg-muted text-muted-foreground border-border',
+    not_set:              'bg-card text-gray-400 border-gray-200',
 };
 
 function StatusBadge({ status }: { status: string | null }) {
@@ -174,8 +174,8 @@ export default function ApprovalQueue({ requests: initial }: Props) {
 
                 {/* Header */}
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Approval Queue</h1>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <h1 className="text-2xl font-bold text-foreground">Approval Queue</h1>
+                    <p className="text-sm text-muted-foreground">
                         Review pending control status change requests
                     </p>
                 </div>
@@ -199,7 +199,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
                                 <p className="text-sm mt-1">No pending status change requests at this time.</p>
                             </div>
                         ) : (
-                            <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                            <div className="divide-y divide-border">
                                 {requests.map(req => (
                                     <div key={req.id} className="px-6 py-4">
 
@@ -207,12 +207,12 @@ export default function ApprovalQueue({ requests: initial }: Props) {
                                         <div className="flex flex-wrap items-start gap-4">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <span className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-300">
+                                                    <span className="font-mono text-xs bg-muted/50 px-1.5 py-0.5 rounded text-foreground/80">
                                                         {req.control_id}
                                                     </span>
                                                     <Badge variant="outline" className="text-xs">{req.framework}</Badge>
                                                 </div>
-                                                <p className="font-medium text-sm text-gray-900 dark:text-white truncate">
+                                                <p className="font-medium text-sm text-foreground truncate">
                                                     {req.control_title}
                                                 </p>
                                                 <p className="text-xs text-gray-500 mt-1">
@@ -232,8 +232,8 @@ export default function ApprovalQueue({ requests: initial }: Props) {
 
                                         {/* Justification */}
                                         {req.justification && (
-                                            <div className="mt-3 p-2.5 bg-gray-50 dark:bg-gray-800 rounded-lg text-xs text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-gray-700">
-                                                <span className="font-medium text-gray-500 dark:text-gray-400">Justification: </span>
+                                            <div className="mt-3 p-2.5 bg-muted/30 rounded-lg text-xs text-foreground/80 border border-gray-100 dark:border-gray-700">
+                                                <span className="font-medium text-muted-foreground">Justification: </span>
                                                 {req.justification}
                                             </div>
                                         )}
@@ -241,7 +241,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
                                         {/* Evidence row (if attached) */}
                                         {req.evidence ? (
                                             <div className="mt-3 rounded-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
-                                                <p className="px-4 pt-3 text-xs text-gray-400 dark:text-gray-500">
+                                                <p className="px-4 pt-3 text-xs text-muted-foreground/60">
                                                     Accepting the evidence will approve the status change. Rejecting will keep the current status.
                                                 </p>
                                                 <EvidenceRow
@@ -319,7 +319,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
                                                     <Button
                                                         size="sm"
                                                         variant="outline"
-                                                        className="border-red-200 text-red-600 hover:bg-red-50 gap-1 h-8"
+                                                        className="border-red-200 text-red-400 hover:bg-red-50 gap-1 h-8"
                                                         onClick={() => setReviewing({ id: req.id, action: 'reject', notes: '' })}
                                                     >
                                                         <XCircle className="w-3.5 h-3.5" />
@@ -344,8 +344,8 @@ export default function ApprovalQueue({ requests: initial }: Props) {
                         : 'bg-red-50 border-red-200 text-red-800'
                     }`}>
                     {toast.type === 'success'
-                        ? <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-green-600" />
-                        : <XCircle      className="w-4 h-4 mt-0.5 shrink-0 text-red-600" />
+                        ? <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-emerald-400" />
+                        : <XCircle      className="w-4 h-4 mt-0.5 shrink-0 text-red-400" />
                     }
                     <span className="flex-1">{toast.text}</span>
                 </div>

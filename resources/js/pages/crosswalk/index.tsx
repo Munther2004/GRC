@@ -3,6 +3,9 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
+import { FilterBar } from '@/components/ui/filter-bar';
 import { ArrowRight, GitCompare, AlertTriangle, CheckCircle2, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import { route } from '@/lib/routes';
@@ -54,21 +57,21 @@ interface Props {
 }
 
 const mappingTypeColors: Record<string, string> = {
-    equivalent: 'bg-green-100 text-green-700 border-green-200',
-    partial:    'bg-amber-100 text-amber-700 border-amber-200',
-    related:    'bg-gray-100 text-gray-600 border-gray-200',
+    equivalent: 'bg-emerald-950 text-emerald-400 border-green-200',
+    partial:    'bg-amber-950 text-amber-400 border-border',
+    related:    'bg-muted text-foreground/75 border-border',
 };
 
 const statusColors: Record<string, string> = {
-    compliant:            'bg-green-100 text-green-700',
-    partially_compliant:  'bg-yellow-100 text-yellow-700',
-    non_compliant:        'bg-red-100 text-red-700',
+    compliant:            'bg-emerald-950 text-emerald-400',
+    partially_compliant:  'bg-amber-950 text-amber-400',
+    non_compliant:        'bg-red-950 text-red-400',
     not_applicable:       'bg-gray-100 text-gray-500',
 };
 
 const statusLabel = (s: string | null) => {
-    if (!s) return { label: 'Not Set', cls: 'bg-gray-100 text-gray-400' };
-    return { label: s.replace(/_/g, ' '), cls: statusColors[s] ?? 'bg-gray-100 text-gray-400' };
+    if (!s) return { label: 'Not Set', cls: 'bg-muted text-muted-foreground/60' };
+    return { label: s.replace(/_/g, ' '), cls: statusColors[s] ?? 'bg-muted text-muted-foreground/60' };
 };
 
 function ControlCard({ ctrl }: { ctrl: ControlRow }) {
@@ -77,21 +80,21 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
     const { label, cls } = statusLabel(ctrl.current_status);
 
     return (
-        <div className={`border rounded-lg overflow-hidden ${!hasMappings ? 'border-dashed border-amber-200 bg-amber-50/30' : 'bg-card'}`}>
+        <div className={`border rounded-lg overflow-hidden ${!hasMappings ? 'border-dashed border-border bg-muted/20' : 'bg-card'}`}>
             <div
                 className="flex items-start gap-3 p-3 cursor-pointer hover:bg-muted/40 transition-colors"
                 onClick={() => hasMappings && setExpanded(e => !e)}
             >
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono text-xs font-semibold text-gray-700 dark:text-gray-300 shrink-0">{ctrl.control_id}</span>
-                        <span className="text-xs text-gray-600 dark:text-gray-400 truncate">{ctrl.title}</span>
+                        <span className="font-mono text-xs font-semibold text-foreground/85 shrink-0">{ctrl.control_id}</span>
+                        <span className="text-xs text-foreground/70 truncate">{ctrl.title}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <span className="text-xs text-gray-400">{ctrl.category}</span>
                         <span className={`text-xs px-1.5 py-0.5 rounded capitalize ${cls}`}>{label}</span>
                         {!hasMappings && (
-                            <span className="text-xs flex items-center gap-0.5 text-amber-600">
+                            <span className="text-xs flex items-center gap-0.5 text-amber-400">
                                 <AlertTriangle className="w-3 h-3" /> No crosswalk mapping
                             </span>
                         )}
@@ -120,7 +123,7 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <Badge className={`text-xs border capitalize ${mappingTypeColors[m.mapping_type]}`}>{m.mapping_type}</Badge>
                                         <Badge variant="secondary" className="text-xs">{m.control.framework}</Badge>
-                                        <span className="font-mono text-gray-700 dark:text-gray-300">{m.control.control_id}</span>
+                                        <span className="font-mono text-foreground/85">{m.control.control_id}</span>
                                         <span className="text-gray-500 truncate">{m.control.title}</span>
                                     </div>
                                     <div className="flex items-center gap-2 flex-wrap">
@@ -159,49 +162,34 @@ export default function CrosswalkIndex({ frameworks, controlData, stats, filters
 
             <div className="max-w-6xl mx-auto space-y-6">
 
-                {/* Header */}
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <GitCompare className="w-6 h-6 text-indigo-600" />
-                        Framework Control Crosswalk
-                    </h1>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Cross-framework mapping across ISO 27001, NIST 800-53, OWASP ASVS, and CIS Controls
-                    </p>
-                </div>
+                <PageHeader
+                    icon={GitCompare}
+                    title="Framework Control Crosswalk"
+                    description="Cross-framework mapping across ISO 27001, NIST 800-53, OWASP ASVS, and CIS Controls"
+                />
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                    {[
-                        { label: 'Total Controls', value: stats.total_controls, cls: 'text-gray-800' },
-                        { label: 'With Mappings',  value: stats.with_mappings,  cls: 'text-indigo-700' },
-                        { label: 'No Mapping',     value: stats.without_mappings, cls: 'text-amber-600' },
-                        { label: 'Equivalent',     value: stats.equivalent,     cls: 'text-green-700' },
-                        { label: 'Partial',        value: stats.partial,        cls: 'text-amber-700' },
-                        { label: 'Related',        value: stats.related,        cls: 'text-gray-600' },
-                    ].map(({ label, value, cls }) => (
-                        <Card key={label}>
-                            <CardContent className="p-3 text-center">
-                                <div className={`text-2xl font-bold ${cls}`}>{value}</div>
-                                <div className="text-xs text-gray-400 mt-0.5">{label}</div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                <StatStrip stats={[
+                    { label: 'Total Controls', value: stats.total_controls, variant: 'default' },
+                    { label: 'With Mappings',  value: stats.with_mappings,  variant: 'primary' },
+                    { label: 'No Mapping',     value: stats.without_mappings, variant: 'warning' },
+                    { label: 'Equivalent',     value: stats.equivalent,     variant: 'success' },
+                    { label: 'Partial',        value: stats.partial,        variant: 'warning' },
+                    { label: 'Related',        value: stats.related,        variant: 'default' },
+                ]} />
 
                 {/* Mapping type legend */}
                 <div className="flex items-center gap-3 flex-wrap text-xs">
-                    <span className="text-gray-500 font-medium">Mapping types:</span>
-                    <span className="flex items-center gap-1 px-2 py-1 rounded border bg-green-100 text-green-700 border-green-200">
+                    <span className="text-muted-foreground font-medium">Mapping types:</span>
+                    <span className="flex items-center gap-1 px-2 py-1 rounded border bg-emerald-950 text-emerald-400 border-border">
                         <CheckCircle2 className="w-3 h-3" /> Equivalent — direct 1:1 control match
                     </span>
-                    <span className="flex items-center gap-1 px-2 py-1 rounded border bg-amber-100 text-amber-700 border-amber-200">
+                    <span className="flex items-center gap-1 px-2 py-1 rounded border bg-amber-950 text-amber-400 border-border">
                         Partial — overlapping but not identical scope
                     </span>
-                    <span className="flex items-center gap-1 px-2 py-1 rounded border bg-gray-100 text-gray-600 border-gray-200">
+                    <span className="flex items-center gap-1 px-2 py-1 rounded border bg-muted text-foreground/75 border-border">
                         Related — thematically linked, different scope
                     </span>
-                    <span className="flex items-center gap-1 px-2 py-1 rounded border border-dashed border-amber-300 bg-amber-50/50 text-amber-600">
+                    <span className="flex items-center gap-1 px-2 py-1 rounded border border-dashed border-border bg-muted/20 text-amber-400">
                         <AlertTriangle className="w-3 h-3" /> No mapping — coverage gap
                     </span>
                 </div>
@@ -209,7 +197,7 @@ export default function CrosswalkIndex({ frameworks, controlData, stats, filters
                 {/* Filters */}
                 <div className="flex gap-3 flex-wrap">
                     <div className="relative flex-1 min-w-[200px]">
-                        <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                        <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground/60" />
                         <Input
                             placeholder="Search control ID or title..."
                             value={search}

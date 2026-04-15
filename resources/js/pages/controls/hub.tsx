@@ -112,9 +112,9 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_BADGE: Record<string, string> = {
     compliant:            'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800',
-    partially_compliant:  'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800',
-    non_compliant:        'bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800',
-    not_applicable:       'bg-gray-100 text-gray-500 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700',
+    partially_compliant:  'bg-amber-50 text-amber-700 border-border dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800',
+    non_compliant:        'bg-red-950 text-red-400 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800',
+    not_applicable:       'bg-muted text-muted-foreground border-border dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700',
 };
 
 const RISK_LEVEL_BADGE: Record<string, string> = {
@@ -125,16 +125,16 @@ const RISK_LEVEL_BADGE: Record<string, string> = {
 };
 
 const PRIORITY_STYLES: Record<string, string> = {
-    Critical: 'bg-red-100 text-red-700 border-red-300',
-    High:     'bg-orange-100 text-orange-700 border-orange-300',
-    Medium:   'bg-yellow-100 text-yellow-700 border-yellow-300',
-    Low:      'bg-green-100 text-green-700 border-green-300',
+    Critical: 'bg-red-950 text-red-400 border-red-300',
+    High:     'bg-orange-950 text-orange-400 border-orange-300',
+    Medium:   'bg-amber-950 text-amber-400 border-yellow-300',
+    Low:      'bg-emerald-950 text-emerald-400 border-green-300',
 };
 
 function StatusBadge({ status }: { status: ControlRow['current_status'] }) {
     if (!status) {
         return (
-            <Badge variant="outline" className="text-xs bg-gray-50 text-gray-400 border-gray-200 dark:bg-gray-800 dark:text-gray-500">
+            <Badge variant="outline" className="text-xs bg-card text-gray-400 border-gray-200 dark:bg-gray-800 dark:text-gray-500">
                 Not Set
             </Badge>
         );
@@ -155,8 +155,8 @@ function EvidenceBadge({ status }: { status: ControlRow['evidence_status'] }) {
         return <span className="text-gray-400">—</span>;
     }
     const config = {
-        valid:    { icon: FileCheck2,  cls: 'text-green-600',  label: 'Evidence OK' },
-        expiring: { icon: FileWarning, cls: 'text-yellow-600', label: 'Expiring Soon' },
+        valid:    { icon: FileCheck2,  cls: 'text-emerald-400',  label: 'Evidence OK' },
+        expiring: { icon: FileWarning, cls: 'text-amber-400', label: 'Expiring Soon' },
         expired:  { icon: FileX,       cls: 'text-red-500',    label: 'Expired' },
     }[status];
 
@@ -333,8 +333,8 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Controls Hub</h1>
-                        <p className="text-sm text-gray-500 mt-1">Live compliance status across all controls</p>
+                        <h1 className="text-2xl font-bold text-foreground">Controls Hub</h1>
+                        <p className="text-sm text-muted-foreground">Live compliance status across all controls</p>
                     </div>
                     {canReview && (
                         <Link href={route('controls.approvals')}>
@@ -355,15 +355,15 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                 <p className="text-xs text-gray-500">Total</p>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-green-600">{stats.compliant}</p>
+                                <p className="text-2xl font-bold text-emerald-400">{stats.compliant}</p>
                                 <p className="text-xs text-gray-500">Compliant</p>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-amber-600">{stats.partiallyCompliant}</p>
+                                <p className="text-2xl font-bold text-amber-400">{stats.partiallyCompliant}</p>
                                 <p className="text-xs text-gray-500">Partial</p>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-red-600">{stats.nonCompliant}</p>
+                                <p className="text-2xl font-bold text-red-400">{stats.nonCompliant}</p>
                                 <p className="text-xs text-gray-500">Non-Compliant</p>
                             </div>
                             <div>
@@ -375,7 +375,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                 <p className="text-xs text-gray-500">Compliant Rate</p>
                             </div>
                         </div>
-                        <div className="w-full h-2.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
+                        <div className="w-full h-2.5 bg-muted rounded-full overflow-hidden flex">
                             {stats.total > 0 && (
                                 <>
                                     <div className="h-full bg-green-500 transition-all"  style={{ width: `${(stats.compliant / stats.total) * 100}%` }} />
@@ -437,14 +437,14 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                     <CardContent className="p-0 mt-4">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
+                                <thead className="bg-muted/30 border-y border-border">
                                     <tr>
                                         {['Control', 'Status', 'Risks', 'Evidence', 'Last Updated', 'Actions'].map(h => (
-                                            <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                                            <th key={h} className="px-4 py-3 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                <tbody className="divide-y divide-border">
                                     {localControls.length === 0 ? (
                                         <tr>
                                             <td colSpan={6} className="px-4 py-12 text-center text-gray-400">
@@ -452,17 +452,17 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                             </td>
                                         </tr>
                                     ) : localControls.map(ctrl => (
-                                        <tr key={ctrl.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                        <tr key={ctrl.id} className="hover:bg-accent/30 transition-colors">
 
                                             {/* Control name */}
                                             <td className="px-4 py-3 max-w-[280px]">
                                                 <div className="flex items-center gap-1.5 mb-0.5">
-                                                    <span className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-300 shrink-0">
+                                                    <span className="font-mono text-xs bg-muted/50 px-1.5 py-0.5 rounded text-foreground/80 shrink-0">
                                                         {ctrl.control_id}
                                                     </span>
                                                     <Badge variant="outline" className="text-xs shrink-0">{ctrl.framework.short_name}</Badge>
                                                 </div>
-                                                <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{ctrl.title}</p>
+                                                <p className="font-medium text-foreground text-sm truncate">{ctrl.title}</p>
                                                 {ctrl.category && (
                                                     <p className="text-xs text-gray-400 mt-0.5">{ctrl.category}</p>
                                                 )}
@@ -473,7 +473,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                                 <div className="flex flex-col gap-1">
                                                     <StatusBadge status={ctrl.current_status} />
                                                     {ctrl.pending_request && (
-                                                        <span className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded px-1.5 py-0.5 w-fit">
+                                                        <span className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-border dark:border-amber-700 rounded px-1.5 py-0.5 w-fit">
                                                             <Clock className="w-2.5 h-2.5 shrink-0" />
                                                             Pending: {STATUS_LABELS[ctrl.pending_request.requested_status] ?? ctrl.pending_request.requested_status}
                                                         </span>
@@ -497,7 +497,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                                 <div className="flex flex-col gap-1">
                                                     <EvidenceBadge status={ctrl.evidence_status} />
                                                     {ctrl.has_weak_evidence && (
-                                                        <span className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400 font-medium">
+                                                        <span className="flex items-center gap-1 text-xs text-red-400 dark:text-red-400 font-medium">
                                                             <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                                                             Weak Evidence
                                                         </span>
@@ -509,7 +509,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                             <td className="px-4 py-3">
                                                 {ctrl.latest_history ? (
                                                     <div>
-                                                        <p className="text-xs text-gray-600 dark:text-gray-300">
+                                                        <p className="text-xs text-foreground/80">
                                                             {new Date(ctrl.latest_history.created_at).toLocaleDateString()}
                                                         </p>
                                                         <p className="text-xs text-gray-400">{ctrl.latest_history.user_name}</p>
@@ -526,7 +526,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                                         <Button
                                                             size="sm"
                                                             variant="outline"
-                                                            className="text-xs h-7 px-2 text-amber-600 border-amber-300 cursor-default"
+                                                            className="text-xs h-7 px-2 text-amber-400 border-amber-300 cursor-default"
                                                             disabled
                                                             title={`Pending approval — requested by ${ctrl.pending_request.requested_by}`}
                                                         >
@@ -600,7 +600,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
 
                     {updateModal && (
                         <div className="space-y-4 py-2">
-                            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <div className="p-3 bg-muted/30 rounded-lg">
                                 <p className="text-xs text-gray-500 font-mono">{updateModal.control_id}</p>
                                 <p className="font-medium text-sm mt-0.5">{updateModal.title}</p>
                                 <div className="flex items-center gap-2 mt-2">
@@ -609,8 +609,8 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                 </div>
                             </div>
 
-                            <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-700">
-                                <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                            <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-border dark:border-amber-700">
+                                <Clock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                                 <p className="text-xs text-amber-700 dark:text-amber-400">
                                     Status changes require approval from an administrator or auditor before taking effect.
                                 </p>
@@ -648,13 +648,13 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                             {/* Evidence Upload */}
                             <div className="space-y-2 pt-1 border-t border-gray-100 dark:border-gray-700">
                                 <div className="flex items-center justify-between">
-                                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                                         Upload New Evidence
                                     </Label>
                                     <button
                                         type="button"
                                         onClick={() => evidenceFileRef.current?.click()}
-                                        className="text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1"
+                                        className="text-xs text-blue-500 hover:text-blue-400 flex items-center gap-1"
                                     >
                                         <Upload className="w-3 h-3" /> Select file
                                     </button>
@@ -757,7 +757,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                             <div className="flex flex-col items-center">
                                                 <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0" />
                                                 {i < historyModal.entries.length - 1 && (
-                                                    <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700 mt-1" />
+                                                    <div className="w-px flex-1 bg-muted mt-1" />
                                                 )}
                                             </div>
                                             <div className="pb-3 flex-1 min-w-0">
@@ -771,7 +771,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                                     <StatusBadge status={entry.new_status as ControlRow['current_status']} />
                                                 </div>
                                                 {entry.notes && (
-                                                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-1.5 bg-gray-50 dark:bg-gray-800 rounded p-2">
+                                                    <p className="text-xs text-foreground/80 mt-1.5 bg-muted/30 rounded p-2">
                                                         {entry.notes}
                                                     </p>
                                                 )}
@@ -798,24 +798,24 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                     className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
                     onClick={e => e.target === e.currentTarget && setPlanModal(null)}
                 >
-                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-purple-200 dark:border-purple-800">
+                    <div className="bg-background rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-purple-200 dark:border-purple-800">
                         <div className="flex items-start justify-between p-5 border-b border-gray-100 dark:border-gray-800">
                             <div className="flex items-start gap-2 flex-1 min-w-0">
                                 <span className="text-purple-600 text-lg leading-none mt-0.5">✨</span>
                                 <div className="min-w-0">
-                                    <h2 className="font-bold text-gray-900 dark:text-white text-sm">AI Remediation Plan</h2>
+                                    <h2 className="font-bold text-foreground text-sm">AI Remediation Plan</h2>
                                     <p className="text-xs text-gray-500 mt-0.5 truncate">
                                         {planModal.ctrl.control_id}: {planModal.ctrl.title}
                                     </p>
                                 </div>
                             </div>
-                            <button onClick={() => setPlanModal(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 ml-3 flex-shrink-0">
+                            <button onClick={() => setPlanModal(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 ml-3 shrink-0">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
                         <div className="overflow-y-auto flex-1 p-5 space-y-5">
-                            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300">
+                            <div className="p-3 bg-muted/30 rounded-lg text-sm text-foreground/85">
                                 {planModal.plan.summary}
                             </div>
                             <div className="flex items-center gap-3">
@@ -823,16 +823,16 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                                     {planModal.plan.priority} Priority
                                 </Badge>
                                 <span className="text-xs text-gray-500">
-                                    Effort: <span className="font-medium text-gray-700 dark:text-gray-300">{planModal.plan.estimated_effort}</span>
+                                    Effort: <span className="font-medium text-foreground/85">{planModal.plan.estimated_effort}</span>
                                 </span>
                             </div>
                             {planModal.plan.quick_wins.length > 0 && (
                                 <div>
-                                    <p className="text-xs font-semibold text-green-700 dark:text-green-400 mb-2">⚡ Quick Wins</p>
+                                    <p className="text-xs font-semibold text-emerald-400 mb-2">⚡ Quick Wins</p>
                                     <div className="space-y-1.5">
                                         {planModal.plan.quick_wins.map((w, i) => (
                                             <div key={i} className="flex items-start gap-2 p-2.5 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                                                <ChevronRight className="w-3.5 h-3.5 text-green-600 flex-shrink-0 mt-0.5" />
+                                                <ChevronRight className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                                                 <span className="text-xs text-green-800 dark:text-green-300">{w}</span>
                                             </div>
                                         ))}
@@ -841,17 +841,17 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                             )}
                             {planModal.plan.remediation_steps.length > 0 && (
                                 <div>
-                                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3">Remediation Steps</p>
+                                    <p className="text-xs font-semibold text-foreground/85 mb-3">Remediation Steps</p>
                                     <div className="space-y-3">
                                         {planModal.plan.remediation_steps.map(s => (
                                             <div key={s.step} className="flex gap-3">
-                                                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center justify-center">
+                                                <div className="shrink-0 w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center justify-center">
                                                     {s.step}
                                                 </div>
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{s.action}</p>
+                                                    <p className="text-sm font-semibold text-foreground">{s.action}</p>
                                                     <p className="text-xs text-gray-500 mt-0.5">{s.detail}</p>
-                                                    <div className="mt-1.5 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs text-gray-500">
+                                                    <div className="mt-1.5 px-2 py-1 bg-muted/50 rounded text-xs text-gray-500">
                                                         Evidence: {s.evidence_needed}
                                                     </div>
                                                 </div>
@@ -865,7 +865,7 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                         <div className="p-4 border-t border-gray-100 dark:border-gray-800">
                             {savedRisk ? (
                                 <div className="flex flex-col items-center gap-3 py-1">
-                                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                                    <div className="flex items-center gap-2 text-emerald-400 dark:text-green-400">
                                         <CheckCircle2 className="w-5 h-5" />
                                         <span className="font-semibold text-sm">Remediation plan saved!</span>
                                     </div>
@@ -903,8 +903,8 @@ export default function ControlsHub({ controls, frameworks, filters, stats }: Pr
                         : 'bg-red-50 border-red-200 text-red-800'
                     }`}>
                     {toast.type === 'success'
-                        ? <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-green-600" />
-                        : <XCircle      className="w-4 h-4 mt-0.5 shrink-0 text-red-600" />
+                        ? <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-emerald-400" />
+                        : <XCircle      className="w-4 h-4 mt-0.5 shrink-0 text-red-400" />
                     }
                     <span className="flex-1">{toast.text}</span>
                     <button onClick={() => setToast(null)} className="opacity-60 hover:opacity-100">

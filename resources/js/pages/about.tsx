@@ -83,7 +83,7 @@ export default function About() {
                                 { term: 'Compliance', def: 'Confirms that the organisation meets all relevant laws, regulations, and industry standards.' },
                             ].map(({ term, def }) => (
                                 <li key={term} className="flex gap-3">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
                                     <p className="text-zinc-400 text-sm leading-relaxed">
                                         <span className="text-white font-medium">{term} — </span>{def}
                                     </p>

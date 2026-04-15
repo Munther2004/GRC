@@ -1,8 +1,6 @@
 import { Link } from "@inertiajs/react"
 import { ArrowUpRight } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 
 type Risk = {
     id: number
@@ -16,118 +14,88 @@ type Risk = {
     status: string
 }
 
-type Props = {
-    risks?: Risk[]
-}
+type Props = { risks?: Risk[] }
 
-function getRiskLevelBadge(level: string) {
+const levelStyle = (level: string) => {
     switch (level) {
-        case "critical":
-            return <Badge variant="destructive" className="text-xs">Critical</Badge>
-        case "high":
-            return <Badge className="bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 text-xs">High</Badge>
-        case "medium":
-            return <Badge className="bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30 text-xs">Medium</Badge>
-        default:
-            return <Badge variant="secondary" className="text-xs">Low</Badge>
+        case 'critical': return { dot: 'bg-red-400',     text: 'text-red-400' }
+        case 'high':     return { dot: 'bg-orange-400',  text: 'text-orange-400' }
+        case 'medium':   return { dot: 'bg-amber-400',   text: 'text-amber-400' }
+        default:         return { dot: 'bg-emerald-400', text: 'text-emerald-400' }
     }
 }
 
-function getStatusBadge(status: string) {
+const statusStyle = (status: string) => {
     switch (status) {
-        case "open":
-            return <Badge variant="outline" className="text-xs border-red-500/50 text-red-400">Open</Badge>
-        case "in_progress":
-            return <Badge variant="outline" className="text-xs border-blue-500/50 text-blue-400">In Progress</Badge>
-        case "under_review":
-            return <Badge variant="outline" className="text-xs border-amber-500/50 text-amber-400">Under Review</Badge>
-        case "closed":
-            return <Badge variant="outline" className="text-xs border-green-500/50 text-green-400">Closed</Badge>
-        default:
-            return <Badge variant="outline" className="text-xs">{status}</Badge>
+        case 'open':         return 'text-red-400/90'
+        case 'in_progress':  return 'text-blue-400/90'
+        case 'under_review': return 'text-amber-400/90'
+        case 'closed':       return 'text-emerald-400/90'
+        default:             return 'text-muted-foreground'
     }
 }
 
 export function TopRisks({ risks = [] }: Props) {
     return (
-        <Card className="bg-card border-border">
-            <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <CardTitle className="text-lg font-medium">Top Risks</CardTitle>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            Ranked by ISO/IEC 27005 likelihood × impact score
-                        </p>
-                    </div>
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
-                        <Link href="/risks">
-                            View all
-                            <ArrowUpRight className="w-4 h-4 ml-1" />
-                        </Link>
-                    </Button>
+        <Card>
+            <CardHeader className="pb-3 flex-row items-start justify-between gap-4">
+                <div>
+                    <CardTitle className="text-sm font-medium">Top Risks</CardTitle>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                        Ranked by ISO/IEC 27005 likelihood × impact
+                    </p>
                 </div>
+                <Link
+                    href="/risks"
+                    className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    View all <ArrowUpRight className="w-3 h-3" />
+                </Link>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
                 {risks.length === 0 ? (
-                    <div className="text-center py-12">
+                    <div className="py-12 text-center px-5">
                         <p className="text-sm text-muted-foreground">No risks recorded yet</p>
-                        <Link href="/risks/create">
-                            <Button variant="outline" size="sm" className="mt-3">
-                                Add First Risk
-                            </Button>
+                        <Link
+                            href="/risks/create"
+                            className="inline-flex items-center gap-1 mt-3 text-xs text-foreground hover:underline"
+                        >
+                            Add first risk <ArrowUpRight className="w-3 h-3" />
                         </Link>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-border">
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">ID</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Risk</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden md:table-cell">Category</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Owner</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Score</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Level</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider"></th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border">
-                                {risks.map((risk) => (
-                                    <tr key={risk.id} className="hover:bg-muted/50 transition-colors">
-                                        <td className="py-3 px-4">
-                                            <span className="text-sm font-mono text-muted-foreground">
-                                                RSK-{String(risk.id).padStart(3, '0')}
-                                            </span>
-                                        </td>
-                                        <td className="py-3 px-4">
-                                            <span className="text-sm font-medium">{risk.title}</span>
-                                        </td>
-                                        <td className="py-3 px-4 hidden md:table-cell">
-                                            <span className="text-sm text-muted-foreground">{risk.category ?? '—'}</span>
-                                        </td>
-                                        <td className="py-3 px-4 hidden lg:table-cell">
-                                            <span className="text-sm text-muted-foreground">{risk.owner ?? '—'}</span>
-                                        </td>
-                                        <td className="py-3 px-4">
-                                            <span className="text-sm font-semibold tabular-nums">
-                                                {risk.risk_score}
-                                                <span className="text-xs text-muted-foreground font-normal">/25</span>
-                                            </span>
-                                        </td>
-                                        <td className="py-3 px-4">{getRiskLevelBadge(risk.risk_level)}</td>
-                                        <td className="py-3 px-4">{getStatusBadge(risk.status)}</td>
-                                        <td className="py-3 px-4">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                                                <Link href={`/risks/${risk.id}`}>
-                                                    <ArrowUpRight className="h-4 w-4" />
-                                                </Link>
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className="border-t border-border">
+                        {risks.map((risk) => {
+                            const ls = levelStyle(risk.risk_level)
+                            return (
+                                <Link
+                                    key={risk.id}
+                                    href={`/risks/${risk.id}`}
+                                    className="group grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_2fr_1fr_auto_auto] items-center gap-4 px-5 py-3 border-b border-border last:border-0 hover:bg-accent/30 transition-colors"
+                                >
+                                    <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
+                                        RSK-{String(risk.id).padStart(3, '0')}
+                                    </span>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-medium text-foreground truncate">{risk.title}</p>
+                                        <p className="text-[11px] text-muted-foreground truncate">
+                                            {risk.category || '—'}{risk.owner ? <> · <span>{risk.owner}</span></> : null}
+                                        </p>
+                                    </div>
+                                    <div className="hidden md:flex items-center gap-1.5 text-xs">
+                                        <span className={`w-1 h-1 rounded-full ${ls.dot}`} />
+                                        <span className={`capitalize ${ls.text}`}>{risk.risk_level}</span>
+                                        <span className={`ml-2 text-[11px] capitalize ${statusStyle(risk.status)}`}>
+                                            · {risk.status.replace('_', ' ')}
+                                        </span>
+                                    </div>
+                                    <span className="font-mono text-sm font-semibold tabular-nums text-foreground">
+                                        {risk.risk_score}<span className="text-[10px] text-muted-foreground font-normal">/25</span>
+                                    </span>
+                                    <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground/50 group-hover:text-foreground transition-colors" />
+                                </Link>
+                            )
+                        })}
                     </div>
                 )}
             </CardContent>

@@ -32,7 +32,7 @@ interface Props {
 
 const statusColors: Record<string, string> = {
     draft:       'bg-gray-100 text-gray-600',
-    in_progress: 'bg-blue-50 text-blue-600',
+    in_progress: 'bg-blue-950 text-blue-400',
     completed:   'bg-green-50 text-green-700',
 };
 
@@ -95,10 +95,10 @@ export default function AssessmentCompare({ assessments }: Props) {
 
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                        <GitCompare className="w-5 h-5 text-blue-600" />
+                        <GitCompare className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Assessment Comparison</h1>
+                        <h1 className="text-2xl font-bold text-foreground">Assessment Comparison</h1>
                         <p className="text-sm text-gray-500">Select two assessments to compare side by side</p>
                     </div>
                 </div>
@@ -113,7 +113,7 @@ export default function AssessmentCompare({ assessments }: Props) {
 
                             {/* Assessment A */}
                             <div className="space-y-2">
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                                     Assessment A — Baseline
                                 </label>
                                 <Select value={selectedA} onValueChange={(v) => {
@@ -140,7 +140,7 @@ export default function AssessmentCompare({ assessments }: Props) {
 
                                 {/* Preview card */}
                                 {assessmentAObj && (
-                                    <div className="rounded-lg border bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
+                                    <div className="rounded-lg border bg-accent/30 p-3 space-y-1.5">
                                         <div className="flex items-center justify-between gap-2">
                                             <p className="text-sm font-medium truncate">{assessmentAObj.title}</p>
                                             <Badge variant="outline" className="text-xs shrink-0">
@@ -170,7 +170,7 @@ export default function AssessmentCompare({ assessments }: Props) {
 
                             {/* Assessment B */}
                             <div className="space-y-2">
-                                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                                     Assessment B — Latest
                                 </label>
                                 <Select
@@ -198,7 +198,7 @@ export default function AssessmentCompare({ assessments }: Props) {
 
                                 {/* Preview card */}
                                 {assessmentBObj && (
-                                    <div className="rounded-lg border bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
+                                    <div className="rounded-lg border bg-accent/30 p-3 space-y-1.5">
                                         <div className="flex items-center justify-between gap-2">
                                             <p className="text-sm font-medium truncate">{assessmentBObj.title}</p>
                                             <Badge variant="outline" className="text-xs shrink-0">

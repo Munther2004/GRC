@@ -133,7 +133,7 @@ export function AiReviewPanel({ review, onRejectForRelevance }: {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {review.strengths && (
                     <div>
-                        <p className="text-xs font-semibold text-green-700 dark:text-green-400 mb-1">Strengths</p>
+                        <p className="text-xs font-semibold text-emerald-400 mb-1">Strengths</p>
                         <p className="text-xs text-green-800 dark:text-green-300 leading-relaxed">{review.strengths}</p>
                     </div>
                 )}
@@ -157,7 +157,7 @@ export function AiReviewPanel({ review, onRejectForRelevance }: {
                         <div className="flex items-center justify-between gap-3">
                             <div className="flex items-start gap-2">
                                 <Ban className="w-3.5 h-3.5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
-                                <p className="text-xs text-red-700 dark:text-red-400">
+                                <p className="text-xs text-red-400">
                                     AI flagged this evidence as <strong>not relevant</strong> to the linked control.
                                 </p>
                             </div>
@@ -172,7 +172,7 @@ export function AiReviewPanel({ review, onRejectForRelevance }: {
                         </div>
                     ) : (
                         <div className="space-y-2">
-                            <p className="text-xs font-semibold text-red-700 dark:text-red-400">
+                            <p className="text-xs font-semibold text-red-400">
                                 Reject this evidence? This marks it as rejected and removes it from compliance counting.
                             </p>
                             <div className="flex items-center gap-2">
@@ -227,7 +227,7 @@ function EvidenceActions({
 }: EvidenceActionsProps) {
     const hasReview = review !== null;
     return (
-        <div className="flex items-center gap-1 flex-shrink-0 flex-wrap justify-end">
+        <div className="flex items-center gap-1 shrink-0 flex-wrap justify-end">
             {canReview && (
                 <Button
                     variant="ghost"
@@ -302,15 +302,15 @@ export function EvidenceRow({
     const formatSize = (type: string) => type.split('/')[1]?.toUpperCase() ?? 'FILE';
 
     return (
-        <div className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+        <div className="p-4 hover:bg-accent/30 transition-colors">
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
-                    <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
                         <FileIcon type={ev.file_type} />
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                            <p className="font-semibold text-sm text-gray-900 dark:text-white">{ev.title}</p>
+                            <p className="font-semibold text-sm text-foreground">{ev.title}</p>
                             {hasReview && (
                                 <Sparkles className="w-3.5 h-3.5 text-purple-500 shrink-0" aria-label="AI reviewed" />
                             )}
@@ -336,7 +336,7 @@ export function EvidenceRow({
 
                         {ev.assessment_item && (
                             <div className="flex items-center gap-2 flex-wrap text-xs text-gray-500 mb-1">
-                                <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                                <span className="font-mono bg-muted/50 px-1.5 py-0.5 rounded">
                                     {ev.assessment_item.control.control_id}
                                 </span>
                                 <span className="truncate max-w-[250px]">{ev.assessment_item.control.title}</span>

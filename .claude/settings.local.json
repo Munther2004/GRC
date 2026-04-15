@@ -40,7 +40,8 @@
       "Bash(php c:/laragon/www/GRC/artisan tinker --execute=\"echo Framework::pluck\\('short_name'\\)->join\\(', '\\);\")",
       "Bash(php c:/laragon/www/GRC/artisan tinker '--execute=:*)",
       "Bash(php c:/laragon/www/GRC/artisan migrate)",
-      "Bash(php c:/laragon/www/GRC/artisan db:seed --class=ControlCrosswalkSeeder)"
+      "Bash(php c:/laragon/www/GRC/artisan db:seed --class=ControlCrosswalkSeeder)",
+      "Bash(xargs sed *)"
     ]
   }
 }

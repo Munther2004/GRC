@@ -129,10 +129,10 @@ const gradeConfig: Record<string, { color: string; bg: string; ring: string }> =
 };
 
 const riskLevelConfig: Record<string, { cls: string; dot: string }> = {
-    critical: { cls: 'bg-red-100 text-red-700 border-red-200',    dot: 'bg-red-500' },
-    high:     { cls: 'bg-orange-100 text-orange-700 border-orange-200', dot: 'bg-orange-500' },
-    medium:   { cls: 'bg-amber-100 text-amber-700 border-amber-200',  dot: 'bg-amber-400' },
-    low:      { cls: 'bg-green-100 text-green-700 border-green-200',  dot: 'bg-green-500' },
+    critical: { cls: 'bg-red-950 text-red-400 border-red-200',    dot: 'bg-red-500' },
+    high:     { cls: 'bg-orange-950 text-orange-400 border-orange-200', dot: 'bg-orange-500' },
+    medium:   { cls: 'bg-amber-950 text-amber-400 border-border',  dot: 'bg-amber-400' },
+    low:      { cls: 'bg-emerald-950 text-emerald-400 border-green-200',  dot: 'bg-green-500' },
 };
 
 function ComplianceBar({ pct, className }: { pct: number; className?: string }) {
@@ -157,11 +157,11 @@ export default function ExecutiveDashboard({
         : 0;
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 print:bg-white">
+        <div className="min-h-screen bg-card dark:bg-gray-950 print:bg-white">
             <Head title="Executive Dashboard" />
 
             {/* ── Action bar (hidden when printing) ── */}
-            <div className="print:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
+            <div className="print:hidden sticky top-0 z-20 bg-background border-b border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link href="/dashboard">
@@ -199,12 +199,12 @@ export default function ExecutiveDashboard({
                 <div className="flex items-start justify-between">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <Shield className="w-4 h-4 text-blue-600" />
+                            <Shield className="w-4 h-4 text-blue-400" />
                             <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
                                 GRC Management System
                             </span>
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Executive Dashboard</h1>
+                        <h1 className="text-3xl font-bold text-foreground">Executive Dashboard</h1>
                         <p className="text-sm text-gray-500 mt-0.5">
                             Compliance &amp; Risk Posture Overview &mdash; Generated {generatedAt}
                         </p>
@@ -245,8 +245,8 @@ export default function ExecutiveDashboard({
                             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Compliance</p>
                             <p className={cn(
                                 'text-3xl font-bold',
-                                complianceSummary.overall_pct >= 80 ? 'text-green-600' :
-                                complianceSummary.overall_pct >= 60 ? 'text-amber-600' : 'text-red-600'
+                                complianceSummary.overall_pct >= 80 ? 'text-emerald-400' :
+                                complianceSummary.overall_pct >= 60 ? 'text-amber-400' : 'text-red-400'
                             )}>
                                 {complianceSummary.overall_pct}%
                             </p>
@@ -261,7 +261,7 @@ export default function ExecutiveDashboard({
                     <Card>
                         <CardContent className="p-4">
                             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Open Risks</p>
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white">{riskSummary.total_open}</p>
+                            <p className="text-3xl font-bold text-foreground">{riskSummary.total_open}</p>
                             <p className="text-xs text-gray-400 mt-1">
                                 Avg score: <span className="font-semibold">{riskSummary.avg_score}</span>/25
                             </p>
@@ -284,14 +284,14 @@ export default function ExecutiveDashboard({
                     <Card>
                         <CardContent className="p-4">
                             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Evidence</p>
-                            <p className="text-3xl font-bold text-gray-900 dark:text-white">{evidenceSummary.total}</p>
+                            <p className="text-3xl font-bold text-foreground">{evidenceSummary.total}</p>
                             <p className="text-xs text-gray-400 mt-1">
-                                <span className="text-green-600 font-semibold">{evidenceSummary.approved}</span> approved
+                                <span className="text-emerald-400 font-semibold">{evidenceSummary.approved}</span> approved
                                 {' · '}
-                                <span className="text-amber-600 font-semibold">{evidenceSummary.pending}</span> pending
+                                <span className="text-amber-400 font-semibold">{evidenceSummary.pending}</span> pending
                             </p>
                             {evidenceSummary.expiring_soon > 0 && (
-                                <p className="text-xs text-orange-600 mt-1 font-medium">
+                                <p className="text-xs text-orange-400 mt-1 font-medium">
                                     ⚠ {evidenceSummary.expiring_soon} expiring in 14 days
                                 </p>
                             )}
@@ -314,8 +314,8 @@ export default function ExecutiveDashboard({
                                         )}
                                         <span className={cn(
                                             'text-2xl font-bold',
-                                            complianceTrend > 0 ? 'text-green-600' :
-                                            complianceTrend < 0 ? 'text-red-600' : 'text-gray-500'
+                                            complianceTrend > 0 ? 'text-emerald-400' :
+                                            complianceTrend < 0 ? 'text-red-400' : 'text-gray-500'
                                         )}>
                                             {complianceTrend > 0 ? '+' : ''}{complianceTrend.toFixed(1)}%
                                         </span>
@@ -323,7 +323,7 @@ export default function ExecutiveDashboard({
                                     <p className="text-xs text-gray-400 mt-1">vs 6 months ago</p>
                                 </>
                             ) : (
-                                <p className="text-sm text-gray-400 mt-2">Insufficient data</p>
+                                <p className="text-sm text-muted-foreground/60 mt-2">Insufficient data</p>
                             )}
                         </CardContent>
                     </Card>
@@ -342,7 +342,7 @@ export default function ExecutiveDashboard({
                         </CardHeader>
                         <CardContent className="p-0">
                             {riskSummary.top_risks.length === 0 ? (
-                                <p className="px-4 py-6 text-sm text-gray-400 text-center">No risks recorded.</p>
+                                <p className="px-4 py-6 text-sm text-muted-foreground/60 text-center">No risks recorded.</p>
                             ) : (
                                 <div className="divide-y divide-gray-100 dark:divide-gray-800">
                                     {riskSummary.top_risks.map((risk, i) => {
@@ -353,7 +353,7 @@ export default function ExecutiveDashboard({
                                                     {i + 1}
                                                 </span>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                                    <p className="text-sm font-medium text-foreground truncate">
                                                         {risk.title}
                                                     </p>
                                                     <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
@@ -373,8 +373,8 @@ export default function ExecutiveDashboard({
                                                 <span className={cn(
                                                     'text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 capitalize',
                                                     risk.status === 'closed'      ? 'bg-gray-100 text-gray-500' :
-                                                    risk.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-amber-100 text-amber-700'
+                                                    risk.status === 'in_progress' ? 'bg-blue-950 text-blue-400' :
+                                                    'bg-amber-950 text-amber-400'
                                                 )}>
                                                     {risk.status.replace('_', ' ')}
                                                 </span>
@@ -396,27 +396,27 @@ export default function ExecutiveDashboard({
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {frameworkBreakdown.length === 0 ? (
-                                <p className="text-sm text-gray-400 text-center py-4">No framework data.</p>
+                                <p className="text-sm text-muted-foreground/60 text-center py-4">No framework data.</p>
                             ) : frameworkBreakdown.map((fw) => (
                                 <div key={fw.name}>
                                     <div className="flex items-center justify-between mb-1">
                                         <div>
-                                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                                            <span className="text-sm font-semibold text-foreground">
                                                 {fw.name}
                                             </span>
                                             <span className="text-xs text-gray-400 ml-2">{fw.total_controls} controls</span>
                                         </div>
                                         <span className={cn(
                                             'text-sm font-bold',
-                                            fw.compliance_pct >= 80 ? 'text-green-600' :
-                                            fw.compliance_pct >= 60 ? 'text-amber-600' : 'text-red-600'
+                                            fw.compliance_pct >= 80 ? 'text-emerald-400' :
+                                            fw.compliance_pct >= 60 ? 'text-amber-400' : 'text-red-400'
                                         )}>
                                             {fw.compliance_pct}%
                                         </span>
                                     </div>
                                     <ComplianceBar pct={fw.compliance_pct} />
                                     <div className="flex gap-3 mt-1 text-[11px] text-gray-400">
-                                        <span className="text-green-600">{fw.compliant} compliant</span>
+                                        <span className="text-emerald-400">{fw.compliant} compliant</span>
                                         <span className="text-amber-500">{fw.partial} partial</span>
                                         <span className="text-red-500">{fw.non_compliant} non-compliant</span>
                                     </div>
@@ -440,12 +440,12 @@ export default function ExecutiveDashboard({
                         <CardContent>
                             <div className="grid grid-cols-2 gap-3">
                                 {[
-                                    { label: 'Approved',       value: evidenceSummary.approved,      color: 'text-green-600',  dot: 'bg-green-500' },
-                                    { label: 'Pending Review', value: evidenceSummary.pending,        color: 'text-amber-600',  dot: 'bg-amber-400' },
-                                    { label: 'Rejected',       value: evidenceSummary.rejected,       color: 'text-red-600',    dot: 'bg-red-500' },
-                                    { label: 'Expiring ≤14d',  value: evidenceSummary.expiring_soon,  color: 'text-orange-600', dot: 'bg-orange-400' },
+                                    { label: 'Approved',       value: evidenceSummary.approved,      color: 'text-emerald-400',  dot: 'bg-green-500' },
+                                    { label: 'Pending Review', value: evidenceSummary.pending,        color: 'text-amber-400',  dot: 'bg-amber-400' },
+                                    { label: 'Rejected',       value: evidenceSummary.rejected,       color: 'text-red-400',    dot: 'bg-red-500' },
+                                    { label: 'Expiring ≤14d',  value: evidenceSummary.expiring_soon,  color: 'text-orange-400', dot: 'bg-orange-400' },
                                     { label: 'Expired',        value: evidenceSummary.expired,        color: 'text-gray-500',   dot: 'bg-gray-400' },
-                                    { label: 'Total Files',    value: evidenceSummary.total,           color: 'text-blue-600',   dot: 'bg-blue-500' },
+                                    { label: 'Total Files',    value: evidenceSummary.total,           color: 'text-blue-400',   dot: 'bg-blue-500' },
                                 ].map(({ label, value, color, dot }) => (
                                     <div key={label} className="flex items-center gap-2">
                                         <span className={cn('w-2 h-2 rounded-full shrink-0', dot)} />
@@ -471,11 +471,11 @@ export default function ExecutiveDashboard({
                             {/* Stats row */}
                             <div className="grid grid-cols-3 gap-2 text-center">
                                 {[
-                                    { label: 'Total',       value: assessmentSummary.total,       color: 'text-gray-900 dark:text-white' },
-                                    { label: 'Completed',   value: assessmentSummary.completed,   color: 'text-green-600' },
-                                    { label: 'Overdue',     value: assessmentSummary.overdue,     color: assessmentSummary.overdue > 0 ? 'text-red-600' : 'text-gray-400' },
+                                    { label: 'Total',       value: assessmentSummary.total,       color: 'text-foreground' },
+                                    { label: 'Completed',   value: assessmentSummary.completed,   color: 'text-emerald-400' },
+                                    { label: 'Overdue',     value: assessmentSummary.overdue,     color: assessmentSummary.overdue > 0 ? 'text-red-400' : 'text-gray-400' },
                                 ].map(({ label, value, color }) => (
-                                    <div key={label} className="rounded-lg bg-gray-50 dark:bg-gray-800/50 p-3">
+                                    <div key={label} className="rounded-lg bg-card dark:bg-gray-800/50 p-3">
                                         <p className={cn('text-2xl font-bold', color)}>{value}</p>
                                         <p className="text-[11px] text-gray-400">{label}</p>
                                     </div>
@@ -490,7 +490,7 @@ export default function ExecutiveDashboard({
                                             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">
                                                 Latest Assessment
                                             </p>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                            <p className="text-sm font-medium text-foreground truncate">
                                                 {assessmentSummary.latest_title}
                                             </p>
                                             <p className="text-xs text-gray-400 mt-0.5">
@@ -506,8 +506,8 @@ export default function ExecutiveDashboard({
                                             <div className="text-right shrink-0">
                                                 <p className={cn(
                                                     'text-xl font-bold',
-                                                    (assessmentSummary.latest_score ?? 0) >= 80 ? 'text-green-600' :
-                                                    (assessmentSummary.latest_score ?? 0) >= 60 ? 'text-amber-600' : 'text-red-600'
+                                                    (assessmentSummary.latest_score ?? 0) >= 80 ? 'text-emerald-400' :
+                                                    (assessmentSummary.latest_score ?? 0) >= 60 ? 'text-amber-400' : 'text-red-400'
                                                 )}>
                                                     {assessmentSummary.latest_score}%
                                                 </p>
@@ -540,7 +540,7 @@ export default function ExecutiveDashboard({
                         </CardHeader>
                         <CardContent>
                             {trend.length < 2 ? (
-                                <p className="text-sm text-gray-400 text-center py-4">
+                                <p className="text-sm text-muted-foreground/60 text-center py-4">
                                     Not enough snapshots yet. Trend data appears after 2 scheduler runs.
                                 </p>
                             ) : (
@@ -598,7 +598,7 @@ export default function ExecutiveDashboard({
                                 { label: 'Open Risks',       value: healthScore.components.open_risks,       max: 10, color: 'bg-orange-500' },
                             ] as const).map(({ label, value, max, color }) => (
                                 <div key={label} className="text-center">
-                                    <div className="text-lg font-bold text-gray-900 dark:text-white">
+                                    <div className="text-lg font-bold text-foreground">
                                         {value}<span className="text-xs text-gray-400 font-normal">/{max}</span>
                                     </div>
                                     <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden my-1.5">

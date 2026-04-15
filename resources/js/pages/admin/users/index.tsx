@@ -1,11 +1,13 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
 import { Plus, Search, Users, Shield, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -28,9 +30,9 @@ interface Props {
 }
 
 const roleColors: Record<string, string> = {
-    admin:   'bg-red-50 text-red-600 border-red-200',
-    auditor: 'bg-blue-50 text-blue-600 border-blue-200',
-    user:    'bg-gray-100 text-gray-600 border-gray-200',
+    admin:   'bg-red-950 text-red-400 border-red-200',
+    auditor: 'bg-blue-950 text-blue-400 border-blue-200',
+    user:    'bg-muted text-foreground/75 border-border',
 };
 
 export default function UsersIndex({ users, stats, filters }: Props) {
@@ -59,8 +61,8 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Users & Roles</h1>
-                        <p className="text-sm text-gray-500 mt-1">Manage user accounts and role-based access control</p>
+                        <h1 className="text-2xl font-bold text-foreground">Users & Roles</h1>
+                        <p className="text-sm text-muted-foreground">Manage user accounts and role-based access control</p>
                     </div>
                     <Link href={route('admin.users.create')}>
                         <Button className="gap-2"><Plus className="w-4 h-4" /> Add User</Button>
@@ -123,31 +125,31 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                     <CardContent className="p-0 mt-4">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
+                                <thead className="bg-muted/30 border-y border-border">
                                     <tr>
                                         {['Name', 'Email', 'Role', 'Joined', 'Actions'].map(h => (
-                                            <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                                            <th key={h} className="px-4 py-3 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                <tbody className="divide-y divide-border">
                                     {users.data.length === 0 ? (
                                         <tr>
                                             <td colSpan={5} className="px-4 py-12 text-center text-gray-400">No users found.</td>
                                         </tr>
                                     ) : users.data.map(user => (
-                                        <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                        <tr key={user.id} className="hover:bg-accent/30 transition-colors">
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
-                                                        <span className="text-xs font-semibold text-blue-600 dark:text-blue-300">
+                                                    <div className="w-8 h-8 rounded-full bg-blue-950 flex items-center justify-center shrink-0">
+                                                        <span className="text-xs font-semibold text-blue-400 dark:text-blue-300">
                                                             {user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                                                         </span>
                                                     </div>
-                                                    <span className="font-medium text-gray-900 dark:text-white">{user.name}</span>
+                                                    <span className="font-medium text-foreground">{user.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{user.email}</td>
+                                            <td className="px-4 py-3 text-foreground/80">{user.email}</td>
                                             <td className="px-4 py-3">
                                                 <Badge variant="outline" className={`capitalize ${roleColors[user.role]}`}>
                                                     {user.role}

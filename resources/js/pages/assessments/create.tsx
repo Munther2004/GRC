@@ -48,7 +48,7 @@ export default function AssessmentCreate({ frameworks }: Props) {
                         <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">New Assessment</h1>
+                        <h1 className="text-2xl font-bold text-foreground">New Assessment</h1>
                         <p className="text-sm text-gray-500">Create a compliance self-assessment</p>
                     </div>
                 </div>
@@ -75,8 +75,8 @@ export default function AssessmentCreate({ frameworks }: Props) {
                                         }`}
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                                                data.framework_id === String(f.id) ? 'bg-blue-500' : 'bg-gray-100 dark:bg-gray-800'
+                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+                                                data.framework_id === String(f.id) ? 'bg-blue-500' : 'bg-muted/50'
                                             }`}>
                                                 <Shield className={`w-5 h-5 ${data.framework_id === String(f.id) ? 'text-white' : 'text-gray-500'}`} />
                                             </div>

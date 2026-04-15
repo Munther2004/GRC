@@ -1,11 +1,13 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
 import { Search, Pencil, Trash2, Settings } from 'lucide-react';
 import { useState } from 'react';
 
@@ -58,8 +60,8 @@ export default function ControlsIndex({ controls, frameworks, categories, filter
 
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Controls Library</h1>
-                    <p className="text-sm text-gray-500 mt-1">All {stats.total} controls across all frameworks</p>
+                    <h1 className="text-2xl font-bold text-foreground">Controls Library</h1>
+                    <p className="text-sm text-muted-foreground">All {stats.total} controls across all frameworks</p>
                 </div>
 
                 {/* Framework Stats */}
@@ -67,7 +69,7 @@ export default function ControlsIndex({ controls, frameworks, categories, filter
                     {stats.by_framework.map(f => (
                         <Card key={f.id}>
                             <CardContent className="p-4 flex items-center gap-3">
-                                <Settings className="w-8 h-8 text-blue-500" />
+                                <Settings className="w-5 h-5 text-blue-400" />
                                 <div>
                                     <p className="text-2xl font-bold">{f.controls_count}</p>
                                     <p className="text-xs text-gray-500">{f.short_name}</p>
@@ -122,36 +124,36 @@ export default function ControlsIndex({ controls, frameworks, categories, filter
                     <CardContent className="p-0 mt-4">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700">
+                                <thead className="bg-muted/30 border-y border-border">
                                     <tr>
                                         {['Control ID', 'Title', 'Framework', 'Category', 'Status', 'Actions'].map(h => (
-                                            <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{h}</th>
+                                            <th key={h} className="px-4 py-3 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                <tbody className="divide-y divide-border">
                                     {controls.data.length === 0 ? (
                                         <tr>
                                             <td colSpan={6} className="px-4 py-12 text-center text-gray-400">No controls found.</td>
                                         </tr>
                                     ) : controls.data.map(control => (
-                                        <tr key={control.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                        <tr key={control.id} className="hover:bg-accent/30 transition-colors">
                                             <td className="px-4 py-3">
-                                                <span className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                                                <span className="font-mono text-xs bg-muted/50 px-2 py-1 rounded">
                                                     {control.control_id}
                                                 </span>
                                             </td>
                                             <td className="px-4 py-3">
-                                                <p className="font-medium text-gray-900 dark:text-white max-w-[280px] truncate">{control.title}</p>
+                                                <p className="font-medium text-foreground max-w-[280px] truncate">{control.title}</p>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <Badge variant="outline" className="text-xs">{control.framework.short_name}</Badge>
                                             </td>
-                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-300 text-xs">{control.category}</td>
+                                            <td className="px-4 py-3 text-foreground/80 text-xs">{control.category}</td>
                                             <td className="px-4 py-3">
                                                 <Badge variant="outline" className={control.is_active
-                                                    ? 'bg-green-50 text-green-600 border-green-200'
-                                                    : 'bg-gray-100 text-gray-500 border-gray-200'
+                                                    ? 'bg-green-50 text-emerald-400 border-green-200'
+                                                    : 'bg-muted text-muted-foreground border-border'
                                                 }>
                                                     {control.is_active ? 'Active' : 'Inactive'}
                                                 </Badge>

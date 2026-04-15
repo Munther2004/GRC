@@ -178,7 +178,7 @@ function ComplianceBar({
     return (
         <div
             className={cn(
-                'h-2 overflow-hidden rounded-full bg-gray-200',
+                'h-2 overflow-hidden rounded-full bg-secondary',
                 className,
             )}
         >
@@ -211,28 +211,28 @@ export default function ExecutiveDashboard({
             : 0;
 
     return (
-        <div className="min-h-screen bg-card dark:bg-gray-950 print:bg-white">
+        <div className="min-h-screen bg-card print:bg-card">
             <Head title="Executive Dashboard" />
 
             {/* ── Action bar (hidden when printing) ── */}
-            <div className="sticky top-0 z-20 border-b border-gray-200 bg-background shadow-sm dark:border-gray-800 print:hidden">
+            <div className="sticky top-0 z-20 border-b border-border bg-background shadow-sm dark:border-border print:hidden">
                 <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
                     <div className="flex items-center gap-3">
                         <Link href="/dashboard">
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="gap-1 text-gray-500 hover:text-gray-900"
+                                className="gap-1 text-muted-foreground hover:text-foreground"
                             >
                                 <ArrowLeft className="h-4 w-4" /> Dashboard
                             </Button>
                         </Link>
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                        <span className="text-sm font-semibold text-muted-foreground">
                             Executive Dashboard
                         </span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="mr-2 text-xs text-gray-400">
+                        <span className="mr-2 text-xs text-muted-foreground">
                             {generatedAt}
                         </span>
                         <Button
@@ -267,19 +267,19 @@ export default function ExecutiveDashboard({
                     <div>
                         <div className="mb-1 flex items-center gap-2">
                             <Shield className="h-4 w-4 text-blue-400" />
-                            <span className="text-xs font-semibold tracking-widest text-gray-400 uppercase">
+                            <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
                                 GRC Management System
                             </span>
                         </div>
                         <h1 className="text-3xl font-bold text-foreground">
                             Executive Dashboard
                         </h1>
-                        <p className="mt-0.5 text-sm text-gray-500">
+                        <p className="mt-0.5 text-sm text-muted-foreground">
                             Compliance &amp; Risk Posture Overview &mdash;
                             Generated {generatedAt}
                         </p>
                     </div>
-                    <div className="hidden text-right text-xs text-gray-400 print:block">
+                    <div className="hidden text-right text-xs text-muted-foreground print:block">
                         <p className="font-semibold">Confidential</p>
                         <p>Internal Use Only</p>
                     </div>
@@ -317,13 +317,13 @@ export default function ExecutiveDashboard({
                                 </span>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-2xl font-bold text-foreground">
                                     {healthScore.health_score}
                                 </p>
-                                <p className="text-xs leading-tight text-gray-500">
+                                <p className="text-xs leading-tight text-muted-foreground">
                                     Health Score / 100
                                 </p>
-                                <p className="mt-0.5 text-xs text-gray-400">
+                                <p className="mt-0.5 text-xs text-muted-foreground">
                                     Basis:{' '}
                                     {healthScore.raw.compliance_basis ===
                                     'evidence'
@@ -337,7 +337,7 @@ export default function ExecutiveDashboard({
                     {/* Compliance % */}
                     <Card>
                         <CardContent className="p-4">
-                            <p className="mb-1 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Compliance
                             </p>
                             <p
@@ -356,7 +356,7 @@ export default function ExecutiveDashboard({
                                 pct={complianceSummary.overall_pct}
                                 className="mt-2"
                             />
-                            <p className="mt-1 text-xs text-gray-400">
+                            <p className="mt-1 text-xs text-muted-foreground">
                                 {complianceSummary.compliant} compliant of{' '}
                                 {complianceSummary.total_controls}
                             </p>
@@ -366,13 +366,13 @@ export default function ExecutiveDashboard({
                     {/* Open Risks */}
                     <Card>
                         <CardContent className="p-4">
-                            <p className="mb-1 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Open Risks
                             </p>
                             <p className="text-3xl font-bold text-foreground">
                                 {riskSummary.total_open}
                             </p>
-                            <p className="mt-1 text-xs text-gray-400">
+                            <p className="mt-1 text-xs text-muted-foreground">
                                 Avg score:{' '}
                                 <span className="font-semibold">
                                     {riskSummary.avg_score}
@@ -403,13 +403,13 @@ export default function ExecutiveDashboard({
                     {/* Evidence Approval */}
                     <Card>
                         <CardContent className="p-4">
-                            <p className="mb-1 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Evidence
                             </p>
                             <p className="text-3xl font-bold text-foreground">
                                 {evidenceSummary.total}
                             </p>
-                            <p className="mt-1 text-xs text-gray-400">
+                            <p className="mt-1 text-xs text-muted-foreground">
                                 <span className="font-semibold text-emerald-400">
                                     {evidenceSummary.approved}
                                 </span>{' '}
@@ -432,7 +432,7 @@ export default function ExecutiveDashboard({
                     {/* Trend indicator */}
                     <Card>
                         <CardContent className="p-4">
-                            <p className="mb-1 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 6-Month Trend
                             </p>
                             {trend.length >= 2 ? (
@@ -443,7 +443,7 @@ export default function ExecutiveDashboard({
                                         ) : complianceTrend < 0 ? (
                                             <TrendingDown className="h-6 w-6 text-red-500" />
                                         ) : (
-                                            <Minus className="h-6 w-6 text-gray-400" />
+                                            <Minus className="h-6 w-6 text-muted-foreground" />
                                         )}
                                         <span
                                             className={cn(
@@ -452,14 +452,14 @@ export default function ExecutiveDashboard({
                                                     ? 'text-emerald-400'
                                                     : complianceTrend < 0
                                                       ? 'text-red-400'
-                                                      : 'text-gray-500',
+                                                      : 'text-muted-foreground',
                                             )}
                                         >
                                             {complianceTrend > 0 ? '+' : ''}
                                             {complianceTrend.toFixed(1)}%
                                         </span>
                                     </div>
-                                    <p className="mt-1 text-xs text-gray-400">
+                                    <p className="mt-1 text-xs text-muted-foreground">
                                         vs 6 months ago
                                     </p>
                                 </>
@@ -498,7 +498,7 @@ export default function ExecutiveDashboard({
                                                 key={i}
                                                 className="flex items-start gap-3 px-4 py-3"
                                             >
-                                                <span className="mt-0.5 w-4 shrink-0 text-xs font-bold text-gray-400">
+                                                <span className="mt-0.5 w-4 shrink-0 text-xs font-bold text-muted-foreground">
                                                     {i + 1}
                                                 </span>
                                                 <div className="min-w-0 flex-1">
@@ -515,13 +515,13 @@ export default function ExecutiveDashboard({
                                                         >
                                                             {risk.level}
                                                         </Badge>
-                                                        <span className="text-xs text-gray-400">
+                                                        <span className="text-xs text-muted-foreground">
                                                             {risk.likelihood}×
                                                             {risk.impact} ={' '}
                                                             {risk.score}
                                                         </span>
                                                         {risk.has_treatment && (
-                                                            <span className="text-[10px] font-medium text-blue-500">
+                                                            <span className="text-[10px] font-medium text-primary">
                                                                 Treatment
                                                                 planned
                                                             </span>
@@ -532,7 +532,7 @@ export default function ExecutiveDashboard({
                                                     className={cn(
                                                         'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium capitalize',
                                                         risk.status === 'closed'
-                                                            ? 'bg-gray-100 text-gray-500'
+                                                            ? 'bg-muted text-muted-foreground'
                                                             : risk.status ===
                                                                 'in_progress'
                                                               ? 'bg-blue-950 text-blue-400'
@@ -556,7 +556,7 @@ export default function ExecutiveDashboard({
                     <Card>
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center gap-2 text-sm">
-                                <BarChart3 className="h-4 w-4 text-blue-500" />
+                                <BarChart3 className="h-4 w-4 text-primary" />
                                 Framework Compliance
                             </CardTitle>
                         </CardHeader>
@@ -573,7 +573,7 @@ export default function ExecutiveDashboard({
                                                 <span className="text-sm font-semibold text-foreground">
                                                     {fw.name}
                                                 </span>
-                                                <span className="ml-2 text-xs text-gray-400">
+                                                <span className="ml-2 text-xs text-muted-foreground">
                                                     {fw.total_controls} controls
                                                 </span>
                                             </div>
@@ -594,7 +594,7 @@ export default function ExecutiveDashboard({
                                         <ComplianceBar
                                             pct={fw.compliance_pct}
                                         />
-                                        <div className="mt-1 flex gap-3 text-[11px] text-gray-400">
+                                        <div className="mt-1 flex gap-3 text-[11px] text-muted-foreground">
                                             <span className="text-emerald-400">
                                                 {fw.compliant} compliant
                                             </span>
@@ -652,14 +652,14 @@ export default function ExecutiveDashboard({
                                     {
                                         label: 'Expired',
                                         value: evidenceSummary.expired,
-                                        color: 'text-gray-500',
+                                        color: 'text-muted-foreground',
                                         dot: 'bg-gray-400',
                                     },
                                     {
                                         label: 'Total Files',
                                         value: evidenceSummary.total,
                                         color: 'text-blue-400',
-                                        dot: 'bg-blue-500',
+                                        dot: 'bg-primary',
                                     },
                                 ].map(({ label, value, color, dot }) => (
                                     <div
@@ -681,7 +681,7 @@ export default function ExecutiveDashboard({
                                             >
                                                 {value}
                                             </p>
-                                            <p className="mt-0.5 text-[11px] text-gray-400">
+                                            <p className="mt-0.5 text-[11px] text-muted-foreground">
                                                 {label}
                                             </p>
                                         </div>
@@ -719,12 +719,12 @@ export default function ExecutiveDashboard({
                                         color:
                                             assessmentSummary.overdue > 0
                                                 ? 'text-red-400'
-                                                : 'text-gray-400',
+                                                : 'text-muted-foreground',
                                     },
                                 ].map(({ label, value, color }) => (
                                     <div
                                         key={label}
-                                        className="rounded-lg bg-card p-3 dark:bg-gray-800/50"
+                                        className="rounded-lg bg-card p-3 dark:bg-secondary/50"
                                     >
                                         <p
                                             className={cn(
@@ -734,7 +734,7 @@ export default function ExecutiveDashboard({
                                         >
                                             {value}
                                         </p>
-                                        <p className="text-[11px] text-gray-400">
+                                        <p className="text-[11px] text-muted-foreground">
                                             {label}
                                         </p>
                                     </div>
@@ -743,16 +743,16 @@ export default function ExecutiveDashboard({
 
                             {/* Latest assessment */}
                             {assessmentSummary.latest_title && (
-                                <div className="rounded-lg border border-gray-200 p-3 dark:border-gray-700">
+                                <div className="rounded-lg border border-border p-3 dark:border-border">
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="min-w-0">
-                                            <p className="mb-0.5 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                            <p className="mb-0.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                                 Latest Assessment
                                             </p>
                                             <p className="truncate text-sm font-medium text-foreground">
                                                 {assessmentSummary.latest_title}
                                             </p>
-                                            <p className="mt-0.5 text-xs text-gray-400">
+                                            <p className="mt-0.5 text-xs text-muted-foreground">
                                                 {assessmentSummary.latest_framework && (
                                                     <Badge
                                                         variant="outline"
@@ -786,7 +786,7 @@ export default function ExecutiveDashboard({
                                                     }
                                                     %
                                                 </p>
-                                                <p className="text-[11px] text-gray-400">
+                                                <p className="text-[11px] text-muted-foreground">
                                                     compliance
                                                 </p>
                                             </div>
@@ -812,9 +812,9 @@ export default function ExecutiveDashboard({
                     <Card>
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center gap-2 text-sm">
-                                <TrendingUp className="h-4 w-4 text-blue-500" />
+                                <TrendingUp className="h-4 w-4 text-primary" />
                                 Compliance Trend
-                                <span className="ml-1 text-xs font-normal text-gray-400">
+                                <span className="ml-1 text-xs font-normal text-muted-foreground">
                                     Last {trend.length} snapshots
                                 </span>
                             </CardTitle>
@@ -901,7 +901,7 @@ export default function ExecutiveDashboard({
                                         value: healthScore.components
                                             .compliance,
                                         max: 40,
-                                        color: 'bg-blue-500',
+                                        color: 'bg-primary',
                                     },
                                     {
                                         label: 'Critical Risks',
@@ -936,11 +936,11 @@ export default function ExecutiveDashboard({
                                 <div key={label} className="text-center">
                                     <div className="text-lg font-bold text-foreground">
                                         {value}
-                                        <span className="text-xs font-normal text-gray-400">
+                                        <span className="text-xs font-normal text-muted-foreground">
                                             /{max}
                                         </span>
                                     </div>
-                                    <div className="my-1.5 h-1.5 overflow-hidden rounded-full bg-gray-200">
+                                    <div className="my-1.5 h-1.5 overflow-hidden rounded-full bg-secondary">
                                         <div
                                             className={cn(
                                                 'h-full rounded-full',
@@ -951,7 +951,7 @@ export default function ExecutiveDashboard({
                                             }}
                                         />
                                     </div>
-                                    <p className="text-[11px] text-gray-500">
+                                    <p className="text-[11px] text-muted-foreground">
                                         {label}
                                     </p>
                                 </div>
@@ -961,7 +961,7 @@ export default function ExecutiveDashboard({
                 </Card>
 
                 {/* Footer */}
-                <div className="border-t border-gray-200 pt-2 pb-4 text-center text-xs text-gray-400 dark:border-gray-800">
+                <div className="border-t border-border pt-2 pb-4 text-center text-xs text-muted-foreground dark:border-border">
                     GRC Management System &mdash; Executive Dashboard &mdash;{' '}
                     {generatedAt}
                     &nbsp;&mdash;&nbsp;Confidential &mdash; Internal Use Only

@@ -105,7 +105,7 @@ const priorityBadge: Record<string, string> = {
 };
 
 const statusBadge: Record<string, string> = {
-    open: 'bg-gray-100 text-gray-600 border-gray-200',
+    open: 'bg-muted text-muted-foreground border-border',
     in_progress: 'bg-blue-100 text-blue-700 border-blue-200',
     completed: 'bg-green-100 text-green-700 border-green-200',
     cancelled: 'bg-red-100 text-red-600 border-red-200',
@@ -193,7 +193,7 @@ function TaskForm({
                         {showControlList &&
                             !selectedControl &&
                             filteredControls.length > 0 && (
-                                <div className="absolute z-50 mt-1 max-h-48 w-full overflow-y-auto rounded-md border bg-white shadow-lg dark:bg-gray-900">
+                                <div className="absolute z-50 mt-1 max-h-48 w-full overflow-y-auto rounded-md border bg-card shadow-lg dark:bg-background">
                                     {filteredControls.slice(0, 12).map((c) => (
                                         <button
                                             key={c.id}
@@ -534,11 +534,11 @@ export default function RemediationTasksIndex({
                 {/* ── Header ── */}
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground">
                             <ClipboardList className="h-6 w-6 text-indigo-600" />
                             Remediation Tasks
                         </h1>
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-sm text-muted-foreground">
                             Track and manage compliance remediation work linked
                             to controls
                         </p>
@@ -565,20 +565,20 @@ export default function RemediationTasksIndex({
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                     <Card>
                         <CardContent className="p-4">
-                            <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                            <p className="text-2xl font-bold text-foreground">
                                 {stats.total}
                             </p>
-                            <p className="mt-0.5 text-xs text-gray-500">
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                                 Total Tasks
                             </p>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardContent className="p-4">
-                            <p className="text-2xl font-bold text-blue-600">
+                            <p className="text-2xl font-bold text-primary">
                                 {stats.open_in_progress}
                             </p>
-                            <p className="mt-0.5 text-xs text-gray-500">
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                                 Open / In Progress
                             </p>
                         </CardContent>
@@ -590,7 +590,7 @@ export default function RemediationTasksIndex({
                             >
                                 {stats.overdue}
                             </p>
-                            <p className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
+                            <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                                 {stats.overdue > 0 && (
                                     <AlertTriangle className="h-3 w-3 text-red-500" />
                                 )}
@@ -603,7 +603,7 @@ export default function RemediationTasksIndex({
                             <p className="text-2xl font-bold text-green-600">
                                 {stats.completed_this_month}
                             </p>
-                            <p className="mt-0.5 text-xs text-gray-500">
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                                 Completed This Month
                             </p>
                         </CardContent>
@@ -613,7 +613,7 @@ export default function RemediationTasksIndex({
                 {/* ── Filters ── */}
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="relative min-w-[220px] flex-1">
-                        <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400" />
+                        <Search className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder="Search title or control ID..."
                             value={search}
@@ -673,7 +673,7 @@ export default function RemediationTasksIndex({
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="gap-1 text-gray-500"
+                            className="gap-1 text-muted-foreground"
                             onClick={() => {
                                 setSearch('');
                                 setStatus('all');
@@ -690,7 +690,7 @@ export default function RemediationTasksIndex({
                 <Card>
                     <CardContent className="p-0">
                         {tasks.data.length === 0 ? (
-                            <div className="py-16 text-center text-gray-400">
+                            <div className="py-16 text-center text-muted-foreground">
                                 <ClipboardList className="mx-auto mb-3 h-12 w-12 opacity-30" />
                                 <p className="text-lg font-medium">
                                     No remediation tasks yet
@@ -703,7 +703,7 @@ export default function RemediationTasksIndex({
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
-                                    <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+                                    <thead className="border-b border-border bg-muted/50 dark:border-border dark:bg-secondary">
                                         <tr>
                                             {[
                                                 'Priority',
@@ -717,7 +717,7 @@ export default function RemediationTasksIndex({
                                             ].map((h) => (
                                                 <th
                                                     key={h}
-                                                    className="px-4 py-3 text-left text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase"
+                                                    className="px-4 py-3 text-left text-xs font-semibold tracking-wider whitespace-nowrap text-muted-foreground uppercase"
                                                 >
                                                     {h}
                                                 </th>
@@ -728,7 +728,7 @@ export default function RemediationTasksIndex({
                                         {tasks.data.map((task) => (
                                             <tr
                                                 key={task.id}
-                                                className={`hover:bg-gray-50 dark:hover:bg-gray-800/50 ${task.is_overdue ? 'bg-red-50/40 dark:bg-red-950/20' : ''}`}
+                                                className={`hover:bg-muted/50 dark:hover:bg-secondary/50 ${task.is_overdue ? 'bg-red-50/40 dark:bg-red-950/20' : ''}`}
                                             >
                                                 {/* Priority */}
                                                 <td className="px-4 py-3">
@@ -741,7 +741,7 @@ export default function RemediationTasksIndex({
 
                                                 {/* Title */}
                                                 <td className="max-w-[220px] px-4 py-3">
-                                                    <p className="truncate font-medium text-gray-900 dark:text-white">
+                                                    <p className="truncate font-medium text-foreground">
                                                         {task.title}
                                                     </p>
                                                     {task.auto_closed && (
@@ -754,13 +754,13 @@ export default function RemediationTasksIndex({
 
                                                 {/* Control */}
                                                 <td className="max-w-[200px] px-4 py-3">
-                                                    <span className="font-mono text-xs font-semibold text-gray-700 dark:text-gray-300">
+                                                    <span className="font-mono text-xs font-semibold text-muted-foreground">
                                                         {
                                                             task.control
                                                                 .control_id
                                                         }
                                                     </span>
-                                                    <p className="mt-0.5 truncate text-xs text-gray-500">
+                                                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
                                                         {task.control.title}
                                                     </p>
                                                 </td>
@@ -776,14 +776,14 @@ export default function RemediationTasksIndex({
                                                 </td>
 
                                                 {/* Assigned To */}
-                                                <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                                                <td className="px-4 py-3 text-muted-foreground dark:text-muted-foreground">
                                                     {task.assigned_to ? (
                                                         <span className="flex items-center gap-1 text-xs">
                                                             <User className="h-3 w-3 shrink-0" />
                                                             {task.assigned_to}
                                                         </span>
                                                     ) : (
-                                                        <span className="text-xs text-gray-400">
+                                                        <span className="text-xs text-muted-foreground">
                                                             —
                                                         </span>
                                                     )}
@@ -793,7 +793,7 @@ export default function RemediationTasksIndex({
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     {task.due_date ? (
                                                         <span
-                                                            className={`flex items-center gap-1 text-xs ${task.is_overdue ? 'font-semibold text-red-600' : 'text-gray-600 dark:text-gray-400'}`}
+                                                            className={`flex items-center gap-1 text-xs ${task.is_overdue ? 'font-semibold text-red-600' : 'text-muted-foreground dark:text-muted-foreground'}`}
                                                         >
                                                             <Calendar className="h-3 w-3 shrink-0" />
                                                             {new Date(
@@ -806,7 +806,7 @@ export default function RemediationTasksIndex({
                                                             )}
                                                         </span>
                                                     ) : (
-                                                        <span className="text-xs text-gray-400">
+                                                        <span className="text-xs text-muted-foreground">
                                                             —
                                                         </span>
                                                     )}
@@ -832,7 +832,7 @@ export default function RemediationTasksIndex({
                                                             <Button
                                                                 size="sm"
                                                                 variant="ghost"
-                                                                className="h-7 w-7 p-0 text-gray-500 hover:text-indigo-600"
+                                                                className="h-7 w-7 p-0 text-muted-foreground hover:text-indigo-600"
                                                                 onClick={() =>
                                                                     openEdit(
                                                                         task,
@@ -852,7 +852,7 @@ export default function RemediationTasksIndex({
                                                                 <Button
                                                                     size="sm"
                                                                     variant="ghost"
-                                                                    className="h-7 w-7 p-0 text-gray-500 hover:text-green-600"
+                                                                    className="h-7 w-7 p-0 text-muted-foreground hover:text-green-600"
                                                                     onClick={() =>
                                                                         markComplete(
                                                                             task,
@@ -867,7 +867,7 @@ export default function RemediationTasksIndex({
                                                             <Button
                                                                 size="sm"
                                                                 variant="ghost"
-                                                                className="h-7 w-7 p-0 text-gray-500 hover:text-red-600"
+                                                                className="h-7 w-7 p-0 text-muted-foreground hover:text-red-600"
                                                                 onClick={() =>
                                                                     setDeleteTask(
                                                                         task,
@@ -898,7 +898,7 @@ export default function RemediationTasksIndex({
                                 disabled={!link.url}
                                 onClick={() => link.url && router.get(link.url)}
                                 dangerouslySetInnerHTML={{ __html: link.label }}
-                                className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${link.active ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'} ${!link.url ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
+                                className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${link.active ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-border hover:bg-muted/50 dark:hover:bg-secondary'} ${!link.url ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
                             />
                         ))}
                     </div>
@@ -955,7 +955,7 @@ export default function RemediationTasksIndex({
                             <Pencil className="h-4 w-4" /> Edit Task
                         </DialogTitle>
                         {editTask && (
-                            <p className="mt-1 text-sm text-gray-500">
+                            <p className="mt-1 text-sm text-muted-foreground">
                                 <span className="font-mono font-semibold">
                                     {editTask.control.control_id}
                                 </span>{' '}
@@ -1004,7 +1004,7 @@ export default function RemediationTasksIndex({
                             <Trash2 className="h-4 w-4" /> Delete Task
                         </DialogTitle>
                     </DialogHeader>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                    <p className="text-sm text-muted-foreground">
                         Delete <strong>"{deleteTask?.title}"</strong>? This
                         cannot be undone.
                     </p>

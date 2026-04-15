@@ -351,22 +351,14 @@ export default function RisksIndex({
                     )}
                     <button
                         onClick={toggleHasPlan}
-                        className={`inline-flex h-8 items-center gap-1.5 rounded-md border px-3 text-xs font-medium transition-colors ${
-                            hasPlan
-                                ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400'
-                                : 'border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground'
-                        }`}
+                        className={`inline-flex h-8 items-center gap-1.5 rounded-md border px-3 text-xs font-medium transition-colors ${ hasPlan ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400' : 'border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground' }`}
                     >
                         Has Plan
                     </button>
                     {appetite && (
                         <button
                             onClick={toggleEscalatedOnly}
-                            className={`inline-flex h-8 items-center gap-1.5 rounded-md border px-3 text-xs font-medium transition-colors ${
-                                escalatedOnly
-                                    ? 'border-red-500/20 bg-red-500/10 text-red-400'
-                                    : 'border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground'
-                            }`}
+                            className={`inline-flex h-8 items-center gap-1.5 rounded-md border px-3 text-xs font-medium transition-colors ${ escalatedOnly ? 'border-red-500/20 bg-red-500/10 text-red-400' : 'border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground' }`}
                         >
                             <Sliders className="h-3 w-3" /> Escalated
                         </button>

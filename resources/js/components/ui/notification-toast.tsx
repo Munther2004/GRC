@@ -40,10 +40,10 @@ const toastConfig: Record<ToastType, { icon: any; bgColor: string; borderColor: 
     },
     info: {
         icon: InfoIcon,
-        bgColor: 'bg-blue-500/10',
+        bgColor: 'bg-primary/10',
         borderColor: 'border-blue-500/30',
         textColor: 'text-blue-300',
-        accentColor: 'bg-blue-500/30',
+        accentColor: 'bg-primary/30',
     },
 }
 
@@ -69,13 +69,7 @@ export function NotificationToast({ toast, onDismiss }: NotificationToastProps) 
 
     return (
         <div
-            className={`
-                fixed bottom-6 right-6 max-w-sm pointer-events-auto
-                animate-in slide-in-from-right-4 duration-300
-                flex items-start gap-3 rounded-lg border ${config.borderColor} ${config.bgColor} 
-                px-4 py-3 backdrop-blur-xl shadow-lg
-                transition-all
-            `}
+            className={`fixed bottom-6 right-6 max-w-sm pointer-events-auto animate-in slide-in-from-right-4 duration-300 flex items-start gap-3 rounded-lg border ${config.borderColor} ${config.bgColor} px-4 py-3 backdrop-blur-xl shadow-lg transition-all`}
         >
             <Icon className={`w-5 h-5 shrink-0 ${config.textColor} mt-0.5`} />
             <div className="flex-1">

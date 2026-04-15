@@ -29,9 +29,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
 
     return (
         <div
-            className={`transition-opacity duration-300 ${
-                isTransitioning ? 'opacity-50' : 'opacity-100'
-            }`}
+            className={`transition-opacity duration-300 ${ isTransitioning ? 'opacity-50' : 'opacity-100' }`}
         >
             <div className="animate-in fade-in duration-500">
                 {children}

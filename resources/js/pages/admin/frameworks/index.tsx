@@ -65,7 +65,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                         {
                             label: 'Total Frameworks',
                             value: total,
-                            color: 'text-blue-500',
+                            color: 'text-primary',
                             icon: Shield,
                         },
                         {
@@ -77,7 +77,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                         {
                             label: 'Inactive',
                             value: total - active,
-                            color: 'text-gray-400',
+                            color: 'text-muted-foreground',
                             icon: ToggleLeft,
                         },
                     ].map(({ label, value, color, icon: Icon }) => (
@@ -88,7 +88,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                     <p className="text-2xl font-bold">
                                         {value}
                                     </p>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-muted-foreground">
                                         {label}
                                     </p>
                                 </div>
@@ -130,7 +130,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                         <tr>
                                             <td
                                                 colSpan={5}
-                                                className="px-4 py-12 text-center text-gray-400"
+                                                className="px-4 py-12 text-center text-muted-foreground"
                                             >
                                                 No frameworks found.
                                             </td>
@@ -156,7 +156,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                                                 {framework.name}
                                                             </p>
                                                             {framework.description && (
-                                                                <p className="max-w-xs truncate text-xs text-gray-400">
+                                                                <p className="max-w-xs truncate text-xs text-muted-foreground">
                                                                     {
                                                                         framework.description
                                                                     }
@@ -165,7 +165,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3 text-gray-500">
+                                                <td className="px-4 py-3 text-muted-foreground">
                                                     {framework.version ?? (
                                                         <span className="text-gray-300">
                                                             —
@@ -174,7 +174,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-1.5 text-foreground/80">
-                                                        <BookOpen className="h-4 w-4 text-gray-400" />
+                                                        <BookOpen className="h-4 w-4 text-muted-foreground" />
                                                         {
                                                             framework.controls_count
                                                         }

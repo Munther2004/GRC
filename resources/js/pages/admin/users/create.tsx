@@ -49,7 +49,7 @@ export default function UserCreate() {
                         <h1 className="text-2xl font-bold text-foreground">
                             Add User
                         </h1>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                             Create a new user account
                         </p>
                     </div>

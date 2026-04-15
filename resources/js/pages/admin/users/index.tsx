@@ -90,7 +90,7 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                         {
                             label: 'Total Users',
                             value: stats.total,
-                            color: 'text-blue-500',
+                            color: 'text-primary',
                             icon: Users,
                         },
                         {
@@ -102,13 +102,13 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                         {
                             label: 'Auditors',
                             value: stats.auditors,
-                            color: 'text-blue-500',
+                            color: 'text-primary',
                             icon: Eye,
                         },
                         {
                             label: 'Users',
                             value: stats.users,
-                            color: 'text-gray-500',
+                            color: 'text-muted-foreground',
                             icon: Users,
                         },
                     ].map(({ label, value, color, icon: Icon }) => (
@@ -119,7 +119,7 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                     <p className="text-2xl font-bold">
                                         {value}
                                     </p>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-muted-foreground">
                                         {label}
                                     </p>
                                 </div>
@@ -133,7 +133,7 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                     <CardContent className="p-4">
                         <div className="flex flex-wrap gap-3">
                             <div className="relative min-w-[200px] flex-1">
-                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder="Search by name or email..."
                                     value={search}
@@ -213,7 +213,7 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                         <tr>
                                             <td
                                                 colSpan={5}
-                                                className="px-4 py-12 text-center text-gray-400"
+                                                className="px-4 py-12 text-center text-muted-foreground"
                                             >
                                                 No users found.
                                             </td>
@@ -258,7 +258,7 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                                         {user.role}
                                                     </Badge>
                                                 </td>
-                                                <td className="px-4 py-3 text-gray-500">
+                                                <td className="px-4 py-3 text-muted-foreground">
                                                     {new Date(
                                                         user.created_at,
                                                     ).toLocaleDateString()}

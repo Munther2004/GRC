@@ -74,7 +74,7 @@ const statusColors: Record<string, string> = {
     compliant: 'bg-emerald-950 text-emerald-400',
     partially_compliant: 'bg-amber-950 text-amber-400',
     non_compliant: 'bg-red-950 text-red-400',
-    not_applicable: 'bg-gray-100 text-gray-500',
+    not_applicable: 'bg-muted text-muted-foreground',
 };
 
 const statusLabel = (s: string | null) => {
@@ -109,7 +109,7 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
                         </span>
                     </div>
                     <div className="mt-1 flex flex-wrap items-center gap-2">
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-muted-foreground">
                             {ctrl.category}
                         </span>
                         <span
@@ -124,7 +124,7 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
                             </span>
                         )}
                         {hasMappings && (
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-muted-foreground">
                                 {ctrl.mappings.length} mapping
                                 {ctrl.mappings.length !== 1 ? 's' : ''}
                             </span>
@@ -132,7 +132,7 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
                     </div>
                 </div>
                 {hasMappings && (
-                    <div className="mt-0.5 shrink-0 text-gray-400">
+                    <div className="mt-0.5 shrink-0 text-muted-foreground">
                         {expanded ? (
                             <ChevronUp className="h-4 w-4" />
                         ) : (
@@ -154,7 +154,7 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
                                 className="flex items-start gap-3 px-3 py-2.5 text-xs"
                             >
                                 <div className="mt-0.5 shrink-0">
-                                    <ArrowRight className="h-3.5 w-3.5 text-gray-400" />
+                                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
                                 </div>
                                 <div className="min-w-0 flex-1 space-y-0.5">
                                     <div className="flex flex-wrap items-center gap-2">
@@ -172,7 +172,7 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
                                         <span className="font-mono text-foreground/85">
                                             {m.control.control_id}
                                         </span>
-                                        <span className="truncate text-gray-500">
+                                        <span className="truncate text-muted-foreground">
                                             {m.control.title}
                                         </span>
                                     </div>
@@ -183,7 +183,7 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
                                             {sl}
                                         </span>
                                         {m.notes && (
-                                            <span className="text-gray-400 italic">
+                                            <span className="text-muted-foreground italic">
                                                 {m.notes}
                                             </span>
                                         )}
@@ -338,14 +338,14 @@ export default function CrosswalkIndex({
                                 <Badge variant="secondary" className="text-sm">
                                     {framework}
                                 </Badge>
-                                <span className="text-sm font-normal text-gray-500">
+                                <span className="text-sm font-normal text-muted-foreground">
                                     {
                                         frameworks.find(
                                             (f) => f.short_name === framework,
                                         )?.name
                                     }
                                 </span>
-                                <span className="ml-auto text-sm font-normal text-gray-400">
+                                <span className="ml-auto text-sm font-normal text-muted-foreground">
                                     {controls.length} controls ·{' '}
                                     {
                                         controls.filter(
@@ -366,7 +366,7 @@ export default function CrosswalkIndex({
                 ))}
 
                 {Object.keys(controlData).length === 0 && (
-                    <div className="py-16 text-center text-gray-400">
+                    <div className="py-16 text-center text-muted-foreground">
                         <GitCompare className="mx-auto mb-3 h-12 w-12 opacity-30" />
                         <p className="text-lg">No controls found</p>
                         <p className="mt-1 text-sm">

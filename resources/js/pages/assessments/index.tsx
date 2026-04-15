@@ -278,14 +278,14 @@ export default function AssessmentsIndex({
                                         <tr>
                                             <td
                                                 colSpan={8}
-                                                className="px-4 py-12 text-center text-gray-400"
+                                                className="px-4 py-12 text-center text-muted-foreground"
                                             >
                                                 No assessments found.{' '}
                                                 <Link
                                                     href={route(
                                                         'assessments.create',
                                                     )}
-                                                    className="text-blue-500 hover:underline"
+                                                    className="text-primary hover:underline"
                                                 >
                                                     Create one.
                                                 </Link>
@@ -301,7 +301,7 @@ export default function AssessmentsIndex({
                                                     <p className="max-w-[220px] truncate font-medium text-foreground">
                                                         {a.title}
                                                     </p>
-                                                    <p className="text-xs text-gray-400">
+                                                    <p className="text-xs text-muted-foreground">
                                                         {a.user?.name}
                                                     </p>
                                                 </td>
@@ -322,14 +322,14 @@ export default function AssessmentsIndex({
                                                 {/* Self-Assessed column */}
                                                 <td className="px-4 py-3">
                                                     {a.status === 'draft' ? (
-                                                        <span className="text-xs text-gray-400">
+                                                        <span className="text-xs text-muted-foreground">
                                                             Not started
                                                         </span>
                                                     ) : (
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
                                                                 <div
-                                                                    className="h-full rounded-full bg-blue-500"
+                                                                    className="h-full rounded-full bg-primary"
                                                                     style={{
                                                                         width: `${a.compliance_percentage}%`,
                                                                     }}
@@ -370,7 +370,7 @@ export default function AssessmentsIndex({
                                                             </span>
                                                         </div>
                                                     ) : (
-                                                        <span className="text-xs text-gray-400">
+                                                        <span className="text-xs text-muted-foreground">
                                                             Pending review
                                                         </span>
                                                     )}
@@ -407,7 +407,7 @@ export default function AssessmentsIndex({
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="icon"
-                                                                        className="h-8 w-8 text-blue-500"
+                                                                        className="h-8 w-8 text-primary"
                                                                         title="Open Questionnaire"
                                                                     >
                                                                         <PlayCircle className="h-4 w-4" />
@@ -498,7 +498,7 @@ export default function AssessmentsIndex({
                                 <p className="text-sm font-medium">
                                     {deleteModal.title}
                                 </p>
-                                <p className="mt-0.5 text-xs text-gray-500">
+                                <p className="mt-0.5 text-xs text-muted-foreground">
                                     {deleteModal.framework.short_name} &middot;{' '}
                                     {deleteModal.items_count} control
                                     {deleteModal.items_count !== 1 ? 's' : ''}{' '}

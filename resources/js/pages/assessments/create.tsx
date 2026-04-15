@@ -66,7 +66,7 @@ export default function AssessmentCreate({ frameworks }: Props) {
                         <h1 className="text-2xl font-bold text-foreground">
                             New Assessment
                         </h1>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                             Create a compliance self-assessment
                         </p>
                     </div>
@@ -96,30 +96,21 @@ export default function AssessmentCreate({ frameworks }: Props) {
                                                 String(f.id),
                                             )
                                         }
-                                        className={`rounded-lg border-2 p-4 text-left transition-all ${
-                                            data.framework_id === String(f.id)
-                                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
-                                                : 'border-gray-200 hover:border-gray-300 dark:border-gray-700'
-                                        }`}
+                                        className={`rounded-lg border-2 p-4 text-left transition-all ${ data.framework_id === String(f.id) ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' : 'border-border hover:border-border dark:border-border' }`}
                                     >
                                         <div className="flex items-center gap-3">
                                             <div
-                                                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-                                                    data.framework_id ===
-                                                    String(f.id)
-                                                        ? 'bg-blue-500'
-                                                        : 'bg-muted/50'
-                                                }`}
+                                                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${ data.framework_id === String(f.id) ? 'bg-primary' : 'bg-muted/50' }`}
                                             >
                                                 <Shield
-                                                    className={`h-5 w-5 ${data.framework_id === String(f.id) ? 'text-white' : 'text-gray-500'}`}
+                                                    className={`h-5 w-5 ${data.framework_id === String(f.id) ? 'text-white' : 'text-muted-foreground'}`}
                                                 />
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold">
                                                     {f.short_name}
                                                 </p>
-                                                <p className="text-xs text-gray-500">
+                                                <p className="text-xs text-muted-foreground">
                                                     {f.name}
                                                 </p>
                                             </div>

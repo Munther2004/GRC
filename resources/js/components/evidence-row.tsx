@@ -113,10 +113,10 @@ export const CONFIDENCE_BADGE: Record<string, string> = {
 
 export const FileIcon = ({ type }: { type: string }) => {
     if (type.includes('image'))
-        return <FileImage className="h-5 w-5 text-blue-500" />;
+        return <FileImage className="h-5 w-5 text-primary" />;
     if (type.includes('pdf'))
         return <FileText className="h-5 w-5 text-red-500" />;
-    return <File className="h-5 w-5 text-gray-500" />;
+    return <File className="h-5 w-5 text-muted-foreground" />;
 };
 
 export function AiReviewPanel({
@@ -322,7 +322,7 @@ function EvidenceActions({
             <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-blue-500 hover:bg-blue-50"
+                className="h-8 w-8 text-primary hover:bg-blue-50"
                 title="Download"
                 onClick={onDownload}
             >
@@ -439,13 +439,13 @@ export function EvidenceRow({
                                     {ev.ai_verdict}
                                 </span>
                             )}
-                            <span className="font-mono text-xs text-gray-400">
+                            <span className="font-mono text-xs text-muted-foreground">
                                 {formatSize(ev.file_type)}
                             </span>
                         </div>
 
                         {ev.assessment_item && (
-                            <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                            <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                                 <span className="rounded bg-muted/50 px-1.5 py-0.5 font-mono">
                                     {ev.assessment_item.control.control_id}
                                 </span>
@@ -462,7 +462,7 @@ export function EvidenceRow({
                         )}
 
                         {ev.assessment_item && (
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-muted-foreground">
                                 Assessment:{' '}
                                 <span className="font-medium">
                                     {ev.assessment_item.assessment.title}
@@ -473,7 +473,7 @@ export function EvidenceRow({
                         )}
 
                         {ev.description && (
-                            <p className="mt-1 text-xs text-gray-500 italic">
+                            <p className="mt-1 text-xs text-muted-foreground italic">
                                 {ev.description}
                             </p>
                         )}
@@ -486,7 +486,7 @@ export function EvidenceRow({
                                             ? 'font-medium text-red-500'
                                             : ev.expires_soon
                                               ? 'font-medium text-yellow-600'
-                                              : 'text-gray-400'
+                                              : 'text-muted-foreground'
                                     }
                                 >
                                     Expires:{' '}
@@ -495,7 +495,7 @@ export function EvidenceRow({
                                     ).toLocaleDateString()}
                                 </span>
                             ) : (
-                                <span className="text-gray-400">No Expiry</span>
+                                <span className="text-muted-foreground">No Expiry</span>
                             )}
                         </p>
 

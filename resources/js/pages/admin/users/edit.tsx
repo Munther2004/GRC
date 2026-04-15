@@ -50,7 +50,7 @@ function EditForm({ user }: { user: any }) {
                         <h1 className="text-2xl font-bold text-foreground">
                             Edit User
                         </h1>
-                        <p className="text-sm text-gray-500">{user.email}</p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
                     </div>
                 </div>
 
@@ -197,7 +197,7 @@ export default function UserEdit() {
                 <EditForm user={user} />
             ) : (
                 <div className="flex h-64 items-center justify-center">
-                    <p className="text-gray-400">Loading...</p>
+                    <p className="text-muted-foreground">Loading...</p>
                 </div>
             )}
         </AdminLayout>

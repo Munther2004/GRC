@@ -453,10 +453,10 @@ export default function EvidenceIndex({
                                 {evidence.data.length === 0 ? (
                                     <div className="p-12 text-center">
                                         <FolderOpen className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-                                        <p className="font-medium text-gray-400">
+                                        <p className="font-medium text-muted-foreground">
                                             No evidence files found
                                         </p>
-                                        <p className="mt-1 text-sm text-gray-400">
+                                        <p className="mt-1 text-sm text-muted-foreground">
                                             Upload evidence from within a
                                             questionnaire.
                                         </p>
@@ -505,10 +505,10 @@ export default function EvidenceIndex({
                                 <Card>
                                     <CardContent className="p-12 text-center">
                                         <FolderOpen className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-                                        <p className="font-medium text-gray-400">
+                                        <p className="font-medium text-muted-foreground">
                                             No evidence files found
                                         </p>
-                                        <p className="mt-1 text-sm text-gray-400">
+                                        <p className="mt-1 text-sm text-muted-foreground">
                                             Upload evidence from within a
                                             questionnaire.
                                         </p>
@@ -583,7 +583,7 @@ export default function EvidenceIndex({
                                                     </Badge>
                                                     <Badge
                                                         variant="outline"
-                                                        className="text-xs text-gray-500"
+                                                        className="text-xs text-muted-foreground"
                                                     >
                                                         {group.items.length}{' '}
                                                         file
@@ -621,11 +621,7 @@ export default function EvidenceIndex({
             {/* Toast notification */}
             {toast && (
                 <div
-                    className={`fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-xl backdrop-blur-xl ${
-                        toast.type === 'success'
-                            ? 'border-emerald-500/30 bg-popover text-foreground'
-                            : 'border-red-500/30 bg-popover text-foreground'
-                    }`}
+                    className={`fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-xl backdrop-blur-xl ${ toast.type === 'success' ? 'border-emerald-500/30 bg-popover text-foreground' : 'border-red-500/30 bg-popover text-foreground' }`}
                 >
                     {toast.type === 'success' ? (
                         <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />

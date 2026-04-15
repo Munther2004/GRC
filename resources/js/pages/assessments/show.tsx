@@ -204,7 +204,7 @@ export default function AssessmentShow({
                                 <Badge variant="outline">
                                     {assessment.framework.short_name}
                                 </Badge>
-                                <span className="text-sm text-gray-500">
+                                <span className="text-sm text-muted-foreground">
                                     {assessment.period}
                                 </span>
                                 <span className="text-sm text-muted-foreground/60">
@@ -267,7 +267,7 @@ export default function AssessmentShow({
                             <CardContent className="space-y-5">
                                 {/* ── Evidence-Backed Score (primary) ──────────────── */}
                                 <div>
-                                    <p className="mb-2 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+                                    <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                                         Evidence-Backed Score
                                     </p>
                                     <div className="mb-3 flex items-end gap-4">
@@ -277,15 +277,15 @@ export default function AssessmentShow({
                                             {evidenceScore.weighted_score}%
                                         </span>
                                         <div className="mb-2">
-                                            <p className="text-sm text-gray-500">
+                                            <p className="text-sm text-muted-foreground">
                                                 {assessment.framework.name}
                                             </p>
-                                            <p className="text-xs text-gray-400">
+                                            <p className="text-xs text-muted-foreground">
                                                 {total} controls assessed
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="h-4 w-full overflow-hidden rounded-full bg-gray-200">
+                                    <div className="h-4 w-full overflow-hidden rounded-full bg-secondary">
                                         <div
                                             className={`h-full rounded-full transition-all ${evidenceScoreBg(evidenceScore.weighted_score)}`}
                                             style={{
@@ -303,14 +303,14 @@ export default function AssessmentShow({
                                         >
                                             {assessment.compliance_percentage}%
                                         </span>
-                                        <span className="ml-2 text-xs text-gray-400">
+                                        <span className="ml-2 text-xs text-muted-foreground">
                                             Self-assessed
                                         </span>
                                     </div>
                                 </div>
 
                                 {/* ── Evidence quality breakdown ────────────────────── */}
-                                <div className="flex flex-wrap gap-4 border-t border-gray-100 pt-1 dark:border-gray-700">
+                                <div className="flex flex-wrap gap-4 border-t border-border/50 pt-1 dark:border-border">
                                     <span className="flex items-center gap-1.5 text-sm text-emerald-400">
                                         <CheckCircle className="h-4 w-4" />
                                         <strong>
@@ -334,7 +334,7 @@ export default function AssessmentShow({
                                     </span>
                                 </div>
 
-                                <p className="text-xs text-gray-400 italic">
+                                <p className="text-xs text-muted-foreground italic">
                                     Score reflects both self-assessment answers
                                     and uploaded evidence quality.
                                 </p>
@@ -364,7 +364,7 @@ export default function AssessmentShow({
                                             label: 'N/A',
                                             value: breakdown.not_applicable,
                                             icon: MinusCircle,
-                                            color: 'text-gray-400',
+                                            color: 'text-muted-foreground',
                                         },
                                     ].map(
                                         ({
@@ -383,7 +383,7 @@ export default function AssessmentShow({
                                                 <p className="text-xl font-bold">
                                                     {value}
                                                 </p>
-                                                <p className="text-xs text-gray-500">
+                                                <p className="text-xs text-muted-foreground">
                                                     {label}
                                                 </p>
                                             </div>
@@ -412,13 +412,13 @@ export default function AssessmentShow({
                                                     className={`font-semibold ${complianceColor(data.percentage)}`}
                                                 >
                                                     {data.percentage}%{' '}
-                                                    <span className="font-normal text-gray-400">
+                                                    <span className="font-normal text-muted-foreground">
                                                         ({data.compliant}/
                                                         {data.total})
                                                     </span>
                                                 </span>
                                             </div>
-                                            <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                                            <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
                                                 <div
                                                     className={`h-full rounded-full ${complianceBg(data.percentage)}`}
                                                     style={{
@@ -446,16 +446,11 @@ export default function AssessmentShow({
                                     {nonCompliantItems.map((item) => (
                                         <div
                                             key={item.id}
-                                            className={`rounded-lg border p-3 text-sm ${
-                                                item.compliance_status ===
-                                                'non_compliant'
-                                                    ? 'border-red-200 bg-red-50 dark:bg-red-950'
-                                                    : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-950'
-                                            }`}
+                                            className={`rounded-lg border p-3 text-sm ${ item.compliance_status === 'non_compliant' ? 'border-red-200 bg-red-50 dark:bg-red-950' : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-950' }`}
                                         >
                                             <div className="flex items-start justify-between gap-2">
                                                 <div>
-                                                    <span className="mr-2 rounded bg-white px-1.5 py-0.5 font-mono text-xs dark:bg-gray-800">
+                                                    <span className="mr-2 rounded bg-card px-1.5 py-0.5 font-mono text-xs dark:bg-secondary">
                                                         {
                                                             item.control
                                                                 .control_id
@@ -472,12 +467,7 @@ export default function AssessmentShow({
                                                 </div>
                                                 <Badge
                                                     variant="outline"
-                                                    className={`shrink-0 text-xs ${
-                                                        item.compliance_status ===
-                                                        'non_compliant'
-                                                            ? 'border-red-200 bg-red-950 text-red-400'
-                                                            : 'border-yellow-200 bg-amber-950 text-amber-400'
-                                                    }`}
+                                                    className={`shrink-0 text-xs ${ item.compliance_status === 'non_compliant' ? 'border-red-200 bg-red-950 text-red-400' : 'border-yellow-200 bg-amber-950 text-amber-400' }`}
                                                 >
                                                     {item.compliance_status ===
                                                     'non_compliant'
@@ -497,7 +487,7 @@ export default function AssessmentShow({
                         <Card>
                             <CardContent className="space-y-3 p-4">
                                 <div>
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-xs text-muted-foreground">
                                         Status
                                     </p>
                                     <Badge
@@ -508,7 +498,7 @@ export default function AssessmentShow({
                                     </Badge>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-xs text-muted-foreground">
                                         Framework
                                     </p>
                                     <p className="text-sm font-medium">
@@ -516,7 +506,7 @@ export default function AssessmentShow({
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-xs text-muted-foreground">
                                         Period
                                     </p>
                                     <p className="text-sm font-medium">
@@ -524,7 +514,7 @@ export default function AssessmentShow({
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-xs text-muted-foreground">
                                         Scope
                                     </p>
                                     <p className="text-sm text-foreground/80">
@@ -533,7 +523,7 @@ export default function AssessmentShow({
                                 </div>
                                 {assessment.due_date && (
                                     <div>
-                                        <p className="text-xs text-gray-400">
+                                        <p className="text-xs text-muted-foreground">
                                             Due Date
                                         </p>
                                         <p className="text-sm font-medium">
@@ -544,7 +534,7 @@ export default function AssessmentShow({
                                     </div>
                                 )}
                                 <div>
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-xs text-muted-foreground">
                                         Created
                                     </p>
                                     <p className="text-sm">
@@ -588,7 +578,7 @@ export default function AssessmentShow({
                             <p className="text-sm font-medium text-foreground/85">
                                 Analyzing assessment data...
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-muted-foreground">
                                 This may take a few seconds
                             </p>
                         </CardContent>
@@ -694,7 +684,7 @@ export default function AssessmentShow({
                                     {aiSummary.key_findings.map((f, i) => (
                                         <div
                                             key={i}
-                                            className="rounded-lg border border-gray-100 bg-accent/30 p-3 dark:border-gray-800"
+                                            className="rounded-lg border border-border/50 bg-accent/30 p-3 dark:border-border"
                                         >
                                             <div className="mb-1 flex items-start justify-between gap-2">
                                                 <p className="text-sm leading-tight font-semibold text-foreground">

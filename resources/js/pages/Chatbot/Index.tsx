@@ -157,9 +157,7 @@ function AssistantBubble({
         <div className="flex justify-start">
             <div className="flex max-w-[85%] items-end gap-2">
                 <div
-                    className={`mb-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
-                        error ? 'bg-destructive/10' : 'bg-primary/10'
-                    }`}
+                    className={`mb-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${ error ? 'bg-destructive/10' : 'bg-primary/10' }`}
                 >
                     {error ? (
                         <AlertCircle className="h-3.5 w-3.5 text-destructive" />
@@ -168,11 +166,7 @@ function AssistantBubble({
                     )}
                 </div>
                 <div
-                    className={`rounded-2xl rounded-bl-sm px-4 py-2.5 ${
-                        error
-                            ? 'border border-destructive/20 bg-destructive/10 text-destructive-foreground'
-                            : 'bg-muted text-foreground'
-                    }`}
+                    className={`rounded-2xl rounded-bl-sm px-4 py-2.5 ${ error ? 'border border-destructive/20 bg-destructive/10 text-destructive-foreground' : 'bg-muted text-foreground' }`}
                 >
                     <MarkdownText text={content ?? ''} />
                 </div>

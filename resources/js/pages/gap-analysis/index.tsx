@@ -418,12 +418,7 @@ export default function GapAnalysisIndex({
                                 {items.data.map((item) => (
                                     <div
                                         key={item.id}
-                                        className={`p-4 transition-colors hover:bg-accent/30 ${
-                                            item.compliance_status ===
-                                            'non_compliant'
-                                                ? 'border-l-4 border-red-400'
-                                                : 'border-l-4 border-yellow-400'
-                                        } ${lastAnalyzed === item.id ? 'ring-2 ring-purple-400 ring-inset' : ''}`}
+                                        className={`p-4 transition-colors hover:bg-accent/30 ${ item.compliance_status === 'non_compliant' ? 'border-l-4 border-red-400' : 'border-l-4 border-yellow-400' } ${lastAnalyzed === item.id ? 'ring-2 ring-purple-400 ring-inset' : ''}`}
                                     >
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="min-w-0 flex-1">
@@ -444,14 +439,14 @@ export default function GapAnalysisIndex({
                                                                 .short_name
                                                         }
                                                     </Badge>
-                                                    <span className="text-xs text-gray-400">
+                                                    <span className="text-xs text-muted-foreground">
                                                         {item.control.category}
                                                     </span>
                                                 </div>
                                                 <p className="text-sm font-semibold text-foreground">
                                                     {item.control.title}
                                                 </p>
-                                                <p className="mt-1 line-clamp-2 text-xs text-gray-500">
+                                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                                                     {item.control.description}
                                                 </p>
                                                 {item.comments && (
@@ -462,7 +457,7 @@ export default function GapAnalysisIndex({
                                                         {item.comments}
                                                     </div>
                                                 )}
-                                                <p className="mt-2 text-xs text-gray-400">
+                                                <p className="mt-2 text-xs text-muted-foreground">
                                                     Assessment:{' '}
                                                     <span className="font-medium">
                                                         {item.assessment.title}

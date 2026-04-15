@@ -16,7 +16,7 @@ export default function Error404() {
                     <h1 className="mb-2 text-6xl font-bold text-foreground">
                         404
                     </h1>
-                    <h2 className="mb-3 text-xl font-semibold text-gray-700 dark:text-gray-200">
+                    <h2 className="mb-3 text-xl font-semibold text-muted-foreground">
                         Page Not Found
                     </h2>
                     <p className="mb-8 text-muted-foreground">

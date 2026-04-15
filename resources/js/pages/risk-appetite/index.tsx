@@ -122,7 +122,7 @@ function ActiveAppetiteCard({ appetite }: { appetite: RiskAppetite }) {
             <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2 text-base font-semibold">
-                        <Sliders className="h-4 w-4 text-blue-600" />
+                        <Sliders className="h-4 w-4 text-primary" />
                         {appetite.name}
                     </CardTitle>
                     <Badge className="border-green-200 bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400">
@@ -133,7 +133,7 @@ function ActiveAppetiteCard({ appetite }: { appetite: RiskAppetite }) {
             <CardContent className="space-y-4">
                 {/* Gradient bar */}
                 <div>
-                    <div className="flex h-8 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="flex h-8 overflow-hidden rounded-lg border border-border dark:border-border">
                         <div
                             className="flex items-center justify-center bg-green-500 text-xs font-semibold text-white"
                             style={{ width: `${acceptablePct}%` }}
@@ -157,7 +157,7 @@ function ActiveAppetiteCard({ appetite }: { appetite: RiskAppetite }) {
                             {escalatedPct >= 12 ? appetite.escalated_label : ''}
                         </div>
                     </div>
-                    <div className="mt-1.5 flex text-xs text-gray-500">
+                    <div className="mt-1.5 flex text-xs text-muted-foreground">
                         <div style={{ width: `${acceptablePct}%` }}>
                             Score 1–{appetite.acceptable_max_score}
                         </div>
@@ -204,10 +204,10 @@ function ActiveAppetiteCard({ appetite }: { appetite: RiskAppetite }) {
                 </div>
 
                 {/* Notify row */}
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
                     {appetite.notify_on_escalation ? (
                         <>
-                            <Bell className="h-3.5 w-3.5 text-blue-500" />
+                            <Bell className="h-3.5 w-3.5 text-primary" />
                             <span>
                                 Notifications enabled for:{' '}
                                 {(
@@ -217,14 +217,14 @@ function ActiveAppetiteCard({ appetite }: { appetite: RiskAppetite }) {
                         </>
                     ) : (
                         <>
-                            <BellOff className="h-3.5 w-3.5 text-gray-400" />
+                            <BellOff className="h-3.5 w-3.5 text-muted-foreground" />
                             <span>Escalation notifications disabled</span>
                         </>
                     )}
                 </div>
 
                 {appetite.notes && (
-                    <p className="border-t pt-2 text-xs text-gray-500 italic">
+                    <p className="border-t pt-2 text-xs text-muted-foreground italic">
                         {appetite.notes}
                     </p>
                 )}
@@ -361,7 +361,7 @@ function AppetiteModal({
                                     {errors.acceptable_max_score}
                                 </p>
                             )}
-                            <p className="mt-0.5 text-xs text-gray-400">
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                                 Score 1–25
                             </p>
                         </div>
@@ -382,7 +382,7 @@ function AppetiteModal({
                                     {errors.review_max_score}
                                 </p>
                             )}
-                            <p className="mt-0.5 text-xs text-gray-400">
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                                 &gt; Acceptable
                             </p>
                         </div>
@@ -392,9 +392,9 @@ function AppetiteModal({
                                 type="number"
                                 value={isNaN(escalatedMin) ? '' : escalatedMin}
                                 readOnly
-                                className="mt-1 cursor-not-allowed bg-gray-50 dark:bg-gray-800"
+                                className="mt-1 cursor-not-allowed bg-muted/50 dark:bg-secondary"
                             />
-                            <p className="mt-0.5 text-xs text-gray-400">
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                                 Auto-calculated
                             </p>
                         </div>
@@ -453,18 +453,10 @@ function AppetiteModal({
                                     !form.notify_on_escalation,
                                 )
                             }
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                                form.notify_on_escalation
-                                    ? 'bg-blue-600'
-                                    : 'bg-gray-300 dark:bg-gray-600'
-                            }`}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${ form.notify_on_escalation ? 'bg-primary' : 'bg-gray-300 ' }`}
                         >
                             <span
-                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                    form.notify_on_escalation
-                                        ? 'translate-x-6'
-                                        : 'translate-x-1'
-                                }`}
+                                className={`inline-block h-4 w-4 transform rounded-full bg-card transition-transform ${ form.notify_on_escalation ? 'translate-x-6' : 'translate-x-1' }`}
                             />
                         </button>
                         <Label
@@ -624,10 +616,10 @@ export default function RiskAppetiteIndex({
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl font-bold text-foreground">
                             Risk Appetite Configuration
                         </h1>
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-sm text-muted-foreground">
                             Define acceptable risk thresholds for your
                             organization
                         </p>
@@ -649,8 +641,8 @@ export default function RiskAppetiteIndex({
                 {active_appetite ? (
                     <ActiveAppetiteCard appetite={active_appetite} />
                 ) : (
-                    <Card className="border-2 border-dashed border-gray-300 dark:border-gray-700">
-                        <CardContent className="p-8 text-center text-gray-400">
+                    <Card className="border-2 border-dashed border-border dark:border-border">
+                        <CardContent className="p-8 text-center text-muted-foreground">
                             <Sliders className="mx-auto mb-2 h-8 w-8 opacity-40" />
                             <p className="font-medium">
                                 No active appetite configured
@@ -673,7 +665,7 @@ export default function RiskAppetiteIndex({
                     <CardContent className="mt-4 p-0">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead className="border-y border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+                                <thead className="border-y border-border bg-muted/50 dark:border-border dark:bg-secondary">
                                     <tr>
                                         {[
                                             'Name',
@@ -686,7 +678,7 @@ export default function RiskAppetiteIndex({
                                         ].map((h) => (
                                             <th
                                                 key={h}
-                                                className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-500 uppercase"
+                                                className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase"
                                             >
                                                 {h}
                                             </th>
@@ -698,7 +690,7 @@ export default function RiskAppetiteIndex({
                                         <tr>
                                             <td
                                                 colSpan={7}
-                                                className="px-4 py-10 text-center text-gray-400"
+                                                className="px-4 py-10 text-center text-muted-foreground"
                                             >
                                                 No configurations yet. Click
                                                 "Add Configuration" to create
@@ -709,14 +701,14 @@ export default function RiskAppetiteIndex({
                                         appetites.map((a) => (
                                             <tr
                                                 key={a.id}
-                                                className={`transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50 ${a.is_active ? 'bg-blue-50/30 dark:bg-blue-950/10' : ''}`}
+                                                className={`transition-colors hover:bg-muted/50 dark:hover:bg-secondary/50 ${a.is_active ? 'bg-blue-50/30 dark:bg-blue-950/10' : ''}`}
                                             >
                                                 <td className="px-4 py-3">
-                                                    <p className="font-medium text-gray-900 dark:text-white">
+                                                    <p className="font-medium text-foreground">
                                                         {a.name}
                                                     </p>
                                                     {a.notes && (
-                                                        <p className="max-w-[200px] truncate text-xs text-gray-400">
+                                                        <p className="max-w-[200px] truncate text-xs text-muted-foreground">
                                                             {a.notes}
                                                         </p>
                                                     )}
@@ -742,7 +734,7 @@ export default function RiskAppetiteIndex({
                                                     {a.notify_on_escalation ? (
                                                         <Badge
                                                             variant="outline"
-                                                            className="gap-1 border-blue-200 bg-blue-50 text-xs text-blue-600"
+                                                            className="gap-1 border-blue-200 bg-blue-50 text-xs text-primary"
                                                         >
                                                             <Bell className="h-3 w-3" />{' '}
                                                             Yes
@@ -750,7 +742,7 @@ export default function RiskAppetiteIndex({
                                                     ) : (
                                                         <Badge
                                                             variant="outline"
-                                                            className="gap-1 text-xs text-gray-400"
+                                                            className="gap-1 text-xs text-muted-foreground"
                                                         >
                                                             <BellOff className="h-3 w-3" />{' '}
                                                             No
@@ -766,7 +758,7 @@ export default function RiskAppetiteIndex({
                                                     ) : (
                                                         <Badge
                                                             variant="outline"
-                                                            className="gap-1 text-gray-400"
+                                                            className="gap-1 text-muted-foreground"
                                                         >
                                                             Inactive
                                                         </Badge>
@@ -778,7 +770,7 @@ export default function RiskAppetiteIndex({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
-                                                                className="h-8 gap-1 text-xs text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                                                                className="h-8 gap-1 text-xs text-primary hover:bg-blue-50 hover:text-blue-700"
                                                                 onClick={() =>
                                                                     handleActivate(
                                                                         a,
@@ -865,7 +857,7 @@ export default function RiskAppetiteIndex({
                             <Trash2 className="h-4 w-4" /> Delete Configuration
                         </DialogTitle>
                     </DialogHeader>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                         Are you sure you want to delete{' '}
                         <strong>"{deleteTarget?.name}"</strong>? This cannot be
                         undone.

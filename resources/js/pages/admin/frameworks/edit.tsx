@@ -47,7 +47,7 @@ export default function FrameworkEdit({ framework }: Props) {
                         <h1 className="text-2xl font-bold text-foreground">
                             Edit Framework
                         </h1>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                             {framework.short_name}
                         </p>
                     </div>

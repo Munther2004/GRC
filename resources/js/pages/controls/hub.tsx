@@ -153,7 +153,7 @@ const STATUS_BADGE: Record<string, string> = {
     non_compliant:
         'bg-red-950 text-red-400 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800',
     not_applicable:
-        'bg-muted text-muted-foreground border-border dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700',
+        'bg-muted text-muted-foreground border-border dark:bg-secondary dark:text-muted-foreground dark:border-border',
 };
 
 const RISK_LEVEL_BADGE: Record<string, string> = {
@@ -175,7 +175,7 @@ function StatusBadge({ status }: { status: ControlRow['current_status'] }) {
         return (
             <Badge
                 variant="outline"
-                className="border-gray-200 bg-card text-xs text-gray-400 dark:bg-gray-800 dark:text-gray-500"
+                className="border-border bg-card text-xs text-muted-foreground dark:bg-secondary dark:text-muted-foreground"
             >
                 Not Set
             </Badge>
@@ -200,7 +200,7 @@ function StatusBadge({ status }: { status: ControlRow['current_status'] }) {
 
 function EvidenceBadge({ status }: { status: ControlRow['evidence_status'] }) {
     if (status === 'none') {
-        return <span className="text-gray-400">—</span>;
+        return <span className="text-muted-foreground">—</span>;
     }
     const config = {
         valid: {
@@ -470,13 +470,13 @@ export default function ControlsHub({
                                 <p className="text-2xl font-bold">
                                     {stats.total}
                                 </p>
-                                <p className="text-xs text-gray-500">Total</p>
+                                <p className="text-xs text-muted-foreground">Total</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-emerald-400">
                                     {stats.compliant}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-muted-foreground">
                                     Compliant
                                 </p>
                             </div>
@@ -484,27 +484,27 @@ export default function ControlsHub({
                                 <p className="text-2xl font-bold text-amber-400">
                                     {stats.partiallyCompliant}
                                 </p>
-                                <p className="text-xs text-gray-500">Partial</p>
+                                <p className="text-xs text-muted-foreground">Partial</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-red-400">
                                     {stats.nonCompliant}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-muted-foreground">
                                     Non-Compliant
                                 </p>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-gray-400">
+                                <p className="text-2xl font-bold text-muted-foreground">
                                     {stats.notApplicable}
                                 </p>
-                                <p className="text-xs text-gray-500">N/A</p>
+                                <p className="text-xs text-muted-foreground">N/A</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold">
                                     {stats.compliancePct}%
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-muted-foreground">
                                     Compliant Rate
                                 </p>
                             </div>
@@ -547,7 +547,7 @@ export default function ControlsHub({
                     <CardContent className="p-4">
                         <div className="flex flex-wrap gap-3">
                             <div className="relative min-w-[200px] flex-1">
-                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder="Search controls..."
                                     value={search}
@@ -663,7 +663,7 @@ export default function ControlsHub({
                                         <tr>
                                             <td
                                                 colSpan={6}
-                                                className="px-4 py-12 text-center text-gray-400"
+                                                className="px-4 py-12 text-center text-muted-foreground"
                                             >
                                                 No controls found matching your
                                                 filters.
@@ -695,7 +695,7 @@ export default function ControlsHub({
                                                         {ctrl.title}
                                                     </p>
                                                     {ctrl.category && (
-                                                        <p className="mt-0.5 text-xs text-gray-400">
+                                                        <p className="mt-0.5 text-xs text-muted-foreground">
                                                             {ctrl.category}
                                                         </p>
                                                     )}
@@ -740,7 +740,7 @@ export default function ControlsHub({
                                                                 )}
                                                         </span>
                                                     ) : (
-                                                        <span className="text-gray-400">
+                                                        <span className="text-muted-foreground">
                                                             —
                                                         </span>
                                                     )}
@@ -774,7 +774,7 @@ export default function ControlsHub({
                                                                         .created_at,
                                                                 ).toLocaleDateString()}
                                                             </p>
-                                                            <p className="text-xs text-gray-400">
+                                                            <p className="text-xs text-muted-foreground">
                                                                 {
                                                                     ctrl
                                                                         .latest_history
@@ -783,7 +783,7 @@ export default function ControlsHub({
                                                             </p>
                                                         </div>
                                                     ) : (
-                                                        <span className="text-xs text-gray-400">
+                                                        <span className="text-xs text-muted-foreground">
                                                             —
                                                         </span>
                                                     )}
@@ -912,14 +912,14 @@ export default function ControlsHub({
                     {updateModal && (
                         <div className="space-y-4 py-2">
                             <div className="rounded-lg bg-muted/30 p-3">
-                                <p className="font-mono text-xs text-gray-500">
+                                <p className="font-mono text-xs text-muted-foreground">
                                     {updateModal.control_id}
                                 </p>
                                 <p className="mt-0.5 text-sm font-medium">
                                     {updateModal.title}
                                 </p>
                                 <div className="mt-2 flex items-center gap-2">
-                                    <span className="text-xs text-gray-500">
+                                    <span className="text-xs text-muted-foreground">
                                         Current:
                                     </span>
                                     <StatusBadge
@@ -984,7 +984,7 @@ export default function ControlsHub({
                             </div>
 
                             {/* Evidence Upload */}
-                            <div className="space-y-2 border-t border-gray-100 pt-1 dark:border-gray-700">
+                            <div className="space-y-2 border-t border-border/50 pt-1 dark:border-border">
                                 <div className="flex items-center justify-between">
                                     <Label className="text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
                                         Upload New Evidence
@@ -994,7 +994,7 @@ export default function ControlsHub({
                                         onClick={() =>
                                             evidenceFileRef.current?.click()
                                         }
-                                        className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-400"
+                                        className="flex items-center gap-1 text-xs text-primary hover:text-blue-400"
                                     >
                                         <Upload className="h-3 w-3" /> Select
                                         file
@@ -1074,7 +1074,7 @@ export default function ControlsHub({
                                         </div>
                                     </div>
                                 ) : (
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-xs text-muted-foreground">
                                         PDF, DOC, DOCX, XLS, PNG, JPG up to 10MB
                                     </p>
                                 )}
@@ -1127,7 +1127,7 @@ export default function ControlsHub({
 
                     {historyModal && (
                         <div>
-                            <p className="mb-4 text-xs text-gray-500">
+                            <p className="mb-4 text-xs text-muted-foreground">
                                 <span className="font-mono">
                                     {historyModal.ctrl.control_id}
                                 </span>{' '}
@@ -1136,10 +1136,10 @@ export default function ControlsHub({
 
                             {historyLoading ? (
                                 <div className="flex items-center justify-center py-8">
-                                    <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+                                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                                 </div>
                             ) : historyModal.entries.length === 0 ? (
-                                <div className="py-8 text-center text-sm text-gray-400">
+                                <div className="py-8 text-center text-sm text-muted-foreground">
                                     No status changes recorded yet.
                                 </div>
                             ) : (
@@ -1150,7 +1150,7 @@ export default function ControlsHub({
                                             className="flex gap-3"
                                         >
                                             <div className="flex flex-col items-center">
-                                                <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-500" />
+                                                <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
                                                 {i <
                                                     historyModal.entries
                                                         .length -
@@ -1167,11 +1167,11 @@ export default function ControlsHub({
                                                             }
                                                         />
                                                     ) : (
-                                                        <span className="text-xs text-gray-400">
+                                                        <span className="text-xs text-muted-foreground">
                                                             Not Set
                                                         </span>
                                                     )}
-                                                    <ArrowRight className="h-3 w-3 text-gray-400" />
+                                                    <ArrowRight className="h-3 w-3 text-muted-foreground" />
                                                     <StatusBadge
                                                         status={
                                                             entry.new_status as ControlRow['current_status']
@@ -1183,7 +1183,7 @@ export default function ControlsHub({
                                                         {entry.notes}
                                                     </p>
                                                 )}
-                                                <p className="mt-1 text-xs text-gray-400">
+                                                <p className="mt-1 text-xs text-muted-foreground">
                                                     {entry.user_name} ·{' '}
                                                     {new Date(
                                                         entry.created_at,
@@ -1217,7 +1217,7 @@ export default function ControlsHub({
                     }
                 >
                     <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-xl border border-purple-200 bg-background shadow-2xl dark:border-purple-800">
-                        <div className="flex items-start justify-between border-b border-gray-100 p-5 dark:border-gray-800">
+                        <div className="flex items-start justify-between border-b border-border/50 p-5 dark:border-border">
                             <div className="flex min-w-0 flex-1 items-start gap-2">
                                 <span className="mt-0.5 text-lg leading-none text-purple-600">
                                     ✨
@@ -1226,7 +1226,7 @@ export default function ControlsHub({
                                     <h2 className="text-sm font-bold text-foreground">
                                         AI Remediation Plan
                                     </h2>
-                                    <p className="mt-0.5 truncate text-xs text-gray-500">
+                                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
                                         {planModal.ctrl.control_id}:{' '}
                                         {planModal.ctrl.title}
                                     </p>
@@ -1234,7 +1234,7 @@ export default function ControlsHub({
                             </div>
                             <button
                                 onClick={() => setPlanModal(null)}
-                                className="ml-3 shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                                className="ml-3 shrink-0 text-muted-foreground hover:text-muted-foreground dark:hover:text-gray-200"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -1251,7 +1251,7 @@ export default function ControlsHub({
                                 >
                                     {planModal.plan.priority} Priority
                                 </Badge>
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-muted-foreground">
                                     Effort:{' '}
                                     <span className="font-medium text-foreground/85">
                                         {planModal.plan.estimated_effort}
@@ -1299,10 +1299,10 @@ export default function ControlsHub({
                                                         <p className="text-sm font-semibold text-foreground">
                                                             {s.action}
                                                         </p>
-                                                        <p className="mt-0.5 text-xs text-gray-500">
+                                                        <p className="mt-0.5 text-xs text-muted-foreground">
                                                             {s.detail}
                                                         </p>
-                                                        <div className="mt-1.5 rounded bg-muted/50 px-2 py-1 text-xs text-gray-500">
+                                                        <div className="mt-1.5 rounded bg-muted/50 px-2 py-1 text-xs text-muted-foreground">
                                                             Evidence:{' '}
                                                             {s.evidence_needed}
                                                         </div>
@@ -1315,7 +1315,7 @@ export default function ControlsHub({
                             )}
                         </div>
 
-                        <div className="border-t border-gray-100 p-4 dark:border-gray-800">
+                        <div className="border-t border-border/50 p-4 dark:border-border">
                             {savedRisk ? (
                                 <div className="flex flex-col items-center gap-3 py-1">
                                     <div className="flex items-center gap-2 text-emerald-400 dark:text-green-400">
@@ -1347,7 +1347,7 @@ export default function ControlsHub({
                                             </span>
                                         )}
                                         {saving && (
-                                            <span className="text-gray-400">
+                                            <span className="text-muted-foreground">
                                                 Saving...
                                             </span>
                                         )}
@@ -1386,11 +1386,7 @@ export default function ControlsHub({
             {/* ── Toast ───────────────────────────────────────────────────────── */}
             {toast && (
                 <div
-                    className={`fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-lg ${
-                        toast.type === 'success'
-                            ? 'border-green-200 bg-green-50 text-green-800'
-                            : 'border-red-200 bg-red-50 text-red-800'
-                    }`}
+                    className={`fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-lg ${ toast.type === 'success' ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-800' }`}
                 >
                     {toast.type === 'success' ? (
                         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />

@@ -122,7 +122,7 @@ export default function AuditLogsIndex({
                             label: 'Total Events',
                             value: stats.total,
                             icon: ScrollText,
-                            color: 'text-blue-500',
+                            color: 'text-primary',
                         },
                         {
                             label: 'Today',
@@ -144,7 +144,7 @@ export default function AuditLogsIndex({
                                     <p className="text-2xl font-bold">
                                         {value}
                                     </p>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-muted-foreground">
                                         {label}
                                     </p>
                                 </div>
@@ -158,7 +158,7 @@ export default function AuditLogsIndex({
                     <CardContent className="space-y-3 p-4">
                         <div className="flex flex-wrap gap-3">
                             <div className="relative min-w-[200px] flex-1">
-                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder="Search descriptions..."
                                     value={search}
@@ -225,7 +225,7 @@ export default function AuditLogsIndex({
                         </div>
                         <div className="flex flex-wrap items-center gap-3">
                             <div className="flex items-center gap-2">
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-muted-foreground">
                                     From:
                                 </span>
                                 <Input
@@ -238,7 +238,7 @@ export default function AuditLogsIndex({
                                 />
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-muted-foreground">
                                     To:
                                 </span>
                                 <Input
@@ -308,7 +308,7 @@ export default function AuditLogsIndex({
                                         <tr>
                                             <td
                                                 colSpan={6}
-                                                className="px-4 py-12 text-center text-gray-400"
+                                                className="px-4 py-12 text-center text-muted-foreground"
                                             >
                                                 No audit logs found.
                                             </td>
@@ -319,7 +319,7 @@ export default function AuditLogsIndex({
                                                 key={log.id}
                                                 className="transition-colors hover:bg-accent/30"
                                             >
-                                                <td className="px-4 py-3 text-xs whitespace-nowrap text-gray-500">
+                                                <td className="px-4 py-3 text-xs whitespace-nowrap text-muted-foreground">
                                                     {formatDate(log.created_at)}
                                                 </td>
                                                 <td className="px-4 py-3">
@@ -332,14 +332,14 @@ export default function AuditLogsIndex({
                                                 <td className="px-4 py-3">
                                                     <Badge
                                                         variant="outline"
-                                                        className={`text-xs capitalize ${actionColors[log.action] ?? 'bg-gray-100 text-gray-600'}`}
+                                                        className={`text-xs capitalize ${actionColors[log.action] ?? 'bg-muted text-muted-foreground'}`}
                                                     >
                                                         {log.action}
                                                     </Badge>
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <span
-                                                        className={`rounded-full px-2 py-1 text-xs font-medium ${modelColors[log.model_type] ?? 'bg-gray-100 text-gray-600'}`}
+                                                        className={`rounded-full px-2 py-1 text-xs font-medium ${modelColors[log.model_type] ?? 'bg-muted text-muted-foreground'}`}
                                                     >
                                                         {log.model_type}
                                                     </span>
@@ -347,7 +347,7 @@ export default function AuditLogsIndex({
                                                 <td className="max-w-xs truncate px-4 py-3 text-foreground/80">
                                                     {log.description}
                                                 </td>
-                                                <td className="px-4 py-3 font-mono text-xs text-gray-400">
+                                                <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
                                                     {log.ip_address ?? '—'}
                                                 </td>
                                             </tr>

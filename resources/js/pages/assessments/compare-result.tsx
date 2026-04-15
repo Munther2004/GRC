@@ -88,7 +88,7 @@ const statusConfig: Record<string, { label: string; cls: string }> = {
     },
     not_assessed: {
         label: 'Not Assessed',
-        cls: 'bg-muted text-muted-foreground/60 border-gray-200',
+        cls: 'bg-muted text-muted-foreground/60 border-border',
     },
 };
 
@@ -148,7 +148,7 @@ function StatusBadge({ status }: { status: string }) {
 function DirectionBadge({ direction }: { direction: string }) {
     const cfg = directionConfig[direction] ?? {
         label: direction,
-        cls: 'bg-gray-100 text-gray-500',
+        cls: 'bg-muted text-muted-foreground',
     };
     return (
         <Badge
@@ -162,11 +162,11 @@ function DirectionBadge({ direction }: { direction: string }) {
 
 function VerdictBadge({ verdict }: { verdict: string | null }) {
     if (!verdict) {
-        return <span className="text-xs text-gray-400">—</span>;
+        return <span className="text-xs text-muted-foreground">—</span>;
     }
     const cfg = verdictConfig[verdict] ?? {
         label: verdict,
-        cls: 'bg-gray-100 text-gray-500',
+        cls: 'bg-muted text-muted-foreground',
     };
     return (
         <Badge variant="outline" className={cn('text-xs', cfg.cls)}>
@@ -178,7 +178,7 @@ function VerdictBadge({ verdict }: { verdict: string | null }) {
 function DeltaChip({ delta, suffix = '' }: { delta: number; suffix?: string }) {
     if (delta === 0)
         return (
-            <span className="text-xs font-medium text-gray-500">No change</span>
+            <span className="text-xs font-medium text-muted-foreground">No change</span>
         );
     const positive = delta > 0;
     return (
@@ -266,7 +266,7 @@ export default function CompareResult({
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="gap-1 text-gray-500"
+                            className="gap-1 text-muted-foreground"
                         >
                             <ArrowLeft className="h-4 w-4" /> Change Selection
                         </Button>
@@ -282,7 +282,7 @@ export default function CompareResult({
                 <div className="rounded-xl border bg-background p-5 shadow-sm">
                     <div className="flex flex-col items-center justify-center gap-4 text-center sm:flex-row sm:gap-6">
                         <div className="flex-1">
-                            <p className="mb-1 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Baseline (A)
                             </p>
                             <p className="text-lg font-bold text-foreground">
@@ -292,7 +292,7 @@ export default function CompareResult({
                                 <Badge variant="outline" className="text-xs">
                                     {assessmentA.framework}
                                 </Badge>
-                                <span className="text-xs text-gray-400">
+                                <span className="text-xs text-muted-foreground">
                                     {assessmentA.date}
                                 </span>
                             </div>
@@ -300,13 +300,13 @@ export default function CompareResult({
 
                         <div className="flex flex-col items-center gap-0.5 px-4">
                             <ArrowRight className="h-6 w-6 text-gray-300" />
-                            <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                            <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
                                 vs
                             </span>
                         </div>
 
                         <div className="flex-1">
-                            <p className="mb-1 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Latest (B)
                             </p>
                             <p className="text-lg font-bold text-foreground">
@@ -316,7 +316,7 @@ export default function CompareResult({
                                 <Badge variant="outline" className="text-xs">
                                     {assessmentB.framework}
                                 </Badge>
-                                <span className="text-xs text-gray-400">
+                                <span className="text-xs text-muted-foreground">
                                     {assessmentB.date}
                                 </span>
                             </div>
@@ -329,11 +329,11 @@ export default function CompareResult({
                     {/* Compliance Score */}
                     <Card className="col-span-2 md:col-span-1">
                         <CardContent className="p-4">
-                            <p className="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Compliance Score
                             </p>
                             <div className="flex items-center gap-2">
-                                <span className="text-xl font-bold text-gray-700 dark:text-gray-200">
+                                <span className="text-xl font-bold text-muted-foreground">
                                     {summary.compliance_score_a}%
                                 </span>
                                 <ArrowRight className="h-4 w-4 text-gray-300" />
@@ -353,13 +353,13 @@ export default function CompareResult({
                     {/* Controls Changed */}
                     <Card>
                         <CardContent className="p-4">
-                            <p className="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Controls Changed
                             </p>
                             <p className="text-2xl font-bold text-foreground">
                                 {summary.changed_count}
                             </p>
-                            <p className="mt-1 text-xs text-gray-500">
+                            <p className="mt-1 text-xs text-muted-foreground">
                                 <span className="font-medium text-emerald-400">
                                     {summary.improved_count}↑
                                 </span>
@@ -374,11 +374,11 @@ export default function CompareResult({
                     {/* Evidence Quality */}
                     <Card>
                         <CardContent className="p-4">
-                            <p className="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Evidence Quality
                             </p>
                             <div className="flex items-center gap-2">
-                                <span className="text-lg font-bold text-gray-700 dark:text-gray-200">
+                                <span className="text-lg font-bold text-muted-foreground">
                                     {summary.evidence_quality_a}%
                                 </span>
                                 <ArrowRight className="h-3 w-3 text-gray-300" />
@@ -398,13 +398,13 @@ export default function CompareResult({
                     {/* Total Controls */}
                     <Card>
                         <CardContent className="p-4">
-                            <p className="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Total Controls
                             </p>
                             <p className="text-2xl font-bold text-foreground">
                                 {summary.total_controls}
                             </p>
-                            <p className="mt-1 text-xs text-gray-500">
+                            <p className="mt-1 text-xs text-muted-foreground">
                                 across both assessments
                             </p>
                         </CardContent>
@@ -413,7 +413,7 @@ export default function CompareResult({
                     {/* Net Change */}
                     <Card>
                         <CardContent className="flex h-full flex-col items-start justify-center p-4">
-                            <p className="mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                            <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Net Change
                             </p>
                             <Badge
@@ -444,7 +444,7 @@ export default function CompareResult({
                         <div className="flex flex-wrap gap-3">
                             {/* Search */}
                             <div className="relative min-w-[200px] flex-1">
-                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder="Search control code or name…"
                                     value={search}
@@ -560,7 +560,7 @@ export default function CompareResult({
                                         <tr>
                                             <td
                                                 colSpan={7}
-                                                className="px-4 py-12 text-center text-gray-400"
+                                                className="px-4 py-12 text-center text-muted-foreground"
                                             >
                                                 No controls match the current
                                                 filters.
@@ -582,7 +582,7 @@ export default function CompareResult({
                                             >
                                                 {/* Control */}
                                                 <td className="px-4 py-3">
-                                                    <p className="font-mono text-xs text-gray-500">
+                                                    <p className="font-mono text-xs text-muted-foreground">
                                                         {row.control_code}
                                                     </p>
                                                     <p className="max-w-[260px] truncate font-medium text-foreground">
@@ -648,7 +648,7 @@ export default function CompareResult({
                         </div>
 
                         {/* Row count */}
-                        <div className="border-t border-gray-100 px-4 py-3 text-xs text-gray-400 dark:border-gray-800">
+                        <div className="border-t border-border/50 px-4 py-3 text-xs text-muted-foreground dark:border-border">
                             Showing {filtered.length} of {rows.length} control
                             {rows.length !== 1 ? 's' : ''}
                             {filterDir !== 'all' ||
@@ -661,9 +661,9 @@ export default function CompareResult({
                 </Card>
 
                 {/* Legend */}
-                <div className="flex flex-wrap items-center gap-3 pb-4 text-xs text-gray-500">
-                    <ShieldCheck className="h-4 w-4 text-gray-400" />
-                    <span className="font-medium text-gray-400">Legend:</span>
+                <div className="flex flex-wrap items-center gap-3 pb-4 text-xs text-muted-foreground">
+                    <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium text-muted-foreground">Legend:</span>
                     {Object.entries(directionConfig).map(([key, cfg]) => (
                         <span
                             key={key}

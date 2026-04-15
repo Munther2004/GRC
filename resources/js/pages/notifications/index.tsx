@@ -218,7 +218,7 @@ export default function NotificationsPage({ notifications }: Props) {
                                     'flex items-start gap-4 rounded-lg border p-4 transition-colors',
                                     n.is_read
                                         ? 'border-border bg-card'
-                                        : 'border-l-4 border-blue-500/30 border-l-blue-500 bg-blue-500/5',
+                                        : 'border-l-4 border-blue-500/30 border-l-blue-500 bg-primary/5',
                                 )}
                             >
                                 {/* Icon */}

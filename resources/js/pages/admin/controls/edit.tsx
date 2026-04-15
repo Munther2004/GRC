@@ -52,7 +52,7 @@ export default function ControlEdit({ control }: Props) {
                         <h1 className="text-2xl font-bold text-foreground">
                             Edit Control
                         </h1>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                             <span className="font-mono">
                                 {control.control_id}
                             </span>{' '}

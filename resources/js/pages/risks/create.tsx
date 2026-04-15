@@ -321,7 +321,7 @@ export default function RiskCreate({
                                                     <p className="text-sm font-medium text-foreground">
                                                         {t.threat}
                                                     </p>
-                                                    <p className="text-xs text-gray-600">
+                                                    <p className="text-xs text-muted-foreground">
                                                         {t.explanation}
                                                     </p>
                                                     <div className="flex items-center gap-2 pt-1">
@@ -491,14 +491,14 @@ export default function RiskCreate({
                                                 Scores Validated — Looks Good
                                             </span>
                                             <span
-                                                className={`ml-auto rounded px-1.5 py-0.5 text-xs capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}
+                                                className={`ml-auto rounded px-1.5 py-0.5 text-xs capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-secondary text-muted-foreground'}`}
                                             >
                                                 {validationResult.confidence}{' '}
                                                 confidence
                                             </span>
                                         </div>
                                         <div className="px-4 py-3">
-                                            <p className="text-sm text-gray-700">
+                                            <p className="text-sm text-muted-foreground">
                                                 {validationResult.reasoning}
                                             </p>
                                         </div>
@@ -516,19 +516,19 @@ export default function RiskCreate({
                                                 Recommendations Available
                                             </span>
                                             <span
-                                                className={`ml-auto rounded px-1.5 py-0.5 text-xs capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}
+                                                className={`ml-auto rounded px-1.5 py-0.5 text-xs capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-secondary text-muted-foreground'}`}
                                             >
                                                 {validationResult.confidence}{' '}
                                                 confidence
                                             </span>
                                         </div>
                                         <div className="space-y-3 px-4 py-3">
-                                            <p className="text-sm text-gray-700">
+                                            <p className="text-sm text-muted-foreground">
                                                 {validationResult.reasoning}
                                             </p>
                                             <div className="flex items-center justify-between gap-4 pt-1">
                                                 <div className="flex items-center gap-3 text-sm">
-                                                    <span className="text-gray-500">
+                                                    <span className="text-muted-foreground">
                                                         Recommended:
                                                     </span>
                                                     <span className="font-medium">

@@ -369,7 +369,7 @@ export default function ReportsIndex({
                                             {f.short_name}
                                         </span>
                                         <div className="flex items-center gap-3">
-                                            <span className="text-xs text-gray-400">
+                                            <span className="text-xs text-muted-foreground">
                                                 {f.assessments_count} assessment
                                                 {f.assessments_count !== 1
                                                     ? 's'
@@ -382,7 +382,7 @@ export default function ReportsIndex({
                                                     {f.latest_score}%
                                                 </span>
                                             ) : (
-                                                <span className="text-xs text-gray-400">
+                                                <span className="text-xs text-muted-foreground">
                                                     No data
                                                 </span>
                                             )}
@@ -554,7 +554,7 @@ export default function ReportsIndex({
                                     label: 'In Progress',
                                     value: riskByStatus.in_progress,
                                     icon: Clock,
-                                    color: 'text-blue-500',
+                                    color: 'text-primary',
                                     bg: 'bg-blue-50 dark:bg-blue-950',
                                 },
                                 {
@@ -600,11 +600,11 @@ export default function ReportsIndex({
                     </CardHeader>
                     <CardContent className="p-0">
                         {assessmentHistory.length === 0 ? (
-                            <div className="p-8 text-center text-gray-400">
+                            <div className="p-8 text-center text-muted-foreground">
                                 No completed assessments yet.
                                 <Link
                                     href="/assessments"
-                                    className="ml-1 text-blue-500 hover:underline"
+                                    className="ml-1 text-primary hover:underline"
                                 >
                                     Start one.
                                 </Link>
@@ -642,7 +642,7 @@ export default function ReportsIndex({
                                                         'assessments.show',
                                                         a.id,
                                                     )}
-                                                    className="font-medium text-blue-500 hover:underline"
+                                                    className="font-medium text-primary hover:underline"
                                                 >
                                                     {a.title}
                                                 </Link>
@@ -660,7 +660,7 @@ export default function ReportsIndex({
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-2 w-16 overflow-hidden rounded-full bg-gray-200">
+                                                    <div className="h-2 w-16 overflow-hidden rounded-full bg-secondary">
                                                         <div
                                                             className="h-full rounded-full"
                                                             style={{
@@ -682,10 +682,10 @@ export default function ReportsIndex({
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 text-gray-500">
+                                            <td className="px-4 py-3 text-muted-foreground">
                                                 {a.completed_at}
                                             </td>
-                                            <td className="px-4 py-3 text-gray-500">
+                                            <td className="px-4 py-3 text-muted-foreground">
                                                 {a.user}
                                             </td>
                                         </tr>
@@ -732,7 +732,7 @@ export default function ReportsIndex({
                                 AI is analysing your GRC data&hellip;
                             </p>
                         </div>
-                        <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
                     </div>
                 </div>
             )}

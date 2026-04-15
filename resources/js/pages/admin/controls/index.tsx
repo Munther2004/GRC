@@ -99,7 +99,7 @@ export default function ControlsIndex({
                                     <p className="text-2xl font-bold">
                                         {f.controls_count}
                                     </p>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-muted-foreground">
                                         {f.short_name}
                                     </p>
                                 </div>
@@ -113,7 +113,7 @@ export default function ControlsIndex({
                     <CardContent className="p-4">
                         <div className="flex flex-wrap gap-3">
                             <div className="relative min-w-[200px] flex-1">
-                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder="Search by ID, title, or description..."
                                     value={search}
@@ -220,7 +220,7 @@ export default function ControlsIndex({
                                         <tr>
                                             <td
                                                 colSpan={6}
-                                                className="px-4 py-12 text-center text-gray-400"
+                                                className="px-4 py-12 text-center text-muted-foreground"
                                             >
                                                 No controls found.
                                             </td>

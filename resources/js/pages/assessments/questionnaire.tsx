@@ -278,7 +278,7 @@ export default function Questionnaire({
                 {/* Controls Hub pre-fill notice */}
                 {prefilledCount > 0 && (
                     <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm dark:border-blue-800 dark:bg-blue-950">
-                        <CheckCircle className="h-4 w-4 shrink-0 text-blue-500" />
+                        <CheckCircle className="h-4 w-4 shrink-0 text-primary" />
                         <span className="text-blue-700 dark:text-blue-300">
                             <strong>{prefilledCount}</strong> control
                             {prefilledCount !== 1 ? 's' : ''} pre-filled from
@@ -303,7 +303,7 @@ export default function Questionnaire({
                                 <Badge variant="outline" className="text-xs">
                                     {assessment.framework.short_name}
                                 </Badge>
-                                <span className="text-xs text-gray-400">
+                                <span className="text-xs text-muted-foreground">
                                     Page {pagination.current_page} of{' '}
                                     {pagination.total_pages}
                                 </span>
@@ -339,17 +339,17 @@ export default function Questionnaire({
                             <span className="text-sm font-medium">
                                 Overall Progress
                             </span>
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-muted-foreground">
                                 {progress.answered} / {progress.total} answered
                             </span>
                         </div>
                         <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                             <div
-                                className="h-full rounded-full bg-blue-500 transition-all duration-500"
+                                className="h-full rounded-full bg-primary transition-all duration-500"
                                 style={{ width: `${progress.percent}%` }}
                             />
                         </div>
-                        <p className="mt-1 text-xs text-gray-400">
+                        <p className="mt-1 text-xs text-muted-foreground">
                             {progress.percent}% complete
                         </p>
                     </CardContent>
@@ -371,22 +371,12 @@ export default function Questionnaire({
                         return (
                             <Card
                                 key={item.id}
-                                className={`transition-all ${
-                                    answer?.compliance_status === 'compliant'
-                                        ? 'border-green-200 dark:border-green-800'
-                                        : answer?.compliance_status ===
-                                            'partially_compliant'
-                                          ? 'border-yellow-200 dark:border-yellow-800'
-                                          : answer?.compliance_status ===
-                                              'non_compliant'
-                                            ? 'border-red-200 dark:border-red-800'
-                                            : ''
-                                }`}
+                                className={`transition-all ${ answer?.compliance_status === 'compliant' ? 'border-green-200 dark:border-green-800' : answer?.compliance_status === 'partially_compliant' ? 'border-yellow-200 dark:border-yellow-800' : answer?.compliance_status === 'non_compliant' ? 'border-red-200 dark:border-red-800' : '' }`}
                             >
                                 <CardHeader className="pb-3">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex flex-1 items-start gap-3">
-                                            <span className="mt-0.5 w-6 shrink-0 font-mono text-xs text-gray-400">
+                                            <span className="mt-0.5 w-6 shrink-0 font-mono text-xs text-muted-foreground">
                                                 {globalIndex}
                                             </span>
                                             <div className="flex-1">
@@ -397,7 +387,7 @@ export default function Questionnaire({
                                                                 .control_id
                                                         }
                                                     </span>
-                                                    <span className="text-xs text-gray-400">
+                                                    <span className="text-xs text-muted-foreground">
                                                         {item.control.category}
                                                     </span>
                                                 </div>
@@ -428,12 +418,7 @@ export default function Questionnaire({
                                                 disabled={
                                                     helpLoading[item.control_id]
                                                 }
-                                                className={`flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-all ${
-                                                    activeHelpControlId ===
-                                                    item.control_id
-                                                        ? 'border-purple-300 bg-purple-100 text-purple-700 dark:border-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
-                                                        : 'border-purple-200 text-purple-600 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-400 dark:hover:bg-purple-950/40'
-                                                }`}
+                                                className={`flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-all ${ activeHelpControlId === item.control_id ? 'border-purple-300 bg-purple-100 text-purple-700 dark:border-purple-700 dark:bg-purple-900/40 dark:text-purple-300' : 'border-purple-200 text-purple-600 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-400 dark:hover:bg-purple-950/40' }`}
                                                 title="Get AI explanation for this control"
                                             >
                                                 {helpLoading[
@@ -456,7 +441,7 @@ export default function Questionnaire({
                                                             : item.id,
                                                     )
                                                 }
-                                                className="text-gray-400 hover:text-gray-600"
+                                                className="text-muted-foreground hover:text-muted-foreground"
                                             >
                                                 <ChevronRight
                                                     className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
@@ -696,7 +681,7 @@ export default function Questionnaire({
                                                         answer?.compliance_status ===
                                                         opt.value
                                                             ? `${opt.color} border-transparent text-white`
-                                                            : 'border-border bg-white text-foreground/80 hover:border-gray-300 dark:bg-gray-800'
+                                                            : 'border-border bg-card text-foreground/80 hover:border-border dark:bg-secondary'
                                                     }`}
                                                 >
                                                     {opt.label}
@@ -724,7 +709,7 @@ export default function Questionnaire({
                                                 }
                                                 rows={2}
                                                 placeholder="Add implementation notes, findings, or observations..."
-                                                className="w-full resize-none rounded-md border border-border bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800"
+                                                className="w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none dark:bg-secondary"
                                             />
                                         </div>
                                     )}
@@ -743,7 +728,7 @@ export default function Questionnaire({
                                                             item.id
                                                         ]?.click()
                                                     }
-                                                    className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-400"
+                                                    className="flex items-center gap-1 text-xs text-primary hover:text-blue-400"
                                                 >
                                                     <Upload className="h-3 w-3" />{' '}
                                                     Upload file
@@ -786,7 +771,7 @@ export default function Questionnaire({
                                                     </p>
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex-1">
-                                                            <label className="mb-1 block text-xs text-gray-500">
+                                                            <label className="mb-1 block text-xs text-muted-foreground">
                                                                 Expiry Date
                                                                 (optional)
                                                             </label>
@@ -811,7 +796,7 @@ export default function Questionnaire({
                                                                             .value,
                                                                     )
                                                                 }
-                                                                className="rounded border border-border bg-white px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800"
+                                                                className="rounded border border-border bg-card px-2 py-1 text-xs focus:ring-2 focus:ring-ring focus:outline-none dark:bg-secondary"
                                                             />
                                                         </div>
                                                         <div className="flex gap-2 pt-4">
@@ -847,20 +832,20 @@ export default function Questionnaire({
                                                     {item.evidence.map((ev) => (
                                                         <div
                                                             key={ev.id}
-                                                            className="flex items-center gap-2 rounded bg-muted/30 p-2 text-xs text-gray-500"
+                                                            className="flex items-center gap-2 rounded bg-muted/30 p-2 text-xs text-muted-foreground"
                                                         >
                                                             <CheckCircle className="h-3 w-3 shrink-0 text-green-500" />
                                                             <span className="truncate">
                                                                 {ev.title}
                                                             </span>
-                                                            <span className="shrink-0 text-gray-400">
+                                                            <span className="shrink-0 text-muted-foreground">
                                                                 ({ev.file_name})
                                                             </span>
                                                         </div>
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <p className="text-xs text-gray-400 italic">
+                                                <p className="text-xs text-muted-foreground italic">
                                                     No evidence uploaded
                                                 </p>
                                             )}
@@ -900,11 +885,7 @@ export default function Questionnaire({
                                             page !== pagination.current_page &&
                                             goToPage(page)
                                         }
-                                        className={`h-8 w-8 rounded text-sm font-medium transition-colors ${
-                                            page === pagination.current_page
-                                                ? 'bg-blue-500 text-white'
-                                                : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                        }`}
+                                        className={`h-8 w-8 rounded text-sm font-medium transition-colors ${ page === pagination.current_page ? 'bg-primary text-white' : 'text-muted-foreground hover:bg-muted dark:hover:bg-secondary' }`}
                                     >
                                         {page}
                                     </button>

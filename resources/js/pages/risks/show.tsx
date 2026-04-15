@@ -129,7 +129,7 @@ const ScoreCell = ({
     color: string;
 }) => (
     <div
-        className={`flex h-10 w-10 items-center justify-center rounded border text-xs font-bold ${active ? color : 'border-gray-200 bg-muted/50 text-gray-400'}`}
+        className={`flex h-10 w-10 items-center justify-center rounded border text-xs font-bold ${active ? color : 'border-border bg-muted/50 text-muted-foreground'}`}
     >
         {value}
     </div>
@@ -421,7 +421,7 @@ export default function RiskShow({
                                                         : s >= 13
                                                           ? 'bg-orange-400 text-white border-orange-500'
                                                           : s >= 7
-                                                            ? 'bg-yellow-400 text-gray-800 border-yellow-500'
+                                                            ? 'bg-yellow-400 text-foreground border-yellow-500'
                                                             : 'bg-green-400 text-white border-green-500';
                                                 return (
                                                     <ScoreCell
@@ -497,7 +497,7 @@ export default function RiskShow({
                                         key={label}
                                         className="flex items-start gap-3"
                                     >
-                                        <Icon className="mt-0.5 h-4 w-4 text-gray-400" />
+                                        <Icon className="mt-0.5 h-4 w-4 text-muted-foreground" />
                                         <div>
                                             <p className="text-xs text-muted-foreground/70">
                                                 {label}
@@ -561,7 +561,7 @@ export default function RiskShow({
 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="mb-1 block text-xs font-medium text-gray-500">
+                                        <label className="mb-1 block text-xs font-medium text-muted-foreground">
                                             Strategy
                                         </label>
                                         <select
@@ -588,7 +588,7 @@ export default function RiskShow({
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="mb-1 block text-xs font-medium text-gray-500">
+                                        <label className="mb-1 block text-xs font-medium text-muted-foreground">
                                             Status
                                         </label>
                                         <select
@@ -616,7 +616,7 @@ export default function RiskShow({
                                 </div>
 
                                 <div>
-                                    <label className="mb-1 block text-xs font-medium text-gray-500">
+                                    <label className="mb-1 block text-xs font-medium text-muted-foreground">
                                         Owner
                                     </label>
                                     <input
@@ -634,7 +634,7 @@ export default function RiskShow({
                                 </div>
 
                                 <div>
-                                    <label className="mb-1 block text-xs font-medium text-gray-500">
+                                    <label className="mb-1 block text-xs font-medium text-muted-foreground">
                                         Description
                                     </label>
                                     <textarea
@@ -653,7 +653,7 @@ export default function RiskShow({
 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="mb-1 block text-xs font-medium text-gray-500">
+                                        <label className="mb-1 block text-xs font-medium text-muted-foreground">
                                             Due Date
                                         </label>
                                         <input
@@ -669,7 +669,7 @@ export default function RiskShow({
                                         />
                                     </div>
                                     <div>
-                                        <label className="mb-1 block text-xs font-medium text-gray-500">
+                                        <label className="mb-1 block text-xs font-medium text-muted-foreground">
                                             Progress ({planForm.progress}%)
                                         </label>
                                         <input
@@ -692,7 +692,7 @@ export default function RiskShow({
                                 </div>
 
                                 <div>
-                                    <p className="mb-2 text-xs font-medium text-gray-500">
+                                    <p className="mb-2 text-xs font-medium text-muted-foreground">
                                         Residual Risk (after treatment)
                                     </p>
                                     <div className="grid grid-cols-2 gap-3">
@@ -802,7 +802,7 @@ export default function RiskShow({
                                             </Badge>
                                             <Badge
                                                 variant="outline"
-                                                className={`text-xs ${plan.status === 'completed' ? 'border-green-200 bg-green-50 text-emerald-400' : plan.status === 'in_progress' ? 'border-blue-200 bg-blue-50 text-blue-400' : 'text-gray-500'}`}
+                                                className={`text-xs ${plan.status === 'completed' ? 'border-green-200 bg-green-50 text-emerald-400' : plan.status === 'in_progress' ? 'border-blue-200 bg-blue-50 text-blue-400' : 'text-muted-foreground'}`}
                                             >
                                                 {statusLabels[plan.status]}
                                             </Badge>
@@ -862,7 +862,7 @@ export default function RiskShow({
                                         </div>
                                         <div className="h-2 overflow-hidden rounded-full bg-muted/50">
                                             <div
-                                                className={`h-full rounded-full transition-all ${plan.progress === 100 ? 'bg-green-500' : plan.progress >= 50 ? 'bg-blue-500' : 'bg-yellow-500'}`}
+                                                className={`h-full rounded-full transition-all ${plan.progress === 100 ? 'bg-green-500' : plan.progress >= 50 ? 'bg-primary' : 'bg-yellow-500'}`}
                                                 style={{
                                                     width: `${plan.progress}%`,
                                                 }}
@@ -977,7 +977,7 @@ export default function RiskShow({
                                                     ) : (
                                                         <Badge
                                                             variant="outline"
-                                                            className="shrink-0 border-gray-200 bg-card text-xs text-gray-500"
+                                                            className="shrink-0 border-border bg-card text-xs text-muted-foreground"
                                                         >
                                                             Auto
                                                         </Badge>

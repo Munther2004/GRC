@@ -54,7 +54,7 @@ function DashboardCard() {
     return (
         <div className="relative mx-auto w-full max-w-[420px] lg:mr-0 lg:ml-auto">
             {/* Subtle glow */}
-            <div className="pointer-events-none absolute -inset-6 rounded-3xl bg-blue-500/10 blur-3xl" />
+            <div className="pointer-events-none absolute -inset-6 rounded-3xl bg-primary/10 blur-3xl" />
 
             {/* Browser chrome wrapper */}
             <div className="relative overflow-hidden rounded-2xl border border-zinc-700/60 bg-zinc-900 shadow-2xl">
@@ -167,7 +167,7 @@ const features = [
         title: 'Risk Assessment',
         desc: 'ISO 27005 likelihood × impact matrix with automatic risk scoring and treatment tracking.',
         color: 'text-blue-400',
-        bg: 'bg-blue-500/10 border-blue-500/20',
+        bg: 'bg-primary/10 border-blue-500/20',
     },
     {
         icon: ClipboardList,
@@ -229,7 +229,7 @@ export default function Welcome() {
                 <header className="sticky top-0 z-40 border-b border-zinc-800/60 bg-[#0a0a0a]/80 backdrop-blur">
                     <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
                         <div className="flex items-center gap-2">
-                            <ShieldCheck className="h-6 w-6 text-blue-500" />
+                            <ShieldCheck className="h-6 w-6 text-primary" />
                             <span className="text-lg font-bold tracking-tight">
                                 GRC System
                             </span>
@@ -243,7 +243,7 @@ export default function Welcome() {
                             </a>
                             <a
                                 href="/register"
-                                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-500"
+                                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary"
                             >
                                 Get Started
                             </a>
@@ -256,14 +256,14 @@ export default function Welcome() {
                     <div className="grid items-center gap-16 lg:grid-cols-2">
                         {/* Left */}
                         <div>
-                            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-400">
+                            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-blue-400">
                                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-400" />
                                 ISO 27001 · NIST · OWASP · CIS
                             </div>
                             <h1 className="mb-6 text-5xl leading-[1.08] font-bold tracking-tight text-white lg:text-6xl">
                                 Risk clarity.
                                 <br />
-                                <span className="text-blue-500">
+                                <span className="text-primary">
                                     Compliance
                                 </span>
                                 <br />
@@ -277,7 +277,7 @@ export default function Welcome() {
                             <div className="flex flex-wrap gap-3">
                                 <a
                                     href="/register"
-                                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
+                                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary"
                                 >
                                     Get Started
                                     <svg
@@ -367,7 +367,7 @@ export default function Welcome() {
                 <section className="mx-auto max-w-7xl px-6 pb-24">
                     <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900 to-blue-950/40 p-12 text-center">
                         {/* Decorative glow */}
-                        <div className="pointer-events-none absolute top-0 left-1/2 h-32 w-96 -translate-x-1/2 rounded-full bg-blue-600/15 blur-3xl" />
+                        <div className="pointer-events-none absolute top-0 left-1/2 h-32 w-96 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
                         <div className="relative">
                             <h2 className="mb-4 text-3xl font-bold text-white">
                                 Ready to take control of your GRC?
@@ -378,7 +378,7 @@ export default function Welcome() {
                             </p>
                             <a
                                 href="/register"
-                                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
+                                className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-primary"
                             >
                                 Get Started
                                 <svg
@@ -404,7 +404,7 @@ export default function Welcome() {
                     <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 py-10 md:flex-row">
                         <div>
                             <div className="mb-1 flex items-center gap-2">
-                                <ShieldCheck className="h-5 w-5 text-blue-500" />
+                                <ShieldCheck className="h-5 w-5 text-primary" />
                                 <span className="font-bold text-white">
                                     GRC System
                                 </span>

@@ -188,7 +188,7 @@ export function AdminHeader() {
                                             key={n.id}
                                             className={cn(
                                                 'group flex items-start gap-3 border-b border-border/50 px-4 py-3 transition-colors last:border-0',
-                                                !n.is_read && 'bg-blue-500/5',
+                                                !n.is_read && 'bg-primary/5',
                                                 'hover:bg-accent/50',
                                             )}
                                         >

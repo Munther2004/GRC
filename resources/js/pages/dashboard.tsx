@@ -193,13 +193,7 @@ function StatTiles({ tiles }: { tiles: StatTile[] }) {
                         {t.progress !== undefined && t.progress !== null && (
                             <div className="mt-2 h-[3px] w-full overflow-hidden rounded-full bg-muted">
                                 <div
-                                    className={`h-full rounded-full ${
-                                        (t.progress ?? 0) >= 70
-                                            ? 'bg-emerald-400'
-                                            : (t.progress ?? 0) >= 40
-                                              ? 'bg-amber-400'
-                                              : 'bg-red-400'
-                                    }`}
+                                    className={`h-full rounded-full ${ (t.progress ?? 0) >= 70 ? 'bg-emerald-400' : (t.progress ?? 0) >= 40 ? 'bg-amber-400' : 'bg-red-400' }`}
                                     style={{
                                         width: `${Math.min(t.progress ?? 0, 100)}%`,
                                     }}
@@ -470,13 +464,7 @@ function HealthBreakdown({ healthScore }: { healthScore: HealthScore }) {
                             </div>
                             <div className="h-1 overflow-hidden rounded-full bg-muted">
                                 <div
-                                    className={`h-full rounded-full ${
-                                        pct >= 70
-                                            ? 'bg-emerald-400/80'
-                                            : pct >= 40
-                                              ? 'bg-amber-400/80'
-                                              : 'bg-red-400/80'
-                                    }`}
+                                    className={`h-full rounded-full ${ pct >= 70 ? 'bg-emerald-400/80' : pct >= 40 ? 'bg-amber-400/80' : 'bg-red-400/80' }`}
                                     style={{ width: `${pct}%` }}
                                 />
                             </div>

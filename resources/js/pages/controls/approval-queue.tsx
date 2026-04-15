@@ -59,7 +59,7 @@ const STATUS_BADGE: Record<string, string> = {
     partially_compliant: 'bg-amber-50 text-amber-700 border-border',
     non_compliant: 'bg-red-950 text-red-400 border-red-200',
     not_applicable: 'bg-muted text-muted-foreground border-border',
-    not_set: 'bg-card text-gray-400 border-gray-200',
+    not_set: 'bg-card text-muted-foreground border-border',
 };
 
 function StatusBadge({ status }: { status: string | null }) {
@@ -253,7 +253,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
                     </CardHeader>
                     <CardContent className="mt-4 p-0">
                         {requests.length === 0 ? (
-                            <div className="px-6 py-12 text-center text-gray-400">
+                            <div className="px-6 py-12 text-center text-muted-foreground">
                                 <CheckCircle2 className="mx-auto mb-3 h-10 w-10 text-green-400" />
                                 <p className="font-medium">All caught up!</p>
                                 <p className="mt-1 text-sm">
@@ -282,7 +282,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
                                                 <p className="truncate text-sm font-medium text-foreground">
                                                     {req.control_title}
                                                 </p>
-                                                <p className="mt-1 text-xs text-gray-500">
+                                                <p className="mt-1 text-xs text-muted-foreground">
                                                     Requested by{' '}
                                                     <span className="font-medium">
                                                         {req.requested_by}
@@ -299,7 +299,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
                                                 <StatusBadge
                                                     status={req.current_status}
                                                 />
-                                                <ArrowRight className="h-4 w-4 text-gray-400" />
+                                                <ArrowRight className="h-4 w-4 text-muted-foreground" />
                                                 <StatusBadge
                                                     status={
                                                         req.requested_status
@@ -310,7 +310,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
 
                                         {/* Justification */}
                                         {req.justification && (
-                                            <div className="mt-3 rounded-lg border border-gray-100 bg-muted/30 p-2.5 text-xs text-foreground/80 dark:border-gray-700">
+                                            <div className="mt-3 rounded-lg border border-border/50 bg-muted/30 p-2.5 text-xs text-foreground/80 dark:border-border">
                                                 <span className="font-medium text-muted-foreground">
                                                     Justification:{' '}
                                                 </span>
@@ -320,7 +320,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
 
                                         {/* Evidence row (if attached) */}
                                         {req.evidence ? (
-                                            <div className="mt-3 overflow-hidden rounded-lg border border-gray-100 dark:border-gray-800">
+                                            <div className="mt-3 overflow-hidden rounded-lg border border-border/50 dark:border-border">
                                                 <p className="px-4 pt-3 text-xs text-muted-foreground/60">
                                                     Accepting the evidence will
                                                     approve the status change.
@@ -402,7 +402,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
                                                     }
                                                 />
                                                 {actioning === req.id && (
-                                                    <div className="flex items-center gap-2 px-4 pb-3 text-xs text-gray-400">
+                                                    <div className="flex items-center gap-2 px-4 pb-3 text-xs text-muted-foreground">
                                                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                                         Processing...
                                                     </div>
@@ -521,11 +521,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
             {/* Toast */}
             {toast && (
                 <div
-                    className={`fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-lg ${
-                        toast.type === 'success'
-                            ? 'border-green-200 bg-green-50 text-green-800'
-                            : 'border-red-200 bg-red-50 text-red-800'
-                    }`}
+                    className={`fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-lg ${ toast.type === 'success' ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-800' }`}
                 >
                     {toast.type === 'success' ? (
                         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />

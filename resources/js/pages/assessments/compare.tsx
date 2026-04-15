@@ -31,7 +31,7 @@ interface Props {
 }
 
 const statusColors: Record<string, string> = {
-    draft: 'bg-gray-100 text-gray-600',
+    draft: 'bg-muted text-muted-foreground',
     in_progress: 'bg-blue-950 text-blue-400',
     completed: 'bg-green-50 text-green-700',
 };
@@ -91,7 +91,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="gap-1 text-gray-500"
+                            className="gap-1 text-muted-foreground"
                         >
                             <ArrowLeft className="h-4 w-4" /> Assessments
                         </Button>
@@ -106,7 +106,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                         <h1 className="text-2xl font-bold text-foreground">
                             Assessment Comparison
                         </h1>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                             Select two assessments to compare side by side
                         </p>
                     </div>
@@ -149,7 +149,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                                                             value={String(a.id)}
                                                         >
                                                             {a.title}
-                                                            <span className="ml-1.5 text-xs text-gray-400">
+                                                            <span className="ml-1.5 text-xs text-muted-foreground">
                                                                 — {a.created_at}
                                                             </span>
                                                         </SelectItem>
@@ -174,7 +174,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                                                 {assessmentAObj.framework}
                                             </Badge>
                                         </div>
-                                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                             <span
                                                 className={`rounded px-1.5 py-0.5 text-xs font-medium ${statusColors[assessmentAObj.status] ?? ''}`}
                                             >
@@ -202,8 +202,8 @@ export default function AssessmentCompare({ assessments }: Props) {
                             {/* vs divider */}
                             <div className="flex items-center justify-center pt-7">
                                 <div className="flex flex-col items-center gap-1">
-                                    <ArrowRight className="h-5 w-5 text-gray-400" />
-                                    <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                                    <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
                                         vs
                                     </span>
                                 </div>
@@ -241,7 +241,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                                                             value={String(a.id)}
                                                         >
                                                             {a.title}
-                                                            <span className="ml-1.5 text-xs text-gray-400">
+                                                            <span className="ml-1.5 text-xs text-muted-foreground">
                                                                 — {a.created_at}
                                                             </span>
                                                         </SelectItem>
@@ -266,7 +266,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                                                 {assessmentBObj.framework}
                                             </Badge>
                                         </div>
-                                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                             <span
                                                 className={`rounded px-1.5 py-0.5 text-xs font-medium ${statusColors[assessmentBObj.status] ?? ''}`}
                                             >
@@ -309,11 +309,11 @@ export default function AssessmentCompare({ assessments }: Props) {
                 {/* Empty state hint */}
                 {assessments.length === 0 && (
                     <Card>
-                        <CardContent className="py-12 text-center text-gray-400">
+                        <CardContent className="py-12 text-center text-muted-foreground">
                             No assessments found.{' '}
                             <Link
                                 href="/assessments/create"
-                                className="text-blue-500 hover:underline"
+                                className="text-primary hover:underline"
                             >
                                 Create one
                             </Link>{' '}
@@ -324,7 +324,7 @@ export default function AssessmentCompare({ assessments }: Props) {
 
                 {assessments.length === 1 && (
                     <Card>
-                        <CardContent className="py-8 text-center text-sm text-gray-400">
+                        <CardContent className="py-8 text-center text-sm text-muted-foreground">
                             You need at least two assessments to compare. Create
                             another assessment to use this feature.
                         </CardContent>

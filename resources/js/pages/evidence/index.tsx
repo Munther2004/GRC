@@ -5,22 +5,37 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatStrip } from '@/components/ui/stat-strip';
 import { FilterBar } from '@/components/ui/filter-bar';
 import {
-    Search, FolderOpen, CheckCircle, XCircle, Clock,
-    LayoutList, Layers, X, AlertTriangle,
+    Search,
+    FolderOpen,
+    CheckCircle,
+    XCircle,
+    Clock,
+    LayoutList,
+    Layers,
+    X,
+    AlertTriangle,
 } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
 import axios from 'axios';
 import {
-    AiReview, EvidenceItem, EvidenceRowProps,
-    EvidenceRow, getReviewFromItem,
+    AiReview,
+    EvidenceItem,
+    EvidenceRowProps,
+    EvidenceRow,
+    getReviewFromItem,
 } from '@/components/evidence-row';
-
 
 interface Props {
     evidence: {
@@ -28,46 +43,88 @@ interface Props {
         links: { url: string | null; label: string; active: boolean }[];
         total: number;
     };
-    frameworks:  { id: number; name: string; short_name: string }[];
+    frameworks: { id: number; name: string; short_name: string }[];
     assessments: { id: number; title: string }[];
-    stats:       { total: number; pending: number; approved: number; rejected: number };
-    filters:     { search?: string; status?: string; framework_id?: string; assessment_id?: string };
+    stats: {
+        total: number;
+        pending: number;
+        approved: number;
+        rejected: number;
+    };
+    filters: {
+        search?: string;
+        status?: string;
+        framework_id?: string;
+        assessment_id?: string;
+    };
 }
-
 
 type GroupStatus = 'adequate' | 'partial' | 'insufficient' | 'unreviewed';
 
-const GROUP_STATUS: Record<GroupStatus, { dot: string; label: string; text: string }> = {
-    adequate:     { dot: 'bg-emerald-500', label: 'Adequate',          text: 'text-emerald-400' },
-    partial:      { dot: 'bg-amber-500',   label: 'Partially Adequate', text: 'text-amber-400' },
-    insufficient: { dot: 'bg-red-500',     label: 'Insufficient',       text: 'text-red-400' },
-    unreviewed:   { dot: 'bg-muted-foreground/40', label: 'No AI Review', text: 'text-muted-foreground' },
+const GROUP_STATUS: Record<
+    GroupStatus,
+    { dot: string; label: string; text: string }
+> = {
+    adequate: {
+        dot: 'bg-emerald-500',
+        label: 'Adequate',
+        text: 'text-emerald-400',
+    },
+    partial: {
+        dot: 'bg-amber-500',
+        label: 'Partially Adequate',
+        text: 'text-amber-400',
+    },
+    insufficient: {
+        dot: 'bg-red-500',
+        label: 'Insufficient',
+        text: 'text-red-400',
+    },
+    unreviewed: {
+        dot: 'bg-muted-foreground/40',
+        label: 'No AI Review',
+        text: 'text-muted-foreground',
+    },
 };
 
-function getGroupStatus(items: EvidenceItem[], liveReviews: Record<number, AiReview>): GroupStatus {
+function getGroupStatus(
+    items: EvidenceItem[],
+    liveReviews: Record<number, AiReview>,
+): GroupStatus {
     const verdicts = items
-        .map(ev => liveReviews[ev.id]?.verdict ?? ev.ai_verdict ?? '')
+        .map((ev) => liveReviews[ev.id]?.verdict ?? ev.ai_verdict ?? '')
         .filter(Boolean);
     if (verdicts.length === 0) return 'unreviewed';
-    if (verdicts.some(v => v === 'Adequate')) return 'adequate';
-    if (verdicts.some(v => v === 'Partially Adequate')) return 'partial';
+    if (verdicts.some((v) => v === 'Adequate')) return 'adequate';
+    if (verdicts.some((v) => v === 'Partially Adequate')) return 'partial';
     return 'insufficient';
 }
 
-export default function EvidenceIndex({ evidence, frameworks, assessments, stats, filters }: Props) {
+export default function EvidenceIndex({
+    evidence,
+    frameworks,
+    assessments,
+    stats,
+    filters,
+}: Props) {
     const { auth } = usePage<SharedProps>().props;
-    const isAdmin   = auth.user.role === 'admin';
+    const isAdmin = auth.user.role === 'admin';
     const isAuditor = auth.user.role === 'auditor';
     const canReview = isAdmin || isAuditor;
 
-    const [search, setSearch]           = useState(filters.search ?? '');
-    const [status, setStatus]           = useState(filters.status ?? 'all');
-    const [frameworkId, setFramework]   = useState(filters.framework_id ?? 'all');
-    const [assessmentId, setAssessment] = useState(filters.assessment_id ?? 'all');
-    const [viewMode, setViewMode]       = useState<'list' | 'policy'>('list');
+    const [search, setSearch] = useState(filters.search ?? '');
+    const [status, setStatus] = useState(filters.status ?? 'all');
+    const [frameworkId, setFramework] = useState(filters.framework_id ?? 'all');
+    const [assessmentId, setAssessment] = useState(
+        filters.assessment_id ?? 'all',
+    );
+    const [viewMode, setViewMode] = useState<'list' | 'policy'>('list');
 
     // Toast
-    const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [toast, setToast] = useState<{
+        type: 'success' | 'error';
+        text: string;
+    } | null>(null);
     useEffect(() => {
         if (!toast) return;
         const t = setTimeout(() => setToast(null), 5000);
@@ -76,28 +133,36 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
 
     const formatStatus = (s: string | null) => {
         if (!s || s === 'not_set') return 'Not Set';
-        return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
     };
 
     // AI review state
-    const [reviewing, setReviewing]         = useState<Record<number, boolean>>({});
-    const [liveReviews, setLiveReviews]     = useState<Record<number, AiReview>>({});
-    const [expanded, setExpanded]           = useState<Record<number, boolean>>({});
-    const [reviewError, setReviewError]     = useState<Record<number, string>>({});
-    const [reviewWarning, setReviewWarning] = useState<Record<number, string>>({});
+    const [reviewing, setReviewing] = useState<Record<number, boolean>>({});
+    const [liveReviews, setLiveReviews] = useState<Record<number, AiReview>>(
+        {},
+    );
+    const [expanded, setExpanded] = useState<Record<number, boolean>>({});
+    const [reviewError, setReviewError] = useState<Record<number, string>>({});
+    const [reviewWarning, setReviewWarning] = useState<Record<number, string>>(
+        {},
+    );
 
     const applyFilters = (overrides: Record<string, string> = {}) => {
-        router.get(route('evidence.index'), {
-            search,
-            status:        status       === 'all' ? '' : status,
-            framework_id:  frameworkId  === 'all' ? '' : frameworkId,
-            assessment_id: assessmentId === 'all' ? '' : assessmentId,
-            ...overrides,
-        }, { preserveState: true, replace: true });
+        router.get(
+            route('evidence.index'),
+            {
+                search,
+                status: status === 'all' ? '' : status,
+                framework_id: frameworkId === 'all' ? '' : frameworkId,
+                assessment_id: assessmentId === 'all' ? '' : assessmentId,
+                ...overrides,
+            },
+            { preserveState: true, replace: true },
+        );
     };
 
-    const approve  = (id: number) => router.post(route('evidence.approve', id));
-    const reject   = (id: number) => router.post(route('evidence.reject', id));
+    const approve = (id: number) => router.post(route('evidence.approve', id));
+    const reject = (id: number) => router.post(route('evidence.reject', id));
 
     const rejectForRelevance = async (id: number) => {
         try {
@@ -108,71 +173,92 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
             setToast({ type: 'success', text: msg });
             router.reload({ only: ['evidence', 'stats'] });
         } catch {
-            setToast({ type: 'error', text: 'Failed to reject evidence. Please try again.' });
+            setToast({
+                type: 'error',
+                text: 'Failed to reject evidence. Please try again.',
+            });
         }
     };
-    const destroy  = (id: number, title: string) => {
+    const destroy = (id: number, title: string) => {
         if (!confirm(`Delete evidence "${title}"?`)) return;
         router.delete(route('evidence.destroy', id));
     };
-    const download = (id: number) => window.open(route('evidence.download', id), '_blank');
+    const download = (id: number) =>
+        window.open(route('evidence.download', id), '_blank');
 
     const runAiReview = async (id: number) => {
-        setReviewing(prev => ({ ...prev, [id]: true }));
-        setReviewError(prev => { const n = { ...prev }; delete n[id]; return n; });
-        setReviewWarning(prev => { const n = { ...prev }; delete n[id]; return n; });
+        setReviewing((prev) => ({ ...prev, [id]: true }));
+        setReviewError((prev) => {
+            const n = { ...prev };
+            delete n[id];
+            return n;
+        });
+        setReviewWarning((prev) => {
+            const n = { ...prev };
+            delete n[id];
+            return n;
+        });
 
         try {
             const { data } = await axios.post(route('evidence.ai-review', id));
             if (data.warning) {
-                setReviewWarning(prev => ({ ...prev, [id]: data.warning }));
+                setReviewWarning((prev) => ({ ...prev, [id]: data.warning }));
                 return;
             }
             if (!data.verdict) {
-                setReviewError(prev => ({ ...prev, [id]: 'AI review could not be completed. Please try again.' }));
+                setReviewError((prev) => ({
+                    ...prev,
+                    [id]: 'AI review could not be completed. Please try again.',
+                }));
                 return;
             }
-            setLiveReviews(prev => ({ ...prev, [id]: data }));
-            setExpanded(prev => ({ ...prev, [id]: true }));
+            setLiveReviews((prev) => ({ ...prev, [id]: data }));
+            setExpanded((prev) => ({ ...prev, [id]: true }));
         } catch (err: any) {
-            const msg = err.response?.data?.error ?? 'AI review could not be completed. Please try again.';
-            setReviewError(prev => ({ ...prev, [id]: msg }));
+            const msg =
+                err.response?.data?.error ??
+                'AI review could not be completed. Please try again.';
+            setReviewError((prev) => ({ ...prev, [id]: msg }));
         } finally {
-            setReviewing(prev => ({ ...prev, [id]: false }));
+            setReviewing((prev) => ({ ...prev, [id]: false }));
         }
     };
 
     const togglePanel = (id: number) => {
-        setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+        setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
     // Group evidence by control for Policy View
     const { controlGroups, unlinked } = useMemo(() => {
-        const groupMap: Record<string, {
-            key: string;
-            controlId: string;
-            controlTitle: string;
-            framework: string;
-            items: EvidenceItem[];
-        }> = {};
+        const groupMap: Record<
+            string,
+            {
+                key: string;
+                controlId: string;
+                controlTitle: string;
+                framework: string;
+                items: EvidenceItem[];
+            }
+        > = {};
         const unlinkedItems: EvidenceItem[] = [];
 
         for (const ev of evidence.data) {
             // Prefer assessment_item.control, fall back to direct control link (Controls Hub uploads)
-            const ctrl      = ev.assessment_item?.control ?? ev.control ?? null;
-            const framework = ev.assessment_item?.assessment.framework.short_name
-                           ?? ev.control?.framework?.short_name
-                           ?? 'Unknown';
+            const ctrl = ev.assessment_item?.control ?? ev.control ?? null;
+            const framework =
+                ev.assessment_item?.assessment.framework.short_name ??
+                ev.control?.framework?.short_name ??
+                'Unknown';
 
             if (ctrl) {
                 const key = ctrl.control_id;
                 if (!groupMap[key]) {
                     groupMap[key] = {
                         key,
-                        controlId:    ctrl.control_id,
+                        controlId: ctrl.control_id,
                         controlTitle: ctrl.title,
                         framework,
-                        items:        [],
+                        items: [],
                     };
                 }
                 groupMap[key].items.push(ev);
@@ -182,29 +268,31 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
         }
 
         return {
-            controlGroups: Object.values(groupMap).sort((a, b) => a.controlId.localeCompare(b.controlId)),
-            unlinked:      unlinkedItems,
+            controlGroups: Object.values(groupMap).sort((a, b) =>
+                a.controlId.localeCompare(b.controlId),
+            ),
+            unlinked: unlinkedItems,
         };
     }, [evidence.data]);
 
     const rowProps = (ev: EvidenceItem): EvidenceRowProps => ({
         ev,
-        review:           getReviewFromItem(ev, liveReviews),
-        isExpanded:       expanded[ev.id] ?? false,
-        isLoading:        reviewing[ev.id] ?? false,
-        error:            reviewError[ev.id],
-        warning:          reviewWarning[ev.id],
+        review: getReviewFromItem(ev, liveReviews),
+        isExpanded: expanded[ev.id] ?? false,
+        isLoading: reviewing[ev.id] ?? false,
+        error: reviewError[ev.id],
+        warning: reviewWarning[ev.id],
         canReview,
         isAdmin,
         isAuditor,
         liveReviewExists: !!liveReviews[ev.id],
-        onRunReview:      () => runAiReview(ev.id),
-        onTogglePanel:    () => togglePanel(ev.id),
-        onApprove:              () => approve(ev.id),
-        onReject:               () => reject(ev.id),
-        onRejectForRelevance:   () => rejectForRelevance(ev.id),
-        onDestroy:              () => destroy(ev.id, ev.title),
-        onDownload:       () => download(ev.id),
+        onRunReview: () => runAiReview(ev.id),
+        onTogglePanel: () => togglePanel(ev.id),
+        onApprove: () => approve(ev.id),
+        onReject: () => reject(ev.id),
+        onRejectForRelevance: () => rejectForRelevance(ev.id),
+        onDestroy: () => destroy(ev.id, ev.title),
+        onDownload: () => download(ev.id),
     });
 
     return (
@@ -212,32 +300,61 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
             <Head title="Evidence" />
 
             <div className="space-y-6">
-
                 <PageHeader
                     title="Evidence"
                     description="All uploaded compliance evidence files"
                 />
 
-                <StatStrip stats={[
-                    { label: 'Total Files', value: stats.total,    tone: 'neutral' },
-                    { label: 'Pending',     value: stats.pending,  tone: stats.pending  > 0 ? 'warn'    : 'neutral' },
-                    { label: 'Approved',    value: stats.approved, tone: stats.approved > 0 ? 'ok'      : 'neutral' },
-                    { label: 'Rejected',    value: stats.rejected, tone: stats.rejected > 0 ? 'bad'     : 'neutral' },
-                ]} />
+                <StatStrip
+                    stats={[
+                        {
+                            label: 'Total Files',
+                            value: stats.total,
+                            tone: 'neutral',
+                        },
+                        {
+                            label: 'Pending',
+                            value: stats.pending,
+                            tone: stats.pending > 0 ? 'warn' : 'neutral',
+                        },
+                        {
+                            label: 'Approved',
+                            value: stats.approved,
+                            tone: stats.approved > 0 ? 'ok' : 'neutral',
+                        },
+                        {
+                            label: 'Rejected',
+                            value: stats.rejected,
+                            tone: stats.rejected > 0 ? 'bad' : 'neutral',
+                        },
+                    ]}
+                />
 
                 <FilterBar>
-                    <div className="relative flex-1 min-w-48">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <div className="relative min-w-48 flex-1">
+                        <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search evidence..."
                             value={search}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-                            onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && applyFilters({ search })}
-                            className="pl-9 h-8 text-sm"
+                            onChange={(
+                                e: React.ChangeEvent<HTMLInputElement>,
+                            ) => setSearch(e.target.value)}
+                            onKeyDown={(e: React.KeyboardEvent) =>
+                                e.key === 'Enter' && applyFilters({ search })
+                            }
+                            className="h-8 pl-9 text-sm"
                         />
                     </div>
-                    <Select value={status} onValueChange={(v: string) => { setStatus(v); applyFilters({ status: v === 'all' ? '' : v }); }}>
-                        <SelectTrigger className="w-36 h-8 text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
+                    <Select
+                        value={status}
+                        onValueChange={(v: string) => {
+                            setStatus(v);
+                            applyFilters({ status: v === 'all' ? '' : v });
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-36 text-sm">
+                            <SelectValue placeholder="Status" />
+                        </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Statuses</SelectItem>
                             <SelectItem value="pending">Pending</SelectItem>
@@ -245,48 +362,85 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
                             <SelectItem value="rejected">Rejected</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Select value={frameworkId} onValueChange={(v: string) => { setFramework(v); applyFilters({ framework_id: v === 'all' ? '' : v }); }}>
-                        <SelectTrigger className="w-40 h-8 text-sm"><SelectValue placeholder="Framework" /></SelectTrigger>
+                    <Select
+                        value={frameworkId}
+                        onValueChange={(v: string) => {
+                            setFramework(v);
+                            applyFilters({
+                                framework_id: v === 'all' ? '' : v,
+                            });
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-40 text-sm">
+                            <SelectValue placeholder="Framework" />
+                        </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Frameworks</SelectItem>
-                            {frameworks.map(f => (
-                                <SelectItem key={f.id} value={String(f.id)}>{f.short_name}</SelectItem>
+                            {frameworks.map((f) => (
+                                <SelectItem key={f.id} value={String(f.id)}>
+                                    {f.short_name}
+                                </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
-                    <Select value={assessmentId} onValueChange={(v: string) => { setAssessment(v); applyFilters({ assessment_id: v === 'all' ? '' : v }); }}>
-                        <SelectTrigger className="w-48 h-8 text-sm"><SelectValue placeholder="Assessment" /></SelectTrigger>
+                    <Select
+                        value={assessmentId}
+                        onValueChange={(v: string) => {
+                            setAssessment(v);
+                            applyFilters({
+                                assessment_id: v === 'all' ? '' : v,
+                            });
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-48 text-sm">
+                            <SelectValue placeholder="Assessment" />
+                        </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Assessments</SelectItem>
-                            {assessments.map(a => (
-                                <SelectItem key={a.id} value={String(a.id)}>{a.title}</SelectItem>
+                            {assessments.map((a) => (
+                                <SelectItem key={a.id} value={String(a.id)}>
+                                    {a.title}
+                                </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
-                    <Button variant="outline" size="sm" onClick={() => applyFilters({ search })}>Search</Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => applyFilters({ search })}
+                    >
+                        Search
+                    </Button>
                 </FilterBar>
 
                 {/* View Toggle + Evidence */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">{evidence.total} file{evidence.total !== 1 ? 's' : ''}</p>
-                        <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                        <p className="text-sm text-muted-foreground">
+                            {evidence.total} file
+                            {evidence.total !== 1 ? 's' : ''}
+                        </p>
+                        <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
                             <Button
-                                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                                variant={
+                                    viewMode === 'list' ? 'default' : 'ghost'
+                                }
                                 size="sm"
-                                className="h-7 px-3 text-xs gap-1.5"
+                                className="h-7 gap-1.5 px-3 text-xs"
                                 onClick={() => setViewMode('list')}
                             >
-                                <LayoutList className="w-3.5 h-3.5" />
+                                <LayoutList className="h-3.5 w-3.5" />
                                 List View
                             </Button>
                             <Button
-                                variant={viewMode === 'policy' ? 'default' : 'ghost'}
+                                variant={
+                                    viewMode === 'policy' ? 'default' : 'ghost'
+                                }
                                 size="sm"
-                                className="h-7 px-3 text-xs gap-1.5"
+                                className="h-7 gap-1.5 px-3 text-xs"
                                 onClick={() => setViewMode('policy')}
                             >
-                                <Layers className="w-3.5 h-3.5" />
+                                <Layers className="h-3.5 w-3.5" />
                                 Policy View
                             </Button>
                         </div>
@@ -298,27 +452,44 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
                             <CardContent className="p-0">
                                 {evidence.data.length === 0 ? (
                                     <div className="p-12 text-center">
-                                        <FolderOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                                        <p className="text-gray-400 font-medium">No evidence files found</p>
-                                        <p className="text-gray-400 text-sm mt-1">Upload evidence from within a questionnaire.</p>
+                                        <FolderOpen className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+                                        <p className="font-medium text-gray-400">
+                                            No evidence files found
+                                        </p>
+                                        <p className="mt-1 text-sm text-gray-400">
+                                            Upload evidence from within a
+                                            questionnaire.
+                                        </p>
                                     </div>
                                 ) : (
                                     <div className="divide-y divide-border">
-                                        {evidence.data.map(ev => (
-                                            <EvidenceRow key={ev.id} {...rowProps(ev)} />
+                                        {evidence.data.map((ev) => (
+                                            <EvidenceRow
+                                                key={ev.id}
+                                                {...rowProps(ev)}
+                                            />
                                         ))}
                                     </div>
                                 )}
                                 {evidence.links.length > 3 && (
-                                    <div className="flex items-center justify-center gap-1 p-4 border-t">
+                                    <div className="flex items-center justify-center gap-1 border-t p-4">
                                         {evidence.links.map((link, i) => (
                                             <Button
                                                 key={i}
-                                                variant={link.active ? 'default' : 'outline'}
+                                                variant={
+                                                    link.active
+                                                        ? 'default'
+                                                        : 'outline'
+                                                }
                                                 size="sm"
                                                 disabled={!link.url}
-                                                onClick={() => link.url && router.get(link.url)}
-                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                                onClick={() =>
+                                                    link.url &&
+                                                    router.get(link.url)
+                                                }
+                                                dangerouslySetInnerHTML={{
+                                                    __html: link.label,
+                                                }}
                                             />
                                         ))}
                                     </div>
@@ -330,13 +501,17 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
                     {/* POLICY VIEW */}
                     {viewMode === 'policy' && (
                         <div className="space-y-4">
-
                             {evidence.data.length === 0 && (
                                 <Card>
                                     <CardContent className="p-12 text-center">
-                                        <FolderOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                                        <p className="text-gray-400 font-medium">No evidence files found</p>
-                                        <p className="text-gray-400 text-sm mt-1">Upload evidence from within a questionnaire.</p>
+                                        <FolderOpen className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+                                        <p className="font-medium text-gray-400">
+                                            No evidence files found
+                                        </p>
+                                        <p className="mt-1 text-sm text-gray-400">
+                                            Upload evidence from within a
+                                            questionnaire.
+                                        </p>
                                     </CardContent>
                                 </Card>
                             )}
@@ -344,21 +519,32 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
                             {/* Unlinked evidence */}
                             {unlinked.length > 0 && (
                                 <Card className="border-amber-500/30">
-                                    <CardHeader className="pb-2 pt-4 px-4">
+                                    <CardHeader className="px-4 pt-4 pb-2">
                                         <div className="flex items-center gap-2">
-                                            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                                            <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
                                             <CardTitle className="text-sm font-semibold text-amber-400">
-                                                Unlinked Evidence ({unlinked.length} file{unlinked.length !== 1 ? 's' : ''})
+                                                Unlinked Evidence (
+                                                {unlinked.length} file
+                                                {unlinked.length !== 1
+                                                    ? 's'
+                                                    : ''}
+                                                )
                                             </CardTitle>
                                         </div>
-                                        <p className="text-xs text-amber-400/70 mt-1">
-                                            These files are not linked to any control and will not count toward compliance. Link them to a control from within a questionnaire.
+                                        <p className="mt-1 text-xs text-amber-400/70">
+                                            These files are not linked to any
+                                            control and will not count toward
+                                            compliance. Link them to a control
+                                            from within a questionnaire.
                                         </p>
                                     </CardHeader>
                                     <CardContent className="p-0">
                                         <div className="divide-y divide-amber-500/20">
-                                            {unlinked.map(ev => (
-                                                <EvidenceRow key={ev.id} {...rowProps(ev)} />
+                                            {unlinked.map((ev) => (
+                                                <EvidenceRow
+                                                    key={ev.id}
+                                                    {...rowProps(ev)}
+                                                />
                                             ))}
                                         </div>
                                     </CardContent>
@@ -366,34 +552,61 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
                             )}
 
                             {/* Control groups */}
-                            {controlGroups.map(group => {
-                                const groupStatus = getGroupStatus(group.items, liveReviews);
-                                const sc          = GROUP_STATUS[groupStatus];
+                            {controlGroups.map((group) => {
+                                const groupStatus = getGroupStatus(
+                                    group.items,
+                                    liveReviews,
+                                );
+                                const sc = GROUP_STATUS[groupStatus];
 
                                 return (
                                     <Card key={group.key}>
-                                        <CardHeader className="pb-2 pt-4 px-4">
-                                            <div className="flex items-center justify-between gap-3 flex-wrap">
-                                                <div className="flex items-center gap-2 min-w-0">
-                                                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${sc.dot}`} />
+                                        <CardHeader className="px-4 pt-4 pb-2">
+                                            <div className="flex flex-wrap items-center justify-between gap-3">
+                                                <div className="flex min-w-0 items-center gap-2">
+                                                    <span
+                                                        className={`h-2.5 w-2.5 shrink-0 rounded-full ${sc.dot}`}
+                                                    />
                                                     <CardTitle className="text-sm font-semibold text-foreground">
-                                                        <span className="font-mono text-muted-foreground/60 mr-1.5">{group.controlId}</span>
+                                                        <span className="mr-1.5 font-mono text-muted-foreground/60">
+                                                            {group.controlId}
+                                                        </span>
                                                         {group.controlTitle}
                                                     </CardTitle>
                                                 </div>
-                                                <div className="flex items-center gap-2 shrink-0">
-                                                    <Badge variant="outline" className="text-xs">{group.framework}</Badge>
-                                                    <Badge variant="outline" className="text-xs text-gray-500">
-                                                        {group.items.length} file{group.items.length !== 1 ? 's' : ''}
+                                                <div className="flex shrink-0 items-center gap-2">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-xs"
+                                                    >
+                                                        {group.framework}
                                                     </Badge>
-                                                    <span className={`text-xs font-medium ${sc.text}`}>{sc.label}</span>
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-xs text-gray-500"
+                                                    >
+                                                        {group.items.length}{' '}
+                                                        file
+                                                        {group.items.length !==
+                                                        1
+                                                            ? 's'
+                                                            : ''}
+                                                    </Badge>
+                                                    <span
+                                                        className={`text-xs font-medium ${sc.text}`}
+                                                    >
+                                                        {sc.label}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </CardHeader>
                                         <CardContent className="p-0">
                                             <div className="divide-y divide-border">
-                                                {group.items.map(ev => (
-                                                    <EvidenceRow key={ev.id} {...rowProps(ev)} />
+                                                {group.items.map((ev) => (
+                                                    <EvidenceRow
+                                                        key={ev.id}
+                                                        {...rowProps(ev)}
+                                                    />
                                                 ))}
                                             </div>
                                         </CardContent>
@@ -407,18 +620,24 @@ export default function EvidenceIndex({ evidence, frameworks, assessments, stats
 
             {/* Toast notification */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-start gap-3 rounded-lg border px-4 py-3 shadow-xl text-sm max-w-sm backdrop-blur-xl
-                    ${toast.type === 'success'
-                        ? 'bg-popover border-emerald-500/30 text-foreground'
-                        : 'bg-popover border-red-500/30 text-foreground'
-                    }`}>
-                    {toast.type === 'success'
-                        ? <CheckCircle className="w-4 h-4 mt-0.5 shrink-0 text-emerald-400" />
-                        : <XCircle    className="w-4 h-4 mt-0.5 shrink-0 text-red-400" />
-                    }
+                <div
+                    className={`fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-xl backdrop-blur-xl ${
+                        toast.type === 'success'
+                            ? 'border-emerald-500/30 bg-popover text-foreground'
+                            : 'border-red-500/30 bg-popover text-foreground'
+                    }`}
+                >
+                    {toast.type === 'success' ? (
+                        <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                    ) : (
+                        <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                    )}
                     <span className="flex-1">{toast.text}</span>
-                    <button onClick={() => setToast(null)} className="shrink-0 opacity-60 hover:opacity-100">
-                        <X className="w-3.5 h-3.5" />
+                    <button
+                        onClick={() => setToast(null)}
+                        className="shrink-0 opacity-60 hover:opacity-100"
+                    >
+                        <X className="h-3.5 w-3.5" />
                     </button>
                 </div>
             )}

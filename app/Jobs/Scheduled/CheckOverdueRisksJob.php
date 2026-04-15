@@ -27,13 +27,13 @@ class CheckOverdueRisksJob implements ShouldQueue
                     );
 
                     AuditLog::create([
-                        'user_id'     => null,
-                        'user_name'   => 'System',
-                        'action'      => 'updated',
-                        'model_type'  => 'Risk',
-                        'model_id'    => $risk->id,
+                        'user_id' => null,
+                        'user_name' => 'System',
+                        'action' => 'updated',
+                        'model_type' => 'Risk',
+                        'model_id' => $risk->id,
                         'description' => "Scheduler: Risk #{$risk->id} marked as overdue",
-                        'ip_address'  => null,
+                        'ip_address' => null,
                     ]);
                 }
             });

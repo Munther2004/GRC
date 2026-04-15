@@ -6,17 +6,22 @@ export default function Error500() {
     return (
         <>
             <Head title="500 — Server Error" />
-            <div className="min-h-screen bg-background dark flex items-center justify-center p-6">
-                <div className="text-center max-w-md">
-                    <div className="flex justify-center mb-6">
-                        <div className="w-20 h-20 rounded-full bg-orange-100 dark:bg-orange-950 flex items-center justify-center">
-                            <ServerCrash className="w-10 h-10 text-orange-500" />
+            <div className="dark flex min-h-screen items-center justify-center bg-background p-6">
+                <div className="max-w-md text-center">
+                    <div className="mb-6 flex justify-center">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-950">
+                            <ServerCrash className="h-10 w-10 text-orange-500" />
                         </div>
                     </div>
-                    <h1 className="text-6xl font-bold text-foreground mb-2">500</h1>
-                    <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3">Server Error</h2>
-                    <p className="text-muted-foreground mb-8">
-                        Something went wrong on our end. Please try again later or contact support if the problem persists.
+                    <h1 className="mb-2 text-6xl font-bold text-foreground">
+                        500
+                    </h1>
+                    <h2 className="mb-3 text-xl font-semibold text-gray-700 dark:text-gray-200">
+                        Server Error
+                    </h2>
+                    <p className="mb-8 text-muted-foreground">
+                        Something went wrong on our end. Please try again later
+                        or contact support if the problem persists.
                     </p>
                     <Link href="/">
                         <Button>Go to Dashboard</Button>

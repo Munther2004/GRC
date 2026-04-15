@@ -9,17 +9,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Save } from 'lucide-react';
 
 interface Framework {
-    id: number; name: string; short_name: string;
-    description: string; version: string;
+    id: number;
+    name: string;
+    short_name: string;
+    description: string;
+    version: string;
 }
 
-interface Props { framework: Framework }
+interface Props {
+    framework: Framework;
+}
 
 export default function FrameworkEdit({ framework }: Props) {
     const { data, setData, put, processing, errors } = useForm({
-        name:        framework.name,
+        name: framework.name,
         description: framework.description,
-        version:     framework.version,
+        version: framework.version,
     });
 
     const submit = (e: React.FormEvent) => {
@@ -31,36 +36,54 @@ export default function FrameworkEdit({ framework }: Props) {
         <AdminLayout>
             <Head title={`Edit — ${framework.short_name}`} />
 
-            <div className="max-w-2xl mx-auto space-y-6">
+            <div className="mx-auto max-w-2xl space-y-6">
                 <div className="flex items-center gap-3">
                     <Link href={route('admin.frameworks.index')}>
-                        <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon">
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">Edit Framework</h1>
-                        <p className="text-sm text-gray-500">{framework.short_name}</p>
+                        <h1 className="text-2xl font-bold text-foreground">
+                            Edit Framework
+                        </h1>
+                        <p className="text-sm text-gray-500">
+                            {framework.short_name}
+                        </p>
                     </div>
                 </div>
 
                 <form onSubmit={submit} className="space-y-6">
                     <Card>
-                        <CardHeader><CardTitle className="text-base">Framework Details</CardTitle></CardHeader>
+                        <CardHeader>
+                            <CardTitle className="text-base">
+                                Framework Details
+                            </CardTitle>
+                        </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-1">
                                 <Label htmlFor="name">Name *</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('name', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => setData('name', e.target.value)}
                                 />
-                                {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
+                                {errors.name && (
+                                    <p className="text-xs text-red-500">
+                                        {errors.name}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="version">Version</Label>
                                 <Input
                                     id="version"
                                     value={data.version}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('version', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => setData('version', e.target.value)}
                                 />
                             </div>
                             <div className="space-y-1">
@@ -68,7 +91,9 @@ export default function FrameworkEdit({ framework }: Props) {
                                 <Textarea
                                     id="description"
                                     value={data.description}
-                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLTextAreaElement>,
+                                    ) => setData('description', e.target.value)}
                                     rows={3}
                                 />
                             </div>
@@ -79,8 +104,12 @@ export default function FrameworkEdit({ framework }: Props) {
                         <Link href={route('admin.frameworks.index')}>
                             <Button variant="outline">Cancel</Button>
                         </Link>
-                        <Button type="submit" disabled={processing} className="gap-2">
-                            <Save className="w-4 h-4" />
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            className="gap-2"
+                        >
+                            <Save className="h-4 w-4" />
                             {processing ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>

@@ -14,27 +14,25 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = User::query()
-            ->when($request->search, fn($q) =>
-                $q->where('name', 'like', "%{$request->search}%")
-                  ->orWhere('email', 'like', "%{$request->search}%")
+            ->when($request->search, fn ($q) => $q->where('name', 'like', "%{$request->search}%")
+                ->orWhere('email', 'like', "%{$request->search}%")
             )
-            ->when($request->role, fn($q) =>
-                $q->where('role', $request->role)
+            ->when($request->role, fn ($q) => $q->where('role', $request->role)
             )
             ->orderBy('created_at', 'desc')
             ->paginate(15)
             ->withQueryString();
 
         $stats = [
-            'total'    => User::count(),
-            'admins'   => User::where('role', 'admin')->count(),
+            'total' => User::count(),
+            'admins' => User::where('role', 'admin')->count(),
             'auditors' => User::where('role', 'auditor')->count(),
-            'users'    => User::where('role', 'user')->count(),
+            'users' => User::where('role', 'user')->count(),
         ];
 
         return Inertia::render('admin/users/index', [
-            'users'   => $users,
-            'stats'   => $stats,
+            'users' => $users,
+            'stats' => $stats,
             'filters' => $request->only(['search', 'role']),
         ]);
     }
@@ -47,17 +45,17 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role'     => 'required|in:admin,auditor,user',
+            'role' => 'required|in:admin,auditor,user',
         ]);
 
         $user = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
+            'name' => $validated['name'],
+            'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role'     => $validated['role'],
+            'role' => $validated['role'],
         ]);
 
         AuditLog::record('created', 'User', $user->id, "User '{$user->name}' created with role '{$user->role}'");
@@ -76,16 +74,16 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email,' . $user->id,
-            'role'     => 'required|in:admin,auditor,user',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            'role' => 'required|in:admin,auditor,user',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         $user->update([
-            'name'  => $validated['name'],
+            'name' => $validated['name'],
             'email' => $validated['email'],
-            'role'  => $validated['role'],
+            'role' => $validated['role'],
             ...($validated['password'] ? ['password' => Hash::make($validated['password'])] : []),
         ]);
 
@@ -102,7 +100,7 @@ class UserController extends Controller
         }
 
         $name = $user->name;
-        $id   = $user->id;
+        $id = $user->id;
         $user->delete();
 
         AuditLog::record('deleted', 'User', $id, "User '{$name}' deleted");

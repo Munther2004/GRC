@@ -31,9 +31,9 @@ interface Props {
 }
 
 const statusColors: Record<string, string> = {
-    draft:       'bg-gray-100 text-gray-600',
+    draft: 'bg-gray-100 text-gray-600',
     in_progress: 'bg-blue-950 text-blue-400',
-    completed:   'bg-green-50 text-green-700',
+    completed: 'bg-green-50 text-green-700',
 };
 
 export default function AssessmentCompare({ assessments }: Props) {
@@ -61,8 +61,10 @@ export default function AssessmentCompare({ assessments }: Props) {
         return map;
     }, [assessments, selectedA]);
 
-    const assessmentAObj = assessments.find(a => String(a.id) === selectedA) ?? null;
-    const assessmentBObj = assessments.find(a => String(a.id) === selectedB) ?? null;
+    const assessmentAObj =
+        assessments.find((a) => String(a.id) === selectedA) ?? null;
+    const assessmentBObj =
+        assessments.find((a) => String(a.id) === selectedB) ?? null;
 
     const canCompare = selectedA && selectedB && selectedA !== selectedB;
 
@@ -82,79 +84,116 @@ export default function AssessmentCompare({ assessments }: Props) {
         <AdminLayout>
             <Head title="Assessment Comparison" />
 
-            <div className="space-y-6 max-w-4xl">
-
+            <div className="max-w-4xl space-y-6">
                 {/* Header */}
                 <div className="flex items-center gap-4">
                     <Link href="/assessments">
-                        <Button variant="ghost" size="sm" className="gap-1 text-gray-500">
-                            <ArrowLeft className="w-4 h-4" /> Assessments
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="gap-1 text-gray-500"
+                        >
+                            <ArrowLeft className="h-4 w-4" /> Assessments
                         </Button>
                     </Link>
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                        <GitCompare className="w-5 h-5 text-blue-400" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                        <GitCompare className="h-5 w-5 text-blue-400" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">Assessment Comparison</h1>
-                        <p className="text-sm text-gray-500">Select two assessments to compare side by side</p>
+                        <h1 className="text-2xl font-bold text-foreground">
+                            Assessment Comparison
+                        </h1>
+                        <p className="text-sm text-gray-500">
+                            Select two assessments to compare side by side
+                        </p>
                     </div>
                 </div>
 
                 {/* Selector card */}
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-base">Choose Assessments</CardTitle>
+                        <CardTitle className="text-base">
+                            Choose Assessments
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-start">
-
+                        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[1fr_auto_1fr]">
                             {/* Assessment A */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                                <label className="text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
                                     Assessment A — Baseline
                                 </label>
-                                <Select value={selectedA} onValueChange={(v) => {
-                                    setSelectedA(v);
-                                    if (v === selectedB) setSelectedB('');
-                                }}>
+                                <Select
+                                    value={selectedA}
+                                    onValueChange={(v) => {
+                                        setSelectedA(v);
+                                        if (v === selectedB) setSelectedB('');
+                                    }}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select baseline assessment…" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {Object.entries(grouped).map(([fw, items]) => (
-                                            <SelectGroup key={fw}>
-                                                <SelectLabel>{fw}</SelectLabel>
-                                                {items.map(a => (
-                                                    <SelectItem key={a.id} value={String(a.id)}>
-                                                        {a.title}
-                                                        <span className="ml-1.5 text-gray-400 text-xs">— {a.created_at}</span>
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        ))}
+                                        {Object.entries(grouped).map(
+                                            ([fw, items]) => (
+                                                <SelectGroup key={fw}>
+                                                    <SelectLabel>
+                                                        {fw}
+                                                    </SelectLabel>
+                                                    {items.map((a) => (
+                                                        <SelectItem
+                                                            key={a.id}
+                                                            value={String(a.id)}
+                                                        >
+                                                            {a.title}
+                                                            <span className="ml-1.5 text-xs text-gray-400">
+                                                                — {a.created_at}
+                                                            </span>
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            ),
+                                        )}
                                     </SelectContent>
                                 </Select>
 
                                 {/* Preview card */}
                                 {assessmentAObj && (
-                                    <div className="rounded-lg border bg-accent/30 p-3 space-y-1.5">
+                                    <div className="space-y-1.5 rounded-lg border bg-accent/30 p-3">
                                         <div className="flex items-center justify-between gap-2">
-                                            <p className="text-sm font-medium truncate">{assessmentAObj.title}</p>
-                                            <Badge variant="outline" className="text-xs shrink-0">
+                                            <p className="truncate text-sm font-medium">
+                                                {assessmentAObj.title}
+                                            </p>
+                                            <Badge
+                                                variant="outline"
+                                                className="shrink-0 text-xs"
+                                            >
                                                 {assessmentAObj.framework}
                                             </Badge>
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-gray-500">
-                                            <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${statusColors[assessmentAObj.status] ?? ''}`}>
-                                                {assessmentAObj.status.replace('_', ' ')}
+                                            <span
+                                                className={`rounded px-1.5 py-0.5 text-xs font-medium ${statusColors[assessmentAObj.status] ?? ''}`}
+                                            >
+                                                {assessmentAObj.status.replace(
+                                                    '_',
+                                                    ' ',
+                                                )}
                                             </span>
                                             <span>&middot;</span>
-                                            <span>{assessmentAObj.compliance_percentage}% compliance</span>
+                                            <span>
+                                                {
+                                                    assessmentAObj.compliance_percentage
+                                                }
+                                                % compliance
+                                            </span>
                                             <span>&middot;</span>
-                                            <span>{assessmentAObj.created_at}</span>
+                                            <span>
+                                                {assessmentAObj.created_at}
+                                            </span>
                                         </div>
                                     </div>
                                 )}
@@ -163,14 +202,16 @@ export default function AssessmentCompare({ assessments }: Props) {
                             {/* vs divider */}
                             <div className="flex items-center justify-center pt-7">
                                 <div className="flex flex-col items-center gap-1">
-                                    <ArrowRight className="w-5 h-5 text-gray-400" />
-                                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">vs</span>
+                                    <ArrowRight className="h-5 w-5 text-gray-400" />
+                                    <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                                        vs
+                                    </span>
                                 </div>
                             </div>
 
                             {/* Assessment B */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                                <label className="text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
                                     Assessment B — Latest
                                 </label>
                                 <Select
@@ -179,40 +220,72 @@ export default function AssessmentCompare({ assessments }: Props) {
                                     disabled={!selectedA}
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder={selectedA ? 'Select latest assessment…' : 'Select A first'} />
+                                        <SelectValue
+                                            placeholder={
+                                                selectedA
+                                                    ? 'Select latest assessment…'
+                                                    : 'Select A first'
+                                            }
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {Object.entries(groupedB).map(([fw, items]) => (
-                                            <SelectGroup key={fw}>
-                                                <SelectLabel>{fw}</SelectLabel>
-                                                {items.map(a => (
-                                                    <SelectItem key={a.id} value={String(a.id)}>
-                                                        {a.title}
-                                                        <span className="ml-1.5 text-gray-400 text-xs">— {a.created_at}</span>
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        ))}
+                                        {Object.entries(groupedB).map(
+                                            ([fw, items]) => (
+                                                <SelectGroup key={fw}>
+                                                    <SelectLabel>
+                                                        {fw}
+                                                    </SelectLabel>
+                                                    {items.map((a) => (
+                                                        <SelectItem
+                                                            key={a.id}
+                                                            value={String(a.id)}
+                                                        >
+                                                            {a.title}
+                                                            <span className="ml-1.5 text-xs text-gray-400">
+                                                                — {a.created_at}
+                                                            </span>
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            ),
+                                        )}
                                     </SelectContent>
                                 </Select>
 
                                 {/* Preview card */}
                                 {assessmentBObj && (
-                                    <div className="rounded-lg border bg-accent/30 p-3 space-y-1.5">
+                                    <div className="space-y-1.5 rounded-lg border bg-accent/30 p-3">
                                         <div className="flex items-center justify-between gap-2">
-                                            <p className="text-sm font-medium truncate">{assessmentBObj.title}</p>
-                                            <Badge variant="outline" className="text-xs shrink-0">
+                                            <p className="truncate text-sm font-medium">
+                                                {assessmentBObj.title}
+                                            </p>
+                                            <Badge
+                                                variant="outline"
+                                                className="shrink-0 text-xs"
+                                            >
                                                 {assessmentBObj.framework}
                                             </Badge>
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-gray-500">
-                                            <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${statusColors[assessmentBObj.status] ?? ''}`}>
-                                                {assessmentBObj.status.replace('_', ' ')}
+                                            <span
+                                                className={`rounded px-1.5 py-0.5 text-xs font-medium ${statusColors[assessmentBObj.status] ?? ''}`}
+                                            >
+                                                {assessmentBObj.status.replace(
+                                                    '_',
+                                                    ' ',
+                                                )}
                                             </span>
                                             <span>&middot;</span>
-                                            <span>{assessmentBObj.compliance_percentage}% compliance</span>
+                                            <span>
+                                                {
+                                                    assessmentBObj.compliance_percentage
+                                                }
+                                                % compliance
+                                            </span>
                                             <span>&middot;</span>
-                                            <span>{assessmentBObj.created_at}</span>
+                                            <span>
+                                                {assessmentBObj.created_at}
+                                            </span>
                                         </div>
                                     </div>
                                 )}
@@ -222,11 +295,11 @@ export default function AssessmentCompare({ assessments }: Props) {
                         {/* Compare button */}
                         <div className="mt-6 flex justify-end">
                             <Button
-                                className="gap-2 min-w-[160px]"
+                                className="min-w-[160px] gap-2"
                                 disabled={!canCompare}
                                 onClick={handleCompare}
                             >
-                                <GitCompare className="w-4 h-4" />
+                                <GitCompare className="h-4 w-4" />
                                 Compare Assessments
                             </Button>
                         </div>
@@ -238,7 +311,10 @@ export default function AssessmentCompare({ assessments }: Props) {
                     <Card>
                         <CardContent className="py-12 text-center text-gray-400">
                             No assessments found.{' '}
-                            <Link href="/assessments/create" className="text-blue-500 hover:underline">
+                            <Link
+                                href="/assessments/create"
+                                className="text-blue-500 hover:underline"
+                            >
                                 Create one
                             </Link>{' '}
                             to get started.
@@ -248,8 +324,9 @@ export default function AssessmentCompare({ assessments }: Props) {
 
                 {assessments.length === 1 && (
                     <Card>
-                        <CardContent className="py-8 text-center text-gray-400 text-sm">
-                            You need at least two assessments to compare. Create another assessment to use this feature.
+                        <CardContent className="py-8 text-center text-sm text-gray-400">
+                            You need at least two assessments to compare. Create
+                            another assessment to use this feature.
                         </CardContent>
                     </Card>
                 )}

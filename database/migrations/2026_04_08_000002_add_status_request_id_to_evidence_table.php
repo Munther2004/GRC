@@ -10,10 +10,10 @@ return new class extends Migration
     {
         Schema::table('evidence', function (Blueprint $table) {
             $table->foreignId('control_status_request_id')
-                  ->nullable()
-                  ->constrained('control_status_requests')
-                  ->nullOnDelete()
-                  ->after('control_id');
+                ->nullable()
+                ->constrained('control_status_requests')
+                ->nullOnDelete()
+                ->after('control_id');
         });
     }
 

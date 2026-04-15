@@ -39,19 +39,19 @@ class GrcMetricsService
             ->first();
 
         $applicable = (int) ($row->applicable ?? 0);
-        $compliant  = (int) ($row->compliant  ?? 0);
-        $partial    = (int) ($row->partial    ?? 0);
+        $compliant = (int) ($row->compliant ?? 0);
+        $partial = (int) ($row->partial ?? 0);
 
         return [
-            'overall_pct'      => $applicable > 0
+            'overall_pct' => $applicable > 0
                 ? round((($compliant + ($partial * 0.5)) / $applicable) * 100, 1)
                 : 0.0,
-            'compliant'        => $compliant,
-            'partial'          => $partial,
-            'non_compliant'    => (int) ($row->non_compliant  ?? 0),
-            'not_applicable'   => (int) ($row->not_applicable ?? 0),
-            'not_set'          => (int) ($row->not_set        ?? 0),
-            'total_active'     => (int) ($row->total_active   ?? 0),
+            'compliant' => $compliant,
+            'partial' => $partial,
+            'non_compliant' => (int) ($row->non_compliant ?? 0),
+            'not_applicable' => (int) ($row->not_applicable ?? 0),
+            'not_set' => (int) ($row->not_set ?? 0),
+            'total_active' => (int) ($row->total_active ?? 0),
             'total_applicable' => $applicable,
         ];
     }
@@ -80,14 +80,14 @@ class GrcMetricsService
             ->first();
 
         return [
-            'total'     => (int)   ($row->total       ?? 0),
-            'critical'  => (int)   ($row->critical    ?? 0),
-            'high'      => (int)   ($row->high        ?? 0),
-            'medium'    => (int)   ($row->medium      ?? 0),
-            'low'       => (int)   ($row->low         ?? 0),
-            'open'      => (int)   ($row->open_count  ?? 0),
-            'closed'    => (int)   ($row->closed_count ?? 0),
-            'avg_score' => (float) ($row->avg_score   ?? 0),
+            'total' => (int) ($row->total ?? 0),
+            'critical' => (int) ($row->critical ?? 0),
+            'high' => (int) ($row->high ?? 0),
+            'medium' => (int) ($row->medium ?? 0),
+            'low' => (int) ($row->low ?? 0),
+            'open' => (int) ($row->open_count ?? 0),
+            'closed' => (int) ($row->closed_count ?? 0),
+            'avg_score' => (float) ($row->avg_score ?? 0),
         ];
     }
 
@@ -108,14 +108,14 @@ class GrcMetricsService
             ")
             ->first();
 
-        $total    = (int) ($row->total    ?? 0);
+        $total = (int) ($row->total ?? 0);
         $approved = (int) ($row->approved ?? 0);
 
         return [
-            'total'         => $total,
-            'approved'      => $approved,
-            'pending'       => (int) ($row->pending  ?? 0),
-            'rejected'      => (int) ($row->rejected ?? 0),
+            'total' => $total,
+            'approved' => $approved,
+            'pending' => (int) ($row->pending ?? 0),
+            'rejected' => (int) ($row->rejected ?? 0),
             'approval_rate' => $total > 0 ? round(($approved / $total) * 100, 1) : 0.0,
         ];
     }
@@ -146,10 +146,10 @@ class GrcMetricsService
             ->avg('evidence_weighted_score');
 
         return [
-            'total'                 => (int) ($row->total       ?? 0),
-            'completed'             => (int) ($row->completed   ?? 0),
-            'in_progress'           => (int) ($row->in_progress ?? 0),
-            'overdue'               => (int) ($row->overdue     ?? 0),
+            'total' => (int) ($row->total ?? 0),
+            'completed' => (int) ($row->completed ?? 0),
+            'in_progress' => (int) ($row->in_progress ?? 0),
+            'overdue' => (int) ($row->overdue ?? 0),
             'evidence_weighted_avg' => $ewAvg !== null ? round((float) $ewAvg, 1) : null,
         ];
     }
@@ -157,12 +157,13 @@ class GrcMetricsService
     /**
      * Evidence expiry counts in two targeted queries.
      *
-     * @param  int $soonDays  Days ahead to consider "expiring soon" (default 14)
+     * @param  int  $soonDays  Days ahead to consider "expiring soon" (default 14)
      * @return array{expiring_soon: int, expired: int}
      */
     public function evidenceExpiry(int $soonDays = 14): array
     {
         $now = now();
+
         return [
             'expiring_soon' => DB::table('evidence')
                 ->whereNotNull('expiry_date')
@@ -184,7 +185,7 @@ class GrcMetricsService
      */
     public function openRisksByLevel(): array
     {
-        $t   = Risk::levelThresholds();
+        $t = Risk::levelThresholds();
         $row = DB::table('risks')
             ->where('status', 'open')
             ->selectRaw("
@@ -197,9 +198,9 @@ class GrcMetricsService
 
         return [
             'critical' => (int) ($row->critical ?? 0),
-            'high'     => (int) ($row->high     ?? 0),
-            'medium'   => (int) ($row->medium   ?? 0),
-            'low'      => (int) ($row->low      ?? 0),
+            'high' => (int) ($row->high ?? 0),
+            'medium' => (int) ($row->medium ?? 0),
+            'low' => (int) ($row->low ?? 0),
         ];
     }
 
@@ -236,18 +237,19 @@ class GrcMetricsService
             ->filter(fn ($row) => (int) $row->total_controls > 0)
             ->map(function ($row) {
                 $applicable = (int) $row->applicable;
-                $compliant  = (int) $row->compliant;
-                $partial    = (int) $row->partial;
-                $pct        = $applicable > 0
+                $compliant = (int) $row->compliant;
+                $partial = (int) $row->partial;
+                $pct = $applicable > 0
                     ? round((($compliant + ($partial * 0.5)) / $applicable) * 100, 1)
                     : 0.0;
+
                 return [
-                    'name'           => $row->name,
-                    'full_name'      => $row->full_name,
+                    'name' => $row->name,
+                    'full_name' => $row->full_name,
                     'total_controls' => (int) $row->total_controls,
-                    'compliant'      => $compliant,
-                    'partial'        => $partial,
-                    'non_compliant'  => (int) $row->non_compliant,
+                    'compliant' => $compliant,
+                    'partial' => $partial,
+                    'non_compliant' => (int) $row->non_compliant,
                     'compliance_pct' => $pct,
                 ];
             })
@@ -266,18 +268,17 @@ class GrcMetricsService
     public function frameworkAssessmentScores(): \Illuminate\Support\Collection
     {
         return Framework::where('is_active', true)
-            ->with(['assessments' => fn ($q) =>
-                $q->where('status', 'completed')->orderBy('created_at', 'desc')
+            ->with(['assessments' => fn ($q) => $q->where('status', 'completed')->orderBy('created_at', 'desc'),
             ])
             ->get()
             ->map(fn ($fw) => [
-                'id'                => $fw->id,
-                'name'              => $fw->short_name,
-                'full_name'         => $fw->name,
-                'latest_score'      => $fw->assessments->first()?->compliance_percentage,
-                'evidence_score'    => $fw->assessments->first()?->evidence_weighted_score,
+                'id' => $fw->id,
+                'name' => $fw->short_name,
+                'full_name' => $fw->name,
+                'latest_score' => $fw->assessments->first()?->compliance_percentage,
+                'evidence_score' => $fw->assessments->first()?->evidence_weighted_score,
                 'assessments_count' => $fw->assessments->count(),
-                'trend'             => $fw->assessments->take(5)->pluck('compliance_percentage')->reverse()->values(),
+                'trend' => $fw->assessments->take(5)->pluck('compliance_percentage')->reverse()->values(),
             ]);
     }
 }

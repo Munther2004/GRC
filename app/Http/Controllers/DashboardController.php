@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Assessment;
@@ -15,99 +16,105 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $grc               = new GrcMetricsService();
-        $riskStats         = $grc->riskCounts();
-        $complianceData    = $grc->complianceSummary();
-        $evidenceStats     = $grc->evidenceCounts();
+        $grc = new GrcMetricsService;
+        $riskStats = $grc->riskCounts();
+        $complianceData = $grc->complianceSummary();
+        $evidenceStats = $grc->evidenceCounts();
         $assessmentSummary = $grc->assessmentSummary();
 
         $stats = [
-            'total_risks'       => $riskStats['total'],
-            'critical_risks'    => $riskStats['critical'],
-            'high_risks'        => $riskStats['high'],
-            'medium_risks'      => $riskStats['medium'],
-            'low_risks'         => $riskStats['low'],
-            'open_risks'        => $riskStats['open'],
-            'compliance_score'  => (int) $complianceData['overall_pct'],
+            'total_risks' => $riskStats['total'],
+            'critical_risks' => $riskStats['critical'],
+            'high_risks' => $riskStats['high'],
+            'medium_risks' => $riskStats['medium'],
+            'low_risks' => $riskStats['low'],
+            'open_risks' => $riskStats['open'],
+            'compliance_score' => (int) $complianceData['overall_pct'],
             'total_assessments' => $assessmentSummary['total'],
-            'evidence_files'    => $evidenceStats['total'],
-            'pending_evidence'  => $evidenceStats['pending'],
+            'evidence_files' => $evidenceStats['total'],
+            'pending_evidence' => $evidenceStats['pending'],
         ];
 
-        $recentRisks = Risk::latest()->limit(5)->get()->map(fn($r) => [
-            'id'         => $r->id,
-            'title'      => $r->title,
-            'category'   => $r->category,
-            'owner'      => $r->owner,
-            'impact'     => $r->impact,
+        $recentRisks = Risk::latest()->limit(5)->get()->map(fn ($r) => [
+            'id' => $r->id,
+            'title' => $r->title,
+            'category' => $r->category,
+            'owner' => $r->owner,
+            'impact' => $r->impact,
             'likelihood' => $r->likelihood,
             'risk_level' => $r->risk_level,
             'risk_score' => $r->risk_score,
-            'status'     => $r->status,
+            'status' => $r->status,
         ]);
 
-        $recentActivity = AuditLog::latest()->limit(8)->get()->map(fn($l) => [
-            'id'          => $l->id,
+        $recentActivity = AuditLog::latest()->limit(8)->get()->map(fn ($l) => [
+            'id' => $l->id,
             'description' => $l->description,
-            'user_name'   => $l->user_name,
-            'action'      => $l->action,
-            'created_at'  => $l->created_at->diffForHumans(),
+            'user_name' => $l->user_name,
+            'action' => $l->action,
+            'created_at' => $l->created_at->diffForHumans(),
         ]);
 
         // Risk trend - group by month, using canonical thresholds
-        $t         = Risk::levelThresholds();
+        $t = Risk::levelThresholds();
         $trendData = Risk::selectRaw("DATE_FORMAT(created_at, '%b') as month,
         SUM(CASE WHEN likelihood * impact >= {$t['critical']} THEN 1 ELSE 0 END) as critical,
         SUM(CASE WHEN likelihood * impact >= {$t['high']}     AND likelihood * impact < {$t['critical']} THEN 1 ELSE 0 END) as high,
         SUM(CASE WHEN likelihood * impact >= {$t['medium']}   AND likelihood * impact < {$t['high']}     THEN 1 ELSE 0 END) as medium,
         SUM(CASE WHEN likelihood * impact <  {$t['medium']} THEN 1 ELSE 0 END) as low")
-        ->groupByRaw('DATE_FORMAT(created_at, "%b"), MONTH(created_at)')
-        ->orderByRaw('MONTH(created_at)')
-        ->get();
+            ->groupByRaw('DATE_FORMAT(created_at, "%b"), MONTH(created_at)')
+            ->orderByRaw('MONTH(created_at)')
+            ->get();
 
         // Slim risk load — only columns needed for heatmap and appetite classification
         $risks = Risk::select(['id', 'title', 'likelihood', 'impact', 'status'])->get();
 
-        $heatmap = $risks->map(fn($r) => [
-            'id'         => $r->id,
-            'title'      => $r->title,
+        $heatmap = $risks->map(fn ($r) => [
+            'id' => $r->id,
+            'title' => $r->title,
             'likelihood' => $r->likelihood,
-            'impact'     => $r->impact,
-            'score'      => $r->likelihood * $r->impact,
-            'status'     => $r->status,
+            'impact' => $r->impact,
+            'score' => $r->likelihood * $r->impact,
+            'status' => $r->status,
         ])->toArray();
 
         // Appetite band counts
-        $appetite        = RiskAppetite::getActive();
-        $appetiteCounts  = null;
+        $appetite = RiskAppetite::getActive();
+        $appetiteCounts = null;
         if ($appetite) {
-            $escalated = 0; $review = 0; $acceptable = 0;
+            $escalated = 0;
+            $review = 0;
+            $acceptable = 0;
             foreach ($risks as $r) {
                 $band = $appetite->classifyRisk($r)['band'];
-                if ($band === 'escalated')  $escalated++;
-                elseif ($band === 'review') $review++;
-                else                        $acceptable++;
+                if ($band === 'escalated') {
+                    $escalated++;
+                } elseif ($band === 'review') {
+                    $review++;
+                } else {
+                    $acceptable++;
+                }
             }
             $appetiteCounts = [
-                'name'       => $appetite->name,
-                'escalated'  => $escalated,
-                'review'     => $review,
+                'name' => $appetite->name,
+                'escalated' => $escalated,
+                'review' => $review,
                 'acceptable' => $acceptable,
-                'labels'     => [
-                    'escalated'  => $appetite->escalated_label,
-                    'review'     => $appetite->review_label,
+                'labels' => [
+                    'escalated' => $appetite->escalated_label,
+                    'review' => $appetite->review_label,
                     'acceptable' => $appetite->acceptable_label,
                 ],
             ];
         }
 
-        $metricsService = new RiskMetricsService();
-        $riskMetrics    = $metricsService->calculateRiskExposure();
-        $healthScore    = $metricsService->calculateHealthScore();
+        $metricsService = new RiskMetricsService;
+        $riskMetrics = $metricsService->calculateRiskExposure();
+        $healthScore = $metricsService->calculateHealthScore();
 
         $kpis = [
-            'risk_exposure'          => $riskMetrics['risk_exposure'],
-            'avg_risk_score'         => $riskMetrics['avg_risk_score'],
+            'risk_exposure' => $riskMetrics['risk_exposure'],
+            'avg_risk_score' => $riskMetrics['avg_risk_score'],
             'evidence_approval_rate' => $evidenceStats['approval_rate'],
             'open_risks_by_level' => $grc->openRisksByLevel(),
             'assessments_due_soon' => Assessment::where('status', '!=', 'completed')
@@ -132,7 +139,7 @@ class DashboardController extends Controller
 
         $ruleAdjustments = AuditLog::where(function ($q) {
             $q->where('description', 'like', 'Rule 1:%')
-              ->orWhere('description', 'like', 'Rule 2:%');
+                ->orWhere('description', 'like', 'Rule 2:%');
         })->where('created_at', '>=', now()->subDays(30))->count();
 
         $kriSnapshots = KriSnapshot::latest('snapshot_date')
@@ -140,34 +147,34 @@ class DashboardController extends Controller
             ->get()
             ->sortBy('snapshot_date')
             ->values()
-            ->map(fn($s) => [
-                'snapshot_date'          => $s->snapshot_date->toDateString(),
-                'compliance_percentage'  => $s->compliance_percentage,
-                'open_risks_critical'    => $s->open_risks_critical,
-                'open_risks_high'        => $s->open_risks_high,
-                'open_risks_medium'      => $s->open_risks_medium,
-                'open_risks_low'         => $s->open_risks_low,
-                'overdue_risks'          => $s->overdue_risks,
-                'overdue_assessments'    => $s->overdue_assessments,
+            ->map(fn ($s) => [
+                'snapshot_date' => $s->snapshot_date->toDateString(),
+                'compliance_percentage' => $s->compliance_percentage,
+                'open_risks_critical' => $s->open_risks_critical,
+                'open_risks_high' => $s->open_risks_high,
+                'open_risks_medium' => $s->open_risks_medium,
+                'open_risks_low' => $s->open_risks_low,
+                'overdue_risks' => $s->overdue_risks,
+                'overdue_assessments' => $s->overdue_assessments,
                 'evidence_approval_rate' => $s->evidence_approval_rate,
-                'ai_generated_risks'     => $s->ai_generated_risks,
-                'total_risks'            => $s->total_risks,
-                'total_controls'         => $s->total_controls,
-                'compliant_controls'     => $s->compliant_controls,
+                'ai_generated_risks' => $s->ai_generated_risks,
+                'total_risks' => $s->total_risks,
+                'total_controls' => $s->total_controls,
+                'compliant_controls' => $s->compliant_controls,
             ]);
 
         return Inertia::render('dashboard', [
-            'stats'              => $stats,
-            'recentRisks'        => $recentRisks,
-            'recentActivity'     => $recentActivity,
-            'trendData'          => $trendData,
-            'heatmap'            => $heatmap,
-            'kpis'               => $kpis,
-            'ruleAdjustments'    => $ruleAdjustments,
-            'lastSchedulerRun'   => Cache::get('scheduler_last_run'),
-            'kriSnapshots'       => $kriSnapshots,
-            'healthScore'        => $healthScore,
-            'appetiteCounts'     => $appetiteCounts,
+            'stats' => $stats,
+            'recentRisks' => $recentRisks,
+            'recentActivity' => $recentActivity,
+            'trendData' => $trendData,
+            'heatmap' => $heatmap,
+            'kpis' => $kpis,
+            'ruleAdjustments' => $ruleAdjustments,
+            'lastSchedulerRun' => Cache::get('scheduler_last_run'),
+            'kriSnapshots' => $kriSnapshots,
+            'healthScore' => $healthScore,
+            'appetiteCounts' => $appetiteCounts,
         ]);
     }
 }

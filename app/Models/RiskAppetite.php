@@ -25,8 +25,8 @@ class RiskAppetite extends Model
     ];
 
     protected $casts = [
-        'is_active'                     => 'boolean',
-        'notify_on_escalation'          => 'boolean',
+        'is_active' => 'boolean',
+        'notify_on_escalation' => 'boolean',
         'escalation_notification_roles' => 'array',
     ];
 
@@ -55,7 +55,7 @@ class RiskAppetite extends Model
 
         if ($score <= $this->acceptable_max_score) {
             return [
-                'band'  => 'acceptable',
+                'band' => 'acceptable',
                 'label' => $this->acceptable_label,
                 'color' => $this->acceptable_color,
             ];
@@ -63,14 +63,14 @@ class RiskAppetite extends Model
 
         if ($score <= $this->review_max_score) {
             return [
-                'band'  => 'review',
+                'band' => 'review',
                 'label' => $this->review_label,
                 'color' => $this->review_color,
             ];
         }
 
         return [
-            'band'  => 'escalated',
+            'band' => 'escalated',
             'label' => $this->escalated_label,
             'color' => $this->escalated_color,
         ];

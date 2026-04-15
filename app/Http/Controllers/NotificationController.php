@@ -15,9 +15,9 @@ class NotificationController extends Controller
         $types = NotificationService::typesForRole(auth()->user()->role);
 
         $query = Notification::where(function ($q) {
-                $q->whereNull('user_id')
-                  ->orWhere('user_id', auth()->id());
-            });
+            $q->whereNull('user_id')
+                ->orWhere('user_id', auth()->id());
+        });
 
         if ($types !== null) {
             $query->whereIn('type', $types);
@@ -33,6 +33,7 @@ class NotificationController extends Controller
     public function markRead(Notification $notification)
     {
         $notification->update(['is_read' => true]);
+
         return back();
     }
 
@@ -43,7 +44,7 @@ class NotificationController extends Controller
         $query = Notification::where('is_read', false)
             ->where(function ($q) {
                 $q->whereNull('user_id')
-                  ->orWhere('user_id', auth()->id());
+                    ->orWhere('user_id', auth()->id());
             });
 
         if ($types !== null) {
@@ -58,12 +59,14 @@ class NotificationController extends Controller
     public function destroy(Notification $notification)
     {
         $notification->delete();
+
         return back();
     }
 
     public function destroyAll()
     {
         Notification::query()->delete();
+
         return back();
     }
 }

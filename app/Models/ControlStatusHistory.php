@@ -21,7 +21,18 @@ class ControlStatusHistory extends Model
         'created_at' => 'datetime',
     ];
 
-    public function control()  { return $this->belongsTo(Control::class); }
-    public function user()     { return $this->belongsTo(User::class); }
-    public function evidence() { return $this->belongsTo(Evidence::class); }
+    public function control()
+    {
+        return $this->belongsTo(Control::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function evidence()
+    {
+        return $this->belongsTo(Evidence::class);
+    }
 }

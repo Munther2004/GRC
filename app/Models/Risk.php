@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Risk extends Model
@@ -10,13 +12,16 @@ class Risk extends Model
         'due_date' => 'date',
     ];
 
-    public function user() { return $this->belongsTo(User::class); }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function controls()
     {
         return $this->belongsToMany(Control::class, 'control_risk')
-                    ->withPivot('auto_linked', 'link_type', 'link_reason')
-                    ->withTimestamps();
+            ->withPivot('auto_linked', 'link_type', 'link_reason')
+            ->withTimestamps();
     }
 
     public function sourceControl()
@@ -54,11 +59,18 @@ class Risk extends Model
 
     public function getRiskLevelAttribute(): string
     {
-        $t     = self::levelThresholds();
+        $t = self::levelThresholds();
         $score = $this->likelihood * $this->impact;
-        if ($score >= $t['critical']) return 'critical';
-        if ($score >= $t['high'])     return 'high';
-        if ($score >= $t['medium'])   return 'medium';
+        if ($score >= $t['critical']) {
+            return 'critical';
+        }
+        if ($score >= $t['high']) {
+            return 'high';
+        }
+        if ($score >= $t['medium']) {
+            return 'medium';
+        }
+
         return 'low';
     }
 
@@ -70,6 +82,7 @@ class Risk extends Model
     public function getAppetiteBandAttribute(): ?array
     {
         $appetite = RiskAppetite::getActive();
+
         return $appetite?->classifyRisk($this);
     }
 }

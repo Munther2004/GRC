@@ -1,28 +1,28 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\RiskController;
+use App\Http\Controllers\Admin\AIController as AdminAIController;
+use App\Http\Controllers\Admin\ControlController as AdminControlController;
+use App\Http\Controllers\Admin\FrameworkController as AdminFrameworkController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\AssessmentComparisonController;
 use App\Http\Controllers\AssessmentController;
-use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AuditLogController;
-use App\Http\Controllers\GapAnalysisController;
-use App\Http\Controllers\EvidenceController;
+use App\Http\Controllers\ComplianceChatbotController;
 use App\Http\Controllers\ControlHubController;
 use App\Http\Controllers\ControlStatusRequestController;
-use App\Http\Controllers\ComplianceChatbotController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\ExecutiveSummaryController;
-use App\Http\Controllers\RiskTreatmentPlanController;
 use App\Http\Controllers\CrosswalkController;
-use App\Http\Controllers\RemediationTaskController;
-use App\Http\Controllers\AssessmentComparisonController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\ExecutiveDashboardController;
+use App\Http\Controllers\ExecutiveSummaryController;
+use App\Http\Controllers\GapAnalysisController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\RemediationTaskController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RiskAppetiteController;
+use App\Http\Controllers\RiskController;
+use App\Http\Controllers\RiskTreatmentPlanController;
 use App\Models\KriSnapshot;
-use App\Http\Controllers\Admin\AIController as AdminAIController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Admin\FrameworkController as AdminFrameworkController;
-use App\Http\Controllers\Admin\ControlController as AdminControlController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -31,7 +31,7 @@ Route::inertia('/', 'welcome', [
 ])->name('home');
 
 Route::inertia('/about', 'about')->name('about');
-Route::inertia('/team',  'team')->name('team');
+Route::inertia('/team', 'team')->name('team');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -40,24 +40,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
-    Route::delete('/notifications',               [NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
+    Route::delete('/notifications', [NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
 
     // ── Everyone ──────────────────────────────────────────────────────────────
-    Route::get('/dashboard',           [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/executive-dashboard',     [ExecutiveDashboardController::class, 'index'])->name('executive-dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/executive-dashboard', [ExecutiveDashboardController::class, 'index'])->name('executive-dashboard');
     Route::get('/executive-dashboard/pdf', [ExecutiveDashboardController::class, 'export'])->name('executive-dashboard.pdf');
-    Route::get('/chatbot',       [ComplianceChatbotController::class, 'index'])->name('chatbot.index');
+    Route::get('/chatbot', [ComplianceChatbotController::class, 'index'])->name('chatbot.index');
     Route::post('/chatbot/chat', [ComplianceChatbotController::class, 'chat'])->name('chatbot.chat');
-    Route::get('/kri-snapshots', fn () =>
-        KriSnapshot::latest('snapshot_date')->limit(12)->get()->sortBy('snapshot_date')->values()
+    Route::get('/kri-snapshots', fn () => KriSnapshot::latest('snapshot_date')->limit(12)->get()->sortBy('snapshot_date')->values()
     )->name('kri-snapshots.index');
-    Route::get('/reports',      [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');
     Route::get('/reports/executive-summary', [ExecutiveSummaryController::class, 'generate'])->name('reports.executive-summary');
-    Route::get('/gap-analysis',        [GapAnalysisController::class, 'index'])->name('gap-analysis.index');
+    Route::get('/gap-analysis', [GapAnalysisController::class, 'index'])->name('gap-analysis.index');
     Route::get('/gap-analysis/report', [GapAnalysisController::class, 'generateReport'])->name('gap-analysis.report');
-    Route::get('/crosswalk',           [CrosswalkController::class, 'index'])->name('crosswalk.index');
-    Route::get('/controls/hub',       [ControlHubController::class, 'index'])->name('controls.hub');
+    Route::get('/crosswalk', [CrosswalkController::class, 'index'])->name('crosswalk.index');
+    Route::get('/controls/hub', [ControlHubController::class, 'index'])->name('controls.hub');
     Route::get('/controls/approvals', [ControlStatusRequestController::class, 'index'])->name('controls.approvals')->middleware('role:admin,auditor');
     Route::get('/controls/{control}/history', [ControlHubController::class, 'history'])->name('controls.history');
 
@@ -66,35 +65,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware('role:admin,user')->group(function () {
         Route::post('/controls/{control}/request-status', [ControlStatusRequestController::class, 'store'])->name('controls.request-status');
-        Route::get('/risks/create',           [RiskController::class, 'create'])->name('risks.create');
+        Route::get('/risks/create', [RiskController::class, 'create'])->name('risks.create');
         Route::post('/risks/validate-scores', [RiskController::class, 'validateScores'])->name('risks.validate-scores');
-        Route::post('/risks',                 [RiskController::class, 'store'])->name('risks.store');
-        Route::get('/risks/{risk}/edit',      [RiskController::class, 'edit'])->name('risks.edit');
-        Route::put('/risks/{risk}',           [RiskController::class, 'update'])->name('risks.update');
-        Route::delete('/risks/{risk}',        [RiskController::class, 'destroy'])->name('risks.destroy');
+        Route::post('/risks', [RiskController::class, 'store'])->name('risks.store');
+        Route::get('/risks/{risk}/edit', [RiskController::class, 'edit'])->name('risks.edit');
+        Route::put('/risks/{risk}', [RiskController::class, 'update'])->name('risks.update');
+        Route::delete('/risks/{risk}', [RiskController::class, 'destroy'])->name('risks.destroy');
         // Treatment plans
-        Route::post('/risks/{risk}/treatment-plans',                     [RiskTreatmentPlanController::class, 'store'])->name('risks.treatment-plans.store');
-        Route::put('/risks/{risk}/treatment-plans/{plan}',               [RiskTreatmentPlanController::class, 'update'])->name('risks.treatment-plans.update');
-        Route::delete('/risks/{risk}/treatment-plans/{plan}',            [RiskTreatmentPlanController::class, 'destroy'])->name('risks.treatment-plans.destroy');
+        Route::post('/risks/{risk}/treatment-plans', [RiskTreatmentPlanController::class, 'store'])->name('risks.treatment-plans.store');
+        Route::put('/risks/{risk}/treatment-plans/{plan}', [RiskTreatmentPlanController::class, 'update'])->name('risks.treatment-plans.update');
+        Route::delete('/risks/{risk}/treatment-plans/{plan}', [RiskTreatmentPlanController::class, 'destroy'])->name('risks.treatment-plans.destroy');
         // Remediation tasks
-        Route::get('/remediation-tasks',                          [RemediationTaskController::class, 'index'])->name('remediation-tasks.index');
-        Route::post('/remediation-tasks',                         [RemediationTaskController::class, 'store'])->name('remediation-tasks.store');
-        Route::put('/remediation-tasks/{task}',                   [RemediationTaskController::class, 'update'])->name('remediation-tasks.update');
-        Route::delete('/remediation-tasks/{task}',                [RemediationTaskController::class, 'destroy'])->name('remediation-tasks.destroy');
-        Route::post('/remediation-tasks/{task}/complete',         [RemediationTaskController::class, 'complete'])->name('remediation-tasks.complete');
+        Route::get('/remediation-tasks', [RemediationTaskController::class, 'index'])->name('remediation-tasks.index');
+        Route::post('/remediation-tasks', [RemediationTaskController::class, 'store'])->name('remediation-tasks.store');
+        Route::put('/remediation-tasks/{task}', [RemediationTaskController::class, 'update'])->name('remediation-tasks.update');
+        Route::delete('/remediation-tasks/{task}', [RemediationTaskController::class, 'destroy'])->name('remediation-tasks.destroy');
+        Route::post('/remediation-tasks/{task}/complete', [RemediationTaskController::class, 'complete'])->name('remediation-tasks.complete');
     });
 
     Route::middleware('role:admin')->group(function () {
-        Route::post('/risks/{risk}/link-control',   [RiskController::class, 'linkControl'])->name('risks.link-control');
+        Route::post('/risks/{risk}/link-control', [RiskController::class, 'linkControl'])->name('risks.link-control');
         Route::post('/risks/{risk}/unlink-control', [RiskController::class, 'unlinkControl'])->name('risks.unlink-control');
     });
 
     // ── AI endpoints ─────────────────────────────────────────────────────────
     Route::middleware('role:admin,user')->group(function () {
-        Route::post('/ai/suggest-threats',                    [AdminAIController::class, 'suggestThreats'])->name('ai.suggest-threats');
-        Route::post('/ai/remediate-gap',                      [AdminAIController::class, 'remediateGap'])->name('ai.remediate-gap');
-        Route::post('/ai/save-remediation',                   [AdminAIController::class, 'saveRemediation'])->name('ai.save-remediation');
-        Route::post('/ai/assessment-summary/{assessment}',    [AdminAIController::class, 'generateAssessmentSummary'])->name('ai.assessment-summary');
+        Route::post('/ai/suggest-threats', [AdminAIController::class, 'suggestThreats'])->name('ai.suggest-threats');
+        Route::post('/ai/remediate-gap', [AdminAIController::class, 'remediateGap'])->name('ai.remediate-gap');
+        Route::post('/ai/save-remediation', [AdminAIController::class, 'saveRemediation'])->name('ai.save-remediation');
+        Route::post('/ai/assessment-summary/{assessment}', [AdminAIController::class, 'generateAssessmentSummary'])->name('ai.assessment-summary');
     });
 
     Route::get('/risks/{risk}', [RiskController::class, 'show'])->name('risks.show');
@@ -103,37 +102,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/assessments', [AssessmentController::class, 'index'])->name('assessments.index');
 
     Route::middleware('role:admin,user')->group(function () {
-        Route::get('/assessments/create',                         [AssessmentController::class, 'create'])->name('assessments.create');
-        Route::get('/assessments/{assessment}/export-pdf',        [AssessmentController::class, 'exportPdf'])->name('assessments.export-pdf');
-        Route::post('/assessments',         [AssessmentController::class, 'store'])->name('assessments.store');
+        Route::get('/assessments/create', [AssessmentController::class, 'create'])->name('assessments.create');
+        Route::get('/assessments/{assessment}/export-pdf', [AssessmentController::class, 'exportPdf'])->name('assessments.export-pdf');
+        Route::post('/assessments', [AssessmentController::class, 'store'])->name('assessments.store');
         Route::delete('/assessments/{assessment}', [AssessmentController::class, 'destroy'])->name('assessments.destroy');
-        Route::get('/assessments/{assessment}/questionnaire',         [AssessmentController::class, 'questionnaire'])->name('assessments.questionnaire');
-        Route::post('/assessments/{assessment}/save-answers',         [AssessmentController::class, 'saveAnswers'])->name('assessments.save-answers');
-        Route::post('/assessments/{assessment}/submit',               [AssessmentController::class, 'submit'])->name('assessments.submit');
-        Route::post('/assessments/{assessment}/auto-fill',            [AssessmentController::class, 'autoFill'])->name('assessments.auto-fill');
-        Route::post('/assessments/{assessment}/items/{item}/evidence',[AssessmentController::class, 'uploadEvidence'])->name('assessments.upload-evidence');
+        Route::get('/assessments/{assessment}/questionnaire', [AssessmentController::class, 'questionnaire'])->name('assessments.questionnaire');
+        Route::post('/assessments/{assessment}/save-answers', [AssessmentController::class, 'saveAnswers'])->name('assessments.save-answers');
+        Route::post('/assessments/{assessment}/submit', [AssessmentController::class, 'submit'])->name('assessments.submit');
+        Route::post('/assessments/{assessment}/auto-fill', [AssessmentController::class, 'autoFill'])->name('assessments.auto-fill');
+        Route::post('/assessments/{assessment}/items/{item}/evidence', [AssessmentController::class, 'uploadEvidence'])->name('assessments.upload-evidence');
         Route::post('/assessments/explain-control', [AssessmentController::class, 'explainControl'])->name('assessments.explain-control')->middleware('throttle:30,1');
     });
 
     // ── Assessment Comparison ─────────────────────────────────────────────────
-    Route::get('/assessments/compare',        [AssessmentComparisonController::class, 'index'])->name('assessments.compare');
+    Route::get('/assessments/compare', [AssessmentComparisonController::class, 'index'])->name('assessments.compare');
     Route::get('/assessments/compare/result', [AssessmentComparisonController::class, 'compare'])->name('assessments.compare.result');
     Route::get('/assessments/compare/export', [AssessmentComparisonController::class, 'exportPdf'])->name('assessments.compare.export');
 
     Route::get('/assessments/{assessment}', [AssessmentController::class, 'show'])->name('assessments.show');
 
     // ── Evidence ──────────────────────────────────────────────────────────────
-    Route::get('/evidence',                     [EvidenceController::class, 'index'])->name('evidence.index');
+    Route::get('/evidence', [EvidenceController::class, 'index'])->name('evidence.index');
     Route::get('/evidence/{evidence}/download', [EvidenceController::class, 'download'])->name('evidence.download');
 
     Route::middleware('role:admin,auditor')->group(function () {
-        Route::post('/controls/status-requests/{statusRequest}/approve',        [ControlStatusRequestController::class, 'approve'])->name('controls.status-requests.approve');
-        Route::post('/controls/status-requests/{statusRequest}/reject',         [ControlStatusRequestController::class, 'reject'])->name('controls.status-requests.reject');
-        Route::post('/controls/status-requests/{statusRequest}/review-evidence',[ControlStatusRequestController::class, 'reviewEvidence'])->name('controls.status-requests.review-evidence');
-        Route::post('/evidence/{evidence}/approve',    [EvidenceController::class, 'approve'])->name('evidence.approve');
-        Route::post('/evidence/{evidence}/reject',     [EvidenceController::class, 'reject'])->name('evidence.reject');
-        Route::post('/evidence/{evidence}/ai-review',  [EvidenceController::class, 'aiReview'])->name('evidence.ai-review');
-        Route::post('/ai/review-evidence',             [AdminAIController::class, 'reviewEvidence'])->name('ai.review-evidence');
+        Route::post('/controls/status-requests/{statusRequest}/approve', [ControlStatusRequestController::class, 'approve'])->name('controls.status-requests.approve');
+        Route::post('/controls/status-requests/{statusRequest}/reject', [ControlStatusRequestController::class, 'reject'])->name('controls.status-requests.reject');
+        Route::post('/controls/status-requests/{statusRequest}/review-evidence', [ControlStatusRequestController::class, 'reviewEvidence'])->name('controls.status-requests.review-evidence');
+        Route::post('/evidence/{evidence}/approve', [EvidenceController::class, 'approve'])->name('evidence.approve');
+        Route::post('/evidence/{evidence}/reject', [EvidenceController::class, 'reject'])->name('evidence.reject');
+        Route::post('/evidence/{evidence}/ai-review', [EvidenceController::class, 'aiReview'])->name('evidence.ai-review');
+        Route::post('/ai/review-evidence', [AdminAIController::class, 'reviewEvidence'])->name('ai.review-evidence');
     });
 
     Route::middleware('role:admin')->group(function () {
@@ -150,16 +149,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('users', AdminUserController::class);
         Route::post('frameworks/{framework}/toggle', [AdminFrameworkController::class, 'toggle'])->name('frameworks.toggle');
         Route::resource('frameworks', AdminFrameworkController::class)->only(['index', 'edit', 'update']);
-        Route::resource('controls',   AdminControlController::class)->only(['index', 'edit', 'update', 'destroy']);
+        Route::resource('controls', AdminControlController::class)->only(['index', 'edit', 'update', 'destroy']);
     });
 
     // ── Risk Appetite — admin only ────────────────────────────────────────────
     Route::middleware('role:admin')->group(function () {
-        Route::get('/risk-appetite',                     [RiskAppetiteController::class, 'index'])->name('risk-appetite.index');
-        Route::post('/risk-appetite',                    [RiskAppetiteController::class, 'store'])->name('risk-appetite.store');
-        Route::put('/risk-appetite/{appetite}',          [RiskAppetiteController::class, 'update'])->name('risk-appetite.update');
-        Route::delete('/risk-appetite/{appetite}',       [RiskAppetiteController::class, 'destroy'])->name('risk-appetite.destroy');
-        Route::post('/risk-appetite/{appetite}/activate',[RiskAppetiteController::class, 'activate'])->name('risk-appetite.activate');
+        Route::get('/risk-appetite', [RiskAppetiteController::class, 'index'])->name('risk-appetite.index');
+        Route::post('/risk-appetite', [RiskAppetiteController::class, 'store'])->name('risk-appetite.store');
+        Route::put('/risk-appetite/{appetite}', [RiskAppetiteController::class, 'update'])->name('risk-appetite.update');
+        Route::delete('/risk-appetite/{appetite}', [RiskAppetiteController::class, 'destroy'])->name('risk-appetite.destroy');
+        Route::post('/risk-appetite/{appetite}/activate', [RiskAppetiteController::class, 'activate'])->name('risk-appetite.activate');
     });
 });
 

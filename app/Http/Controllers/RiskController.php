@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use App\Models\Control;
 use App\Models\Framework;
 use App\Models\Notification;
 use App\Models\Risk;
 use App\Models\RiskAppetite;
-use App\Models\AuditLog;
 use App\Services\AIControlLinker;
 use App\Services\AIService;
 use App\Services\RiskMetricsService;
@@ -21,33 +21,27 @@ class RiskController extends Controller
     public function index(Request $request)
     {
         $paginator = Risk::with(['user', 'sourceControl.framework'])
-            ->when($request->search, fn($q) =>
-                $q->where('title', 'like', "%{$request->search}%")
-                  ->orWhere('description', 'like', "%{$request->search}%")
+            ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
+                ->orWhere('description', 'like', "%{$request->search}%")
             )
-            ->when($request->status, fn($q) =>
-                $q->where('status', $request->status)
+            ->when($request->status, fn ($q) => $q->where('status', $request->status)
             )
-            ->when($request->level, function($q) use ($request) {
+            ->when($request->level, function ($q) use ($request) {
                 $t = Risk::levelThresholds();
-                match($request->level) {
+                match ($request->level) {
                     'critical' => $q->whereRaw("likelihood * impact >= {$t['critical']}"),
-                    'high'     => $q->whereRaw("likelihood * impact >= {$t['high']} AND likelihood * impact < {$t['critical']}"),
-                    'medium'   => $q->whereRaw("likelihood * impact >= {$t['medium']} AND likelihood * impact < {$t['high']}"),
-                    'low'      => $q->whereRaw("likelihood * impact < {$t['medium']}"),
-                    default    => null
+                    'high' => $q->whereRaw("likelihood * impact >= {$t['high']} AND likelihood * impact < {$t['critical']}"),
+                    'medium' => $q->whereRaw("likelihood * impact >= {$t['medium']} AND likelihood * impact < {$t['high']}"),
+                    'low' => $q->whereRaw("likelihood * impact < {$t['medium']}"),
+                    default => null
                 };
             })
-            ->when($request->category, fn($q) =>
-                $q->where('category', $request->category)
+            ->when($request->category, fn ($q) => $q->where('category', $request->category)
             )
-            ->when($request->has_plan, fn($q) =>
-                $q->whereNotNull('treatment_plan')->where('treatment_plan', '<>', '')
+            ->when($request->has_plan, fn ($q) => $q->whereNotNull('treatment_plan')->where('treatment_plan', '<>', '')
             )
-            ->when($request->framework, fn($q) =>
-                $q->whereHas('sourceControl.framework', fn($fq) =>
-                    $fq->where('short_name', $request->framework)
-                )
+            ->when($request->framework, fn ($q) => $q->whereHas('sourceControl.framework', fn ($fq) => $fq->where('short_name', $request->framework)
+            )
             )
             ->orderByRaw('likelihood * impact DESC')
             ->paginate(15)
@@ -57,8 +51,8 @@ class RiskController extends Controller
 
         // Client filter: escalated_only — collect escalated IDs if appetite active
         if ($request->escalated_only && $appetite) {
-            $allRisks      = Risk::all();
-            $escalatedIds  = $allRisks
+            $allRisks = Risk::all();
+            $escalatedIds = $allRisks
                 ->filter(fn ($r) => $appetite->classifyRisk($r)['band'] === 'escalated')
                 ->pluck('id')
                 ->toArray();
@@ -69,35 +63,35 @@ class RiskController extends Controller
                 ->withQueryString();
         }
 
-        $paginator->through(fn($risk) => array_merge($risk->toArray(), [
+        $paginator->through(fn ($risk) => array_merge($risk->toArray(), [
             'framework_name' => $risk->sourceControl?->framework?->short_name ?? null,
-            'risk_score'     => $risk->risk_score,
-            'appetite_band'  => $appetite?->classifyRisk($risk),
+            'risk_score' => $risk->risk_score,
+            'appetite_band' => $appetite?->classifyRisk($risk),
         ]));
 
-        $tc    = Risk::levelThresholds();
+        $tc = Risk::levelThresholds();
         $stats = [
-            'total'    => Risk::count(),
-            'open'     => Risk::where('status', 'open')->count(),
+            'total' => Risk::count(),
+            'open' => Risk::where('status', 'open')->count(),
             'critical' => Risk::whereRaw("likelihood * impact >= {$tc['critical']}")->count(),
-            'overdue'  => Risk::where('due_date', '<', now())
-                              ->whereNotIn('status', ['closed'])
-                              ->count(),
+            'overdue' => Risk::where('due_date', '<', now())
+                ->whereNotIn('status', ['closed'])
+                ->count(),
         ];
 
         $frameworks = Framework::where('is_active', true)
             ->orderBy('short_name')
             ->get(['id', 'short_name', 'name']);
 
-        $riskExposure = (new RiskMetricsService())->calculateRiskExposure();
+        $riskExposure = (new RiskMetricsService)->calculateRiskExposure();
 
         return Inertia::render('risks/index', [
-            'risks'        => $paginator,
-            'stats'        => $stats,
+            'risks' => $paginator,
+            'stats' => $stats,
             'riskExposure' => $riskExposure,
-            'filters'      => $request->only(['search', 'status', 'level', 'category', 'has_plan', 'framework', 'escalated_only']),
-            'frameworks'   => $frameworks,
-            'appetite'     => $appetite,
+            'filters' => $request->only(['search', 'status', 'level', 'category', 'has_plan', 'framework', 'escalated_only']),
+            'frameworks' => $frameworks,
+            'appetite' => $appetite,
         ]);
     }
 
@@ -105,7 +99,7 @@ class RiskController extends Controller
     {
         return Inertia::render('risks/create', [
             'categories' => $this->getCategories(),
-            'statuses'   => $this->getStatuses(),
+            'statuses' => $this->getStatuses(),
             'treatments' => $this->getTreatments(),
         ]);
     }
@@ -113,17 +107,17 @@ class RiskController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'          => 'required|string|max:255',
-            'description'    => 'required|string',
-            'category'       => 'required|string',
-            'owner'          => 'required|string|max:255',
-            'likelihood'     => 'required|integer|min:1|max:5',
-            'impact'         => 'required|integer|min:1|max:5',
-            'status'         => 'required|in:open,in_progress,under_review,closed',
-            'treatment'      => 'required|in:accept,mitigate,transfer,avoid',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'category' => 'required|string',
+            'owner' => 'required|string|max:255',
+            'likelihood' => 'required|integer|min:1|max:5',
+            'impact' => 'required|integer|min:1|max:5',
+            'status' => 'required|in:open,in_progress,under_review,closed',
+            'treatment' => 'required|in:accept,mitigate,transfer,avoid',
             'treatment_plan' => 'nullable|string',
-            'due_date'       => 'nullable|date',
-            'ai_validated'   => 'boolean',
+            'due_date' => 'nullable|date',
+            'ai_validated' => 'boolean',
         ]);
 
         $risk = Risk::create([
@@ -138,7 +132,7 @@ class RiskController extends Controller
             "Risk '{$risk->title}' created with score {$risk->risk_score} ({$risk->risk_level})"
         );
 
-        (new AIControlLinker())->linkControlsToRisk($risk);
+        (new AIControlLinker)->linkControlsToRisk($risk);
 
         return redirect()->route('risks.show', $risk)
             ->with('success', 'Risk created successfully.');
@@ -151,17 +145,17 @@ class RiskController extends Controller
         $linkedControls = $risk->controls()
             ->with('framework')
             ->get()
-            ->map(fn($c) => [
-                'id'                     => $c->id,
-                'control_id'             => $c->control_id,
-                'title'                  => $c->title,
-                'description'            => $c->description,
-                'implementation_guidance'=> $c->implementation_guidance,
-                'category'               => $c->category,
-                'auto_linked'            => (bool) $c->pivot->auto_linked,
-                'link_type'              => $c->pivot->link_type ?? 'auto',
-                'link_reason'            => $c->pivot->link_reason,
-                'framework'              => $c->framework->short_name,
+            ->map(fn ($c) => [
+                'id' => $c->id,
+                'control_id' => $c->control_id,
+                'title' => $c->title,
+                'description' => $c->description,
+                'implementation_guidance' => $c->implementation_guidance,
+                'category' => $c->category,
+                'auto_linked' => (bool) $c->pivot->auto_linked,
+                'link_type' => $c->pivot->link_type ?? 'auto',
+                'link_reason' => $c->pivot->link_reason,
+                'framework' => $c->framework->short_name,
             ]);
 
         $allControls = Control::with('framework')
@@ -169,38 +163,38 @@ class RiskController extends Controller
             ->orderBy('control_id')
             ->limit(500)
             ->get(['id', 'control_id', 'title', 'framework_id'])
-            ->map(fn($c) => [
-                'id'         => $c->id,
+            ->map(fn ($c) => [
+                'id' => $c->id,
                 'control_id' => $c->control_id,
-                'title'      => $c->title,
-                'framework'  => $c->framework->short_name,
+                'title' => $c->title,
+                'framework' => $c->framework->short_name,
             ]);
 
         $treatmentPlans = $risk->treatmentPlans->map(fn ($p) => [
-            'id'                   => $p->id,
-            'strategy'             => $p->strategy,
-            'description'          => $p->description,
-            'owner'                => $p->owner,
-            'due_date'             => $p->due_date?->format('Y-m-d'),
-            'progress'             => $p->progress,
-            'status'               => $p->status,
-            'residual_likelihood'  => $p->residual_likelihood,
-            'residual_impact'      => $p->residual_impact,
-            'residual_score'       => $p->residual_score,
-            'residual_level'       => $p->residual_level,
+            'id' => $p->id,
+            'strategy' => $p->strategy,
+            'description' => $p->description,
+            'owner' => $p->owner,
+            'due_date' => $p->due_date?->format('Y-m-d'),
+            'progress' => $p->progress,
+            'status' => $p->status,
+            'residual_likelihood' => $p->residual_likelihood,
+            'residual_impact' => $p->residual_impact,
+            'residual_score' => $p->residual_score,
+            'residual_level' => $p->residual_level,
         ])->toArray();
 
         return Inertia::render('risks/show', [
             'risk' => array_merge($risk->toArray(), [
-                'risk_score'     => $risk->risk_score,
-                'risk_level'     => $risk->risk_level,
+                'risk_score' => $risk->risk_score,
+                'risk_level' => $risk->risk_level,
                 'source_control' => $risk->sourceControl ? [
                     'control_id' => $risk->sourceControl->control_id,
-                    'title'      => $risk->sourceControl->title,
+                    'title' => $risk->sourceControl->title,
                 ] : null,
             ]),
             'linkedControls' => $linkedControls,
-            'allControls'    => $allControls,
+            'allControls' => $allControls,
             'treatmentPlans' => $treatmentPlans,
         ]);
     }
@@ -208,12 +202,12 @@ class RiskController extends Controller
     public function edit(Risk $risk)
     {
         return Inertia::render('risks/edit', [
-            'risk'       => array_merge($risk->toArray(), [
+            'risk' => array_merge($risk->toArray(), [
                 'risk_score' => $risk->risk_score,
                 'risk_level' => $risk->risk_level,
             ]),
             'categories' => $this->getCategories(),
-            'statuses'   => $this->getStatuses(),
+            'statuses' => $this->getStatuses(),
             'treatments' => $this->getTreatments(),
         ]);
     }
@@ -221,17 +215,17 @@ class RiskController extends Controller
     public function update(Request $request, Risk $risk)
     {
         $validated = $request->validate([
-            'title'          => 'required|string|max:255',
-            'description'    => 'required|string',
-            'category'       => 'required|string',
-            'owner'          => 'required|string|max:255',
-            'likelihood'     => 'required|integer|min:1|max:5',
-            'impact'         => 'required|integer|min:1|max:5',
-            'status'         => 'required|in:open,in_progress,under_review,closed',
-            'treatment'      => 'required|in:accept,mitigate,transfer,avoid',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'category' => 'required|string',
+            'owner' => 'required|string|max:255',
+            'likelihood' => 'required|integer|min:1|max:5',
+            'impact' => 'required|integer|min:1|max:5',
+            'status' => 'required|in:open,in_progress,under_review,closed',
+            'treatment' => 'required|in:accept,mitigate,transfer,avoid',
             'treatment_plan' => 'nullable|string',
-            'due_date'       => 'nullable|date',
-            'ai_validated'   => 'boolean',
+            'due_date' => 'nullable|date',
+            'ai_validated' => 'boolean',
         ]);
 
         $oldScore = $risk->risk_score;
@@ -244,7 +238,7 @@ class RiskController extends Controller
             "Risk '{$risk->title}' updated. Score changed from {$oldScore} to {$risk->risk_score}"
         );
 
-        (new AIControlLinker())->linkControlsToRisk($risk);
+        (new AIControlLinker)->linkControlsToRisk($risk);
 
         return redirect()->route('risks.show', $risk)
             ->with('success', 'Risk updated successfully.');
@@ -253,9 +247,9 @@ class RiskController extends Controller
     public function destroy(Risk $risk)
     {
         $title = $risk->title;
-        $id    = $risk->id;
+        $id = $risk->id;
 
-        Notification::where('url', '/risks/' . $risk->id)->delete();
+        Notification::where('url', '/risks/'.$risk->id)->delete();
         DB::table('control_risk')->where('risk_id', $risk->id)->delete();
 
         $risk->delete();
@@ -274,14 +268,14 @@ class RiskController extends Controller
     public function validateScores(Request $request)
     {
         $validated = $request->validate([
-            'title'       => 'required|string',
+            'title' => 'required|string',
             'description' => 'required|string',
-            'likelihood'  => 'required|integer|min:1|max:5',
-            'impact'      => 'required|integer|min:1|max:5',
+            'likelihood' => 'required|integer|min:1|max:5',
+            'impact' => 'required|integer|min:1|max:5',
         ]);
 
         try {
-            $result = (new AIService())->validateRiskScores(
+            $result = (new AIService)->validateRiskScores(
                 $validated['title'],
                 $validated['description'],
                 $validated['likelihood'],
@@ -289,7 +283,8 @@ class RiskController extends Controller
             );
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('validateScores exception', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            return response()->json(['error' => 'Validation failed: ' . $e->getMessage()], 500);
+
+            return response()->json(['error' => 'Validation failed: '.$e->getMessage()], 500);
         }
 
         return response()->json($result);

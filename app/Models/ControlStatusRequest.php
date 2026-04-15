@@ -15,10 +15,28 @@ class ControlStatusRequest extends Model
         'reviewed_at' => 'datetime',
     ];
 
-    public function control()   { return $this->belongsTo(Control::class); }
-    public function requester() { return $this->belongsTo(User::class, 'requested_by'); }
-    public function reviewer()  { return $this->belongsTo(User::class, 'reviewed_by'); }
-    public function evidence()  { return $this->hasOne(Evidence::class, 'control_status_request_id'); }
+    public function control()
+    {
+        return $this->belongsTo(Control::class);
+    }
 
-    public function scopePending($query) { return $query->where('status', 'pending'); }
+    public function requester()
+    {
+        return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function evidence()
+    {
+        return $this->hasOne(Evidence::class, 'control_status_request_id');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
 }

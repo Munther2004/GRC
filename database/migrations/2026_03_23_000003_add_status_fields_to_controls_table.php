@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::table('controls', function (Blueprint $table) {
             $table->enum('current_status', ['compliant', 'non_compliant', 'not_applicable'])
-                  ->nullable()
-                  ->default(null)
-                  ->after('is_active');
+                ->nullable()
+                ->default(null)
+                ->after('is_active');
             $table->timestamp('last_remediated_at')->nullable()->after('current_status');
             $table->text('remediation_notes')->nullable()->after('last_remediated_at');
         });

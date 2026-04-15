@@ -13,15 +13,30 @@ class Assessment extends Model
     ];
 
     protected $casts = [
-        'due_date'                => 'date',
-        'compliance_percentage'   => 'float',
+        'due_date' => 'date',
+        'compliance_percentage' => 'float',
         'evidence_weighted_score' => 'float',
     ];
 
-    public function user()       { return $this->belongsTo(User::class); }
-    public function framework()  { return $this->belongsTo(Framework::class); }
-    public function items()      { return $this->hasMany(AssessmentItem::class); }
-    public function risks()      { return $this->hasMany(Risk::class); }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function framework()
+    {
+        return $this->belongsTo(Framework::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(AssessmentItem::class);
+    }
+
+    public function risks()
+    {
+        return $this->hasMany(Risk::class);
+    }
 
     public function getIsOverdueAttribute(): bool
     {
@@ -36,6 +51,7 @@ class Assessment extends Model
 
         if ($items->isEmpty()) {
             $this->update(['compliance_percentage' => 0]);
+
             return;
         }
 
@@ -48,7 +64,7 @@ class Assessment extends Model
 
     public function recalculateEvidenceWeightedScore(): void
     {
-        $scoring = (new \App\Services\EvidenceScoringService())->calculateEvidenceWeightedScore($this);
+        $scoring = (new \App\Services\EvidenceScoringService)->calculateEvidenceWeightedScore($this);
         $this->update(['evidence_weighted_score' => $scoring['weighted_score']]);
     }
 }

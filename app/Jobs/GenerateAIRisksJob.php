@@ -18,13 +18,14 @@ class GenerateAIRisksJob implements ShouldQueue
     {
         // Re-fetch from DB — the assessment may have been deleted since dispatch
         $assessment = Assessment::find($this->assessment->id);
-        if (!$assessment) {
+        if (! $assessment) {
             Log::warning('GenerateAIRisksJob: assessment no longer exists, skipping', [
                 'assessment_id' => $this->assessment->id,
             ]);
+
             return;
         }
 
-        (new AIRiskGenerator())->generateRisksFromAssessment($assessment);
+        (new AIRiskGenerator)->generateRisksFromAssessment($assessment);
     }
 }

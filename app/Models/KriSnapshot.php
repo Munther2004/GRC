@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class KriSnapshot extends Model
 {
@@ -24,8 +23,8 @@ class KriSnapshot extends Model
     ];
 
     protected $casts = [
-        'snapshot_date'          => 'date',
-        'compliance_percentage'  => 'float',
+        'snapshot_date' => 'date',
+        'compliance_percentage' => 'float',
         'evidence_approval_rate' => 'float',
     ];
 
@@ -33,7 +32,7 @@ class KriSnapshot extends Model
     {
         $date = $date ?? now()->toDateString();
 
-        $totalEvidence    = Evidence::count();
+        $totalEvidence = Evidence::count();
         $approvedEvidence = Evidence::where('status', 'approved')->count();
 
         return static::updateOrCreate(
@@ -66,8 +65,8 @@ class KriSnapshot extends Model
                     ? round(($approvedEvidence / $totalEvidence) * 100, 2)
                     : 0,
                 'ai_generated_risks' => Risk::where('auto_generated', 1)->count(),
-                'total_risks'        => Risk::count(),
-                'total_controls'     => Control::where('is_active', true)->count(),
+                'total_risks' => Risk::count(),
+                'total_controls' => Control::where('is_active', true)->count(),
                 // Use controls.current_status — source of truth after Controls Hub changes
                 'compliant_controls' => Control::where('current_status', 'compliant')
                     ->where('is_active', true)

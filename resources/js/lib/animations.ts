@@ -1,28 +1,32 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react';
 
 export function useAnimateOnScroll() {
-    const ref = useRef<HTMLDivElement>(null)
-    
+    const ref = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in', 'fade-in', 'slide-in-from-bottom-4')
-                    entry.target.classList.remove('opacity-0')
-                    observer.unobserve(entry.target)
+                    entry.target.classList.add(
+                        'animate-in',
+                        'fade-in',
+                        'slide-in-from-bottom-4',
+                    );
+                    entry.target.classList.remove('opacity-0');
+                    observer.unobserve(entry.target);
                 }
             },
-            { threshold: 0.1 }
-        )
-        
+            { threshold: 0.1 },
+        );
+
         if (ref.current) {
-            observer.observe(ref.current)
+            observer.observe(ref.current);
         }
-        
-        return () => observer.disconnect()
-    }, [])
-    
-    return ref
+
+        return () => observer.disconnect();
+    }, []);
+
+    return ref;
 }
 
 export const animationClasses = {
@@ -33,4 +37,4 @@ export const animationClasses = {
     scaleIn: 'animate-in zoom-in-95 duration-500',
     pulse: 'animate-pulse',
     spin: 'animate-spin',
-}
+};

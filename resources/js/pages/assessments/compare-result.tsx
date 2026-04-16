@@ -105,7 +105,7 @@ const directionConfig: Record<string, { label: string; cls: string }> = {
         label: '→ Unchanged',
         cls: 'bg-muted text-muted-foreground border-border',
     },
-    new: { label: '✦ New', cls: 'bg-blue-950 text-blue-400 border-blue-200' },
+    new: { label: '✦ New', cls: 'bg-accent text-foreground border-primary/20' },
     removed: {
         label: '✕ Removed',
         cls: 'bg-muted text-muted-foreground border-border',
@@ -356,7 +356,7 @@ export default function CompareResult({
                             <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Controls Changed
                             </p>
-                            <p className="text-2xl font-bold text-foreground">
+                            <p className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                                 {summary.changed_count}
                             </p>
                             <p className="mt-1 text-xs text-muted-foreground">
@@ -401,7 +401,7 @@ export default function CompareResult({
                             <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Total Controls
                             </p>
-                            <p className="text-2xl font-bold text-foreground">
+                            <p className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                                 {summary.total_controls}
                             </p>
                             <p className="mt-1 text-xs text-muted-foreground">

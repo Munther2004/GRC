@@ -41,7 +41,28 @@
       "Bash(php c:/laragon/www/GRC/artisan tinker '--execute=:*)",
       "Bash(php c:/laragon/www/GRC/artisan migrate)",
       "Bash(php c:/laragon/www/GRC/artisan db:seed --class=ControlCrosswalkSeeder)",
-      "Bash(xargs sed *)"
+      "Bash(xargs sed *)",
+      "Bash(sed -i '' 's/className=\"h-7 px-2 text-red-500 hover:bg-red-50 hover:text-red-400\"/className=\"h-7 px-2\" style={{ color: \"#8B2635\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"h-7 shrink-0 px-2 text-red-500 hover:bg-red-50 hover:text-red-400\"/className=\"h-7 shrink-0 px-2\" style={{ color: \"#8B2635\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"space-y-3 rounded-lg border bg-muted\\\\/30 p-4\"/className=\"space-y-3 rounded p-4\" style={{ background: \"rgba\\(37,30,25,0.6\\)\", border: \"1px solid #4A3F35\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted\"/className=\"flex w-full items-center gap-2 px-3 py-2 text-left\" style={{ color: \"#E8DFD4\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:ring-2 focus:ring-ring focus:outline-none\"/className=\"w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none\" style={{ background: \"#251E19\", border: \"1px solid #4A3F35\", color: \"#E8DFD4\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"w-full resize-none rounded-md border bg-background px-3 py-1.5 text-sm focus:ring-2 focus:ring-ring focus:outline-none\"/className=\"w-full resize-none rounded px-3 py-1.5 font-body text-sm focus:outline-none\" style={{ background: \"#251E19\", border: \"1px solid #4A3F35\", color: \"#E8DFD4\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"mb-1 block text-xs font-medium text-muted-foreground\"/className=\"mb-1 block font-display text-[9px] uppercase tracking-[0.15em]\" style={{ color: \"#9C8B7A\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"mb-1 block text-xs text-muted-foreground\\\\/70\"/className=\"mb-1 block font-display text-[9px] uppercase tracking-[0.1em]\" style={{ color: \"rgba\\(156,139,122,0.7\\)\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"shrink-0 border-purple-200 bg-purple-100 text-xs text-purple-700\"/className=\"shrink-0 text-xs\"/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"shrink-0 border-border bg-muted\\\\/20 text-xs text-purple-600\"/className=\"shrink-0 text-xs\" style={{ color: \"#C9A962\", borderColor: \"rgba\\(201,169,98,0.3\\)\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"shrink-0 border-border bg-card text-xs text-muted-foreground\"/className=\"shrink-0 text-xs\"/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/show.tsx)",
+      "Bash(sed -i '' 's/className=\"border-purple-200 bg-purple-100 text-xs text-purple-700\"/className=\"text-xs\"/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
+      "Bash(sed -i '' 's/className=\"gap-1.5 border-purple-300 text-purple-700 hover:border-purple-400 hover:bg-purple-50\"/className=\"gap-1.5\" style={{ borderColor: \"rgba\\(201,169,98,0.5\\)\", color: \"#C9A962\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
+      "Bash(sed -i '' 's/className=\"text-xs text-red-500\"/className=\"font-body text-xs italic\" style={{ color: \"#8B2635\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
+      "Bash(sed -i '' 's/className=\"px-1 text-sm text-red-500\"/className=\"font-body px-1 text-sm italic\" style={{ color: \"#8B2635\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
+      "Bash(sed -i '' 's/className=\"h-4 w-4 text-purple-600\"/className=\"h-4 w-4\" style={{ color: \"#C9A962\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
+      "Bash(sed -i '' 's/className=\"flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3\"/className=\"flex items-start gap-2 rounded p-3\" style={{ background: \"rgba\\(139,38,53,0.1\\)\", border: \"1px solid rgba\\(139,38,53,0.3\\)\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
+      "Bash(sed -i '' 's/className=\"mt-0.5 h-4 w-4 shrink-0 text-red-500\"/className=\"mt-0.5 h-4 w-4 shrink-0\" style={{ color: \"#8B2635\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
+      "Bash(sed -i '' 's/className=\"text-sm text-red-700\"/className=\"font-body text-sm italic\" style={{ color: \"#8B2635\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
+      "Bash(sed -i '' 's/className=\"rounded-lg border border-red-200 bg-red-50\"/className=\"rounded\" style={{ background: \"rgba\\(139,38,53,0.08\\)\", border: \"1px solid rgba\\(139,38,53,0.3\\)\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
+      "Bash(sed -i '' 's/className=\"flex items-center gap-2 rounded-t-lg bg-red-100 px-4 py-2\"/className=\"flex items-center gap-2 rounded-t px-4 py-2\" style={{ background: \"rgba\\(139,38,53,0.15\\)\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)"
     ]
   }
 }

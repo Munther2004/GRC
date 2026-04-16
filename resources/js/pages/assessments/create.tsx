@@ -63,7 +63,7 @@ export default function AssessmentCreate({ frameworks }: Props) {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                             New Assessment
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -96,7 +96,7 @@ export default function AssessmentCreate({ frameworks }: Props) {
                                                 String(f.id),
                                             )
                                         }
-                                        className={`rounded-lg border-2 p-4 text-left transition-all ${ data.framework_id === String(f.id) ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' : 'border-border hover:border-border dark:border-border' }`}
+                                        className={`rounded-lg border-2 p-4 text-left transition-all ${ data.framework_id === String(f.id) ? 'border-primary bg-primary/10 dark:bg-primary/10' : 'border-border hover:border-border dark:border-border' }`}
                                     >
                                         <div className="flex items-center gap-3">
                                             <div
@@ -125,7 +125,7 @@ export default function AssessmentCreate({ frameworks }: Props) {
                             )}
 
                             {selectedFramework && (
-                                <div className="rounded-lg bg-blue-50 p-3 text-sm text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                <div className="rounded-lg bg-primary/10 p-3 text-sm text-primary dark:bg-primary/10 dark:text-primary">
                                     {selectedFramework.description}
                                 </div>
                             )}

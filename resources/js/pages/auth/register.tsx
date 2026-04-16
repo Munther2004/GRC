@@ -100,7 +100,7 @@ export default function Register() {
                             </Button>
                         </div>
 
-                        <div className="text-center text-sm text-muted-foreground">
+                        <div className="font-body text-center text-sm italic" style={{ color: '#9C8B7A' }}>
                             Already have an account?{' '}
                             <TextLink href={login()} tabIndex={6}>
                                 Log in

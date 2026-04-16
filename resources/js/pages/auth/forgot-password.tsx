@@ -19,7 +19,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <Head title="Forgot password" />
 
             {status && (
-                <div className="mb-4 text-center text-sm font-medium text-emerald-400">
+                <div className="font-body mb-4 text-center text-sm italic" style={{ color: '#8B9E6B' }}>
                     {status}
                 </div>
             )}
@@ -58,7 +58,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     )}
                 </Form>
 
-                <div className="space-x-1 text-center text-sm text-muted-foreground">
+                <div className="font-body space-x-1 text-center text-sm italic" style={{ color: '#9C8B7A' }}>
                     <span>Or, return to</span>
                     <TextLink href={login()}>log in</TextLink>
                 </div>

@@ -6,25 +6,34 @@ export default function Error403() {
     return (
         <>
             <Head title="403 — Forbidden" />
-            <div className="dark flex min-h-screen items-center justify-center bg-background p-6">
+            <div
+                className="flex min-h-screen items-center justify-center p-6"
+                style={{ background: '#1C1714' }}
+            >
                 <div className="max-w-md text-center">
                     <div className="mb-6 flex justify-center">
-                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-950">
-                            <ShieldOff className="h-10 w-10 text-red-500" />
+                        <div
+                            className="flex h-20 w-20 items-center justify-center rounded-full"
+                            style={{ background: 'rgba(139,38,53,0.12)', border: '1px solid rgba(139,38,53,0.4)' }}
+                        >
+                            <ShieldOff className="h-10 w-10" style={{ color: '#8B2635' }} strokeWidth={1.5} />
                         </div>
                     </div>
-                    <h1 className="mb-2 text-6xl font-bold text-foreground">
+                    <p className="font-display mb-1 text-[10px] uppercase tracking-[0.3em]" style={{ color: '#9C8B7A' }}>
+                        Error
+                    </p>
+                    <h1 className="font-heading mb-2 text-7xl font-normal" style={{ color: '#8B2635' }}>
                         403
                     </h1>
-                    <h2 className="mb-3 text-xl font-semibold text-muted-foreground">
+                    <h2 className="font-heading mb-3 text-xl font-normal" style={{ color: '#E8DFD4' }}>
                         Access Denied
                     </h2>
-                    <p className="mb-8 text-muted-foreground">
+                    <p className="font-body mb-8 italic" style={{ color: '#9C8B7A' }}>
                         You don't have permission to access this page. Contact
                         your administrator if you believe this is a mistake.
                     </p>
                     <Link href="/">
-                        <Button>Go to Dashboard</Button>
+                        <Button>Return to Dashboard</Button>
                     </Link>
                 </div>
             </div>

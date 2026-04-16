@@ -312,7 +312,7 @@ export default function CrosswalkIndex({
                     </select>
                     <button
                         onClick={applyFilters}
-                        className="rounded-md bg-indigo-600 px-4 py-2 text-sm text-white transition-colors hover:bg-indigo-700"
+                        className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
                     >
                         Filter
                     </button>

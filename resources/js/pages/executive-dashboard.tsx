@@ -133,7 +133,7 @@ const gradeConfig: Record<string, { color: string; bg: string; ring: string }> =
             bg: 'bg-green-50',
             ring: 'ring-green-300',
         },
-        B: { color: 'text-blue-700', bg: 'bg-blue-50', ring: 'ring-blue-300' },
+        B: { color: 'text-primary', bg: 'bg-primary/20', ring: 'ring-primary/30' },
         C: {
             color: 'text-amber-700',
             bg: 'bg-amber-50',
@@ -266,7 +266,7 @@ export default function ExecutiveDashboard({
                 <div className="flex items-start justify-between">
                     <div>
                         <div className="mb-1 flex items-center gap-2">
-                            <Shield className="h-4 w-4 text-blue-400" />
+                            <Shield className="h-4 w-4 text-primary" />
                             <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
                                 GRC Management System
                             </span>
@@ -317,7 +317,7 @@ export default function ExecutiveDashboard({
                                 </span>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-foreground">
+                                <p className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                                     {healthScore.health_score}
                                 </p>
                                 <p className="text-xs leading-tight text-muted-foreground">
@@ -535,7 +535,7 @@ export default function ExecutiveDashboard({
                                                             ? 'bg-muted text-muted-foreground'
                                                             : risk.status ===
                                                                 'in_progress'
-                                                              ? 'bg-blue-950 text-blue-400'
+                                                              ? 'bg-accent text-foreground'
                                                               : 'bg-amber-950 text-amber-400',
                                                     )}
                                                 >
@@ -618,7 +618,7 @@ export default function ExecutiveDashboard({
                     <Card>
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center gap-2 text-sm">
-                                <FileText className="h-4 w-4 text-purple-500" />
+                                <FileText className="h-4 w-4 text-destructive" />
                                 Evidence Status
                             </CardTitle>
                         </CardHeader>
@@ -658,7 +658,7 @@ export default function ExecutiveDashboard({
                                     {
                                         label: 'Total Files',
                                         value: evidenceSummary.total,
-                                        color: 'text-blue-400',
+                                        color: 'text-primary',
                                         dot: 'bg-primary',
                                     },
                                 ].map(({ label, value, color, dot }) => (
@@ -915,7 +915,7 @@ export default function ExecutiveDashboard({
                                         value: healthScore.components
                                             .evidence_quality,
                                         max: 20,
-                                        color: 'bg-purple-500',
+                                        color: 'bg-secondary',
                                     },
                                     {
                                         label: 'Overdue Items',

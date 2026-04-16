@@ -50,7 +50,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground">
+                    <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                         Frameworks
                     </h1>
                     <p className="text-sm text-muted-foreground">
@@ -143,8 +143,8 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                             >
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/30">
-                                                            <span className="text-xs font-bold text-blue-400 dark:text-blue-400">
+                                                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/20 dark:bg-primary/20">
+                                                            <span className="text-xs font-bold text-primary dark:text-primary">
                                                                 {framework.short_name.substring(
                                                                     0,
                                                                     4,
@@ -185,7 +185,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                                         variant="outline"
                                                         className={
                                                             framework.is_active
-                                                                ? 'border-green-200 bg-green-50 text-green-700'
+                                                                ? 'border-primary/50 bg-primary/10 text-primary'
                                                                 : 'border-border bg-muted text-muted-foreground'
                                                         }
                                                     >
@@ -213,7 +213,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className={`h-8 w-8 ${framework.is_active ? 'text-orange-500 hover:bg-orange-50' : 'text-green-500 hover:bg-green-50'}`}
+                                                            className={`h-8 w-8 ${framework.is_active ? 'text-destructive hover:bg-destructive/10' : 'text-primary hover:bg-primary/10'}`}
                                                             onClick={() =>
                                                                 toggle(
                                                                     framework,

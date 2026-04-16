@@ -372,7 +372,7 @@ export default function ChatbotIndex({ context }: Props) {
                                     <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                                         <Sparkles className="h-6 w-6 text-primary" />
                                     </div>
-                                    <p className="text-sm font-medium">
+                                    <p className="font-heading text-lg font-normal">
                                         How can I help you today?
                                     </p>
                                     <p className="text-xs text-muted-foreground">

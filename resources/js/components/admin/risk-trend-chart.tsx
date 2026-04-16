@@ -23,10 +23,10 @@ type Props = {
 };
 
 const COLORS = {
-    critical: '#ef4444',
-    high: '#f59e0b',
-    medium: '#eab308',
-    low: '#22c55e',
+    critical: '#8B2635',
+    high: '#B07840',
+    medium: '#C9A962',
+    low: '#8B9E6B',
 };
 
 export function RiskTrendChart({ trendData = [] }: Props) {
@@ -35,10 +35,10 @@ export function RiskTrendChart({ trendData = [] }: Props) {
     return (
         <Card>
             <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="font-heading text-lg font-normal">
                     Risk Trend
                 </CardTitle>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="font-body text-[11px] italic" style={{ color: '#9C8B7A' }}>
                     Risk levels over time — ISO/IEC 27005 scoring
                 </p>
             </CardHeader>
@@ -46,10 +46,10 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                 {!hasData ? (
                     <div className="flex h-64 items-center justify-center">
                         <div className="text-center">
-                            <p className="text-sm text-muted-foreground">
+                            <p className="font-body text-sm italic" style={{ color: '#9C8B7A' }}>
                                 No trend data available yet
                             </p>
-                            <p className="mt-1 text-xs text-muted-foreground/70">
+                            <p className="font-body mt-1 text-xs italic" style={{ color: 'rgba(156,139,122,0.6)' }}>
                                 Data will appear as risks are recorded over time
                             </p>
                         </div>
@@ -59,104 +59,55 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart
                                 data={trendData}
-                                margin={{
-                                    top: 10,
-                                    right: 10,
-                                    left: -20,
-                                    bottom: 0,
-                                }}
+                                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                             >
                                 <defs>
-                                    {Object.entries(COLORS).map(
-                                        ([key, color]) => (
-                                            <linearGradient
-                                                key={key}
-                                                id={`color-${key}`}
-                                                x1="0"
-                                                y1="0"
-                                                x2="0"
-                                                y2="1"
-                                            >
-                                                <stop
-                                                    offset="5%"
-                                                    stopColor={color}
-                                                    stopOpacity={0.3}
-                                                />
-                                                <stop
-                                                    offset="95%"
-                                                    stopColor={color}
-                                                    stopOpacity={0}
-                                                />
-                                            </linearGradient>
-                                        ),
-                                    )}
+                                    {Object.entries(COLORS).map(([key, color]) => (
+                                        <linearGradient key={key} id={`color-${key}`} x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%"  stopColor={color} stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor={color} stopOpacity={0} />
+                                        </linearGradient>
+                                    ))}
                                 </defs>
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    stroke="rgba(255,255,255,0.1)"
-                                    vertical={false}
-                                />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#4A3F35" vertical={false} />
                                 <XAxis
                                     dataKey="month"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#888', fontSize: 12 }}
+                                    tick={{ fill: '#9C8B7A', fontSize: 10, fontFamily: "'Cinzel', serif" }}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#888', fontSize: 12 }}
+                                    tick={{ fill: '#9C8B7A', fontSize: 10, fontFamily: "'Cinzel', serif" }}
                                 />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: 'oklch(0.06 0 0)',
-                                        border: '1px solid oklch(0.18 0 0)',
-                                        borderRadius: '6px',
+                                        backgroundColor: '#251E19',
+                                        border: '1px solid #4A3F35',
+                                        borderRadius: '4px',
                                         fontSize: '11px',
                                         padding: '6px 10px',
+                                        fontFamily: "'Crimson Pro', serif",
+                                        color: '#E8DFD4',
                                     }}
-                                    labelStyle={{ color: '#fafafa' }}
+                                    labelStyle={{ color: '#C9A962', fontFamily: "'Cinzel', serif", fontSize: '10px' }}
                                 />
                                 <Legend
                                     iconType="circle"
                                     iconSize={8}
                                     wrapperStyle={{
-                                        fontSize: '12px',
+                                        fontSize: '10px',
                                         paddingTop: '10px',
+                                        fontFamily: "'Cinzel', serif",
+                                        letterSpacing: '0.05em',
+                                        color: '#9C8B7A',
                                     }}
                                 />
-                                <Area
-                                    type="monotone"
-                                    dataKey="low"
-                                    stackId="1"
-                                    stroke={COLORS.low}
-                                    fill="url(#color-low)"
-                                    strokeWidth={2}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="medium"
-                                    stackId="1"
-                                    stroke={COLORS.medium}
-                                    fill="url(#color-medium)"
-                                    strokeWidth={2}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="high"
-                                    stackId="1"
-                                    stroke={COLORS.high}
-                                    fill="url(#color-high)"
-                                    strokeWidth={2}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="critical"
-                                    stackId="1"
-                                    stroke={COLORS.critical}
-                                    fill="url(#color-critical)"
-                                    strokeWidth={2}
-                                />
+                                <Area type="monotone" dataKey="low"      stackId="1" stroke={COLORS.low}      fill="url(#color-low)"      strokeWidth={1.5} />
+                                <Area type="monotone" dataKey="medium"   stackId="1" stroke={COLORS.medium}   fill="url(#color-medium)"   strokeWidth={1.5} />
+                                <Area type="monotone" dataKey="high"     stackId="1" stroke={COLORS.high}     fill="url(#color-high)"     strokeWidth={1.5} />
+                                <Area type="monotone" dataKey="critical" stackId="1" stroke={COLORS.critical} fill="url(#color-critical)" strokeWidth={1.5} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>

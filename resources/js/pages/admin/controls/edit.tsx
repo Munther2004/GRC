@@ -49,7 +49,7 @@ export default function ControlEdit({ control }: Props) {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                             Edit Control
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -144,7 +144,7 @@ export default function ControlEdit({ control }: Props) {
                                     onChange={(
                                         e: React.ChangeEvent<HTMLInputElement>,
                                     ) => setData('is_active', e.target.checked)}
-                                    className="h-4 w-4 accent-blue-600"
+                                    className="h-4 w-4 accent-primary"
                                 />
                                 <Label htmlFor="is_active">
                                     Active — include in assessments

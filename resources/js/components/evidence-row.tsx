@@ -135,7 +135,7 @@ export function AiReviewPanel({
         !!onRejectForRelevance;
 
     return (
-        <div className="mt-3 space-y-3 border-t border-purple-200 pt-3 dark:border-purple-800">
+        <div className="mt-3 space-y-3 border-t border-muted pt-3 dark:border-muted">
             <div className="flex flex-wrap items-center gap-2">
                 <span
                     className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${vc.bg} ${vc.color}`}
@@ -290,7 +290,7 @@ function EvidenceActions({
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 gap-1 px-2 text-xs text-purple-600 hover:bg-purple-50 hover:text-purple-700 dark:hover:bg-purple-950/30"
+                    className="h-8 gap-1 px-2 text-xs text-muted-foreground hover:bg-secondary hover:text-secondary-foreground dark:hover:bg-secondary/30"
                     onClick={() =>
                         hasReview ? onTogglePanel() : onRunReview()
                     }
@@ -322,7 +322,7 @@ function EvidenceActions({
             <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-primary hover:bg-blue-50"
+                className="h-8 w-8 text-primary hover:bg-accent"
                 title="Download"
                 onClick={onDownload}
             >
@@ -407,7 +407,7 @@ export function EvidenceRow({
                             </p>
                             {hasReview && (
                                 <Sparkles
-                                    className="h-3.5 w-3.5 shrink-0 text-purple-500"
+                                    className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
                                     aria-label="AI reviewed"
                                 />
                             )}

@@ -81,7 +81,7 @@ export default function ControlsIndex({
 
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground">
+                    <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                         Controls Library
                     </h1>
                     <p className="text-sm text-muted-foreground">
@@ -94,7 +94,7 @@ export default function ControlsIndex({
                     {stats.by_framework.map((f) => (
                         <Card key={f.id}>
                             <CardContent className="flex items-center gap-3 p-4">
-                                <Settings className="h-5 w-5 text-blue-400" />
+                                <Settings className="h-5 w-5 text-primary" />
                                 <div>
                                     <p className="text-2xl font-bold">
                                         {f.controls_count}
@@ -260,7 +260,7 @@ export default function ControlsIndex({
                                                         variant="outline"
                                                         className={
                                                             control.is_active
-                                                                ? 'border-green-200 bg-green-50 text-emerald-400'
+                                                                ? 'border-primary/50 bg-primary/10 text-primary'
                                                                 : 'border-border bg-muted text-muted-foreground'
                                                         }
                                                     >
@@ -288,7 +288,7 @@ export default function ControlsIndex({
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                                            className="h-8 w-8 text-destructive hover:bg-destructive/10"
                                                             onClick={() =>
                                                                 deleteControl(
                                                                     control.id,

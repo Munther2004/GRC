@@ -22,7 +22,7 @@ import {
     XCircle,
     Zap,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { downloadPdf } from '@/lib/download-pdf';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -162,52 +162,38 @@ type StatTile = {
     progress?: number | null;
 };
 
-function StatTiles({ tiles }: { tiles: StatTile[] }) {
-    const dot = (t?: StatTile['tone']) =>
-        ({
-            neutral: 'bg-foreground/30',
-            ok: 'bg-emerald-400',
-            warn: 'bg-amber-400',
-            bad: 'bg-red-400',
-        })[t ?? 'neutral'];
+const toneCol: Record<string, string> = {
+    neutral: '#9C8B7A', ok: '#8B9E6B', warn: '#B07840', bad: '#8B2635',
+};
 
+function StatTiles({ tiles }: { tiles: StatTile[] }) {
     return (
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3 lg:grid-cols-5">
-            {tiles.map((t) => (
-                <div
-                    key={t.label}
-                    className="flex min-h-[104px] flex-col justify-between bg-card px-5 py-4"
-                >
-                    <div className="flex items-center gap-1.5">
-                        <span
-                            className={`h-1 w-1 rounded-full ${dot(t.tone)}`}
-                        />
-                        <p className="text-[11px] font-medium tracking-tight text-muted-foreground uppercase">
-                            {t.label}
-                        </p>
+        <div
+            className="grid grid-cols-2 overflow-hidden rounded md:grid-cols-3 lg:grid-cols-5"
+            style={{ border: '1px solid #4A3F35', gap: '1px', background: '#4A3F35' }}
+        >
+            {tiles.map((t, i) => {
+                const dot = toneCol[t.tone ?? 'neutral'];
+                const p   = t.progress ?? null;
+                return (
+                    <div key={t.label} className="relative flex flex-col justify-between px-5 py-4" style={{ background: '#251E19', minHeight: '100px' }}>
+                        {i === 0 && <div className="absolute left-0 top-3 bottom-3 w-px" style={{ background: '#C9A962', opacity: 0.6 }} />}
+                        <div className="flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: dot }} />
+                            <p className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: '#9C8B7A' }}>{t.label}</p>
+                        </div>
+                        <div className="mt-2">
+                            <p className="font-heading text-3xl font-normal tabular-nums leading-none" style={{ color: '#E8DFD4' }}>{t.value}</p>
+                            {p !== null && (
+                                <div className="mt-2 h-px w-full overflow-hidden" style={{ background: '#4A3F35' }}>
+                                    <div className="h-full" style={{ width: `${Math.min(p, 100)}%`, background: dot, transition: 'width 0.5s ease' }} />
+                                </div>
+                            )}
+                            {t.hint && <p className="mt-1.5 font-body text-[11px] italic" style={{ color: '#9C8B7A' }}>{t.hint}</p>}
+                        </div>
                     </div>
-                    <div className="mt-auto">
-                        <p className="text-3xl leading-none font-semibold tracking-tight text-foreground tabular-nums">
-                            {t.value}
-                        </p>
-                        {t.progress !== undefined && t.progress !== null && (
-                            <div className="mt-2 h-[3px] w-full overflow-hidden rounded-full bg-muted">
-                                <div
-                                    className={`h-full rounded-full ${ (t.progress ?? 0) >= 70 ? 'bg-emerald-400' : (t.progress ?? 0) >= 40 ? 'bg-amber-400' : 'bg-red-400' }`}
-                                    style={{
-                                        width: `${Math.min(t.progress ?? 0, 100)}%`,
-                                    }}
-                                />
-                            </div>
-                        )}
-                        {t.hint && (
-                            <p className="mt-2 text-[11px] text-muted-foreground/70">
-                                {t.hint}
-                            </p>
-                        )}
-                    </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 }
@@ -216,50 +202,41 @@ function StatTiles({ tiles }: { tiles: StatTile[] }) {
 // Hero — page header + grade + quick actions
 // -----------------------------------------------------------------------
 
-const gradeAccent: Record<string, string> = {
-    A: 'text-emerald-400',
-    B: 'text-teal-400',
-    C: 'text-amber-400',
-    D: 'text-orange-400',
-    F: 'text-red-400',
+const gradeColor: Record<string, string> = {
+    A: '#8B9E6B', B: '#C9A962', C: '#B07840', D: '#B07840', F: '#8B2635',
 };
 
 function DashboardHero({ healthScore }: { healthScore: HealthScore }) {
-    const accent = gradeAccent[healthScore.grade] ?? gradeAccent.F;
-
+    const gradeC = gradeColor[healthScore.grade] ?? gradeColor.F;
     return (
-        <div className="relative overflow-hidden rounded-xl border border-border bg-card">
-            <div className="absolute inset-0 grid-bg opacity-40" aria-hidden />
-            <div
-                className="absolute inset-0 bg-linear-to-br from-background/0 via-background/60 to-background"
-                aria-hidden
-            />
+        <div
+            className="relative overflow-hidden rounded ornate-frame"
+            style={{ background: '#251E19', border: '1px solid #4A3F35' }}
+        >
+            {/* Subtle warm grid */}
+            <div className="absolute inset-0 opacity-20" aria-hidden style={{
+                backgroundImage: 'linear-gradient(to right, #4A3F35 1px, transparent 1px), linear-gradient(to bottom, #4A3F35 1px, transparent 1px)',
+                backgroundSize: '48px 48px',
+            }} />
+            <div className="absolute inset-0" aria-hidden style={{ background: 'linear-gradient(135deg, transparent 0%, rgba(28,23,20,0.7) 100%)' }} />
 
             <div className="relative flex flex-col gap-6 p-6 md:flex-row md:items-end md:justify-between md:p-8">
-                <div className="space-y-1.5">
-                    <p className="font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase">
-                        Overview
+                <div className="space-y-2">
+                    <p className="font-display text-[9px] uppercase tracking-[0.3em]" style={{ color: '#C9A962' }}>
+                        Overview · GRC Command Centre
                     </p>
-                    <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                    <h1 className="font-heading text-4xl font-normal leading-tight md:text-5xl" style={{ color: '#E8DFD4' }}>
                         Good to see you back.
                     </h1>
-                    <p className="max-w-md text-sm text-muted-foreground">
-                        Live view of your risks, controls, and compliance
-                        posture.
+                    <p className="max-w-md font-body italic text-base" style={{ color: '#9C8B7A' }}>
+                        Live view of your risks, controls, and compliance posture.
                     </p>
                 </div>
-
                 <div className="flex items-center gap-6">
                     <div className="text-right">
-                        <p className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-                            Health
-                        </p>
-                        <p
-                            className={`text-5xl leading-none font-semibold tabular-nums ${accent}`}
-                        >
-                            {healthScore.grade}
-                        </p>
-                        <p className="mt-1 font-mono text-[11px] text-muted-foreground tabular-nums">
+                        <p className="font-display text-[9px] uppercase tracking-[0.25em] mb-1" style={{ color: '#9C8B7A' }}>Health</p>
+                        <p className="font-heading text-6xl leading-none" style={{ color: gradeC }}>{healthScore.grade}</p>
+                        <p className="mt-1 font-display text-[10px] uppercase tracking-wider tabular-nums" style={{ color: '#9C8B7A' }}>
                             {healthScore.health_score}/100
                         </p>
                     </div>
@@ -275,24 +252,23 @@ function DashboardHero({ healthScore }: { healthScore: HealthScore }) {
 
 function ActionStrip() {
     const actions = [
-        { href: '/risks/create', label: 'New risk', icon: Plus },
-        {
-            href: '/assessments/create',
-            label: 'Start assessment',
-            icon: Sparkles,
-        },
-        { href: '/evidence/upload', label: 'Upload evidence', icon: Upload },
-        { href: '/reports', label: 'Reports', icon: FileText },
+        { href: '/risks/create',        label: 'New Risk',         icon: Plus     },
+        { href: '/assessments/create',  label: 'Start Assessment', icon: Sparkles },
+        { href: '/evidence/upload',     label: 'Upload Evidence',  icon: Upload   },
+        { href: '/reports',             label: 'Reports',          icon: FileText },
     ];
     return (
         <div className="flex flex-wrap items-center gap-2">
-            {actions.map((a) => (
+            {actions.map(a => (
                 <Link
                     key={a.label}
                     href={a.href}
-                    className="group inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground/80 transition-colors hover:border-foreground/30 hover:text-foreground"
+                    className="group inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-display text-[10px] uppercase tracking-[0.14em] transition-all duration-200"
+                    style={{ border: '1px solid #4A3F35', background: '#251E19', color: '#9C8B7A' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#C9A962'; e.currentTarget.style.color = '#C9A962'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#4A3F35'; e.currentTarget.style.color = '#9C8B7A'; }}
                 >
-                    <a.icon className="h-3 w-3 text-muted-foreground transition-colors group-hover:text-foreground" />
+                    <a.icon className="h-3 w-3" strokeWidth={1.5} />
                     {a.label}
                 </Link>
             ))}
@@ -331,71 +307,58 @@ function ExecutiveSummaryCard() {
         }
     };
 
+    const cardBase: React.CSSProperties = { background: '#251E19', border: '1px solid #4A3F35', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.3s ease' };
     return (
         <>
             <div className="grid gap-3 md:grid-cols-2">
                 <button
                     onClick={generate}
                     disabled={generating}
-                    className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-foreground/20 disabled:opacity-60"
+                    className="group relative text-left disabled:opacity-50 ornate-frame"
+                    style={cardBase}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(201,169,98,0.5)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = '#4A3F35')}
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-background">
-                            <Sparkles className="h-4 w-4 text-foreground/80" />
+                    <div className="flex items-center gap-3 p-4">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded" style={{ border: '1px solid rgba(201,169,98,0.4)', background: 'rgba(201,169,98,0.08)' }}>
+                            <Sparkles className="h-4 w-4" style={{ color: '#C9A962' }} />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-foreground">
-                                AI Executive Summary
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                Board-ready PDF with AI narrative
-                            </p>
+                            <p className="font-heading text-base font-normal" style={{ color: '#E8DFD4' }}>AI Executive Summary</p>
+                            <p className="font-body italic text-xs" style={{ color: '#9C8B7A' }}>Board-ready PDF with AI narrative</p>
                         </div>
-                        {generating ? (
-                            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
-                        ) : (
-                            <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-foreground" />
-                        )}
+                        {generating ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" style={{ color: '#9C8B7A' }} /> : <ArrowRight className="h-4 w-4 shrink-0 transition-all group-hover:translate-x-0.5" style={{ color: '#9C8B7A' }} />}
                     </div>
                 </button>
-                <Link
-                    href="/executive-dashboard"
-                    className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/20"
+                <Link href="/executive-dashboard" className="group relative ornate-frame" style={cardBase}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(201,169,98,0.5)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = '#4A3F35')}
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-background">
-                            <FileText className="h-4 w-4 text-foreground/80" />
+                    <div className="flex items-center gap-3 p-4">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded" style={{ border: '1px solid rgba(201,169,98,0.4)', background: 'rgba(201,169,98,0.08)' }}>
+                            <FileText className="h-4 w-4" style={{ color: '#C9A962' }} />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-foreground">
-                                Executive Dashboard
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                Printable one-page compliance view
-                            </p>
+                            <p className="font-heading text-base font-normal" style={{ color: '#E8DFD4' }}>Executive Dashboard</p>
+                            <p className="font-body italic text-xs" style={{ color: '#9C8B7A' }}>Printable one-page compliance view</p>
                         </div>
-                        <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-foreground" />
+                        <ArrowRight className="h-4 w-4 shrink-0 transition-all group-hover:translate-x-0.5" style={{ color: '#9C8B7A' }} />
                     </div>
                 </Link>
             </div>
-
             {generating && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-                    <div className="mx-4 flex max-w-xs flex-col items-center gap-3 rounded-xl border border-border bg-popover p-6">
-                        <Sparkles className="h-6 w-6 animate-pulse text-foreground" />
-                        <p className="text-sm font-medium text-foreground">
-                            Generating summary…
-                        </p>
-                        <p className="text-center text-xs text-muted-foreground">
-                            AI is analysing your GRC data
-                        </p>
+                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(28,23,20,0.85)', backdropFilter: 'blur(8px)' }}>
+                    <div className="mx-4 flex max-w-xs flex-col items-center gap-3 rounded p-6 ornate-frame" style={{ background: '#251E19', border: '1px solid #4A3F35' }}>
+                        <Sparkles className="h-6 w-6 animate-pulse" style={{ color: '#C9A962' }} />
+                        <p className="font-heading text-lg font-normal" style={{ color: '#E8DFD4' }}>Generating summary…</p>
+                        <p className="text-center font-body italic text-sm" style={{ color: '#9C8B7A' }}>The AI is analysing your GRC data</p>
                     </div>
                 </div>
             )}
             {toast && (
-                <div className="fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded-md border border-red-500/30 bg-popover px-4 py-3 text-sm">
-                    <XCircle className="h-4 w-4 shrink-0 text-red-400" />
-                    <span className="text-foreground">{toast.text}</span>
+                <div className="fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded px-4 py-3 text-sm" style={{ background: '#251E19', border: '1px solid rgba(139,38,53,0.4)' }}>
+                    <XCircle className="h-4 w-4 shrink-0" style={{ color: '#8B2635' }} />
+                    <span className="font-body" style={{ color: '#E8DFD4' }}>{toast.text}</span>
                 </div>
             )}
         </>
@@ -437,36 +400,26 @@ function HealthBreakdown({ healthScore }: { healthScore: HealthScore }) {
 
     return (
         <Card>
-            <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">
-                    Health Breakdown
-                </CardTitle>
-                <p className="text-[11px] text-muted-foreground">
-                    {healthScore.raw.compliance_basis === 'evidence'
-                        ? 'Evidence-weighted'
-                        : 'Self-assessed'}{' '}
-                    · 100 pts total
+            <CardHeader className="pb-2">
+                <CardTitle className="font-heading text-lg font-normal">Health Breakdown</CardTitle>
+                <p className="font-body italic text-xs" style={{ color: '#9C8B7A' }}>
+                    {healthScore.raw.compliance_basis === 'evidence' ? 'Evidence-weighted' : 'Self-assessed'} · 100 pts total
                 </p>
             </CardHeader>
             <CardContent className="space-y-3">
                 {components.map((c) => {
-                    const pct = (c.value / c.max) * 100;
+                    const pct  = (c.value / c.max) * 100;
+                    const barC = pct >= 70 ? '#8B9E6B' : pct >= 40 ? '#B07840' : '#8B2635';
                     return (
                         <div key={c.label}>
-                            <div className="mb-1 flex items-center justify-between text-xs">
-                                <span className="text-foreground/80">
-                                    {c.label}
-                                </span>
-                                <span className="font-mono text-muted-foreground tabular-nums">
-                                    {c.value}
-                                    <span className="opacity-40">/{c.max}</span>
+                            <div className="mb-1.5 flex items-center justify-between">
+                                <span className="font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: '#9C8B7A' }}>{c.label}</span>
+                                <span className="font-heading text-sm tabular-nums" style={{ color: '#E8DFD4' }}>
+                                    {c.value}<span style={{ color: '#9C8B7A', opacity: 0.5 }}>/{c.max}</span>
                                 </span>
                             </div>
-                            <div className="h-1 overflow-hidden rounded-full bg-muted">
-                                <div
-                                    className={`h-full rounded-full ${ pct >= 70 ? 'bg-emerald-400/80' : pct >= 40 ? 'bg-amber-400/80' : 'bg-red-400/80' }`}
-                                    style={{ width: `${pct}%` }}
-                                />
+                            <div className="h-px w-full overflow-hidden" style={{ background: '#4A3F35' }}>
+                                <div className="h-full" style={{ width: `${pct}%`, background: barC, transition: 'width 0.5s ease' }} />
                             </div>
                         </div>
                     );
@@ -490,7 +443,7 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
         return (
             <Card>
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
+                    <CardTitle className="font-heading text-lg font-normal">
                         KRI Trends
                     </CardTitle>
                 </CardHeader>
@@ -518,18 +471,20 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
     }));
 
     const tooltipStyle = {
-        backgroundColor: 'oklch(0.06 0 0)',
-        border: '1px solid oklch(0.18 0 0)',
-        borderRadius: '6px',
+        backgroundColor: '#251E19',
+        border: '1px solid #4A3F35',
+        borderRadius: '4px',
         fontSize: '11px',
         padding: '6px 10px',
+        fontFamily: "'Crimson Pro', serif",
+        color: '#E8DFD4',
     };
 
     return (
         <div className="grid gap-4 lg:grid-cols-2">
             <Card>
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
+                    <CardTitle className="font-heading text-lg font-normal">
                         Compliance Trend
                     </CardTitle>
                 </CardHeader>
@@ -541,18 +496,18 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
                         >
                             <CartesianGrid
                                 strokeDasharray="3 3"
-                                stroke="oklch(0.18 0 0)"
+                                stroke="#4A3F35"
                                 vertical={false}
                             />
                             <XAxis
                                 dataKey="date"
-                                tick={{ fontSize: 10, fill: '#71717a' }}
+                                tick={{ fontSize: 10, fill: '#9C8B7A', fontFamily: "'Cinzel', serif" }}
                                 axisLine={false}
                                 tickLine={false}
                             />
                             <YAxis
                                 domain={[0, 100]}
-                                tick={{ fontSize: 10, fill: '#71717a' }}
+                                tick={{ fontSize: 10, fill: '#9C8B7A', fontFamily: "'Cinzel', serif" }}
                                 axisLine={false}
                                 tickLine={false}
                                 unit="%"
@@ -575,7 +530,7 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
             </Card>
             <Card>
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
+                    <CardTitle className="font-heading text-lg font-normal">
                         Open Risks Distribution
                     </CardTitle>
                 </CardHeader>
@@ -587,18 +542,18 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
                         >
                             <CartesianGrid
                                 strokeDasharray="3 3"
-                                stroke="oklch(0.18 0 0)"
+                                stroke="#4A3F35"
                                 vertical={false}
                             />
                             <XAxis
                                 dataKey="date"
-                                tick={{ fontSize: 10, fill: '#71717a' }}
+                                tick={{ fontSize: 10, fill: '#9C8B7A', fontFamily: "'Cinzel', serif" }}
                                 axisLine={false}
                                 tickLine={false}
                             />
                             <YAxis
                                 allowDecimals={false}
-                                tick={{ fontSize: 10, fill: '#71717a' }}
+                                tick={{ fontSize: 10, fill: '#9C8B7A', fontFamily: "'Cinzel', serif" }}
                                 axisLine={false}
                                 tickLine={false}
                             />
@@ -665,6 +620,40 @@ export default function AdminDashboard({
     const hasCritical = recent.some(
         (n) => n.type === 'critical_risk' || n.type === 'overdue_risk',
     );
+
+    // Heatmap expansion state based on scroll position
+    const [heatmapScale, setHeatmapScale] = useState(1);
+    const heatmapRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!heatmapRef.current) return;
+
+            const rect = heatmapRef.current.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            
+            // Distance from center of viewport to center of element
+            const elementCenter = rect.top + rect.height / 2;
+            const viewportCenter = windowHeight / 2;
+            const distance = Math.abs(elementCenter - viewportCenter);
+            
+            // Maximum distance (beyond which we don't expand)
+            const maxDistance = windowHeight * 0.6;
+            
+            // Calculate scale: expands as element moves toward center
+            if (distance < maxDistance) {
+                const progress = 1 - (distance / maxDistance);
+                const scale = 1 + progress * 0.6; // Expands to 1.6x
+                setHeatmapScale(scale);
+            } else {
+                setHeatmapScale(1);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll(); // Call once on mount
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     // Unified stat tiles (merges MetricsCards + KpiCards into one bar)
     const tiles: StatTile[] = [
@@ -733,31 +722,22 @@ export default function AdminDashboard({
             <div className="space-y-6">
                 <DashboardHero healthScore={healthScore} />
 
-                {/* Consolidated notification strip */}
+                {/* Notification strip */}
                 {unreadCount > 0 && (
                     <Link
                         href="/notifications"
-                        className="group flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 transition-colors hover:bg-accent/40"
+                        className="group flex items-center gap-3 rounded px-4 py-3 transition-all duration-200"
+                        style={{ border: `1px solid ${hasCritical ? 'rgba(139,38,53,0.5)' : 'rgba(176,120,64,0.4)'}`, background: hasCritical ? 'rgba(139,38,53,0.08)' : 'rgba(176,120,64,0.06)' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = hasCritical ? 'rgba(139,38,53,0.14)' : 'rgba(176,120,64,0.1)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = hasCritical ? 'rgba(139,38,53,0.08)' : 'rgba(176,120,64,0.06)')}
                     >
-                        <span
-                            className={`inline-flex h-1.5 w-1.5 rounded-full ${hasCritical ? 'bg-red-400' : 'bg-amber-400'} animate-pulse`}
-                        />
-                        <AlertTriangle
-                            className={`h-4 w-4 shrink-0 ${hasCritical ? 'text-red-400' : 'text-amber-400'}`}
-                        />
-                        <div className="min-w-0 flex-1">
-                            <p className="text-sm text-foreground">
-                                <span className="font-medium">
-                                    {unreadCount} item
-                                    {unreadCount > 1 ? 's' : ''}
-                                </span>
-                                <span className="text-muted-foreground">
-                                    {' '}
-                                    require your attention
-                                </span>
-                            </p>
-                        </div>
-                        <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground" />
+                        <span className="inline-flex h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: hasCritical ? '#8B2635' : '#B07840' }} />
+                        <AlertTriangle className="h-4 w-4 shrink-0" style={{ color: hasCritical ? '#8B2635' : '#B07840' }} />
+                        <p className="min-w-0 flex-1 font-body text-sm" style={{ color: '#E8DFD4' }}>
+                            <span style={{ fontWeight: 500 }}>{unreadCount} item{unreadCount > 1 ? 's' : ''}</span>
+                            <span style={{ color: '#9C8B7A' }}> require your attention</span>
+                        </p>
+                        <ArrowUpRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" style={{ color: '#9C8B7A' }} />
                     </Link>
                 )}
 
@@ -767,35 +747,31 @@ export default function AdminDashboard({
 
                 {/* Risk appetite — minimal */}
                 {appetiteCounts && (
-                    <Link
-                        href="/risk-appetite"
-                        className="group flex items-center gap-3 text-xs"
+                    <Link href="/risk-appetite" className="group flex items-center gap-3 rounded px-4 py-2.5 transition-all duration-200"
+                        style={{ border: '1px solid #4A3F35', background: '#251E19' }}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(201,169,98,0.4)')}
+                        onMouseLeave={e => (e.currentTarget.style.borderColor = '#4A3F35')}
                     >
-                        <span className="font-mono tracking-wider text-muted-foreground uppercase">
-                            {appetiteCounts.name}
-                        </span>
-                        <span className="flex items-center gap-2">
+                        <span className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: '#9C8B7A' }}>{appetiteCounts.name}</span>
+                        <span className="flex items-center gap-3">
                             {appetiteCounts.escalated > 0 && (
-                                <span className="inline-flex items-center gap-1 text-red-400">
-                                    <span className="h-1 w-1 rounded-full bg-red-400" />
-                                    {appetiteCounts.escalated}{' '}
-                                    {appetiteCounts.labels.escalated}
+                                <span className="inline-flex items-center gap-1 font-display text-[9px] uppercase tracking-wider" style={{ color: '#8B2635' }}>
+                                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#8B2635' }} />
+                                    {appetiteCounts.escalated} {appetiteCounts.labels.escalated}
                                 </span>
                             )}
                             {appetiteCounts.review > 0 && (
-                                <span className="inline-flex items-center gap-1 text-amber-400">
-                                    <span className="h-1 w-1 rounded-full bg-amber-400" />
-                                    {appetiteCounts.review}{' '}
-                                    {appetiteCounts.labels.review}
+                                <span className="inline-flex items-center gap-1 font-display text-[9px] uppercase tracking-wider" style={{ color: '#B07840' }}>
+                                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#B07840' }} />
+                                    {appetiteCounts.review} {appetiteCounts.labels.review}
                                 </span>
                             )}
-                            <span className="inline-flex items-center gap-1 text-emerald-400">
-                                <span className="h-1 w-1 rounded-full bg-emerald-400" />
-                                {appetiteCounts.acceptable}{' '}
-                                {appetiteCounts.labels.acceptable}
+                            <span className="inline-flex items-center gap-1 font-display text-[9px] uppercase tracking-wider" style={{ color: '#8B9E6B' }}>
+                                <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#8B9E6B' }} />
+                                {appetiteCounts.acceptable} {appetiteCounts.labels.acceptable}
                             </span>
                         </span>
-                        <span className="ml-auto flex items-center gap-1 text-muted-foreground transition-colors group-hover:text-foreground">
+                        <span className="ml-auto flex items-center gap-1 font-display text-[9px] uppercase tracking-wider transition-colors duration-200" style={{ color: '#9C8B7A' }}>
                             Configure <ArrowRight className="h-3 w-3" />
                         </span>
                     </Link>
@@ -805,17 +781,27 @@ export default function AdminDashboard({
 
                 <FocusScrollWrapper className="grid gap-4 lg:grid-cols-3">
                     <div
-                        className="animate-in slide-in-from-bottom-4 lg:col-span-2"
-                        style={{ animationDelay: '0ms' }}
+                        ref={heatmapRef}
+                        className="animate-in slide-in-from-bottom-4 lg:col-span-2 origin-center transition-transform duration-300 ease-out"
+                        style={{
+                            animationDelay: '0ms',
+                            transform: `scaleX(${1 + (heatmapScale - 1) * 0.6}) scaleY(${1 - (heatmapScale - 1) * 0.4})`,
+                        }}
                     >
                         <RiskHeatmap risks={heatmap} />
                     </div>
-                    <div
-                        className="animate-in slide-in-from-bottom-4"
-                        style={{ animationDelay: '100ms' }}
-                    >
-                        <HealthBreakdown healthScore={healthScore} />
-                    </div>
+                    {heatmapScale < 1.15 && (
+                        <div
+                            className="animate-in slide-in-from-bottom-4 transition-opacity duration-300"
+                            style={{
+                                animationDelay: '100ms',
+                                opacity: heatmapScale < 1.15 ? 1 : 0,
+                                pointerEvents: heatmapScale < 1.15 ? 'auto' : 'none',
+                            }}
+                        >
+                            <HealthBreakdown healthScore={healthScore} />
+                        </div>
+                    )}
                 </FocusScrollWrapper>
 
                 <div
@@ -853,19 +839,17 @@ export default function AdminDashboard({
                     >
                         <Card>
                             <CardHeader className="pb-2">
-                                <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                                    <Zap className="h-3.5 w-3.5 text-muted-foreground" />
+                                <CardTitle className="flex items-center gap-2 font-heading text-lg font-normal">
+                                    <Zap className="h-4 w-4" style={{ color: '#C9A962' }} strokeWidth={1.5} />
                                     Rule Adjustments
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-3xl font-semibold tabular-nums">
+                                <p className="font-heading text-4xl font-normal tabular-nums" style={{ color: '#E8DFD4' }}>
                                     {ruleAdjustments}
                                 </p>
-                                <p className="mt-1 text-xs text-muted-foreground">
-                                    risk score{ruleAdjustments !== 1 ? 's' : ''}{' '}
-                                    auto-adjusted by compliance rules in the
-                                    last 30 days
+                                <p className="mt-2 font-body italic text-sm" style={{ color: '#9C8B7A' }}>
+                                    risk score{ruleAdjustments !== 1 ? 's' : ''} auto-adjusted by compliance rules in the last 30 days
                                 </p>
                             </CardContent>
                         </Card>
@@ -874,10 +858,13 @@ export default function AdminDashboard({
 
                 <TopRisks risks={recentRisks} />
 
-                <p className="pb-2 text-center font-mono text-[11px] text-muted-foreground/50">
-                    Nightly checks · 02:00 · last run{' '}
-                    {lastSchedulerRun ?? 'never'}
-                </p>
+                {/* Ornate footer */}
+                <div className="pb-4 text-center space-y-2">
+                    <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, #4A3F35 30%, #4A3F35 70%, transparent)', opacity: 0.5 }} />
+                    <p className="font-display text-[9px] uppercase tracking-[0.25em]" style={{ color: 'rgba(156,139,122,0.4)' }}>
+                        Nightly checks · 02:00 · last run {lastSchedulerRun ?? 'never'}
+                    </p>
+                </div>
             </div>
         </AdminLayout>
     );

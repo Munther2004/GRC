@@ -25,6 +25,7 @@ import { useState } from 'react';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogFooter,
@@ -65,7 +66,7 @@ interface Props {
 
 const statusColors: Record<string, string> = {
     draft: 'bg-muted text-foreground/75 border-border',
-    in_progress: 'bg-blue-950 text-blue-400 border-blue-200',
+    in_progress: 'bg-accent text-foreground border-primary/20',
     submitted: 'bg-amber-950 text-amber-400 border-yellow-200',
     completed: 'bg-green-50 text-emerald-400 border-green-200',
 };
@@ -481,10 +482,10 @@ export default function AssessmentsIndex({
                     if (!open && !deleting) setDeleteModal(null);
                 }}
             >
-                <DialogContent
-                    className="max-w-md"
-                    aria-describedby={undefined}
-                >
+                <DialogContent className="max-w-md">
+                    <DialogDescription className="sr-only">
+                        Delete assessment confirmation dialog
+                    </DialogDescription>
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-red-400">
                             <Trash2 className="h-4 w-4" /> Delete Assessment
@@ -495,7 +496,7 @@ export default function AssessmentsIndex({
                         <div className="space-y-4 py-1">
                             {/* Assessment info */}
                             <div className="rounded-lg border bg-accent/30 p-3">
-                                <p className="text-sm font-medium">
+                                <p className="font-heading text-lg font-normal">
                                     {deleteModal.title}
                                 </p>
                                 <p className="mt-0.5 text-xs text-muted-foreground">

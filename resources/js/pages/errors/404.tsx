@@ -6,25 +6,33 @@ export default function Error404() {
     return (
         <>
             <Head title="404 — Not Found" />
-            <div className="dark flex min-h-screen items-center justify-center bg-background p-6">
+            <div
+                className="flex min-h-screen items-center justify-center p-6"
+                style={{ background: '#1C1714' }}
+            >
                 <div className="max-w-md text-center">
                     <div className="mb-6 flex justify-center">
-                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-950">
-                            <SearchX className="h-10 w-10 text-yellow-500" />
+                        <div
+                            className="flex h-20 w-20 items-center justify-center rounded-full"
+                            style={{ background: 'rgba(201,169,98,0.08)', border: '1px solid rgba(201,169,98,0.3)' }}
+                        >
+                            <SearchX className="h-10 w-10" style={{ color: '#C9A962' }} strokeWidth={1.5} />
                         </div>
                     </div>
-                    <h1 className="mb-2 text-6xl font-bold text-foreground">
+                    <p className="font-display mb-1 text-[10px] uppercase tracking-[0.3em]" style={{ color: '#9C8B7A' }}>
+                        Error
+                    </p>
+                    <h1 className="font-heading mb-2 text-7xl font-normal" style={{ color: '#C9A962' }}>
                         404
                     </h1>
-                    <h2 className="mb-3 text-xl font-semibold text-muted-foreground">
+                    <h2 className="font-heading mb-3 text-xl font-normal" style={{ color: '#E8DFD4' }}>
                         Page Not Found
                     </h2>
-                    <p className="mb-8 text-muted-foreground">
-                        The page you're looking for doesn't exist or has been
-                        moved.
+                    <p className="font-body mb-8 italic" style={{ color: '#9C8B7A' }}>
+                        The page you're looking for doesn't exist or has been moved.
                     </p>
                     <Link href="/">
-                        <Button>Go to Dashboard</Button>
+                        <Button>Return to Dashboard</Button>
                     </Link>
                 </div>
             </div>

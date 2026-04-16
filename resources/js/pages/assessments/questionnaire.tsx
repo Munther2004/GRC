@@ -277,9 +277,9 @@ export default function Questionnaire({
             <div className="mx-auto max-w-4xl space-y-6">
                 {/* Controls Hub pre-fill notice */}
                 {prefilledCount > 0 && (
-                    <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm dark:border-blue-800 dark:bg-blue-950">
+                    <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm dark:border-primary/30 dark:bg-primary/10">
                         <CheckCircle className="h-4 w-4 shrink-0 text-primary" />
-                        <span className="text-blue-700 dark:text-blue-300">
+                        <span className="text-primary dark:text-primary">
                             <strong>{prefilledCount}</strong> control
                             {prefilledCount !== 1 ? 's' : ''} pre-filled from
                             Controls Hub — update if status has changed.
@@ -336,7 +336,7 @@ export default function Questionnaire({
                 <Card>
                     <CardContent className="p-4">
                         <div className="mb-2 flex items-center justify-between">
-                            <span className="text-sm font-medium">
+                            <span className="font-heading text-lg font-normal">
                                 Overall Progress
                             </span>
                             <span className="text-sm text-muted-foreground">
@@ -418,7 +418,7 @@ export default function Questionnaire({
                                                 disabled={
                                                     helpLoading[item.control_id]
                                                 }
-                                                className={`flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-all ${ activeHelpControlId === item.control_id ? 'border-purple-300 bg-purple-100 text-purple-700 dark:border-purple-700 dark:bg-purple-900/40 dark:text-purple-300' : 'border-purple-200 text-purple-600 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-400 dark:hover:bg-purple-950/40' }`}
+                                                className={`flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-all ${ activeHelpControlId === item.control_id ? 'border-secondary/30 bg-secondary/20 text-secondary-foreground dark:border-secondary/30 dark:bg-secondary/40 dark:text-secondary-foreground' : 'border-secondary/20 text-secondary-foreground hover:bg-secondary/10 dark:border-secondary/20 dark:text-secondary-foreground dark:hover:bg-secondary/40' }`}
                                                 title="Get AI explanation for this control"
                                             >
                                                 {helpLoading[
@@ -460,12 +460,12 @@ export default function Questionnaire({
                                     {/* AI Help Panel */}
                                     {activeHelpControlId ===
                                         item.control_id && (
-                                        <div className="overflow-hidden rounded-lg border border-purple-200 bg-purple-50 transition-all duration-200 dark:border-purple-800 dark:bg-purple-950/20">
+                                        <div className="overflow-hidden rounded-lg border border-secondary/20 bg-secondary/5 transition-all duration-200 dark:border-secondary/20 dark:bg-secondary/20">
                                             {/* Panel header */}
-                                            <div className="flex items-center justify-between border-b border-purple-200 bg-purple-100/60 px-4 py-2.5 dark:border-purple-800 dark:bg-purple-900/30">
+                                            <div className="flex items-center justify-between border-b border-secondary/20 bg-secondary/10 px-4 py-2.5 dark:border-secondary/20 dark:bg-secondary/30">
                                                 <div className="flex items-center gap-2">
-                                                    <Sparkles className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
-                                                    <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">
+                                                    <Sparkles className="h-3.5 w-3.5 text-secondary-foreground dark:text-secondary-foreground" />
+                                                    <span className="text-xs font-semibold text-secondary-foreground dark:text-secondary-foreground">
                                                         AI Guidance —{' '}
                                                         {
                                                             item.control
@@ -481,7 +481,7 @@ export default function Questionnaire({
                                                             null,
                                                         )
                                                     }
-                                                    className="text-purple-400 transition-colors hover:text-purple-600 dark:hover:text-purple-300"
+                                                    className="text-secondary/60 transition-colors hover:text-secondary-foreground dark:hover:text-secondary-foreground"
                                                 >
                                                     <X className="h-3.5 w-3.5" />
                                                 </button>
@@ -489,7 +489,7 @@ export default function Questionnaire({
 
                                             {/* Loading state */}
                                             {helpLoading[item.control_id] && (
-                                                <div className="flex items-center gap-2 px-4 py-4 text-sm text-purple-600 dark:text-purple-400">
+                                                <div className="flex items-center gap-2 px-4 py-4 text-sm text-secondary-foreground dark:text-secondary-foreground">
                                                     <Loader2 className="h-4 w-4 animate-spin" />
                                                     Asking Claude for
                                                     guidance...
@@ -519,7 +519,7 @@ export default function Questionnaire({
                                                                         item.control_id,
                                                                     )
                                                                 }
-                                                                className="text-xs text-purple-600 underline hover:no-underline dark:text-purple-400"
+                                                                className="text-xs text-secondary-foreground underline hover:no-underline dark:text-secondary-foreground"
                                                             >
                                                                 Retry
                                                             </button>
@@ -539,7 +539,7 @@ export default function Questionnaire({
                                                         <div className="space-y-3 px-4 py-3 text-xs">
                                                             {/* Plain English */}
                                                             <div>
-                                                                <p className="mb-1 font-semibold text-purple-700 dark:text-purple-300">
+                                                                <p className="mb-1 font-semibold text-secondary-foreground dark:text-secondary-foreground">
                                                                     💬 What this
                                                                     means
                                                                 </p>
@@ -552,7 +552,7 @@ export default function Questionnaire({
 
                                                             {/* What it requires */}
                                                             <div>
-                                                                <p className="mb-1 font-semibold text-purple-700 dark:text-purple-300">
+                                                                <p className="mb-1 font-semibold text-secondary-foreground dark:text-secondary-foreground">
                                                                     ✅ What it
                                                                     requires
                                                                 </p>
@@ -568,7 +568,7 @@ export default function Questionnaire({
                                                                                 }
                                                                                 className="flex gap-1.5"
                                                                             >
-                                                                                <span className="shrink-0 text-purple-400">
+                                                                                <span className="shrink-0 text-secondary/60">
                                                                                     •
                                                                                 </span>
                                                                                 {
@@ -582,7 +582,7 @@ export default function Questionnaire({
 
                                                             {/* Evidence examples */}
                                                             <div>
-                                                                <p className="mb-1 font-semibold text-purple-700 dark:text-purple-300">
+                                                                <p className="mb-1 font-semibold text-secondary-foreground dark:text-secondary-foreground">
                                                                     📎 Evidence
                                                                     examples
                                                                 </p>
@@ -598,7 +598,7 @@ export default function Questionnaire({
                                                                                 }
                                                                                 className="flex gap-1.5"
                                                                             >
-                                                                                <span className="shrink-0 text-purple-400">
+                                                                                <span className="shrink-0 text-secondary/60">
                                                                                     •
                                                                                 </span>
                                                                                 {
@@ -612,7 +612,7 @@ export default function Questionnaire({
 
                                                             {/* Compliant looks like */}
                                                             <div>
-                                                                <p className="mb-1 font-semibold text-purple-700 dark:text-purple-300">
+                                                                <p className="mb-1 font-semibold text-secondary-foreground dark:text-secondary-foreground">
                                                                     ✔ Compliant
                                                                     implementation
                                                                     looks like
@@ -647,7 +647,7 @@ export default function Questionnaire({
                                     {isExpanded &&
                                         item.control
                                             .implementation_guidance && (
-                                            <div className="rounded-lg bg-blue-50 p-3 text-xs text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                            <div className="rounded-lg bg-primary/10 p-3 text-xs text-primary dark:bg-primary/10 dark:text-primary">
                                                 <p className="mb-1 font-semibold">
                                                     Implementation Guidance:
                                                 </p>
@@ -728,7 +728,7 @@ export default function Questionnaire({
                                                             item.id
                                                         ]?.click()
                                                     }
-                                                    className="flex items-center gap-1 text-xs text-primary hover:text-blue-400"
+                                                    className="flex items-center gap-1 text-xs text-primary hover:text-primary/80"
                                                 >
                                                     <Upload className="h-3 w-3" />{' '}
                                                     Upload file
@@ -759,8 +759,8 @@ export default function Questionnaire({
                                             {/* Expiry date picker shown when a file is selected for this item */}
                                             {pendingUpload?.itemId ===
                                                 item.id && (
-                                                <div className="mt-2 space-y-2 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950">
-                                                    <p className="text-xs font-medium text-blue-700 dark:text-blue-300">
+                                                <div className="mt-2 space-y-2 rounded-lg border border-primary/20 bg-primary/10 p-3 dark:border-primary/30 dark:bg-primary/10">
+                                                    <p className="text-xs font-medium text-primary dark:text-primary">
                                                         File selected:{' '}
                                                         <span className="font-semibold">
                                                             {

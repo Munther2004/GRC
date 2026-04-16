@@ -37,7 +37,7 @@ interface Props {
 
 const roleColors: Record<string, string> = {
     admin: 'bg-red-950 text-red-400 border-red-200',
-    auditor: 'bg-blue-950 text-blue-400 border-blue-200',
+    auditor: 'bg-accent text-foreground border-primary/20',
     user: 'bg-muted text-foreground/75 border-border',
 };
 
@@ -70,7 +70,7 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                             Users & Roles
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -226,8 +226,8 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                             >
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-950">
-                                                            <span className="text-xs font-semibold text-blue-400 dark:text-blue-300">
+                                                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent">
+                                                            <span className="text-xs font-semibold text-foreground dark:text-foreground">>
                                                                 {user.name
                                                                     .split(' ')
                                                                     .map(

@@ -62,7 +62,7 @@ const rightNavItems: NavItem[] = [
 ];
 
 const activeItemStyles =
-    'text-foreground dark:bg-neutral-800 dark:text-neutral-100';
+    'text-foreground bg-secondary dark:bg-secondary dark:text-secondary-foreground';
 
 export function AppHeader({ breadcrumbs = [] }: Props) {
     const page = usePage();
@@ -226,7 +226,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                             src={auth.user.avatar}
                                             alt={auth.user.name}
                                         />
-                                        <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700">
+                                        <AvatarFallback className="rounded-lg bg-muted text-muted-foreground dark:bg-secondary dark:text-secondary-foreground">
                                             {getInitials(auth.user.name)}
                                         </AvatarFallback>
                                     </Avatar>

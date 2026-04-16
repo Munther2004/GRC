@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 
 export function ScrollFocusMode() {
-    const [isFocused, setIsFocused] = useState(false)
-    const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
+    const focusedElementRef = useRef<HTMLElement | null>(null)
     
     useEffect(() => {
         const handleScroll = () => {
@@ -18,31 +17,32 @@ export function ScrollFocusMode() {
                 // Element is in view and centered
                 const isInFocus = rect.top > triggerTop && rect.top < triggerBottom
                 
-                if (isInFocus && !isFocused) {
-                    setIsFocused(true)
-                    setFocusElement(el as HTMLElement)
+                if (isInFocus && focusedElementRef.current !== el) {
+                    focusedElementRef.current = el as HTMLElement
                     // Hide siblings
                     const parent = el.parentElement
                     if (parent) {
-                        Array.from(parent.children).forEach((child: Element) => {
+                        for (let i = 0; i < parent.children.length; i++) {
+                            const child = parent.children[i] as HTMLElement
                             if (child !== el) {
-                                (child as HTMLElement).style.opacity = '0'
-                                (child as HTMLElement).style.pointerEvents = 'none'
-                                (child as HTMLElement).style.transition = 'all 0.3s ease'
+                                child.style.opacity = '0'
+                                child.style.pointerEvents = 'none'
+                                child.style.transition = 'all 0.3s ease'
                             }
-                        })
+                        }
                     }
-                } else if (!isInFocus && isFocused && focusElement === el) {
-                    setIsFocused(false)
+                } else if (!isInFocus && focusedElementRef.current === el) {
+                    focusedElementRef.current = null
                     // Restore siblings
                     const parent = el.parentElement
                     if (parent) {
-                        Array.from(parent.children).forEach((child: Element) => {
+                        for (let i = 0; i < parent.children.length; i++) {
+                            const child = parent.children[i] as HTMLElement
                             if (child !== el) {
-                                (child as HTMLElement).style.opacity = '1'
-                                (child as HTMLElement).style.pointerEvents = 'auto'
+                                child.style.opacity = '1'
+                                child.style.pointerEvents = 'auto'
                             }
-                        })
+                        }
                     }
                 }
             })
@@ -50,7 +50,7 @@ export function ScrollFocusMode() {
         
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
-    }, [isFocused, focusElement])
+    }, [])
     
     return null
 }

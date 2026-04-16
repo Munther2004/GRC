@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogFooter,
@@ -101,12 +102,12 @@ const priorityBadge: Record<string, string> = {
     critical: 'bg-red-100 text-red-700 border-red-200',
     high: 'bg-orange-100 text-orange-700 border-orange-200',
     medium: 'bg-amber-100 text-amber-700 border-amber-200',
-    low: 'bg-blue-100 text-blue-700 border-blue-200',
+    low: 'bg-primary/10 text-primary border-primary/20',
 };
 
 const statusBadge: Record<string, string> = {
     open: 'bg-muted text-muted-foreground border-border',
-    in_progress: 'bg-blue-100 text-blue-700 border-blue-200',
+    in_progress: 'bg-primary/10 text-primary border-primary/20',
     completed: 'bg-green-100 text-green-700 border-green-200',
     cancelled: 'bg-red-100 text-red-600 border-red-200',
 };
@@ -535,7 +536,7 @@ export default function RemediationTasksIndex({
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground">
-                            <ClipboardList className="h-6 w-6 text-indigo-600" />
+                            <ClipboardList className="h-6 w-6 text-primary" />
                             Remediation Tasks
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
@@ -545,7 +546,7 @@ export default function RemediationTasksIndex({
                     </div>
                     {canEdit && (
                         <Button
-                            className="gap-2 bg-indigo-600 text-white hover:bg-indigo-700"
+                            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
                             onClick={openAdd}
                         >
                             <Plus className="h-4 w-4" /> Add Task
@@ -565,7 +566,7 @@ export default function RemediationTasksIndex({
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                     <Card>
                         <CardContent className="p-4">
-                            <p className="text-2xl font-bold text-foreground">
+                            <p className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                                 {stats.total}
                             </p>
                             <p className="mt-0.5 text-xs text-muted-foreground">
@@ -745,7 +746,7 @@ export default function RemediationTasksIndex({
                                                         {task.title}
                                                     </p>
                                                     {task.auto_closed && (
-                                                        <span className="mt-0.5 inline-flex items-center gap-1 text-xs text-purple-600">
+                                                        <span className="mt-0.5 inline-flex items-center gap-1 text-xs text-secondary-foreground">
                                                             <Sparkles className="h-3 w-3" />{' '}
                                                             Auto-closed
                                                         </span>
@@ -832,7 +833,7 @@ export default function RemediationTasksIndex({
                                                             <Button
                                                                 size="sm"
                                                                 variant="ghost"
-                                                                className="h-7 w-7 p-0 text-muted-foreground hover:text-indigo-600"
+                                                                className="h-7 w-7 p-0 text-muted-foreground hover:text-primary"
                                                                 onClick={() =>
                                                                     openEdit(
                                                                         task,
@@ -898,7 +899,7 @@ export default function RemediationTasksIndex({
                                 disabled={!link.url}
                                 onClick={() => link.url && router.get(link.url)}
                                 dangerouslySetInnerHTML={{ __html: link.label }}
-                                className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${link.active ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-border hover:bg-muted/50 dark:hover:bg-secondary'} ${!link.url ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
+                                className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border hover:bg-muted/50 dark:hover:bg-secondary'} ${!link.url ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
                             />
                         ))}
                     </div>
@@ -911,6 +912,9 @@ export default function RemediationTasksIndex({
                 onOpenChange={(open) => !saving && setAddOpen(open)}
             >
                 <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+                    <DialogDescription className="sr-only">
+                        Add new remediation task
+                    </DialogDescription>
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <Plus className="h-4 w-4" /> New Remediation Task
@@ -936,7 +940,7 @@ export default function RemediationTasksIndex({
                         <Button
                             onClick={submitAdd}
                             disabled={saving || !form.control_id || !form.title}
-                            className="bg-indigo-600 text-white hover:bg-indigo-700"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90"
                         >
                             {saving ? 'Saving…' : 'Create Task'}
                         </Button>
@@ -950,6 +954,9 @@ export default function RemediationTasksIndex({
                 onOpenChange={(open) => !saving && !open && setEditTask(null)}
             >
                 <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+                    <DialogDescription className="sr-only">
+                        Edit remediation task
+                    </DialogDescription>
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <Pencil className="h-4 w-4" /> Edit Task
@@ -983,7 +990,7 @@ export default function RemediationTasksIndex({
                         <Button
                             onClick={submitEdit}
                             disabled={saving || !form.title}
-                            className="bg-indigo-600 text-white hover:bg-indigo-700"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90"
                         >
                             {saving ? 'Saving…' : 'Save Changes'}
                         </Button>
@@ -999,6 +1006,9 @@ export default function RemediationTasksIndex({
                 }
             >
                 <DialogContent className="max-w-sm">
+                    <DialogDescription className="sr-only">
+                        Delete remediation task confirmation dialog
+                    </DialogDescription>
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-red-600">
                             <Trash2 className="h-4 w-4" /> Delete Task

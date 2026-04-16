@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogFooter,
@@ -118,7 +119,7 @@ function ActiveAppetiteCard({ appetite }: { appetite: RiskAppetite }) {
     const escalatedPct = 100 - acceptablePct - reviewPct;
 
     return (
-        <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 dark:border-blue-800 dark:from-blue-950/30 dark:to-indigo-950/30">
+        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5 dark:border-primary/30 dark:from-primary/10 dark:to-secondary/10">
             <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2 text-base font-semibold">
@@ -316,6 +317,9 @@ function AppetiteModal({
     return (
         <Dialog open={open} onOpenChange={(v) => !saving && !v && onClose()}>
             <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+                <DialogDescription className="sr-only">
+                    Configuration dialog for risk appetite settings
+                </DialogDescription>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Sliders className="h-4 w-4" />
@@ -616,7 +620,7 @@ export default function RiskAppetiteIndex({
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                             Risk Appetite Configuration
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
@@ -658,7 +662,7 @@ export default function RiskAppetiteIndex({
                 {/* All Configurations Table */}
                 <Card>
                     <CardHeader className="pb-0">
-                        <CardTitle className="text-base font-semibold">
+                        <CardTitle className="font-heading text-xl font-normal">
                             All Configurations ({appetites.length})
                         </CardTitle>
                     </CardHeader>
@@ -701,7 +705,7 @@ export default function RiskAppetiteIndex({
                                         appetites.map((a) => (
                                             <tr
                                                 key={a.id}
-                                                className={`transition-colors hover:bg-muted/50 dark:hover:bg-secondary/50 ${a.is_active ? 'bg-blue-50/30 dark:bg-blue-950/10' : ''}`}
+                                                className={`transition-colors hover:bg-muted/50 dark:hover:bg-secondary/50 ${a.is_active ? 'bg-primary/10 dark:bg-primary/10' : ''}`}
                                             >
                                                 <td className="px-4 py-3">
                                                     <p className="font-medium text-foreground">
@@ -734,7 +738,7 @@ export default function RiskAppetiteIndex({
                                                     {a.notify_on_escalation ? (
                                                         <Badge
                                                             variant="outline"
-                                                            className="gap-1 border-blue-200 bg-blue-50 text-xs text-primary"
+                                                            className="gap-1 border-primary/20 bg-primary/10 text-xs text-primary"
                                                         >
                                                             <Bell className="h-3 w-3" />{' '}
                                                             Yes
@@ -770,7 +774,7 @@ export default function RiskAppetiteIndex({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
-                                                                className="h-8 gap-1 text-xs text-primary hover:bg-blue-50 hover:text-blue-700"
+                                                                className="h-8 gap-1 text-xs text-primary hover:bg-primary/20 hover:text-primary"
                                                                 onClick={() =>
                                                                     handleActivate(
                                                                         a,
@@ -852,6 +856,9 @@ export default function RiskAppetiteIndex({
                 onOpenChange={(v) => !v && setDeleteTarget(null)}
             >
                 <DialogContent className="max-w-sm">
+                    <DialogDescription className="sr-only">
+                        Delete risk appetite configuration confirmation
+                    </DialogDescription>
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-red-600">
                             <Trash2 className="h-4 w-4" /> Delete Configuration

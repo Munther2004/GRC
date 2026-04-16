@@ -49,16 +49,16 @@ interface Props {
 
 const actionColors: Record<string, string> = {
     created: 'bg-green-50 text-green-700 border-green-200',
-    updated: 'bg-blue-50 text-blue-700 border-blue-200',
+    updated: 'bg-primary/10 text-primary border-primary/20',
     deleted: 'bg-red-950 text-red-400 border-red-200',
-    submitted: 'bg-purple-50 text-purple-700 border-purple-200',
+    submitted: 'bg-secondary/10 text-secondary-foreground border-secondary/20',
     uploaded: 'bg-yellow-50 text-yellow-700 border-yellow-200',
 };
 
 const modelColors: Record<string, string> = {
-    Assessment: 'bg-blue-950 text-blue-400',
+    Assessment: 'bg-accent text-foreground',
     Risk: 'bg-orange-950 text-orange-400',
-    User: 'bg-purple-100 text-purple-700',
+    User: 'bg-secondary/20 text-secondary-foreground',
     Evidence: 'bg-amber-950 text-amber-400',
     Framework: 'bg-emerald-950 text-emerald-400',
     Control: 'bg-muted text-foreground',
@@ -108,7 +108,7 @@ export default function AuditLogsIndex({
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground">
+                    <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                         Audit Logs
                     </h1>
                     <p className="text-sm text-muted-foreground">
@@ -135,7 +135,7 @@ export default function AuditLogsIndex({
                             label: 'This Week',
                             value: stats.week,
                             icon: Calendar,
-                            color: 'text-purple-500',
+                            color: 'text-secondary-foreground',
                         },
                     ].map(({ label, value, icon: Icon, color }) => (
                         <Card key={label}>

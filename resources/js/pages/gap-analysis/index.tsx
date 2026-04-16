@@ -247,7 +247,7 @@ export default function GapAnalysisIndex({
                 {stats.by_framework.length > 0 && (
                     <Card>
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium">
+                            <CardTitle className="font-heading text-lg font-normal">
                                 Gaps by Framework
                             </CardTitle>
                         </CardHeader>
@@ -418,7 +418,7 @@ export default function GapAnalysisIndex({
                                 {items.data.map((item) => (
                                     <div
                                         key={item.id}
-                                        className={`p-4 transition-colors hover:bg-accent/30 ${ item.compliance_status === 'non_compliant' ? 'border-l-4 border-red-400' : 'border-l-4 border-yellow-400' } ${lastAnalyzed === item.id ? 'ring-2 ring-purple-400 ring-inset' : ''}`}
+                                        className={`p-4 transition-colors hover:bg-accent/30 ${ item.compliance_status === 'non_compliant' ? 'border-l-4 border-destructive' : 'border-l-4 border-yellow-400' } ${lastAnalyzed === item.id ? 'ring-2 ring-primary ring-inset' : ''}`}
                                     >
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="min-w-0 flex-1">
@@ -491,7 +491,7 @@ export default function GapAnalysisIndex({
                                                         onClick={() =>
                                                             handleAiFix(item)
                                                         }
-                                                        className="gap-1 bg-purple-600 text-xs text-white hover:bg-purple-700 disabled:opacity-60"
+                                                        className="gap-1 bg-secondary text-xs text-foreground hover:bg-secondary/80 disabled:opacity-60"
                                                     >
                                                         {analyzing ===
                                                         item.id ? (
@@ -563,7 +563,7 @@ export default function GapAnalysisIndex({
                         {/* Modal Header */}
                         <div className="flex items-start justify-between border-b border-border p-5">
                             <div className="flex min-w-0 flex-1 items-start gap-2">
-                                <span className="mt-0.5 text-lg leading-none text-violet-400">
+                                <span className="mt-0.5 text-lg leading-none text-primary">
                                     ✨
                                 </span>
                                 <div className="min-w-0">
@@ -644,7 +644,7 @@ export default function GapAnalysisIndex({
                                                     key={s.step}
                                                     className="flex gap-3"
                                                 >
-                                                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-xs font-bold text-violet-400">
+                                                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">
                                                         {s.step}
                                                     </div>
                                                     <div className="min-w-0 flex-1">

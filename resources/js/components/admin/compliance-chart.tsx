@@ -31,7 +31,7 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
     return (
         <Card>
             <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="font-heading text-lg font-normal">
                     Compliance by Framework
                 </CardTitle>
             </CardHeader>
@@ -55,7 +55,7 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                                 tick={false}
                             />
                             <RadialBar
-                                background={{ fill: 'rgba(255,255,255,0.05)' }}
+                                background={{ fill: 'rgba(74,63,53,0.3)' }}
                                 dataKey="value"
                                 cornerRadius={6}
                             />
@@ -69,7 +69,7 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                                     paddingTop: '20px',
                                 }}
                                 formatter={(value: string, entry: any) => (
-                                    <span style={{ color: '#888' }}>
+                                    <span style={{ color: '#9C8B7A', fontFamily: "'Cinzel', serif", fontSize: '10px', letterSpacing: '0.05em' }}>
                                         {value} ({entry.payload.value}%)
                                     </span>
                                 )}
@@ -90,10 +90,10 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                         }}
                     >
                         <div style={{ textAlign: 'center' }}>
-                            <div className="text-3xl font-bold">
+                            <div className="font-heading text-3xl font-normal" style={{ color: '#E8DFD4' }}>
                                 {Math.round(score)}%
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: '#9C8B7A' }}>
                                 Overall
                             </div>
                         </div>

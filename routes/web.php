@@ -62,6 +62,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ── Risks — read-only for all, write for admin & user ────────────────────
     Route::get('/risks', [RiskController::class, 'index'])->name('risks.index');
+    Route::get('/risks/heatmap', [RiskController::class, 'heatmap'])->name('risks.heatmap');
 
     Route::middleware('role:admin,user')->group(function () {
         Route::post('/controls/{control}/request-status', [ControlStatusRequestController::class, 'store'])->name('controls.request-status');

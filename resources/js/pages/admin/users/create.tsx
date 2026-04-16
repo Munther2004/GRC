@@ -46,7 +46,7 @@ export default function UserCreate() {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                             Add User
                         </h1>
                         <p className="text-sm text-muted-foreground">

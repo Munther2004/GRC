@@ -13,15 +13,15 @@ const frameworks = [
     {
         name: 'ISO 27001',
         icon: Lock,
-        color: 'text-blue-400',
-        bg: 'bg-primary/10 border-blue-500/20',
+        color: 'text-primary',
+        bg: 'bg-primary/10 border-primary/20',
         desc: 'International standard for information security management systems (ISMS). Defines requirements for establishing, implementing, and continuously improving information security.',
     },
     {
         name: 'NIST 800-53',
         icon: Server,
-        color: 'text-purple-400',
-        bg: 'bg-purple-500/10 border-purple-500/20',
+        color: 'text-secondary-foreground',
+        bg: 'bg-secondary/10 border-secondary/20',
         desc: 'NIST Special Publication providing a catalogue of security and privacy controls for federal information systems, widely adopted by private sector organisations.',
     },
     {
@@ -67,7 +67,7 @@ export default function About() {
                 <main className="mx-auto max-w-4xl space-y-16 px-6 py-16">
                     {/* Hero */}
                     <div className="text-center">
-                        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-primary/10 px-3 py-1.5 text-xs text-blue-400">
+                        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs text-primary">
                             <BookOpen className="h-3.5 w-3.5" />
                             Graduation Project · PSUT 2025/2026
                         </div>

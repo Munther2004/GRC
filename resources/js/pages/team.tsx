@@ -6,13 +6,13 @@ const members = [
         name: 'Ghaith Abboud',
         role: 'Full Stack Developer',
         initials: 'GA',
-        color: 'bg-primary/20 text-blue-400 border-blue-500/30',
+        color: 'bg-primary/20 text-primary border-primary/30',
     },
     {
         name: 'Moayyad Zeidan',
         role: 'Full Stack Developer',
         initials: 'MZ',
-        color: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+        color: 'bg-secondary/20 text-secondary-foreground border-secondary/30',
     },
     {
         name: 'Munther Elatrash',
@@ -49,7 +49,7 @@ export default function Team() {
                 <main className="mx-auto max-w-4xl px-6 py-16">
                     {/* Hero */}
                     <div className="mb-14 text-center">
-                        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-primary/10 px-3 py-1.5 text-xs text-blue-400">
+                        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs text-primary">
                             <Code2 className="h-3.5 w-3.5" />
                             Graduation Project · PSUT 2025/2026
                         </div>

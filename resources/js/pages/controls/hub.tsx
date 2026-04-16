@@ -20,6 +20,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription,
 } from '@/components/ui/dialog';
 import {
     CheckCircle2,
@@ -445,7 +446,7 @@ export default function ControlsHub({
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                             Controls Hub
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -631,7 +632,7 @@ export default function ControlsHub({
                 {/* Controls table */}
                 <Card>
                     <CardHeader className="pb-0">
-                        <CardTitle className="text-base font-semibold">
+                        <CardTitle className="font-heading text-xl font-normal">
                             {controls.total} control
                             {controls.total !== 1 ? 's' : ''}
                         </CardTitle>
@@ -842,7 +843,7 @@ export default function ControlsHub({
                                                                         ctrl,
                                                                     )
                                                                 }
-                                                                className="h-7 bg-purple-600 px-2 text-xs text-white hover:bg-purple-700 disabled:opacity-60"
+                                                                className="h-7 bg-secondary px-2 text-xs text-foreground hover:bg-secondary/80 disabled:opacity-60"
                                                             >
                                                                 {analyzing ===
                                                                 ctrl.id ? (
@@ -901,10 +902,10 @@ export default function ControlsHub({
                     }
                 }}
             >
-                <DialogContent
-                    className="max-w-md"
-                    aria-describedby={undefined}
-                >
+                <DialogContent className="max-w-md">
+                    <DialogDescription className="sr-only">
+                        Update control status and provide justification for the change
+                    </DialogDescription>
                     <DialogHeader>
                         <DialogTitle>Request Status Change</DialogTitle>
                     </DialogHeader>
@@ -994,7 +995,7 @@ export default function ControlsHub({
                                         onClick={() =>
                                             evidenceFileRef.current?.click()
                                         }
-                                        className="flex items-center gap-1 text-xs text-primary hover:text-blue-400"
+                                        className="flex items-center gap-1 text-xs text-primary hover:text-primary/80"
                                     >
                                         <Upload className="h-3 w-3" /> Select
                                         file
@@ -1021,7 +1022,7 @@ export default function ControlsHub({
 
                                 {evidenceFile ? (
                                     <div className="space-y-2">
-                                        <div className="flex items-center gap-2 rounded-lg bg-blue-50 p-2 text-xs text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+                                        <div className="flex items-center gap-2 rounded-lg bg-primary/10 p-2 text-xs text-primary dark:bg-primary/20 dark:text-primary">
                                             <Paperclip className="h-3.5 w-3.5 shrink-0" />
                                             <span className="flex-1 truncate">
                                                 {evidenceFile.name}
@@ -1118,6 +1119,9 @@ export default function ControlsHub({
                 onOpenChange={(open) => !open && setHistoryModal(null)}
             >
                 <DialogContent className="max-w-lg">
+                    <DialogDescription className="sr-only">
+                        Control dialog
+                    </DialogDescription>
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <History className="h-4 w-4" />
@@ -1216,10 +1220,10 @@ export default function ControlsHub({
                         e.target === e.currentTarget && setPlanModal(null)
                     }
                 >
-                    <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-xl border border-purple-200 bg-background shadow-2xl dark:border-purple-800">
+                    <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-xl border border-secondary/20 bg-background shadow-2xl dark:border-secondary/20">
                         <div className="flex items-start justify-between border-b border-border/50 p-5 dark:border-border">
                             <div className="flex min-w-0 flex-1 items-start gap-2">
-                                <span className="mt-0.5 text-lg leading-none text-purple-600">
+                                <span className="mt-0.5 text-lg leading-none text-secondary-foreground">
                                     ✨
                                 </span>
                                 <div className="min-w-0">
@@ -1292,7 +1296,7 @@ export default function ControlsHub({
                                                     key={s.step}
                                                     className="flex gap-3"
                                                 >
-                                                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-purple-100 text-xs font-bold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+                                                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary/20 text-xs font-bold text-secondary-foreground dark:bg-secondary/40 dark:text-secondary-foreground">
                                                         {s.step}
                                                     </div>
                                                     <div className="flex-1">
@@ -1332,7 +1336,7 @@ export default function ControlsHub({
                                             setPlanModal(null);
                                             setSavedRisk(null);
                                         }}
-                                        className="w-full gap-2 bg-purple-600 py-2.5 text-sm font-semibold text-white hover:bg-purple-700"
+                                        className="w-full gap-2 bg-secondary py-2.5 text-sm font-semibold text-foreground hover:bg-secondary/80"
                                     >
                                         View Risk Record{' '}
                                         <ArrowRight className="h-4 w-4" />
@@ -1364,7 +1368,7 @@ export default function ControlsHub({
                                             size="sm"
                                             disabled={saving}
                                             onClick={handleSavePlan}
-                                            className="gap-1 bg-purple-600 text-white hover:bg-purple-700"
+                                            className="gap-1 bg-secondary text-foreground hover:bg-secondary/80"
                                         >
                                             {saving ? (
                                                 <>

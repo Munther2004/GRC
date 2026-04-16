@@ -41,8 +41,8 @@ const toastConfig: Record<ToastType, { icon: any; bgColor: string; borderColor: 
     info: {
         icon: InfoIcon,
         bgColor: 'bg-primary/10',
-        borderColor: 'border-blue-500/30',
-        textColor: 'text-blue-300',
+        borderColor: 'border-primary/30',
+        textColor: 'text-primary',
         accentColor: 'bg-primary/30',
     },
 }

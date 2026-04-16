@@ -5,31 +5,63 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive active:scale-95",
+  // Base — Cinzel display font, uppercase, engraved feel
+  [
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded",
+    "font-display text-xs uppercase tracking-[0.15em]",
+    "transition-all duration-300 ease-out",
+    "disabled:pointer-events-none disabled:opacity-40",
+    "[&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
+    "outline-none focus-visible:ring-2 focus-visible:ring-[#C9A962] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1C1714]",
+    "active:scale-[0.98]",
+    "text-engraved",
+  ].join(" "),
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:shadow-md active:shadow-sm",
-        destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 hover:shadow-md focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 active:shadow-sm",
-        outline:
-          "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:shadow-md active:shadow-sm",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 hover:shadow-md active:shadow-sm",
-        ghost: "hover:bg-accent hover:text-accent-foreground active:bg-accent/70",
-        link: "text-primary underline-offset-4 hover:underline hover:opacity-80",
+        // Polished brass — primary call to action
+        default: [
+          "bg-brass text-[#1C1714]",
+          "shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(0,0,0,0.2),0_2px_8px_rgba(0,0,0,0.3)]",
+          "hover:brightness-110 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(201,169,98,0.35)]",
+        ].join(" "),
+        // Outlined brass → transforms to crimson on hover
+        secondary: [
+          "border-2 border-[#C9A962] bg-transparent text-[#C9A962]",
+          "hover:border-[#8B2635] hover:bg-[#8B2635] hover:text-[#E8DFD4]",
+        ].join(" "),
+        // Library Crimson — destructive actions
+        destructive: [
+          "bg-[#8B2635] text-[#E8DFD4]",
+          "shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_2px_8px_rgba(0,0,0,0.3)]",
+          "hover:bg-[#A02D40] hover:shadow-[0_4px_12px_rgba(139,38,53,0.4)]",
+        ].join(" "),
+        // Subtle outlined — secondary actions
+        outline: [
+          "border border-[#4A3F35] bg-transparent text-[#9C8B7A]",
+          "hover:border-[#C9A962] hover:text-[#C9A962] hover:bg-[#3D332B]",
+        ].join(" "),
+        // Ghost — minimal tertiary actions
+        ghost: [
+          "bg-transparent text-[#9C8B7A]",
+          "hover:text-[#C9A962] hover:bg-[#3D332B]",
+        ].join(" "),
+        // Link — brass underline
+        link: [
+          "bg-transparent text-[#C9A962] underline-offset-4",
+          "hover:underline hover:text-[#D4B872]",
+        ].join(" "),
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
+        default: "h-10 px-6 py-2",
+        sm:      "h-8 px-4 py-1 text-[10px]",
+        lg:      "h-12 px-8 py-2.5",
+        icon:    "size-9 p-0",
       },
     },
     defaultVariants: {
       variant: "default",
-      size: "default",
+      size:    "default",
     },
   }
 )

@@ -112,7 +112,7 @@ const evidenceScoreBg = (pct: number) => {
 
 const STATUS_STYLES: Record<string, string> = {
     Strong: 'bg-emerald-950 text-emerald-400 border-green-300',
-    Adequate: 'bg-blue-950 text-blue-400 border-blue-300',
+    Adequate: 'bg-accent text-foreground border-primary/30',
     'Needs Improvement': 'bg-amber-950 text-amber-400 border-yellow-300',
     'At Risk': 'bg-orange-950 text-orange-400 border-orange-300',
     Critical: 'bg-red-950 text-red-400 border-red-300',
@@ -120,7 +120,7 @@ const STATUS_STYLES: Record<string, string> = {
 
 const RATING_STYLES: Record<string, string> = {
     Excellent: 'bg-emerald-950 text-emerald-400 border-green-300',
-    Good: 'bg-blue-950 text-blue-400 border-blue-300',
+    Good: 'bg-accent text-foreground border-primary/30',
     Fair: 'bg-amber-950 text-amber-400 border-yellow-300',
     Poor: 'bg-orange-950 text-orange-400 border-orange-300',
     Critical: 'bg-red-950 text-red-400 border-red-300',
@@ -197,7 +197,7 @@ export default function AssessmentShow({
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="text-2xl font-bold text-foreground">
+                            <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                                 {assessment.title}
                             </h1>
                             <div className="mt-1 flex items-center gap-2">
@@ -219,7 +219,7 @@ export default function AssessmentShow({
                             onClick={
                                 aiSummary ? generateSummary : generateSummary
                             }
-                            className="gap-2 bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-60"
+                            className="gap-2 bg-secondary text-foreground hover:bg-secondary/80 disabled:opacity-60"
                         >
                             {loadingSummary ? (
                                 <>
@@ -501,7 +501,7 @@ export default function AssessmentShow({
                                     <p className="text-xs text-muted-foreground">
                                         Framework
                                     </p>
-                                    <p className="text-sm font-medium">
+                                    <p className="font-heading text-lg font-normal">
                                         {assessment.framework.name}
                                     </p>
                                 </div>
@@ -509,7 +509,7 @@ export default function AssessmentShow({
                                     <p className="text-xs text-muted-foreground">
                                         Period
                                     </p>
-                                    <p className="text-sm font-medium">
+                                    <p className="font-heading text-lg font-normal">
                                         {assessment.period}
                                     </p>
                                 </div>
@@ -526,7 +526,7 @@ export default function AssessmentShow({
                                         <p className="text-xs text-muted-foreground">
                                             Due Date
                                         </p>
-                                        <p className="text-sm font-medium">
+                                        <p className="font-heading text-lg font-normal">
                                             {new Date(
                                                 assessment.due_date,
                                             ).toLocaleDateString()}
@@ -572,9 +572,9 @@ export default function AssessmentShow({
 
                 {/* Loading state */}
                 {loadingSummary && (
-                    <Card className="border-purple-200 dark:border-purple-800">
+                    <Card className="border-secondary/20 dark:border-secondary/20">
                         <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
-                            <Loader2 className="h-5 w-5 animate-spin text-purple-400" />
+                            <Loader2 className="h-5 w-5 animate-spin text-secondary" />
                             <p className="text-sm font-medium text-foreground/85">
                                 Analyzing assessment data...
                             </p>
@@ -613,7 +613,7 @@ export default function AssessmentShow({
                                 >
                                     {aiSummary.compliance_rating} Compliance
                                 </Badge>
-                                <span className="flex items-center gap-1 text-xs font-medium text-purple-600 dark:text-purple-400">
+                                <span className="flex items-center gap-1 text-xs font-medium text-secondary-foreground dark:text-secondary-foreground">
                                     <Sparkles className="h-3.5 w-3.5" /> AI
                                     Generated
                                 </span>
@@ -658,9 +658,9 @@ export default function AssessmentShow({
                         </div>
 
                         {/* Executive Summary */}
-                        <Card className="border-purple-100 dark:border-purple-900">
+                        <Card className="border-secondary/20 dark:border-secondary/20">
                             <CardHeader className="pb-3">
-                                <CardTitle className="text-base text-purple-700 dark:text-purple-400">
+                                <CardTitle className="text-base text-secondary-foreground dark:text-secondary-foreground">
                                     Executive Summary
                                 </CardTitle>
                             </CardHeader>
@@ -768,9 +768,9 @@ export default function AssessmentShow({
                                     (step, i) => (
                                         <div
                                             key={i}
-                                            className="flex gap-4 rounded-r-lg border-l-4 border-purple-400 bg-purple-50 p-3 dark:bg-purple-900/10"
+                                            className="flex gap-4 rounded-r-lg border-l-4 border-secondary bg-secondary/10 p-3 dark:bg-secondary/10"
                                         >
-                                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-purple-100 text-sm font-bold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+                                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary/20 text-sm font-bold text-secondary-foreground dark:bg-secondary/40 dark:text-secondary-foreground">
                                                 {i + 1}
                                             </span>
                                             <p className="pt-1 text-sm text-foreground/85">

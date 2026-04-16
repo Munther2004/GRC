@@ -138,7 +138,7 @@ export default function RiskEdit({
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                             Edit Risk
                         </h1>
                         <p className="max-w-md truncate text-sm text-muted-foreground">
@@ -165,7 +165,7 @@ export default function RiskEdit({
                                     ) => setData('title', e.target.value)}
                                 />
                                 {errors.title && (
-                                    <p className="text-xs text-red-500">
+                                    <p className="font-body text-xs italic" style={{ color: "#8B2635" }}>
                                         {errors.title}
                                     </p>
                                 )}
@@ -183,7 +183,7 @@ export default function RiskEdit({
                                     rows={4}
                                 />
                                 {errors.description && (
-                                    <p className="text-xs text-red-500">
+                                    <p className="font-body text-xs italic" style={{ color: "#8B2635" }}>
                                         {errors.description}
                                     </p>
                                 )}
@@ -235,7 +235,7 @@ export default function RiskEdit({
                                     </CardDescription>
                                 </div>
                                 {data.ai_validated && (
-                                    <Badge className="border-blue-200 bg-blue-950 text-xs text-blue-400">
+                                    <Badge className="text-xs">
                                         <Sparkles className="mr-1 h-3 w-3" />
                                         AI Validated
                                     </Badge>
@@ -261,7 +261,7 @@ export default function RiskEdit({
                                                 e.target.value,
                                             )
                                         }
-                                        className="w-full accent-blue-600"
+                                        className="w-full" style={{ accentColor: "#C9A962" }}
                                     />
                                     <div className="flex justify-between text-xs text-muted-foreground/70">
                                         <span>Rare</span>
@@ -281,7 +281,7 @@ export default function RiskEdit({
                                         onChange={(
                                             e: React.ChangeEvent<HTMLInputElement>,
                                         ) => setData('impact', e.target.value)}
-                                        className="w-full accent-blue-600"
+                                        className="w-full" style={{ accentColor: "#C9A962" }}
                                     />
                                     <div className="flex justify-between text-xs text-muted-foreground/70">
                                         <span>Negligible</span>
@@ -300,7 +300,7 @@ export default function RiskEdit({
                                     type="button"
                                     size="sm"
                                     variant="outline"
-                                    className="gap-1.5 border-blue-300 text-blue-700 hover:border-blue-400 hover:bg-blue-50"
+                                    className="gap-1.5" style={{ borderColor: "rgba(201,169,98,0.4)", color: "#C9A962" }}
                                     onClick={validateScores}
                                     disabled={loadingValidation || !canValidate}
                                 >
@@ -316,9 +316,9 @@ export default function RiskEdit({
                             </div>
 
                             {validationError && (
-                                <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3">
-                                    <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                                    <p className="text-sm text-red-700">
+                                <div className="flex items-start gap-2 rounded p-3" style={{ background: "rgba(139,38,53,0.1)", border: "1px solid rgba(139,38,53,0.3)" }}>
+                                    <XCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "#8B2635" }} />
+                                    <p className="font-body text-sm italic" style={{ color: "#8B2635" }}>
                                         {validationError}
                                     </p>
                                 </div>
@@ -326,15 +326,15 @@ export default function RiskEdit({
 
                             {validationResult &&
                                 validationResult.error === true && (
-                                    <div className="rounded-lg border border-red-200 bg-red-50">
-                                        <div className="flex items-center gap-2 rounded-t-lg bg-red-100 px-4 py-2">
-                                            <XCircle className="h-4 w-4 text-red-400" />
-                                            <span className="text-sm font-semibold text-red-800">
+                                    <div className="rounded" style={{ background: "rgba(139,38,53,0.08)", border: "1px solid rgba(139,38,53,0.3)" }}>
+                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(139,38,53,0.15)" }}>
+                                            <XCircle className="h-4 w-4" style={{ color: "#8B2635" }} />
+                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#8B2635" }}>
                                                 Validation Unavailable
                                             </span>
                                         </div>
                                         <div className="px-4 py-3">
-                                            <p className="text-sm text-red-700">
+                                            <p className="font-body text-sm italic" style={{ color: "#8B2635" }}>
                                                 {validationResult.reasoning}
                                             </p>
                                         </div>
@@ -344,14 +344,14 @@ export default function RiskEdit({
                             {validationResult &&
                                 !validationResult.error &&
                                 validationResult.valid && (
-                                    <div className="rounded-lg border border-green-200 bg-green-50">
-                                        <div className="flex items-center gap-2 rounded-t-lg bg-green-100 px-4 py-2">
-                                            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                                            <span className="text-sm font-semibold text-green-800">
+                                    <div className="rounded" style={{ background: "rgba(139,158,107,0.08)", border: "1px solid rgba(139,158,107,0.3)" }}>
+                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(139,158,107,0.15)" }}>
+                                            <CheckCircle2 className="h-4 w-4" style={{ color: "#8B9E6B" }} />
+                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#8B9E6B" }}>
                                                 Scores Validated — Looks Good
                                             </span>
                                             <span
-                                                className={`ml-auto rounded px-1.5 py-0.5 text-xs capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-secondary text-muted-foreground'}`}
+                                                className="ml-auto font-display rounded px-1.5 py-0.5 text-[9px] uppercase tracking-widest" style={{ color: validationResult.confidence === 'high' ? '#8B9E6B' : validationResult.confidence === 'medium' ? '#C9A962' : '#9C8B7A' }}
                                             >
                                                 {validationResult.confidence}{' '}
                                                 confidence
@@ -368,15 +368,15 @@ export default function RiskEdit({
                             {validationResult &&
                                 !validationResult.error &&
                                 !validationResult.valid && (
-                                    <div className="rounded-lg border border-border bg-amber-50">
-                                        <div className="flex items-center gap-2 rounded-t-lg bg-amber-100 px-4 py-2">
-                                            <AlertTriangle className="h-4 w-4 text-amber-400" />
-                                            <span className="text-sm font-semibold text-amber-800">
+                                    <div className="rounded" style={{ background: "rgba(176,120,64,0.08)", border: "1px solid rgba(176,120,64,0.3)" }}>
+                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(176,120,64,0.15)" }}>
+                                            <AlertTriangle className="h-4 w-4" style={{ color: "#B07840" }} />
+                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#B07840" }}>
                                                 Scores Adjusted —
                                                 Recommendations Available
                                             </span>
                                             <span
-                                                className={`ml-auto rounded px-1.5 py-0.5 text-xs capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-secondary text-muted-foreground'}`}
+                                                className="ml-auto font-display rounded px-1.5 py-0.5 text-[9px] uppercase tracking-widest" style={{ color: validationResult.confidence === 'high' ? '#8B9E6B' : validationResult.confidence === 'medium' ? '#C9A962' : '#9C8B7A' }}
                                             >
                                                 {validationResult.confidence}{' '}
                                                 confidence
@@ -415,7 +415,7 @@ export default function RiskEdit({
                                                 <Button
                                                     type="button"
                                                     size="sm"
-                                                    className="shrink-0 bg-amber-500 text-white hover:bg-amber-700"
+                                                    className="shrink-0" style={{ background: "#C9A962", color: "#1C1714" }}
                                                     onClick={
                                                         applyRecommendations
                                                     }
@@ -428,7 +428,7 @@ export default function RiskEdit({
                                 )}
 
                             <div
-                                className={`flex items-center justify-between rounded-lg border p-4 ${level.color}`}
+                                className="flex items-center justify-between rounded border p-4" style={level.style}
                             >
                                 <div className="flex items-center gap-2">
                                     <AlertTriangle className="h-5 w-5" />

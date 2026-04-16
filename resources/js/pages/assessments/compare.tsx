@@ -32,7 +32,7 @@ interface Props {
 
 const statusColors: Record<string, string> = {
     draft: 'bg-muted text-muted-foreground',
-    in_progress: 'bg-blue-950 text-blue-400',
+    in_progress: 'bg-accent text-foreground',
     completed: 'bg-green-50 text-green-700',
 };
 
@@ -99,11 +99,11 @@ export default function AssessmentCompare({ assessments }: Props) {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20">
-                        <GitCompare className="h-5 w-5 text-blue-400" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20 dark:bg-primary/20">
+                        <GitCompare className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
                             Assessment Comparison
                         </h1>
                         <p className="text-sm text-muted-foreground">

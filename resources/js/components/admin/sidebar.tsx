@@ -1,9 +1,8 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from "@inertiajs/react"
 import {
     AlertTriangle,
     BarChart3,
     Bell,
-    ChevronDown,
     ClipboardList,
     Clock,
     FileCheck,
@@ -18,235 +17,150 @@ import {
     Sliders,
     Sparkles,
     Users,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useState } from 'react';
+} from "lucide-react"
+import { cn } from "@/lib/utils"
 
 type SharedProps = {
     auth: {
-        user: {
-            name: string;
-            email: string;
-            role: string;
-        };
-    };
+        user: { name: string; email: string; role: string }
+    }
     notifications: {
-        unread_count: number;
-        pending_approvals_count: number;
-        open_remediation_tasks: number;
-    };
-};
+        unread_count: number
+        pending_approvals_count: number
+        open_remediation_tasks: number
+    }
+}
 
 const mainNavigation = [
-    {
-        name: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutDashboard,
-        roles: ['admin', 'auditor', 'user'],
-    },
-    {
-        name: 'AI Assistant',
-        href: '/chatbot',
-        icon: Sparkles,
-        roles: ['admin', 'auditor', 'user'],
-    },
-    {
-        name: 'Risk Register',
-        href: '/risks',
-        icon: AlertTriangle,
-        roles: ['admin', 'auditor', 'user'],
-    },
-    {
-        name: 'Assessments',
-        href: '/assessments',
-        icon: ClipboardList,
-        roles: ['admin', 'auditor', 'user'],
-    },
-    {
-        name: 'Evidence',
-        href: '/evidence',
-        icon: FolderOpen,
-        roles: ['admin', 'auditor', 'user'],
-    },
-    {
-        name: 'Gap Analysis',
-        href: '/gap-analysis',
-        icon: FileCheck,
-        roles: ['admin', 'auditor', 'user'],
-    },
-    {
-        name: 'Crosswalk',
-        href: '/crosswalk',
-        icon: GitCompare,
-        roles: ['admin', 'auditor', 'user'],
-    },
-    {
-        name: 'Controls Hub',
-        href: '/controls/hub',
-        icon: LayoutGrid,
-        roles: ['admin', 'auditor', 'user'],
-    },
-    {
-        name: 'Remediation',
-        href: '/remediation-tasks',
-        icon: ClipboardList,
-        roles: ['admin', 'user'],
-        badgeKey: 'remediation',
-    },
-    {
-        name: 'Reports',
-        href: '/reports',
-        icon: BarChart3,
-        roles: ['admin', 'auditor', 'user'],
-    },
-];
+    { name: "Dashboard",    href: "/dashboard",        icon: LayoutDashboard, roles: ['admin','auditor','user'] },
+    { name: "AI Assistant", href: "/chatbot",           icon: Sparkles,        roles: ['admin','auditor','user'] },
+    { name: "Risk Register",href: "/risks",             icon: AlertTriangle,   roles: ['admin','auditor','user'] },
+    { name: "Assessments",  href: "/assessments",       icon: ClipboardList,   roles: ['admin','auditor','user'] },
+    { name: "Evidence",     href: "/evidence",          icon: FolderOpen,      roles: ['admin','auditor','user'] },
+    { name: "Gap Analysis", href: "/gap-analysis",      icon: FileCheck,       roles: ['admin','auditor','user'] },
+    { name: "Crosswalk",    href: "/crosswalk",         icon: GitCompare,      roles: ['admin','auditor','user'] },
+    { name: "Controls Hub", href: "/controls/hub",      icon: LayoutGrid,      roles: ['admin','auditor','user'] },
+    { name: "Remediation",  href: "/remediation-tasks", icon: ClipboardList,   roles: ['admin','user'],           badgeKey: 'remediation' },
+    { name: "Reports",      href: "/reports",           icon: BarChart3,       roles: ['admin','auditor','user'] },
+]
 
 const reviewNavigation = [
-    {
-        name: 'Approvals',
-        href: '/controls/approvals',
-        icon: Clock,
-        roles: ['admin', 'auditor'],
-        badgeKey: 'approvals',
-    },
-    {
-        name: 'Audit Logs',
-        href: '/audit-logs',
-        icon: ScrollText,
-        roles: ['admin', 'auditor'],
-    },
-    {
-        name: 'Notifications',
-        href: '/notifications',
-        icon: Bell,
-        roles: ['admin', 'auditor', 'user'],
-        badgeKey: 'notifications',
-    },
-];
+    { name: "Approvals",     href: "/controls/approvals", icon: Clock,      roles: ['admin','auditor'], badgeKey: 'approvals' },
+    { name: "Audit Logs",    href: "/audit-logs",         icon: ScrollText, roles: ['admin','auditor'] },
+    { name: "Notifications", href: "/notifications",      icon: Bell,       roles: ['admin','auditor','user'], badgeKey: 'notifications' },
+]
 
 const adminNavigation = [
-    { name: 'Users', href: '/admin/users', icon: Users },
-    { name: 'Frameworks', href: '/admin/frameworks', icon: Shield },
-    { name: 'Controls Library', href: '/admin/controls', icon: Settings },
-    { name: 'Risk Appetite', href: '/risk-appetite', icon: Sliders },
-];
+    { name: "Users",            href: "/admin/users",      icon: Users    },
+    { name: "Frameworks",       href: "/admin/frameworks", icon: Shield   },
+    { name: "Controls Library", href: "/admin/controls",   icon: Settings },
+    { name: "Risk Appetite",    href: "/risk-appetite",    icon: Sliders  },
+]
 
 export function AdminSidebar() {
-    const { auth, notifications } = usePage<SharedProps>().props;
-    const unreadCount = notifications?.unread_count ?? 0;
-    const pendingApprovals = notifications?.pending_approvals_count ?? 0;
-    const openRemediationTasks = notifications?.open_remediation_tasks ?? 0;
-    const url = usePage().url as string;
-    const isAdmin = auth.user.role === 'admin';
-    const isAuditor = auth.user.role === 'auditor';
-    const initials = auth.user.name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .substring(0, 2)
-        .toUpperCase();
-    const roleName = isAdmin ? 'Admin' : isAuditor ? 'Auditor' : 'Member';
+    const { auth, notifications } = usePage<SharedProps>().props
+    const unreadCount          = notifications?.unread_count ?? 0
+    const pendingApprovals     = notifications?.pending_approvals_count ?? 0
+    const openRemediationTasks = notifications?.open_remediation_tasks ?? 0
+    const url       = usePage().url as string
+    const isAdmin   = auth.user.role === 'admin'
+    const isAuditor = auth.user.role === 'auditor'
+    const initials  = auth.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+    const roleName  = isAdmin ? 'Admin' : isAuditor ? 'Auditor' : 'Member'
 
-    const [expandedGroups, setExpandedGroups] = useState<
-        Record<string, boolean>
-    >({
-        main: true,
-        review: true,
-        admin: true,
-    });
-
-    const toggleGroup = (group: string) => {
-        setExpandedGroups((prev) => ({ ...prev, [group]: !prev[group] }));
-    };
-
-    const getBadge = (badgeKey?: string): number | undefined => {
-        if (!badgeKey) return undefined;
-        if (badgeKey === 'notifications' && unreadCount > 0) return unreadCount;
-        if (badgeKey === 'approvals' && pendingApprovals > 0)
-            return pendingApprovals;
-        if (badgeKey === 'remediation' && openRemediationTasks > 0)
-            return openRemediationTasks;
-        return undefined;
-    };
+    const getBadge = (key?: string): number | undefined => {
+        if (!key) return undefined
+        if (key === 'notifications' && unreadCount > 0)          return unreadCount
+        if (key === 'approvals'     && pendingApprovals > 0)     return pendingApprovals
+        if (key === 'remediation'   && openRemediationTasks > 0) return openRemediationTasks
+        return undefined
+    }
 
     return (
-        <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-60 lg:flex-col">
-            <div className="flex grow flex-col overflow-y-auto border-r border-sidebar-border bg-sidebar">
-                {/* Wordmark */}
-                <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-sidebar-border px-5">
-                    <svg
-                        viewBox="0 0 76 65"
-                        className="h-4 w-4 fill-sidebar-foreground"
-                        aria-hidden
+        <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
+            <div
+                className="flex grow flex-col overflow-y-auto"
+                style={{ background: '#1C1714', borderRight: '1px solid #4A3F35' }}
+            >
+                {/* ── Wordmark ───────────────────────────────────────────── */}
+                <div
+                    className="flex h-16 shrink-0 items-center gap-3 px-5"
+                    style={{ borderBottom: '1px solid #4A3F35' }}
+                >
+                    <div
+                        className="flex items-center justify-center w-7 h-7 rounded-sm"
+                        style={{ border: '1px solid rgba(201,169,98,0.6)', background: 'rgba(201,169,98,0.08)' }}
                     >
-                        <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
-                    </svg>
-                    <span className="text-[13px] font-semibold tracking-tight text-sidebar-foreground">
-                        grc
+                        <Shield className="w-3.5 h-3.5" style={{ color: '#C9A962' }} strokeWidth={1.5} />
+                    </div>
+                    <span className="font-display text-xs uppercase tracking-[0.25em]" style={{ color: '#E8DFD4' }}>
+                        GRC
                     </span>
-                    <span className="ml-auto font-mono text-[10px] tracking-wider text-sidebar-foreground/40 uppercase">
+                    <span
+                        className="ml-auto font-display text-[9px] uppercase tracking-[0.2em] px-1.5 py-0.5 rounded-sm"
+                        style={{ color: '#9C8B7A', border: '1px solid #4A3F35' }}
+                    >
                         {roleName}
                     </span>
                 </div>
 
-                <nav className="flex flex-1 flex-col gap-2 px-2 py-4">
+                {/* Ornate divider */}
+                <div style={{ position: 'relative', height: '1px', margin: '0 16px', background: 'linear-gradient(90deg, transparent, #4A3F35 30%, #C9A962 50%, #4A3F35 70%, transparent)' }}>
+                    <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', color: '#C9A962', fontSize: '8px', background: '#1C1714', padding: '0 8px' }}>✶</span>
+                </div>
+
+                <nav className="flex flex-1 flex-col gap-5 px-3 py-4">
                     {/* Main */}
-                    <NavGroup
-                        name="Navigation"
-                        expanded={expandedGroups.main}
-                        onToggle={() => toggleGroup('main')}
-                        items={mainNavigation
-                            .filter((item) =>
-                                item.roles.includes(auth.user.role),
-                            )
-                            .map((item) => ({
-                                ...item,
-                                badge: getBadge((item as any).badgeKey),
-                            }))}
-                        currentUrl={url}
-                    />
+                    <ul className="flex flex-col gap-0.5">
+                        {mainNavigation
+                            .filter(item => item.roles.includes(auth.user.role))
+                            .map(item => (
+                                <NavItem key={item.name} item={item} currentUrl={url} badge={getBadge((item as any).badgeKey)} />
+                            ))
+                        }
+                    </ul>
 
                     {/* Review */}
-                    <NavGroup
-                        name="Review"
-                        expanded={expandedGroups.review}
-                        onToggle={() => toggleGroup('review')}
-                        items={reviewNavigation
-                            .filter((item) =>
-                                item.roles.includes(auth.user.role),
-                            )
-                            .map((item) => ({
-                                ...item,
-                                badge: getBadge((item as any).badgeKey),
-                            }))}
-                        currentUrl={url}
-                    />
+                    <div>
+                        <SectionLabel>Review</SectionLabel>
+                        <ul className="flex flex-col gap-0.5">
+                            {reviewNavigation
+                                .filter(item => item.roles.includes(auth.user.role))
+                                .map(item => (
+                                    <NavItem key={item.name} item={item} currentUrl={url} badge={getBadge((item as any).badgeKey)} />
+                                ))
+                            }
+                        </ul>
+                    </div>
 
                     {/* Admin */}
                     {isAdmin && (
-                        <NavGroup
-                            name="Administration"
-                            expanded={expandedGroups.admin}
-                            onToggle={() => toggleGroup('admin')}
-                            items={adminNavigation}
-                            currentUrl={url}
-                        />
+                        <div>
+                            <SectionLabel>Administration</SectionLabel>
+                            <ul className="flex flex-col gap-0.5">
+                                {adminNavigation.map(item => (
+                                    <NavItem key={item.name} item={item} currentUrl={url} />
+                                ))}
+                            </ul>
+                        </div>
                     )}
                 </nav>
 
-                {/* User */}
-                <div className="border-t border-sidebar-border p-3">
-                    <div className="flex items-center gap-2.5 rounded-md px-2 py-1.5 transition-colors hover:bg-sidebar-accent">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-900 ring-1 ring-sidebar-border">
-                            <span className="text-[11px] font-medium text-sidebar-foreground">
-                                {initials}
-                            </span>
+                {/* ── User footer ───────────────────────────────────────── */}
+                <div style={{ borderTop: '1px solid #4A3F35', padding: '12px' }}>
+                    <div className="flex items-center gap-2.5 rounded px-2 py-1.5">
+                        {/* Initials medallion */}
+                        <div
+                            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                            style={{ background: 'rgba(201,169,98,0.12)', border: '1px solid rgba(201,169,98,0.5)' }}
+                        >
+                            <span className="font-display text-[10px]" style={{ color: '#C9A962' }}>{initials}</span>
                         </div>
-                        <div className="min-w-0 flex-1">
-                            <p className="truncate text-[13px] leading-tight font-medium text-sidebar-foreground">
+                        <div className="flex-1 min-w-0">
+                            <p className="font-heading text-sm truncate leading-tight" style={{ color: '#E8DFD4' }}>
                                 {auth.user.name}
                             </p>
-                            <p className="truncate text-[11px] leading-tight text-sidebar-foreground/45">
+                            <p className="font-body text-[11px] italic truncate leading-tight" style={{ color: '#9C8B7A' }}>
                                 {auth.user.email}
                             </p>
                         </div>
@@ -254,59 +168,27 @@ export function AdminSidebar() {
                             href="/logout"
                             method="post"
                             as="button"
-                            className="text-sidebar-foreground/40 transition-colors hover:text-sidebar-foreground"
                             title="Log out"
+                            className="transition-colors duration-200"
+                            style={{ color: '#9C8B7A' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = '#C9A962')}
+                            onMouseLeave={e => (e.currentTarget.style.color = '#9C8B7A')}
                         >
-                            <LogOut className="h-3.5 w-3.5" />
+                            <LogOut className="w-3.5 h-3.5" />
                         </Link>
                     </div>
                 </div>
             </div>
         </aside>
-    );
+    )
 }
 
-function NavGroup({
-    name,
-    expanded,
-    onToggle,
-    items,
-    currentUrl,
-}: {
-    name: string;
-    expanded: boolean;
-    onToggle: () => void;
-    items: Array<{ name: string; href: string; icon: any; badge?: number }>;
-    currentUrl: string;
-}) {
+function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
-        <div>
-            <button
-                onClick={onToggle}
-                className="flex w-full items-center justify-between px-3 py-1.5 text-[10px] font-medium tracking-[0.12em] text-sidebar-foreground/50 uppercase transition-colors hover:text-sidebar-foreground/70"
-            >
-                <span>{name}</span>
-                <ChevronDown
-                    className={cn(
-                        'h-3.5 w-3.5 transition-transform',
-                        expanded ? 'rotate-180' : '',
-                    )}
-                />
-            </button>
-            {expanded && (
-                <ul className="mt-1 flex flex-col gap-0.5">
-                    {items.map((item) => (
-                        <NavItem
-                            key={item.name}
-                            item={item}
-                            currentUrl={currentUrl}
-                            badge={item.badge}
-                        />
-                    ))}
-                </ul>
-            )}
-        </div>
-    );
+        <p className="px-3 pb-2 font-display text-[9px] uppercase tracking-[0.25em]" style={{ color: '#9C8B7A' }}>
+            {children}
+        </p>
+    )
 }
 
 function NavItem({
@@ -314,40 +196,39 @@ function NavItem({
     currentUrl,
     badge,
 }: {
-    item: { name: string; href: string; icon: any };
-    currentUrl: string;
-    badge?: number;
+    item: { name: string; href: string; icon: any }
+    currentUrl: string
+    badge?: number
 }) {
-    const isActive =
-        currentUrl.startsWith(item.href) &&
-        (item.href !== '/dashboard' || currentUrl === '/dashboard');
+    const isActive = currentUrl.startsWith(item.href) &&
+        (item.href !== '/dashboard' || currentUrl === '/dashboard')
 
     return (
         <li>
             <Link
                 href={item.href}
                 className={cn(
-                    'group relative flex items-center gap-2.5 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors',
-                    isActive
-                        ? 'bg-sidebar-accent text-sidebar-foreground'
-                        : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+                    "group flex items-center gap-2.5 rounded px-3 py-2 transition-all duration-200",
+                    "font-display text-[10px] uppercase tracking-[0.14em]",
                 )}
+                style={isActive
+                    ? { color: '#C9A962', background: 'rgba(201,169,98,0.1)', borderLeft: '2px solid #C9A962', paddingLeft: '10px' }
+                    : { color: '#9C8B7A', background: 'transparent', borderLeft: '2px solid transparent', paddingLeft: '10px' }
+                }
+                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.color = '#E8DFD4'; e.currentTarget.style.background = 'rgba(61,51,43,0.5)' } }}
+                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.color = '#9C8B7A'; e.currentTarget.style.background = 'transparent' } }}
             >
-                <item.icon
-                    className={cn(
-                        'h-4 w-4 shrink-0 transition-colors',
-                        isActive
-                            ? 'text-sidebar-foreground'
-                            : 'text-sidebar-foreground/45 group-hover:text-sidebar-foreground/80',
-                    )}
-                />
+                <item.icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
                 <span className="flex-1 truncate">{item.name}</span>
                 {badge !== undefined && badge > 0 && (
-                    <span className="font-mono text-[10px] font-medium text-sidebar-foreground/60 tabular-nums">
+                    <span
+                        className="font-display text-[9px] px-1.5 py-0.5 rounded-full tabular-nums"
+                        style={{ background: 'rgba(139,38,53,0.25)', color: '#C9A962', border: '1px solid rgba(139,38,53,0.4)' }}
+                    >
                         {badge > 99 ? '99+' : badge}
                     </span>
                 )}
             </Link>
         </li>
-    );
+    )
 }

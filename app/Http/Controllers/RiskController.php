@@ -361,4 +361,24 @@ class RiskController extends Controller
             ['value' => 'avoid',    'label' => 'Avoid — Eliminate the activity'],
         ];
     }
+
+    public function heatmap()
+    {
+        $risks = Risk::with(['user', 'sourceControl.framework'])
+            ->orderByRaw('likelihood * impact DESC')
+            ->get();
+
+        $heatmap = $risks->map(fn ($r) => [
+            'id' => $r->id,
+            'title' => $r->title,
+            'likelihood' => $r->likelihood,
+            'impact' => $r->impact,
+            'score' => $r->likelihood * $r->impact,
+            'status' => $r->status,
+        ]);
+
+        return Inertia::render('risks/heatmap', [
+            'heatmap' => $heatmap,
+        ]);
+    }
 }

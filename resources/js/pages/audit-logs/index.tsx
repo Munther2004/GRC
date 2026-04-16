@@ -108,7 +108,7 @@ export default function AuditLogsIndex({
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                    <h1 className="font-heading text-4xl font-normal text-foreground">
                         Audit Logs
                     </h1>
                     <p className="text-sm text-muted-foreground">

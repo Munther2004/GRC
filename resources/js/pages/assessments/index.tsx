@@ -85,7 +85,7 @@ export default function AssessmentsIndex({
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
     const isAdmin = auth.user.role === 'admin';
-    const canEdit = auth.user.role === 'admin' || auth.user.role === 'user';
+    const canEdit = auth.user.role === 'admin' || auth.user.role === 'manager' || auth.user.role === 'employee' || auth.user.role === 'user';
 
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState(filters.status ?? 'all');

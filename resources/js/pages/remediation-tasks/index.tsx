@@ -404,7 +404,7 @@ export default function RemediationTasksIndex({
     filters,
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
-    const canEdit = auth.user.role === 'admin' || auth.user.role === 'user';
+    const canEdit = auth.user.role === 'admin' || auth.user.role === 'manager' || auth.user.role === 'employee' || auth.user.role === 'user';
 
     // Filter state
     const [search, setSearch] = useState(filters.search ?? '');

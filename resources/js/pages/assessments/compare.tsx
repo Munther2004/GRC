@@ -103,7 +103,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                         <GitCompare className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                        <h1 className="font-heading text-4xl font-normal text-foreground">
                             Assessment Comparison
                         </h1>
                         <p className="text-sm text-muted-foreground">

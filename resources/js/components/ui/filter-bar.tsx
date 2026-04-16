@@ -11,7 +11,7 @@ export function FilterBar({ children, className }: FilterBarProps) {
     return (
         <div
             className={cn('flex flex-wrap items-center gap-2 rounded px-4 py-3', className)}
-            style={{ background: '#0D1F1C', border: '1px solid #285A48' }}
+            style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
         >
             {children}
         </div>

@@ -30,8 +30,8 @@ export function levelFromScore(score: number): {
     color: string;
     style: React.CSSProperties;
 } {
-    if (score >= 20) return { label: 'Critical', color: '', style: { color: '#8B2635', background: 'rgba(139,38,53,0.15)', borderColor: 'rgba(139,38,53,0.4)' } };
-    if (score >= 13) return { label: 'High',     color: '', style: { color: '#285A48', background: 'rgba(176,120,64,0.15)', borderColor: 'rgba(176,120,64,0.4)' } };
-    if (score >= 7)  return { label: 'Medium',   color: '', style: { color: '#408A71', background: 'rgba(64,138,113,0.15)', borderColor: 'rgba(64,138,113,0.4)' } };
-    return                  { label: 'Low',      color: '', style: { color: '#B0E4CC', background: 'rgba(139,158,107,0.15)', borderColor: 'rgba(139,158,107,0.4)' } };
+    if (score >= 20) return { label: 'Critical', color: '', style: { color: 'var(--destructive)', background: 'rgba(var(--color-destructive) / 0.15)', borderColor: 'rgba(var(--color-destructive) / 0.4)' } };
+    if (score >= 13) return { label: 'High',     color: '', style: { color: 'var(--border)', background: 'rgba(var(--color-border) / 0.15)', borderColor: 'rgba(var(--color-border) / 0.4)' } };
+    if (score >= 7)  return { label: 'Medium',   color: '', style: { color: 'var(--primary)', background: 'rgba(var(--color-primary) / 0.15)', borderColor: 'rgba(var(--color-primary) / 0.4)' } };
+    return                  { label: 'Low',      color: '', style: { color: 'var(--chart-1)', background: 'rgba(var(--color-chart-1) / 0.15)', borderColor: 'rgba(var(--color-chart-1) / 0.4)' } };
 }

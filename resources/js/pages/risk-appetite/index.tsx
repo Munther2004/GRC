@@ -620,7 +620,7 @@ export default function RiskAppetiteIndex({
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                        <h1 className="font-heading text-4xl font-normal text-foreground">
                             Risk Appetite Configuration
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">

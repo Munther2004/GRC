@@ -12,12 +12,12 @@ const Textarea = React.forwardRef<
       data-slot="textarea"
       className={cn(
         // Aged oak textarea
-        "flex min-h-[100px] w-full rounded border border-[#285A48] bg-[#0D1F1C]",
-        "px-3 py-2.5 text-base text-[#E0F5EC]",
-        "font-body placeholder:text-[#7ABFA8] placeholder:italic",
+        "flex min-h-[100px] w-full rounded border border-border bg-card",
+        "px-3 py-2.5 text-base text-foreground",
+        "font-body placeholder:text-muted-foreground placeholder:italic",
         "resize-y transition-all duration-300 outline-none",
         // Focus — brass ring
-        "focus-visible:border-[#408A71] focus-visible:ring-2 focus-visible:ring-[#408A71]/25 focus-visible:ring-offset-1 focus-visible:ring-offset-[#091413]",
+        "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-1 focus-visible:ring-offset-background",
         // Disabled
         "disabled:pointer-events-none disabled:opacity-40",
         className

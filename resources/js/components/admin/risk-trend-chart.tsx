@@ -23,14 +23,24 @@ type Props = {
 };
 
 const COLORS = {
-    critical: '#8B2635',
-    high: '#285A48',
-    medium: '#408A71',
-    low: '#B0E4CC',
+    critical: 'var(--destructive)',
+    high:     'var(--chart-5)',
+    medium:   'var(--primary)',
+    low:      'var(--chart-2)',
 };
 
 export function RiskTrendChart({ trendData = [] }: Props) {
     const hasData = trendData.length > 0;
+
+    const tooltipStyle = {
+        backgroundColor: 'var(--card)',
+        border: '1px solid var(--border)',
+        borderRadius: '4px',
+        fontSize: '11px',
+        padding: '6px 10px',
+        fontFamily: "'Crimson Pro', serif",
+        color: 'var(--foreground)',
+    };
 
     return (
         <Card>
@@ -38,7 +48,7 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                 <CardTitle className="font-heading text-lg font-normal">
                     Risk Trend
                 </CardTitle>
-                <p className="font-body text-[11px] italic" style={{ color: '#7ABFA8' }}>
+                <p className="font-body text-[11px] italic text-muted-foreground">
                     Risk levels over time — ISO/IEC 27005 scoring
                 </p>
             </CardHeader>
@@ -46,10 +56,10 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                 {!hasData ? (
                     <div className="flex h-64 items-center justify-center">
                         <div className="text-center">
-                            <p className="font-body text-sm italic" style={{ color: '#7ABFA8' }}>
+                            <p className="font-body text-sm italic text-muted-foreground">
                                 No trend data available yet
                             </p>
-                            <p className="font-body mt-1 text-xs italic" style={{ color: 'rgba(156,139,122,0.6)' }}>
+                            <p className="font-body mt-1 text-xs italic text-muted-foreground opacity-60">
                                 Data will appear as risks are recorded over time
                             </p>
                         </div>
@@ -62,36 +72,28 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                                 margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                             >
                                 <defs>
-                                    {Object.entries(COLORS).map(([key, color]) => (
+                                    {(Object.entries(COLORS) as [string, string][]).map(([key, color]) => (
                                         <linearGradient key={key} id={`color-${key}`} x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%"  stopColor={color} stopOpacity={0.3} />
+                                            <stop offset="5%"  stopColor={color} stopOpacity={0.35} />
                                             <stop offset="95%" stopColor={color} stopOpacity={0} />
                                         </linearGradient>
                                     ))}
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#285A48" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                                 <XAxis
                                     dataKey="month"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#7ABFA8', fontSize: 10, fontFamily: "'Cinzel', serif" }}
+                                    tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: "'Cinzel', serif" }}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#7ABFA8', fontSize: 10, fontFamily: "'Cinzel', serif" }}
+                                    tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: "'Cinzel', serif" }}
                                 />
                                 <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: '#0D1F1C',
-                                        border: '1px solid #285A48',
-                                        borderRadius: '4px',
-                                        fontSize: '11px',
-                                        padding: '6px 10px',
-                                        fontFamily: "'Crimson Pro', serif",
-                                        color: '#E0F5EC',
-                                    }}
-                                    labelStyle={{ color: '#408A71', fontFamily: "'Cinzel', serif", fontSize: '10px' }}
+                                    contentStyle={tooltipStyle}
+                                    labelStyle={{ color: 'var(--primary)', fontFamily: "'Cinzel', serif", fontSize: '10px' }}
                                 />
                                 <Legend
                                     iconType="circle"
@@ -101,7 +103,7 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                                         paddingTop: '10px',
                                         fontFamily: "'Cinzel', serif",
                                         letterSpacing: '0.05em',
-                                        color: '#7ABFA8',
+                                        color: 'var(--muted-foreground)',
                                     }}
                                 />
                                 <Area type="monotone" dataKey="low"      stackId="1" stroke={COLORS.low}      fill="url(#color-low)"      strokeWidth={1.5} />

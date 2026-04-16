@@ -140,7 +140,7 @@ export default function AssessmentShow({
     evidenceScore,
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
-    const canEdit = auth.user.role === 'admin' || auth.user.role === 'user';
+    const canEdit = auth.user.role === 'admin' || auth.user.role === 'manager' || auth.user.role === 'employee' || auth.user.role === 'user';
 
     const [aiSummary, setAiSummary] = useState<AISummary | null>(null);
     const [loadingSummary, setLoading] = useState(false);
@@ -197,7 +197,7 @@ export default function AssessmentShow({
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                            <h1 className="font-heading text-4xl font-normal text-foreground">
                                 {assessment.title}
                             </h1>
                             <div className="mt-1 flex items-center gap-2">

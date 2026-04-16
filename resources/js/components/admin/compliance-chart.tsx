@@ -19,10 +19,10 @@ type Props = {
 };
 
 const defaultFrameworks: FrameworkScore[] = [
-    { name: 'ISO 27001', value: 0, fill: '#3b82f6' },
-    { name: 'NIST 800-53', value: 0, fill: '#8b5cf6' },
-    { name: 'OWASP ASVS', value: 0, fill: '#f59e0b' },
-    { name: 'CIS Benchmarks', value: 0, fill: '#22c55e' },
+    { name: 'ISO 27001', value: 0, fill: 'var(--chart-1)' },
+    { name: 'NIST 800-53', value: 0, fill: 'var(--chart-2)' },
+    { name: 'OWASP ASVS', value: 0, fill: 'var(--chart-3)' },
+    { name: 'CIS Benchmarks', value: 0, fill: 'var(--chart-4)' },
 ];
 
 export function ComplianceChart({ score = 0, frameworkScores }: Props) {
@@ -55,7 +55,7 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                                 tick={false}
                             />
                             <RadialBar
-                                background={{ fill: 'rgba(40,90,72,0.3)' }}
+                                background={{ fill: 'color-mix(in srgb, var(--primary) 12%, transparent)' }}
                                 dataKey="value"
                                 cornerRadius={6}
                             />
@@ -69,7 +69,7 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                                     paddingTop: '20px',
                                 }}
                                 formatter={(value: string, entry: any) => (
-                                    <span style={{ color: '#7ABFA8', fontFamily: "'Cinzel', serif", fontSize: '10px', letterSpacing: '0.05em' }}>
+                                    <span style={{ color: 'var(--muted-foreground)', fontFamily: "'Cinzel', serif", fontSize: '10px', letterSpacing: '0.05em' }}>
                                         {value} ({entry.payload.value}%)
                                     </span>
                                 )}
@@ -90,10 +90,10 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                         }}
                     >
                         <div style={{ textAlign: 'center' }}>
-                            <div className="font-heading text-3xl font-normal" style={{ color: '#E0F5EC' }}>
+                            <div className="font-heading text-3xl font-normal" style={{ color: 'var(--foreground)' }}>
                                 {Math.round(score)}%
                             </div>
-                            <div className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: '#7ABFA8' }}>
+                            <div className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: 'var(--muted-foreground)' }}>
                                 Overall
                             </div>
                         </div>

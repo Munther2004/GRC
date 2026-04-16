@@ -67,7 +67,7 @@ export default function CorporateDashboard({ corporation, stats, users }: Props)
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                    <h1 className="font-heading text-4xl font-normal text-foreground">
                         {corporation.name}
                     </h1>
                     <p className="text-sm text-muted-foreground">
@@ -98,7 +98,7 @@ export default function CorporateDashboard({ corporation, stats, users }: Props)
                 <Card style={{ border: '1px solid rgba(176,228,204,0.4)', background: 'rgba(176,228,204,0.04)' }}>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-base">
-                            <Share2 className="h-4 w-4" style={{ color: '#B0E4CC' }} />
+                            <Share2 className="h-4 w-4 text-chart-1" />
                             Employee Registration Code
                         </CardTitle>
                         <p className="text-sm text-muted-foreground">
@@ -111,7 +111,7 @@ export default function CorporateDashboard({ corporation, stats, users }: Props)
                         <div className="flex items-center gap-2">
                             <code
                                 className="flex-1 rounded p-3 font-mono text-xl font-bold tracking-widest"
-                                style={{ background: 'rgba(176,228,204,0.08)', color: '#B0E4CC', border: '1px solid rgba(176,228,204,0.3)' }}
+                                style={{ background: 'rgba(var(--color-chart-1) / 0.08)', color: 'var(--chart-1)', border: '1px solid rgba(var(--color-chart-1) / 0.3)' }}
                             >
                                 {corporation.registration_code}
                             </code>
@@ -126,7 +126,7 @@ export default function CorporateDashboard({ corporation, stats, users }: Props)
                             <div className="flex items-center gap-2">
                                 <code
                                     className="flex-1 rounded p-2.5 font-mono text-xs break-all"
-                                    style={{ background: 'rgba(9,20,19,0.6)', color: '#7ABFA8', border: '1px solid #285A48' }}
+                                    style={{ background: 'rgba(0,0,0,0.3)', color: 'var(--muted-foreground)', border: '1px solid var(--border)' }}
                                 >
                                     {signupLink}
                                 </code>
@@ -137,7 +137,7 @@ export default function CorporateDashboard({ corporation, stats, users }: Props)
                         </div>
 
                         {copied && (
-                            <p className="text-xs" style={{ color: '#B0E4CC' }}>Copied to clipboard!</p>
+                            <p className="text-xs text-chart-1">Copied to clipboard!</p>
                         )}
                     </CardContent>
                 </Card>

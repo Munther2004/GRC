@@ -56,6 +56,8 @@ class User extends Authenticatable
         return match ($this->role) {
             'admin' => 'Administrator',
             'auditor' => 'Auditor',
+            'manager' => 'Manager',
+            'employee' => 'Employee',
             default => 'User',
         };
     }

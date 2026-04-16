@@ -27,6 +27,15 @@ type PaginatedData = {
 type Props = { notifications: PaginatedData };
 type FilterTab = 'all' | 'unread' | 'overdue_assessment' | 'pending_evidence' | 'critical_risk' | 'overdue_risk';
 
+const themeColors = {
+    destructive: '#8B2635',
+    primary: '#408A71',
+    border: '#285A48',
+    muted: '#7ABFA8',
+    card: '#0D1F1C',
+    foreground: '#E0F5EC',
+};
+
 function timeAgo(dateStr: string): string {
     const date = new Date(dateStr);
     const now  = new Date();
@@ -38,11 +47,11 @@ function timeAgo(dateStr: string): string {
 }
 
 const typeStyle: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
-    overdue_assessment: { icon: Clock,          color: '#8B2635', bg: 'rgba(139,38,53,0.1)'  },
-    pending_evidence:   { icon: FileCheck,      color: '#408A71', bg: 'rgba(64,138,113,0.1)' },
-    critical_risk:      { icon: AlertTriangle,  color: '#8B2635', bg: 'rgba(139,38,53,0.1)'  },
-    overdue_risk:       { icon: Shield,         color: '#285A48', bg: 'rgba(40,90,72,0.1)' },
-    default:            { icon: Bell,           color: '#7ABFA8', bg: 'rgba(156,139,122,0.1)' },
+    overdue_assessment: { icon: Clock,          color: themeColors.destructive, bg: `rgba(139,38,53,0.1)`  },
+    pending_evidence:   { icon: FileCheck,      color: themeColors.primary, bg: `rgba(64,138,113,0.1)` },
+    critical_risk:      { icon: AlertTriangle,  color: themeColors.destructive, bg: `rgba(139,38,53,0.1)`  },
+    overdue_risk:       { icon: Shield,         color: themeColors.border, bg: `rgba(40,90,72,0.1)` },
+    default:            { icon: Bell,           color: themeColors.muted, bg: `rgba(156,139,122,0.1)` },
 };
 
 const tabs: { key: FilterTab; label: string }[] = [
@@ -103,18 +112,18 @@ export default function NotificationsPage({ notifications }: Props) {
                 </PageHeader>
 
                 {/* Filter tabs */}
-                <div className="flex flex-wrap gap-1 pb-0" style={{ borderBottom: '1px solid #285A48' }}>
+                <div className="flex flex-wrap gap-1 pb-0" style={{ borderBottomColor: 'var(--border)', borderBottomWidth: '1px' }}>
                     {tabs.map((tab) => (
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
                             className="-mb-px px-3 py-2 font-display text-[10px] uppercase tracking-[0.15em] transition-colors"
                             style={activeTab === tab.key
-                                ? { borderBottom: '2px solid #408A71', color: '#408A71' }
-                                : { borderBottom: '2px solid transparent', color: '#7ABFA8' }
+                                ? { borderBottom: `2px solid ${themeColors.primary}`, color: themeColors.primary }
+                                : { borderBottom: '2px solid transparent', color: themeColors.muted }
                             }
-                            onMouseEnter={e => { if (activeTab !== tab.key) e.currentTarget.style.color = '#E0F5EC'; }}
-                            onMouseLeave={e => { if (activeTab !== tab.key) e.currentTarget.style.color = '#7ABFA8'; }}
+                            onMouseEnter={e => { if (activeTab !== tab.key) e.currentTarget.style.color = themeColors.foreground; }}
+                            onMouseLeave={e => { if (activeTab !== tab.key) e.currentTarget.style.color = themeColors.muted; }}
                         >
                             {tab.label}
                         </button>
@@ -126,7 +135,7 @@ export default function NotificationsPage({ notifications }: Props) {
                     {filtered.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center">
                             <Bell className="mb-4 h-10 w-10" style={{ color: 'rgba(156,139,122,0.3)' }} />
-                            <p className="font-body italic" style={{ color: '#7ABFA8' }}>No notifications found</p>
+                            <p className="font-body italic text-muted-foreground">No notifications found</p>
                         </div>
                     ) : (
                         filtered.map((n) => {
@@ -150,11 +159,11 @@ export default function NotificationsPage({ notifications }: Props) {
                                     <div className="min-w-0 flex-1">
                                         <p
                                             className="font-body text-sm"
-                                            style={{ color: n.is_read ? '#7ABFA8' : '#E0F5EC', fontStyle: n.is_read ? 'italic' : 'normal' }}
+                                            style={{ color: n.is_read ? 'var(--muted-foreground)' : 'var(--foreground)', fontStyle: n.is_read ? 'italic' : 'normal' }}
                                         >
                                             {n.title}
                                         </p>
-                                        <p className="font-body mt-0.5 text-sm italic" style={{ color: '#7ABFA8' }}>
+                                        <p className="font-body mt-0.5 text-sm italic text-muted-foreground">
                                             {n.message}
                                         </p>
                                         <p className="font-display mt-1 text-[9px] uppercase tracking-widest" style={{ color: 'rgba(156,139,122,0.5)' }}>
@@ -188,8 +197,8 @@ export default function NotificationsPage({ notifications }: Props) {
                                 href={`/notifications?page=${page}`}
                                 className="flex h-8 w-8 items-center justify-center rounded font-display text-[10px] transition-colors"
                                 style={page === notifications.current_page
-                                    ? { background: '#408A71', color: '#091413' }
-                                    : { color: '#7ABFA8', border: '1px solid #285A48' }
+                                    ? { background: themeColors.primary, color: themeColors.card }
+                                    : { color: themeColors.muted, border: `1px solid ${themeColors.border}` }
                                 }
                             >
                                 {page}

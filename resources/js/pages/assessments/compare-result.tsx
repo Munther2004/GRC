@@ -356,7 +356,7 @@ export default function CompareResult({
                             <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Controls Changed
                             </p>
-                            <p className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                            <p className="font-heading text-4xl font-normal text-foreground">
                                 {summary.changed_count}
                             </p>
                             <p className="mt-1 text-xs text-muted-foreground">
@@ -401,7 +401,7 @@ export default function CompareResult({
                             <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                 Total Controls
                             </p>
-                            <p className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                            <p className="font-heading text-4xl font-normal text-foreground">
                                 {summary.total_controls}
                             </p>
                             <p className="mt-1 text-xs text-muted-foreground">

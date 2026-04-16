@@ -69,7 +69,10 @@
       "Bash(grep -rn \"corporation_id\" /Users/abdurahmanal-essa/GRC/app/Models/*.php)",
       "Bash(php -l app/Http/Controllers/RemediationTaskController.php)",
       "Bash(php -l app/Services/GrcMetricsService.php)",
-      "Bash(php -l app/Models/User.php)"
+      "Bash(php -l app/Models/User.php)",
+      "Bash(npx tsc *)",
+      "Bash(npx vite *)",
+      "Bash(node -e ' *)"
     ]
   }
 }

@@ -20,30 +20,34 @@ export function QuickActions() {
                     className="inline-flex items-center gap-2 rounded px-4 py-2 font-display text-[10px] uppercase tracking-[0.15em] transition-all duration-200"
                     style={action.primary
                         ? {
-                            background: 'linear-gradient(135deg, #408A71 0%, #285A48 100%)',
-                            color: '#091413',
-                            boxShadow: '0 2px 8px rgba(64,138,113,0.3)',
+                            background: 'var(--primary)',
+                            color: 'var(--primary-foreground)',
+                            boxShadow: '0 2px 8px color-mix(in srgb, var(--primary) 35%, transparent)',
                         }
                         : {
                             background: 'transparent',
-                            border: '1px solid #285A48',
-                            color: '#7ABFA8',
+                            border: '1px solid var(--border)',
+                            color: 'var(--muted-foreground)',
                         }
                     }
                     onMouseEnter={e => {
                         if (action.primary) {
-                            e.currentTarget.style.boxShadow = '0 4px 16px rgba(64,138,113,0.45)';
+                            e.currentTarget.style.filter = 'brightness(1.1)';
+                            e.currentTarget.style.boxShadow = '0 4px 16px color-mix(in srgb, var(--primary) 45%, transparent)';
                         } else {
-                            e.currentTarget.style.borderColor = '#408A71';
-                            e.currentTarget.style.color = '#408A71';
+                            e.currentTarget.style.borderColor = 'var(--primary)';
+                            e.currentTarget.style.color = 'var(--primary)';
+                            e.currentTarget.style.background = 'color-mix(in srgb, var(--primary) 6%, transparent)';
                         }
                     }}
                     onMouseLeave={e => {
                         if (action.primary) {
-                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(64,138,113,0.3)';
+                            e.currentTarget.style.filter = '';
+                            e.currentTarget.style.boxShadow = '0 2px 8px color-mix(in srgb, var(--primary) 35%, transparent)';
                         } else {
-                            e.currentTarget.style.borderColor = '#285A48';
-                            e.currentTarget.style.color = '#7ABFA8';
+                            e.currentTarget.style.borderColor = 'var(--border)';
+                            e.currentTarget.style.color = 'var(--muted-foreground)';
+                            e.currentTarget.style.background = 'transparent';
                         }
                     }}
                 >

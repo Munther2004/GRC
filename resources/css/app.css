@@ -43,6 +43,9 @@
     --destructive:          #8B2635;
     --destructive-foreground: #E0F5EC;
 
+    /* Mint — success/positive states */
+    --success:              #B0E4CC;
+
     /* Fern — borders and dividers */
     --border:               #285A48;
     --input:                #285A48;
@@ -85,6 +88,7 @@
     --accent-foreground:    #E0F5EC;
     --destructive:          #8B2635;
     --destructive-foreground: #E0F5EC;
+    --success:              #B0E4CC;
     --border:               #285A48;
     --input:                #285A48;
     --ring:                 #408A71;
@@ -126,6 +130,7 @@
     --color-accent-foreground:      var(--accent-foreground);
     --color-destructive:            var(--destructive);
     --color-destructive-foreground: var(--destructive-foreground);
+    --color-success:                var(--success);
     --color-border:                 var(--border);
     --color-input:                  var(--input);
     --color-ring:                   var(--ring);
@@ -157,6 +162,10 @@
         @apply border-border outline-ring/50;
     }
 
+    html {
+        @apply bg-background text-foreground;
+    }
+
     body {
         @apply bg-background text-foreground antialiased;
         font-family: 'Crimson Pro', Georgia, serif;
@@ -169,12 +178,12 @@
         font-weight: 400;
         line-height: 1.15;
         letter-spacing: -0.01em;
-        color: #E0F5EC;
+        color: var(--foreground);
     }
 
     ::selection {
-        background: #408A71;
-        color: #091413;
+        background: var(--primary);
+        color: var(--background);
     }
 
     ::-webkit-scrollbar {
@@ -182,16 +191,16 @@
         height: 8px;
     }
     ::-webkit-scrollbar-track {
-        background: #091413;
+        background: var(--background);
     }
     ::-webkit-scrollbar-thumb {
-        background: #285A48;
+        background: var(--border);
         border-radius: 999px;
-        border: 2px solid #091413;
+        border: 2px solid var(--background);
     }
     ::-webkit-scrollbar-thumb:hover {
-        background: #408A71;
-        border-color: #091413;
+        background: var(--primary);
+        border-color: var(--background);
     }
 
     main {
@@ -224,7 +233,7 @@
     }
 
     .bg-primary-gradient {
-        background: linear-gradient(135deg, #408A71, #285A48);
+        background: linear-gradient(135deg, var(--primary), var(--border));
     }
 
     .ornate-frame {
@@ -236,8 +245,8 @@
         position: absolute;
         width: 28px;
         height: 28px;
-        border: 1px solid #408A71;
-        opacity: 0.5;
+        border: 1px solid var(--primary);
+        opacity: 0.4;
         transition: opacity 0.3s ease;
         pointer-events: none;
     }
@@ -251,7 +260,7 @@
     }
     .ornate-frame:hover::before,
     .ornate-frame:hover::after {
-        opacity: 1;
+        opacity: 0.9;
     }
 
     .ornate-divider {
@@ -260,9 +269,9 @@
         background: linear-gradient(
             90deg,
             transparent 0%,
-            #285A48 20%,
-            #408A71 50%,
-            #285A48 80%,
+            var(--border) 20%,
+            var(--primary) 50%,
+            var(--border) 80%,
             transparent 100%
         );
     }
@@ -272,7 +281,7 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        color: #408A71;
+        color: var(--primary);
         font-size: 10px;
         background: var(--background);
         padding: 0 10px;
@@ -287,7 +296,7 @@
             ellipse at center,
             transparent 0%,
             transparent 55%,
-            rgba(9,20,19,0.45) 100%
+            rgba(0,0,0,0.4) 100%
         );
         pointer-events: none;
         z-index: 0;

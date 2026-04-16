@@ -17,10 +17,17 @@ type Metric = {
 };
 
 const toneColor: Record<Metric['tone'], string> = {
-    neutral: '#7ABFA8',
-    warn:    '#285A48',
-    ok:      '#B0E4CC',
-    bad:     '#8B2635',
+    neutral: 'var(--muted-foreground)',
+    warn:    'var(--border)',
+    ok:      'var(--success)',
+    bad:     'var(--destructive)',
+};
+
+const toneValueColor: Record<Metric['tone'], string> = {
+    neutral: 'var(--foreground)',
+    warn:    'var(--border)',
+    ok:      'var(--success)',
+    bad:     'var(--destructive)',
 };
 
 export function MetricsCards({ stats }: { stats: Stats }) {
@@ -54,34 +61,34 @@ export function MetricsCards({ stats }: { stats: Stats }) {
     return (
         <div
             className="grid grid-cols-2 overflow-hidden rounded lg:grid-cols-4"
-            style={{ gap: '1px', background: '#285A48' }}
+            style={{ gap: '1px', background: 'var(--border)' }}
         >
             {metrics.map((metric, idx) => (
                 <Card
                     key={metric.title}
                     className="rounded-none border-0 shadow-none"
-                    style={{ background: '#0D1F1C' }}
+                    style={{ background: 'var(--card)' }}
                 >
                     <div
                         className="px-5 py-4"
-                        style={idx === 0 ? { borderLeft: '2px solid #408A71' } : {}}
+                        style={idx === 0 ? { borderLeft: '2px solid var(--primary)' } : {}}
                     >
                         <div className="flex items-center gap-1.5">
                             <span
                                 className="h-1 w-1 rounded-full shrink-0"
                                 style={{ background: toneColor[metric.tone] }}
                             />
-                            <p className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: '#7ABFA8' }}>
+                            <p className="font-display text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
                                 {metric.title}
                             </p>
                         </div>
                         <p
                             className="font-heading mt-2.5 text-3xl font-normal tabular-nums"
-                            style={{ color: toneColor[metric.tone] === '#7ABFA8' ? '#E0F5EC' : toneColor[metric.tone] }}
+                            style={{ color: toneValueColor[metric.tone] }}
                         >
                             {metric.value}
                         </p>
-                        <p className="font-body mt-1 text-xs italic" style={{ color: 'rgba(156,139,122,0.8)' }}>
+                        <p className="font-body mt-1 text-xs italic text-muted-foreground/80">
                             {metric.sub}
                         </p>
                     </div>

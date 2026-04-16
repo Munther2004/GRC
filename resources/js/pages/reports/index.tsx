@@ -34,16 +34,24 @@ interface Props {
     stats: { total_risks: number; open_risks: number; total_assessments: number; total_frameworks: number };
 }
 
-const complianceColor = (pct: number) => pct >= 80 ? '#B0E4CC' : pct >= 50 ? '#408A71' : '#8B2635';
+const themeColors = {
+    success: '#B0E4CC',
+    primary: '#408A71',
+    destructive: '#8B2635',
+    border: '#285A48',
+    card: '#0D1F1C',
+};
+
+const complianceColor = (pct: number) => pct >= 80 ? themeColors.success : pct >= 50 ? themeColors.primary : themeColors.destructive;
 const complianceStyle = (pct: number): React.CSSProperties => ({ color: complianceColor(pct) });
 
-const RISK_COLORS = { critical: '#8B2635', high: '#285A48', medium: '#408A71', low: '#B0E4CC' };
+const RISK_COLORS = { critical: 'var(--destructive)', high: 'var(--border)', medium: 'var(--primary)', low: 'var(--chart-1)' };
 
 const tooltipStyle = {
-    contentStyle: { backgroundColor: '#0D1F1C', border: '1px solid #285A48', borderRadius: '4px', fontFamily: "'Crimson Pro', serif", color: '#E0F5EC' },
-    labelStyle:   { color: '#408A71', fontFamily: "'Cinzel', serif", fontSize: '10px' },
+    contentStyle: { backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '4px', fontFamily: "'Crimson Pro', serif", color: 'var(--foreground)' },
+    labelStyle:   { color: 'var(--primary)', fontFamily: "'Cinzel', serif", fontSize: '10px' },
 };
-const axisStyle = { fill: '#7ABFA8', fontSize: 11, fontFamily: "'Cinzel', serif" };
+const axisStyle = { fill: 'var(--muted-foreground)', fontSize: 11, fontFamily: "'Cinzel', serif" };
 
 export default function ReportsIndex({
     overallCompliance, complianceByFramework, riskByLevel, riskByCategory,
@@ -138,8 +146,8 @@ export default function ReportsIndex({
                                 <span className="font-heading text-7xl font-normal" style={complianceStyle(overallCompliance)}>
                                     {overallCompliance}%
                                 </span>
-                                <p className="font-body mt-2 text-sm italic" style={{ color: '#7ABFA8' }}>Across all frameworks</p>
-                                <div className="mt-4 h-1 w-full overflow-hidden rounded-full" style={{ background: 'rgba(40,90,72,0.5)' }}>
+                                <p className="font-body mt-2 text-sm italic text-muted-foreground">Across all frameworks</p>
+                                <div className="mt-4 h-1 w-full overflow-hidden rounded-full" style={{ background: 'rgba(var(--color-border) / 0.5)' }}>
                                     <div className="h-full rounded-full transition-all" style={{ width: `${overallCompliance}%`, backgroundColor: complianceColor(overallCompliance) }} />
                                 </div>
                             </div>
@@ -152,7 +160,7 @@ export default function ReportsIndex({
                             <div className="h-48 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={frameworkChartData} barSize={40}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#285A48" vertical={false} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke={themeColors.border} vertical={false} />
                                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={axisStyle} />
                                         <YAxis domain={[0, 100]} axisLine={false} tickLine={false} tick={axisStyle} />
                                         <Tooltip {...tooltipStyle} formatter={(v: any) => [`${v}%`, 'Compliance']} />
@@ -167,14 +175,14 @@ export default function ReportsIndex({
                             <div className="mt-4 space-y-2">
                                 {complianceByFramework.map((f) => (
                                     <div key={f.id} className="flex items-center justify-between">
-                                        <span className="font-body text-sm" style={{ color: '#E0F5EC' }}>{f.short_name}</span>
+                                        <span className="font-body text-sm text-foreground">{f.short_name}</span>
                                         <div className="flex items-center gap-3">
-                                            <span className="font-body text-xs italic" style={{ color: '#7ABFA8' }}>
+                                            <span className="font-body text-xs italic text-muted-foreground">
                                                 {f.assessments_count} assessment{f.assessments_count !== 1 ? 's' : ''}
                                             </span>
                                             {f.latest_score !== null
                                                 ? <span className="font-heading text-base" style={complianceStyle(f.latest_score)}>{f.latest_score}%</span>
-                                                : <span className="font-body text-xs italic" style={{ color: '#7ABFA8' }}>No data</span>
+                                                : <span className="font-body text-xs italic text-muted-foreground">No data</span>
                                             }
                                         </div>
                                     </div>
@@ -192,11 +200,11 @@ export default function ReportsIndex({
                             <div className="h-48 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={monthlyTrend}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#285A48" vertical={false} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                                         <XAxis dataKey="month" axisLine={false} tickLine={false} tick={axisStyle} />
                                         <YAxis domain={[0, 100]} axisLine={false} tickLine={false} tick={axisStyle} />
                                         <Tooltip {...tooltipStyle} formatter={(v: any) => [`${v}%`, 'Avg Compliance']} />
-                                        <Line type="monotone" dataKey="score" stroke="#408A71" strokeWidth={2} dot={{ fill: '#408A71', r: 4 }} />
+                                        <Line type="monotone" dataKey="score" stroke="var(--primary)" strokeWidth={2} dot={{ fill: 'var(--primary)', r: 4 }} />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
@@ -216,7 +224,7 @@ export default function ReportsIndex({
                                             {riskLevelData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                                         </Pie>
                                         <Tooltip {...tooltipStyle} />
-                                        <Legend iconSize={8} wrapperStyle={{ fontSize: 10, fontFamily: "'Cinzel', serif", color: '#7ABFA8' }} />
+                                        <Legend iconSize={8} wrapperStyle={{ fontSize: 10, fontFamily: "'Cinzel', serif", color: 'var(--muted-foreground)' }} />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>
@@ -224,8 +232,8 @@ export default function ReportsIndex({
                                 {riskLevelData.map((r) => (
                                     <div key={r.name} className="flex items-center gap-2">
                                         <div className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.color }} />
-                                        <span className="font-body text-xs" style={{ color: '#7ABFA8' }}>
-                                            {r.name}: <span className="font-heading not-italic" style={{ color: '#E0F5EC' }}>{r.value}</span>
+                                        <span className="font-body text-xs text-muted-foreground">
+                                            {r.name}: <span className="font-heading not-italic text-foreground">{r.value}</span>
                                         </span>
                                     </div>
                                 ))}
@@ -239,11 +247,11 @@ export default function ReportsIndex({
                             <div className="h-64 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={riskCategoryData} layout="vertical" barSize={10}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#285A48" horizontal={false} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
                                         <XAxis type="number" axisLine={false} tickLine={false} tick={axisStyle} />
                                         <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ ...axisStyle, fontSize: 9 }} width={85} />
                                         <Tooltip {...tooltipStyle} />
-                                        <Bar dataKey="value" fill="#408A71" radius={[0, 3, 3, 0]} />
+                                        <Bar dataKey="value" fill="var(--primary)" radius={[0, 3, 3, 0]} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
@@ -254,15 +262,15 @@ export default function ReportsIndex({
                         <CardHeader><CardTitle className="font-heading text-lg font-normal">Risks by Status</CardTitle></CardHeader>
                         <CardContent className="space-y-2 pt-2">
                             {[
-                                { label: 'Open',         value: riskByStatus.open,         icon: AlertTriangle, color: '#8B2635', bg: 'rgba(139,38,53,0.1)'  },
-                                { label: 'In Progress',  value: riskByStatus.in_progress,  icon: Clock,         color: '#408A71', bg: 'rgba(64,138,113,0.1)' },
-                                { label: 'Under Review', value: riskByStatus.under_review, icon: Eye,           color: '#285A48', bg: 'rgba(40,90,72,0.1)' },
-                                { label: 'Closed',       value: riskByStatus.closed,       icon: CheckCircle,   color: '#B0E4CC', bg: 'rgba(176,228,204,0.1)' },
+                                { label: 'Open',         value: riskByStatus.open,         icon: AlertTriangle, color: 'var(--destructive)', bg: 'rgba(var(--color-destructive) / 0.1)'  },
+                                { label: 'In Progress',  value: riskByStatus.in_progress,  icon: Clock,         color: 'var(--primary)', bg: 'rgba(var(--color-primary) / 0.1)' },
+                                { label: 'Under Review', value: riskByStatus.under_review, icon: Eye,           color: 'var(--border)', bg: 'rgba(var(--color-border) / 0.1)' },
+                                { label: 'Closed',       value: riskByStatus.closed,       icon: CheckCircle,   color: 'var(--primary)', bg: 'rgba(var(--color-primary) / 0.1)' },
                             ].map(({ label, value, icon: Icon, color, bg }) => (
-                                <div key={label} className="flex items-center justify-between rounded p-3" style={{ background: bg, border: `1px solid ${color}33` }}>
+                                    <div key={label} className="flex items-center justify-between rounded p-3" style={{ background: bg, borderColor: color, borderWidth: '1px', borderOpacity: '0.2' }}>
                                     <div className="flex items-center gap-2">
                                         <Icon className="h-4 w-4" style={{ color }} strokeWidth={1.5} />
-                                        <span className="font-display text-[10px] uppercase tracking-[0.1em]" style={{ color: '#E0F5EC' }}>{label}</span>
+                                        <span className="font-display text-[10px] uppercase tracking-[0.1em] text-foreground">{label}</span>
                                     </div>
                                     <span className="font-heading text-xl font-normal" style={{ color }}>{value}</span>
                                 </div>
@@ -277,17 +285,17 @@ export default function ReportsIndex({
                     <CardContent className="p-0">
                         {assessmentHistory.length === 0 ? (
                             <div className="p-8 text-center">
-                                <p className="font-body italic" style={{ color: '#7ABFA8' }}>
+                                <p className="font-body italic text-muted-foreground">
                                     No completed assessments yet.{' '}
-                                    <Link href="/assessments" style={{ color: '#408A71' }}>Start one.</Link>
+                                    <Link href="/assessments" className="text-primary">Start one.</Link>
                                 </p>
                             </div>
                         ) : (
                             <table className="w-full text-sm">
-                                <thead style={{ borderTop: '1px solid #285A48', borderBottom: '1px solid #285A48', background: 'rgba(13,31,28,0.6)' }}>
+                                <thead style={{ borderTopColor: 'var(--border)', borderTopWidth: '1px', borderBottomColor: 'var(--border)', borderBottomWidth: '1px', background: 'rgba(var(--color-card) / 0.4)' }}>
                                     <tr>
                                         {['Assessment', 'Framework', 'Period', 'Score', 'Completed', 'By'].map((h) => (
-                                            <th key={h} className="px-4 py-3 text-left font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: '#7ABFA8' }}>
+                                            <th key={h} className="px-4 py-3 text-left font-display text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
                                                 {h}
                                             </th>
                                         ))}
@@ -295,14 +303,14 @@ export default function ReportsIndex({
                                 </thead>
                                 <tbody>
                                     {assessmentHistory.map((a) => (
-                                        <tr key={a.id} className="transition-colors" style={{ borderBottom: '1px solid rgba(40,90,72,0.4)' }}
-                                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(61,51,43,0.3)')}
+                                        <tr key={a.id} className="transition-colors" style={{ borderBottomColor: 'var(--border)', borderBottomWidth: '1px', borderBottomOpacity: '0.4' }}
+                                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(var(--color-muted) / 0.1)')}
                                             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                                         >
                                             <td className="px-4 py-3">
-                                                <Link href={route('assessments.show', a.id)} className="font-body text-sm transition-colors" style={{ color: '#408A71' }}
-                                                    onMouseEnter={e => (e.currentTarget.style.color = '#E0F5EC')}
-                                                    onMouseLeave={e => (e.currentTarget.style.color = '#408A71')}
+                                                <Link href={route('assessments.show', a.id)} className="font-body text-sm transition-colors text-primary"
+                                                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--foreground)')}
+                                                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--primary)')}                                                
                                                 >
                                                     {a.title}
                                                 </Link>
@@ -310,10 +318,10 @@ export default function ReportsIndex({
                                             <td className="px-4 py-3">
                                                 <Badge variant="outline">{a.framework}</Badge>
                                             </td>
-                                            <td className="px-4 py-3 font-body italic" style={{ color: '#7ABFA8' }}>{a.period}</td>
+                                            <td className="px-4 py-3 font-body italic text-muted-foreground">{a.period}</td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-1 w-16 overflow-hidden rounded-full" style={{ background: 'rgba(40,90,72,0.5)' }}>
+                                                    <div className="h-1 w-16 overflow-hidden rounded-full" style={{ background: 'rgba(var(--color-border) / 0.5)' }}>
                                                         <div className="h-full rounded-full" style={{ width: `${a.compliance_percentage}%`, background: complianceColor(a.compliance_percentage) }} />
                                                     </div>
                                                     <span className="font-heading text-base" style={complianceStyle(a.compliance_percentage)}>
@@ -321,8 +329,8 @@ export default function ReportsIndex({
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 font-display text-[10px]" style={{ color: '#7ABFA8' }}>{a.completed_at}</td>
-                                            <td className="px-4 py-3 font-body italic" style={{ color: '#7ABFA8' }}>{a.user}</td>
+                                            <td className="px-4 py-3 font-display text-[10px] text-muted-foreground">{a.completed_at}</td>
+                                            <td className="px-4 py-3 font-body italic text-muted-foreground">{a.user}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -334,32 +342,32 @@ export default function ReportsIndex({
 
             {/* Gap Analysis overlay */}
             {generatingGap && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(9,20,19,0.85)', backdropFilter: 'blur(4px)' }}>
-                    <div className="mx-4 flex max-w-sm flex-col items-center gap-4 rounded p-8" style={{ background: '#0D1F1C', border: '1px solid #285A48', boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}>
-                        <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'rgba(64,138,113,0.1)', border: '1px solid rgba(64,138,113,0.3)' }}>
-                            <Sparkles className="h-7 w-7 animate-pulse" style={{ color: '#408A71' }} />
+                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}>
+                    <div className="mx-4 flex max-w-sm flex-col items-center gap-4 rounded p-8 bg-card border" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}>
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'rgba(var(--color-primary) / 0.1)', borderColor: 'rgba(var(--color-primary) / 0.3)', borderWidth: '1px' }}>
+                            <Sparkles className="h-7 w-7 animate-pulse text-primary" />
                         </div>
                         <div className="text-center">
-                            <p className="font-heading text-xl font-normal" style={{ color: '#E0F5EC' }}>Generating Gap Analysis</p>
-                            <p className="font-body text-sm italic" style={{ color: '#7ABFA8' }}>AI is analysing your compliance gaps…</p>
+                            <p className="font-heading text-xl font-normal text-foreground">Generating Gap Analysis</p>
+                            <p className="font-body text-sm italic text-muted-foreground">AI is analysing your compliance gaps…</p>
                         </div>
-                        <Loader2 className="h-5 w-5 animate-spin" style={{ color: '#408A71' }} />
+                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
                     </div>
                 </div>
             )}
 
             {/* Executive Summary overlay */}
             {generating && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(9,20,19,0.85)', backdropFilter: 'blur(4px)' }}>
-                    <div className="mx-4 flex max-w-sm flex-col items-center gap-4 rounded p-8" style={{ background: '#0D1F1C', border: '1px solid #285A48', boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}>
-                        <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'rgba(64,138,113,0.1)', border: '1px solid rgba(64,138,113,0.3)' }}>
-                            <Sparkles className="h-7 w-7 animate-pulse" style={{ color: '#408A71' }} />
+                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}>
+                    <div className="mx-4 flex max-w-sm flex-col items-center gap-4 rounded p-8 bg-card border" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}>
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'rgba(var(--color-primary) / 0.1)', borderColor: 'rgba(var(--color-primary) / 0.3)', borderWidth: '1px' }}>
+                            <Sparkles className="h-7 w-7 animate-pulse text-primary" />
                         </div>
                         <div className="text-center">
-                            <p className="font-heading text-xl font-normal" style={{ color: '#E0F5EC' }}>Generating Executive Summary</p>
-                            <p className="font-body text-sm italic" style={{ color: '#7ABFA8' }}>AI is analysing your GRC data…</p>
+                            <p className="font-heading text-xl font-normal text-foreground">Generating Executive Summary</p>
+                            <p className="font-body text-sm italic text-muted-foreground">AI is analysing your GRC data…</p>
                         </div>
-                        <Loader2 className="h-5 w-5 animate-spin" style={{ color: '#408A71' }} />
+                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
                     </div>
                 </div>
             )}
@@ -369,8 +377,8 @@ export default function ReportsIndex({
                 <div
                     className="fixed right-6 bottom-6 z-50 flex items-center gap-3 rounded px-4 py-3 font-display text-[10px] uppercase tracking-widest"
                     style={toast.type === 'success'
-                        ? { background: 'rgba(176,228,204,0.15)', border: '1px solid rgba(176,228,204,0.4)', color: '#B0E4CC', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }
-                        : { background: 'rgba(139,38,53,0.15)',  border: '1px solid rgba(139,38,53,0.4)',  color: '#8B2635', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }
+                        ? { background: 'rgba(var(--color-chart-1) / 0.15)', borderColor: 'rgba(var(--color-chart-1) / 0.4)', borderWidth: '1px', color: 'var(--chart-1)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }
+                        : { background: 'rgba(var(--color-destructive) / 0.15)',  borderColor: 'rgba(var(--color-destructive) / 0.4)',  borderWidth: '1px', color: 'var(--destructive)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }
                     }
                 >
                     {toast.type === 'success' ? <CheckCircle className="h-4 w-4 shrink-0" /> : <XCircle className="h-4 w-4 shrink-0" />}

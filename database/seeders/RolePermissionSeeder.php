@@ -64,7 +64,8 @@ class RolePermissionSeeder extends Seeder
         // Create roles
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $auditorRole = Role::firstOrCreate(['name' => 'auditor']);
-        $userRole = Role::firstOrCreate(['name' => 'user']);
+        $managerRole = Role::firstOrCreate(['name' => 'manager']);
+        $employeeRole = Role::firstOrCreate(['name' => 'employee']);
 
         // Assign all permissions to admin
         $adminRole->syncPermissions(Permission::all());
@@ -77,8 +78,24 @@ class RolePermissionSeeder extends Seeder
             'reject_evidence',
         ]);
 
-        // Assign user permissions
-        $userRole->syncPermissions([
+        // Assign manager permissions (can manage team and oversee operations)
+        $managerRole->syncPermissions([
+            'view_users',
+            'view_audit_logs',
+            'create_risk',
+            'edit_risk',
+            'delete_risk',
+            'approve_risk',
+            'create_assessment',
+            'edit_assessment',
+            'delete_assessment',
+            'approve_evidence',
+            'reject_evidence',
+            'manage_risk_appetite',
+        ]);
+
+        // Assign employee permissions (can create and manage their own items)
+        $employeeRole->syncPermissions([
             'create_risk',
             'edit_risk',
             'delete_risk',

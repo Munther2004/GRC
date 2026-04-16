@@ -17,6 +17,7 @@ import {
     Shield,
     Sliders,
     Sparkles,
+    Palette,
     Users,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -57,6 +58,7 @@ const adminNavigation = [
     { name: "Frameworks",       href: "/admin/frameworks",      icon: Shield   },
     { name: "Controls Library", href: "/admin/controls",        icon: Settings },
     { name: "Risk Appetite",    href: "/risk-appetite",         icon: Sliders  },
+    { name: "Appearance",       href: "/settings/appearance",   icon: Palette  },
 ]
 
 export function AdminSidebar() {
@@ -82,33 +84,33 @@ export function AdminSidebar() {
         <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
             <div
                 className="flex grow flex-col overflow-y-auto"
-                style={{ background: '#091413', borderRight: '1px solid #285A48' }}
+                style={{ background: 'var(--sidebar)', borderRight: '1px solid var(--sidebar-border)' }}
             >
                 {/* ── Wordmark ───────────────────────────────────────────── */}
                 <div
                     className="flex h-16 shrink-0 items-center gap-3 px-5"
-                    style={{ borderBottom: '1px solid #285A48' }}
+                    style={{ borderBottom: '1px solid var(--sidebar-border)' }}
                 >
                     <div
                         className="flex items-center justify-center w-7 h-7 rounded-sm"
-                        style={{ border: '1px solid rgba(64,138,113,0.6)', background: 'rgba(64,138,113,0.08)' }}
+                        style={{ border: '1px solid color-mix(in srgb, var(--sidebar-primary) 60%, transparent)', background: 'color-mix(in srgb, var(--sidebar-primary) 10%, transparent)' }}
                     >
-                        <Shield className="w-3.5 h-3.5" style={{ color: '#408A71' }} strokeWidth={1.5} />
+                        <Shield className="w-3.5 h-3.5" style={{ color: 'var(--sidebar-primary)' }} strokeWidth={1.5} />
                     </div>
-                    <span className="font-display text-xs uppercase tracking-[0.25em]" style={{ color: '#E0F5EC' }}>
+                    <span className="font-display text-xs uppercase tracking-[0.25em]" style={{ color: 'var(--sidebar-foreground)' }}>
                         GRC
                     </span>
                     <span
                         className="ml-auto font-display text-[9px] uppercase tracking-[0.2em] px-1.5 py-0.5 rounded-sm"
-                        style={{ color: '#7ABFA8', border: '1px solid #285A48' }}
+                        style={{ color: 'var(--muted-foreground)', border: '1px solid var(--sidebar-border)' }}
                     >
                         {roleName}
                     </span>
                 </div>
 
                 {/* Ornate divider */}
-                <div style={{ position: 'relative', height: '1px', margin: '0 16px', background: 'linear-gradient(90deg, transparent, #285A48 30%, #408A71 50%, #285A48 70%, transparent)' }}>
-                    <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', color: '#408A71', fontSize: '8px', background: '#091413', padding: '0 8px' }}>✶</span>
+                <div style={{ position: 'relative', height: '1px', margin: '0 16px', background: 'linear-gradient(90deg, transparent, var(--sidebar-border) 30%, var(--sidebar-primary) 50%, var(--sidebar-border) 70%, transparent)' }}>
+                    <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', color: 'var(--sidebar-primary)', fontSize: '8px', background: 'var(--sidebar)', padding: '0 8px' }}>✶</span>
                 </div>
 
                 <nav className="flex flex-1 flex-col gap-5 px-3 py-4">
@@ -149,20 +151,20 @@ export function AdminSidebar() {
                 </nav>
 
                 {/* ── User footer ───────────────────────────────────────── */}
-                <div style={{ borderTop: '1px solid #285A48', padding: '12px' }}>
+                <div style={{ borderTop: '1px solid var(--sidebar-border)', padding: '12px' }}>
                     <div className="flex items-center gap-2.5 rounded px-2 py-1.5">
                         {/* Initials medallion */}
                         <div
                             className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                            style={{ background: 'rgba(64,138,113,0.12)', border: '1px solid rgba(64,138,113,0.5)' }}
+                            style={{ background: 'color-mix(in srgb, var(--sidebar-primary) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--sidebar-primary) 50%, transparent)' }}
                         >
-                            <span className="font-display text-[10px]" style={{ color: '#408A71' }}>{initials}</span>
+                            <span className="font-display text-[10px]" style={{ color: 'var(--sidebar-primary)' }}>{initials}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="font-heading text-sm truncate leading-tight" style={{ color: '#E0F5EC' }}>
+                            <p className="font-heading text-sm truncate leading-tight" style={{ color: 'var(--sidebar-foreground)' }}>
                                 {auth.user.name}
                             </p>
-                            <p className="font-body text-[11px] italic truncate leading-tight" style={{ color: '#7ABFA8' }}>
+                            <p className="font-body text-[11px] italic truncate leading-tight" style={{ color: 'var(--muted-foreground)' }}>
                                 {auth.user.email}
                             </p>
                         </div>
@@ -172,9 +174,9 @@ export function AdminSidebar() {
                             as="button"
                             title="Log out"
                             className="transition-colors duration-200"
-                            style={{ color: '#7ABFA8' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#408A71')}
-                            onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
+                            style={{ color: 'var(--muted-foreground)' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--sidebar-primary)')}
+                            onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
                         >
                             <LogOut className="w-3.5 h-3.5" />
                         </Link>
@@ -187,7 +189,7 @@ export function AdminSidebar() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
-        <p className="px-3 pb-2 font-display text-[9px] uppercase tracking-[0.25em]" style={{ color: '#7ABFA8' }}>
+        <p className="px-3 pb-2 font-display text-[9px] uppercase tracking-[0.25em]" style={{ color: 'var(--muted-foreground)' }}>
             {children}
         </p>
     )
@@ -214,18 +216,18 @@ function NavItem({
                     "font-display text-[10px] uppercase tracking-[0.14em]",
                 )}
                 style={isActive
-                    ? { color: '#408A71', background: 'rgba(64,138,113,0.1)', borderLeft: '2px solid #408A71', paddingLeft: '10px' }
-                    : { color: '#7ABFA8', background: 'transparent', borderLeft: '2px solid transparent', paddingLeft: '10px' }
+                    ? { color: 'var(--sidebar-primary)', background: 'color-mix(in srgb, var(--sidebar-primary) 10%, transparent)', borderLeft: '2px solid var(--sidebar-primary)', paddingLeft: '10px' }
+                    : { color: 'var(--muted-foreground)', background: 'transparent', borderLeft: '2px solid transparent', paddingLeft: '10px' }
                 }
-                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.color = '#E0F5EC'; e.currentTarget.style.background = 'rgba(61,51,43,0.5)' } }}
-                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.color = '#7ABFA8'; e.currentTarget.style.background = 'transparent' } }}
+                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.color = 'var(--sidebar-foreground)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--sidebar-primary) 8%, transparent)' } }}
+                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.color = 'var(--muted-foreground)'; e.currentTarget.style.background = 'transparent' } }}
             >
                 <item.icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
                 <span className="flex-1 truncate">{item.name}</span>
                 {badge !== undefined && badge > 0 && (
                     <span
                         className="font-display text-[9px] px-1.5 py-0.5 rounded-full tabular-nums"
-                        style={{ background: 'rgba(139,38,53,0.25)', color: '#408A71', border: '1px solid rgba(139,38,53,0.4)' }}
+                        style={{ background: 'color-mix(in srgb, var(--destructive) 25%, transparent)', color: 'var(--sidebar-primary)', border: '1px solid color-mix(in srgb, var(--destructive) 40%, transparent)' }}
                     >
                         {badge > 99 ? '99+' : badge}
                     </span>

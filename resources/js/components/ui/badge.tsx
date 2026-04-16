@@ -14,18 +14,14 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        // Brass — default emphasis
         default:
-          "border-[#408A71]/50 bg-[#408A71]/15 text-[#408A71]",
-        // Crimson — secondary/special
+          "border-primary/50 bg-primary/15 text-primary",
         secondary:
-          "border-[#8B2635]/50 bg-[#8B2635]/15 text-[#408A71]",
-        // Crimson — destructive
+          "border-destructive/50 bg-destructive/15 text-primary",
         destructive:
-          "border-[#8B2635]/60 bg-[#8B2635]/20 text-[#E0F5EC]",
-        // Outlined — subtle
+          "border-destructive/60 bg-destructive/20 text-foreground",
         outline:
-          "border-[#285A48] bg-transparent text-[#7ABFA8]",
+          "border-border bg-transparent text-muted-foreground",
       },
     },
     defaultVariants: {

@@ -153,7 +153,7 @@ export default function RiskShow({
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
     const isAdmin = auth.user.role === 'admin';
-    const canEdit = auth.user.role === 'admin' || auth.user.role === 'user';
+    const canEdit = auth.user.role === 'admin' || auth.user.role === 'manager' || auth.user.role === 'employee' || auth.user.role === 'user';
 
     const [selectedControlId, setSelectedControlId] = useState<number | ''>('');
     const [controlSearch, setControlSearch] = useState('');

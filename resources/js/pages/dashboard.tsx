@@ -335,8 +335,8 @@ function ExecutiveSummaryCard() {
                     disabled={generating}
                     className="group relative text-left disabled:opacity-50 ornate-frame"
                     style={cardBase}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(64,138,113,0.5)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(40,90,72,0.4)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 50%, transparent)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--border) 40%, transparent)')}
                 >
                     <div className="flex items-center gap-3 p-4">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded" style={{ borderColor: 'rgba(var(--color-primary) / 0.4)', borderWidth: '1px', background: 'rgba(var(--color-primary) / 0.08)' }}>
@@ -350,11 +350,11 @@ function ExecutiveSummaryCard() {
                     </div>
                 </button>
                 <Link href="/executive-dashboard" className="group relative ornate-frame" style={cardBase}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(64,138,113,0.5)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(40,90,72,0.4)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 50%, transparent)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--border) 40%, transparent)')}
                 >
                     <div className="flex items-center gap-3 p-4">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded" style={{ borderColor: 'rgba(64,138,113,0.4)', borderWidth: '1px', background: 'rgba(64,138,113,0.08)' }}>
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded" style={{ borderColor: 'color-mix(in srgb, var(--primary) 40%, transparent)', borderWidth: '1px', background: 'color-mix(in srgb, var(--primary) 8%, transparent)' }}>
                             <FileText className="h-4 w-4 text-primary" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -562,7 +562,7 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
                         >
                             <CartesianGrid
                                 strokeDasharray="3 3"
-                                stroke="#285A48"
+                                stroke="var(--border)"
                                 vertical={false}
                             />
                             <XAxis

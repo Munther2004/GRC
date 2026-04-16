@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type HeatmapRisk = {
@@ -26,6 +26,22 @@ function getCellColors(score: number): { bg: string; text: string } {
 export function RiskHeatmap({ risks, fullscreen = false }: Props) {
     const [highlighted, setHighlighted] = useState<number[] | null>(null);
     const [hovered, setHovered] = useState<{ l: number; i: number } | null>(null);
+    const [isInView, setIsInView] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsInView(entry.isIntersecting);
+            },
+            { threshold: 0.3 }
+        );
+
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+    }, []);
 
     const grid: HeatmapRisk[][][] = Array.from({ length: 5 }, () =>
         Array.from({ length: 5 }, () => []),
@@ -240,7 +256,14 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
     }
 
     return (
-        <Card>
+        <Card 
+            ref={containerRef}
+            style={{
+                transform: isInView ? 'scaleX(1.02)' : 'scaleX(1)',
+                transformOrigin: 'right',
+                transition: 'transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+        >
             <CardHeader className="flex-row items-start justify-between gap-4 pb-4">
                 <div className="space-y-1">
                     <CardTitle className="font-heading text-lg font-normal">
@@ -263,7 +286,9 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                 </div>
             </CardHeader>
             <CardContent>
-                <div className="flex gap-4">
+                <div 
+                    className="flex gap-4"
+                >
                     {/* Y axis label */}
                     <div className="flex w-4 flex-col items-center justify-center">
                         <span className="-rotate-90 font-display text-[9px] tracking-widest whitespace-nowrap uppercase text-muted-foreground opacity-50">

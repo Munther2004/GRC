@@ -9,6 +9,7 @@ use App\Models\Risk;
 use App\Models\RiskAppetite;
 use App\Services\GrcMetricsService;
 use App\Services\RiskMetricsService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
@@ -16,7 +17,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $grc = new GrcMetricsService;
+        $user = Auth::user();
+        $scopedRisks = fn () => $user->organisationScope(Risk::query());
+        $scopedAssessments = fn () => $user->organisationScope(Assessment::query());
+
+        $grc = new GrcMetricsService($user);
         $riskStats = $grc->riskCounts();
         $complianceData = $grc->complianceSummary();
         $evidenceStats = $grc->evidenceCounts();
@@ -35,7 +40,7 @@ class DashboardController extends Controller
             'pending_evidence' => $evidenceStats['pending'],
         ];
 
-        $recentRisks = Risk::latest()->limit(5)->get()->map(fn ($r) => [
+        $recentRisks = $scopedRisks()->latest()->limit(5)->get()->map(fn ($r) => [
             'id' => $r->id,
             'title' => $r->title,
             'category' => $r->category,
@@ -67,7 +72,7 @@ class DashboardController extends Controller
             ->get();
 
         // Slim risk load — only columns needed for heatmap and appetite classification
-        $risks = Risk::select(['id', 'title', 'likelihood', 'impact', 'status'])->get();
+        $risks = $scopedRisks()->select(['id', 'title', 'likelihood', 'impact', 'status'])->get();
 
         $heatmap = $risks->map(fn ($r) => [
             'id' => $r->id,
@@ -117,19 +122,19 @@ class DashboardController extends Controller
             'avg_risk_score' => $riskMetrics['avg_risk_score'],
             'evidence_approval_rate' => $evidenceStats['approval_rate'],
             'open_risks_by_level' => $grc->openRisksByLevel(),
-            'assessments_due_soon' => Assessment::where('status', '!=', 'completed')
+            'assessments_due_soon' => $scopedAssessments()->where('status', '!=', 'completed')
                 ->whereNotNull('due_date')
                 ->where('due_date', '<=', now()->addDays(7))
                 ->where('due_date', '>=', now())
                 ->count(),
             'pending_evidence' => $evidenceStats['pending'],
             'compliance_this_week' => round(
-                Assessment::where('status', 'completed')
+                $scopedAssessments()->where('status', 'completed')
                     ->where('updated_at', '>=', now()->subWeek())
                     ->avg('compliance_percentage') ?? 0, 1
             ),
             'compliance_last_week' => round(
-                Assessment::where('status', 'completed')
+                $scopedAssessments()->where('status', 'completed')
                     ->whereBetween('updated_at', [now()->subWeeks(2), now()->subWeek()])
                     ->avg('compliance_percentage') ?? 0, 1
             ),

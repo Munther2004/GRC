@@ -50,7 +50,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
+                    <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
                         Frameworks
                     </h1>
                     <p className="text-sm text-muted-foreground">

@@ -17,10 +17,10 @@ export interface ValidationResult {
 
 /** Academia colour classes for each 1-5 slider value on the L/I badges. */
 export const levelColors: Record<number, string> = {
-    1: 'bg-[rgba(139,158,107,0.15)] text-[#8B9E6B]',
-    2: 'bg-[rgba(139,158,107,0.1)] text-[#8B9E6B]',
-    3: 'bg-[rgba(201,169,98,0.15)] text-[#C9A962]',
-    4: 'bg-[rgba(176,120,64,0.15)] text-[#B07840]',
+    1: 'bg-[rgba(139,158,107,0.15)] text-[#B0E4CC]',
+    2: 'bg-[rgba(139,158,107,0.1)] text-[#B0E4CC]',
+    3: 'bg-[rgba(64,138,113,0.15)] text-[#408A71]',
+    4: 'bg-[rgba(176,120,64,0.15)] text-[#285A48]',
     5: 'bg-[rgba(139,38,53,0.15)] text-[#8B2635]',
 };
 
@@ -31,7 +31,7 @@ export function levelFromScore(score: number): {
     style: React.CSSProperties;
 } {
     if (score >= 20) return { label: 'Critical', color: '', style: { color: '#8B2635', background: 'rgba(139,38,53,0.15)', borderColor: 'rgba(139,38,53,0.4)' } };
-    if (score >= 13) return { label: 'High',     color: '', style: { color: '#B07840', background: 'rgba(176,120,64,0.15)', borderColor: 'rgba(176,120,64,0.4)' } };
-    if (score >= 7)  return { label: 'Medium',   color: '', style: { color: '#C9A962', background: 'rgba(201,169,98,0.15)', borderColor: 'rgba(201,169,98,0.4)' } };
-    return                  { label: 'Low',      color: '', style: { color: '#8B9E6B', background: 'rgba(139,158,107,0.15)', borderColor: 'rgba(139,158,107,0.4)' } };
+    if (score >= 13) return { label: 'High',     color: '', style: { color: '#285A48', background: 'rgba(176,120,64,0.15)', borderColor: 'rgba(176,120,64,0.4)' } };
+    if (score >= 7)  return { label: 'Medium',   color: '', style: { color: '#408A71', background: 'rgba(64,138,113,0.15)', borderColor: 'rgba(64,138,113,0.4)' } };
+    return                  { label: 'Low',      color: '', style: { color: '#B0E4CC', background: 'rgba(139,158,107,0.15)', borderColor: 'rgba(139,158,107,0.4)' } };
 }

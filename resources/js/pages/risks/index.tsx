@@ -86,20 +86,20 @@ interface Props {
 
 const levelColors = (level: string): { color: string; bg: string } => ({
     critical: { color: '#8B2635', bg: 'rgba(139,38,53,0.15)' },
-    high:     { color: '#B07840', bg: 'rgba(176,120,64,0.15)' },
-    medium:   { color: '#C9A962', bg: 'rgba(201,169,98,0.15)' },
-    low:      { color: '#8B9E6B', bg: 'rgba(139,158,107,0.15)' },
-}[level] ?? { color: '#9C8B7A', bg: 'rgba(156,139,122,0.1)' });
+    high:     { color: '#285A48', bg: 'rgba(40,90,72,0.15)' },
+    medium:   { color: '#408A71', bg: 'rgba(64,138,113,0.15)' },
+    low:      { color: '#B0E4CC', bg: 'rgba(176,228,204,0.15)' },
+}[level] ?? { color: '#7ABFA8', bg: 'rgba(156,139,122,0.1)' });
 
 const statusColor = (status: string): string => ({
     open:         '#8B2635',
-    in_progress:  '#C9A962',
-    under_review: '#B07840',
-    closed:       '#8B9E6B',
-}[status] ?? '#9C8B7A');
+    in_progress:  '#408A71',
+    under_review: '#285A48',
+    closed:       '#B0E4CC',
+}[status] ?? '#7ABFA8');
 
 function AppetiteDot({ band }: { band: AppetiteBand }) {
-    const color = band.band === 'escalated' ? '#8B2635' : band.band === 'review' ? '#B07840' : '#8B9E6B';
+    const color = band.band === 'escalated' ? '#8B2635' : band.band === 'review' ? '#285A48' : '#B0E4CC';
     return <span className="font-display text-[10px] uppercase tracking-[0.05em]" style={{ color }}>{band.label}</span>;
 }
 
@@ -161,7 +161,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
 
                 <FilterBar>
                     <div className="relative min-w-45 flex-1">
-                        <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" style={{ color: '#9C8B7A' }} />
+                        <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" style={{ color: '#7ABFA8' }} />
                         <Input
                             placeholder="Search risks..."
                             value={search}
@@ -212,8 +212,8 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                         onClick={toggleHasPlan}
                         className="inline-flex h-8 items-center gap-1.5 rounded px-3 font-display text-[10px] uppercase tracking-widest transition-colors"
                         style={hasPlan
-                            ? { border: '1px solid rgba(139,158,107,0.4)', background: 'rgba(139,158,107,0.1)', color: '#8B9E6B' }
-                            : { border: '1px solid #4A3F35', color: '#9C8B7A' }
+                            ? { border: '1px solid rgba(176,228,204,0.4)', background: 'rgba(176,228,204,0.1)', color: '#B0E4CC' }
+                            : { border: '1px solid #285A48', color: '#7ABFA8' }
                         }
                     >
                         Has Plan
@@ -224,7 +224,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                             className="inline-flex h-8 items-center gap-1.5 rounded px-3 font-display text-[10px] uppercase tracking-widest transition-colors"
                             style={escalatedOnly
                                 ? { border: '1px solid rgba(139,38,53,0.4)', background: 'rgba(139,38,53,0.1)', color: '#8B2635' }
-                                : { border: '1px solid #4A3F35', color: '#9C8B7A' }
+                                : { border: '1px solid #285A48', color: '#7ABFA8' }
                             }
                         >
                             <Sliders className="h-3 w-3" /> Escalated
@@ -237,8 +237,8 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
 
                 <Card>
                     <CardHeader className="flex-row items-center justify-between pb-0">
-                        <CardTitle className="font-body text-sm italic" style={{ color: '#9C8B7A' }}>
-                            <span className="font-heading not-italic text-base" style={{ color: '#E8DFD4' }}>
+                        <CardTitle className="font-body text-sm italic" style={{ color: '#7ABFA8' }}>
+                            <span className="font-heading not-italic text-base" style={{ color: '#E0F5EC' }}>
                                 {risks.total}
                             </span>{' '}
                             risk{risks.total !== 1 ? 's' : ''}
@@ -247,10 +247,10 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                     <CardContent className="mt-4 p-0">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead style={{ borderTop: '1px solid #4A3F35', borderBottom: '1px solid #4A3F35', background: 'rgba(37,30,25,0.6)' }}>
+                                <thead style={{ borderTop: '1px solid #285A48', borderBottom: '1px solid #285A48', background: 'rgba(13,31,28,0.6)' }}>
                                     <tr>
                                         {['Risk','Category','Owner','Score','Level',...(appetite ? ['Appetite'] : []),'Status','Treatment','Due',''].map((h) => (
-                                            <th key={h} className="px-4 py-2.5 text-left font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: '#9C8B7A' }}>
+                                            <th key={h} className="px-4 py-2.5 text-left font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: '#7ABFA8' }}>
                                                 {h}
                                             </th>
                                         ))}
@@ -260,9 +260,9 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                     {risks.data.length === 0 ? (
                                         <tr>
                                             <td colSpan={appetite ? 10 : 9} className="px-4 py-12 text-center">
-                                                <p className="font-body text-sm italic" style={{ color: '#9C8B7A' }}>
+                                                <p className="font-body text-sm italic" style={{ color: '#7ABFA8' }}>
                                                     No risks found.{' '}
-                                                    <Link href={route('risks.create')} style={{ color: '#C9A962' }}>
+                                                    <Link href={route('risks.create')} style={{ color: '#408A71' }}>
                                                         Add the first one.
                                                     </Link>
                                                 </p>
@@ -276,21 +276,21 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                 <tr
                                                     key={risk.id}
                                                     className="transition-colors"
-                                                    style={{ borderBottom: '1px solid rgba(74,63,53,0.4)' }}
+                                                    style={{ borderBottom: '1px solid rgba(40,90,72,0.4)' }}
                                                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(61,51,43,0.3)')}
                                                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                                                 >
                                                     <td className="max-w-60 px-4 py-3">
                                                         <div className="flex items-center gap-1.5">
-                                                            <p className="font-body truncate text-sm" style={{ color: '#E8DFD4' }}>{risk.title}</p>
+                                                            <p className="font-body truncate text-sm" style={{ color: '#E0F5EC' }}>{risk.title}</p>
                                                             {risk.auto_generated === 1 && (
-                                                                <span className="font-display inline-flex shrink-0 items-center gap-0.5 text-[9px] uppercase tracking-wider" style={{ color: '#C9A962' }}>
+                                                                <span className="font-display inline-flex shrink-0 items-center gap-0.5 text-[9px] uppercase tracking-wider" style={{ color: '#408A71' }}>
                                                                     <Sparkles className="h-2.5 w-2.5" /> AI
                                                                 </span>
                                                             )}
                                                         </div>
                                                         <div className="mt-0.5 flex items-center gap-1.5">
-                                                            <span className="font-body text-[11px] italic" style={{ color: '#9C8B7A' }}>{risk.user?.name}</span>
+                                                            <span className="font-body text-[11px] italic" style={{ color: '#7ABFA8' }}>{risk.user?.name}</span>
                                                             {risk.framework_name && (
                                                                 <span className="font-display text-[9px]" style={{ color: 'rgba(156,139,122,0.6)' }}>{risk.framework_name}</span>
                                                             )}
@@ -299,9 +299,9 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                     <td className="px-4 py-3 font-body text-sm" style={{ color: 'rgba(232,223,212,0.75)' }}>{risk.category}</td>
                                                     <td className="px-4 py-3 font-body text-sm" style={{ color: 'rgba(232,223,212,0.75)' }}>{risk.owner}</td>
                                                     <td className="px-4 py-3">
-                                                        <span className="font-heading text-sm tabular-nums" style={{ color: '#C9A962' }}>{score}</span>
-                                                        <span className="font-display text-[10px]" style={{ color: '#9C8B7A' }}>/25</span>
-                                                        <p className="font-display text-[9px]" style={{ color: '#9C8B7A' }}>{risk.likelihood}×{risk.impact}</p>
+                                                        <span className="font-heading text-sm tabular-nums" style={{ color: '#408A71' }}>{score}</span>
+                                                        <span className="font-display text-[10px]" style={{ color: '#7ABFA8' }}>/25</span>
+                                                        <p className="font-display text-[9px]" style={{ color: '#7ABFA8' }}>{risk.likelihood}×{risk.impact}</p>
                                                     </td>
                                                     <td className="px-4 py-3">
                                                         <span
@@ -314,7 +314,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                     </td>
                                                     {appetite && (
                                                         <td className="px-4 py-3">
-                                                            {risk.appetite_band ? <AppetiteDot band={risk.appetite_band} /> : <span style={{ color: '#9C8B7A' }}>—</span>}
+                                                            {risk.appetite_band ? <AppetiteDot band={risk.appetite_band} /> : <span style={{ color: '#7ABFA8' }}>—</span>}
                                                         </td>
                                                     )}
                                                     <td className="px-4 py-3">
@@ -323,24 +323,24 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                         </span>
                                                     </td>
                                                     <td className="px-4 py-3 font-body text-sm capitalize" style={{ color: 'rgba(232,223,212,0.75)' }}>{risk.treatment}</td>
-                                                    <td className="px-4 py-3 font-display text-[10px]" style={{ color: '#9C8B7A' }}>
+                                                    <td className="px-4 py-3 font-display text-[10px]" style={{ color: '#7ABFA8' }}>
                                                         {risk.due_date ? new Date(risk.due_date).toLocaleDateString() : '—'}
                                                     </td>
                                                     <td className="px-4 py-3">
                                                         <div className="flex items-center gap-1">
                                                             <Link href={route('risks.show', risk.id)}>
-                                                                <button className="rounded p-1.5 transition-colors" style={{ color: '#9C8B7A' }}
-                                                                    onMouseEnter={e => (e.currentTarget.style.color = '#C9A962')}
-                                                                    onMouseLeave={e => (e.currentTarget.style.color = '#9C8B7A')}
+                                                                <button className="rounded p-1.5 transition-colors" style={{ color: '#7ABFA8' }}
+                                                                    onMouseEnter={e => (e.currentTarget.style.color = '#408A71')}
+                                                                    onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
                                                                 >
                                                                     <Eye className="h-3.5 w-3.5" />
                                                                 </button>
                                                             </Link>
                                                             {canEdit && (
                                                                 <Link href={route('risks.edit', risk.id)}>
-                                                                    <button className="rounded p-1.5 transition-colors" style={{ color: '#9C8B7A' }}
-                                                                        onMouseEnter={e => (e.currentTarget.style.color = '#C9A962')}
-                                                                        onMouseLeave={e => (e.currentTarget.style.color = '#9C8B7A')}
+                                                                    <button className="rounded p-1.5 transition-colors" style={{ color: '#7ABFA8' }}
+                                                                        onMouseEnter={e => (e.currentTarget.style.color = '#408A71')}
+                                                                        onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
                                                                     >
                                                                         <Pencil className="h-3.5 w-3.5" />
                                                                     </button>
@@ -348,9 +348,9 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                             )}
                                                             {canEdit && (
                                                                 <button
-                                                                    className="rounded p-1.5 transition-colors" style={{ color: '#9C8B7A' }}
+                                                                    className="rounded p-1.5 transition-colors" style={{ color: '#7ABFA8' }}
                                                                     onMouseEnter={e => (e.currentTarget.style.color = '#8B2635')}
-                                                                    onMouseLeave={e => (e.currentTarget.style.color = '#9C8B7A')}
+                                                                    onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
                                                                     onClick={() => deleteRisk(risk.id, risk.title)}
                                                                 >
                                                                     <Trash2 className="h-3.5 w-3.5" />
@@ -366,7 +366,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                             </table>
                         </div>
                         {risks.links.length > 3 && (
-                            <div className="flex items-center justify-center gap-1 p-4" style={{ borderTop: '1px solid #4A3F35' }}>
+                            <div className="flex items-center justify-center gap-1 p-4" style={{ borderTop: '1px solid #285A48' }}>
                                 {risks.links.map((link, i) => (
                                     <Button key={i} variant={link.active ? 'default' : 'outline'} size="sm" disabled={!link.url}
                                         onClick={() => link.url && router.get(link.url)}

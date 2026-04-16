@@ -197,7 +197,7 @@ export default function AssessmentShow({
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
+                            <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
                                 {assessment.title}
                             </h1>
                             <div className="mt-1 flex items-center gap-2">

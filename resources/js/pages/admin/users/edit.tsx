@@ -5,13 +5,7 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Card,
     CardContent,
@@ -21,12 +15,31 @@ import {
 } from '@/components/ui/card';
 import { ArrowLeft, Save } from 'lucide-react';
 
+interface Role {
+    id: number;
+    name: string;
+    description?: string;
+}
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    roles?: Role[];
+}
+
+interface Props extends SharedProps {
+    user: User | null;
+    roles: Role[];
+    userRoles: number[];
+}
+
 // Inner component — only renders when user exists
-function EditForm({ user }: { user: any }) {
+function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userRoles: number[] }) {
     const { data, setData, put, processing, errors } = useForm({
         name: user.name,
         email: user.email,
-        role: user.role,
+        roles: userRoles,
         password: '',
         password_confirmation: '',
     });
@@ -34,6 +47,13 @@ function EditForm({ user }: { user: any }) {
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         put(route('admin.users.update', user.id));
+    };
+
+    const toggleRole = (roleId: number) => {
+        const updatedRoles = data.roles.includes(roleId)
+            ? data.roles.filter((id) => id !== roleId)
+            : [...data.roles, roleId];
+        setData('roles', updatedRoles);
     };
 
     return (
@@ -47,7 +67,7 @@ function EditForm({ user }: { user: any }) {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
                             Edit User
                         </h1>
                         <p className="text-sm text-muted-foreground">{user.email}</p>
@@ -97,37 +117,6 @@ function EditForm({ user }: { user: any }) {
                                 )}
                             </div>
                             <div className="space-y-1">
-                                <Label>Role *</Label>
-                                <Select
-                                    value={data.role}
-                                    onValueChange={(v: string) =>
-                                        setData('role', v)
-                                    }
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="user">
-                                            User — Complete assessments, manage
-                                            risks
-                                        </SelectItem>
-                                        <SelectItem value="auditor">
-                                            Auditor — Read-only access to all
-                                            data
-                                        </SelectItem>
-                                        <SelectItem value="admin">
-                                            Admin — Full system access
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors.role && (
-                                    <p className="text-xs text-red-500">
-                                        {errors.role}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="space-y-1">
                                 <Label htmlFor="password">New Password</Label>
                                 <Input
                                     id="password"
@@ -166,6 +155,54 @@ function EditForm({ user }: { user: any }) {
                         </CardContent>
                     </Card>
 
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base">
+                                Assign Roles *
+                            </CardTitle>
+                            <CardDescription>
+                                Select one or more roles for this user
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {roles.length > 0 ? (
+                                roles.map((role) => (
+                                    <div
+                                        key={role.id}
+                                        className="flex items-center gap-3 rounded border border-border p-3"
+                                    >
+                                        <Checkbox
+                                            id={`role-${role.id}`}
+                                            checked={data.roles.includes(
+                                                role.id,
+                                            )}
+                                            onCheckedChange={() =>
+                                                toggleRole(role.id)
+                                            }
+                                        />
+                                        <div className="flex-1">
+                                            <Label
+                                                htmlFor={`role-${role.id}`}
+                                                className="font-medium capitalize"
+                                            >
+                                                {role.name}
+                                            </Label>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-sm text-muted-foreground">
+                                    No roles available
+                                </p>
+                            )}
+                            {errors.roles && (
+                                <p className="text-xs text-red-500">
+                                    {errors.roles}
+                                </p>
+                            )}
+                        </CardContent>
+                    </Card>
+
                     <div className="flex justify-end gap-3">
                         <Link href={route('admin.users.index')}>
                             <Button variant="outline">Cancel</Button>
@@ -187,14 +224,12 @@ function EditForm({ user }: { user: any }) {
 
 // Outer component — handles the guard safely
 export default function UserEdit() {
-    const { user } = usePage<
-        SharedProps & { user: Record<string, unknown> | null }
-    >().props;
+    const { user, roles, userRoles } = usePage<Props>().props;
 
     return (
         <AdminLayout>
             {user ? (
-                <EditForm user={user} />
+                <EditForm user={user} roles={roles} userRoles={userRoles} />
             ) : (
                 <div className="flex h-64 items-center justify-center">
                     <p className="text-muted-foreground">Loading...</p>
@@ -203,3 +238,4 @@ export default function UserEdit() {
         </AdminLayout>
     );
 }
+

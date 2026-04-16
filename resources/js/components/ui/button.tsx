@@ -12,7 +12,7 @@ const buttonVariants = cva(
     "transition-all duration-300 ease-out",
     "disabled:pointer-events-none disabled:opacity-40",
     "[&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
-    "outline-none focus-visible:ring-2 focus-visible:ring-[#C9A962] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1C1714]",
+    "outline-none focus-visible:ring-2 focus-visible:ring-[#408A71] focus-visible:ring-offset-2 focus-visible:ring-offset-[#091413]",
     "active:scale-[0.98]",
     "text-engraved",
   ].join(" "),
@@ -21,35 +21,35 @@ const buttonVariants = cva(
       variant: {
         // Polished brass — primary call to action
         default: [
-          "bg-brass text-[#1C1714]",
+          "bg-brass text-[#091413]",
           "shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(0,0,0,0.2),0_2px_8px_rgba(0,0,0,0.3)]",
-          "hover:brightness-110 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(201,169,98,0.35)]",
+          "hover:brightness-110 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(64,138,113,0.35)]",
         ].join(" "),
         // Outlined brass → transforms to crimson on hover
         secondary: [
-          "border-2 border-[#C9A962] bg-transparent text-[#C9A962]",
-          "hover:border-[#8B2635] hover:bg-[#8B2635] hover:text-[#E8DFD4]",
+          "border-2 border-[#408A71] bg-transparent text-[#408A71]",
+          "hover:border-[#8B2635] hover:bg-[#8B2635] hover:text-[#E0F5EC]",
         ].join(" "),
         // Library Crimson — destructive actions
         destructive: [
-          "bg-[#8B2635] text-[#E8DFD4]",
+          "bg-[#8B2635] text-[#E0F5EC]",
           "shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_2px_8px_rgba(0,0,0,0.3)]",
           "hover:bg-[#A02D40] hover:shadow-[0_4px_12px_rgba(139,38,53,0.4)]",
         ].join(" "),
         // Subtle outlined — secondary actions
         outline: [
-          "border border-[#4A3F35] bg-transparent text-[#9C8B7A]",
-          "hover:border-[#C9A962] hover:text-[#C9A962] hover:bg-[#3D332B]",
+          "border border-[#285A48] bg-transparent text-[#7ABFA8]",
+          "hover:border-[#408A71] hover:text-[#408A71] hover:bg-[#122B22]",
         ].join(" "),
         // Ghost — minimal tertiary actions
         ghost: [
-          "bg-transparent text-[#9C8B7A]",
-          "hover:text-[#C9A962] hover:bg-[#3D332B]",
+          "bg-transparent text-[#7ABFA8]",
+          "hover:text-[#408A71] hover:bg-[#122B22]",
         ].join(" "),
         // Link — brass underline
         link: [
-          "bg-transparent text-[#C9A962] underline-offset-4",
-          "hover:underline hover:text-[#D4B872]",
+          "bg-transparent text-[#408A71] underline-offset-4",
+          "hover:underline hover:text-[#B0E4CC]",
         ].join(" "),
       },
       size: {

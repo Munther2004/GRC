@@ -4,25 +4,27 @@ namespace App\Services;
 
 use App\Models\Framework;
 use App\Models\Risk;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Provides lightweight, SQL-aggregate metrics used across Dashboard,
- * ExecutiveDashboard, ExecutiveSummary, and Report controllers.
- *
- * All public methods issue exactly ONE database query each, replacing
- * the prior pattern of loading entire tables into PHP collections and
- * then filtering/counting in memory.
- */
 class GrcMetricsService
 {
-    /**
-     * Compliance breakdown from the controls table.
-     * Uses model thresholds: compliant = 1.0, partially_compliant = 0.5.
-     *
-     * @return array{overall_pct: float, compliant: int, partial: int,
-     *               non_compliant: int, not_applicable: int, total_applicable: int}
-     */
+    public function __construct(private ?User $user = null) {}
+
+    // Apply organisation scope when a user is set
+    private function scopedRisks(): Builder
+    {
+        $q = Risk::query();
+        return $this->user ? $this->user->organisationScope($q) : $q;
+    }
+
+    private function scopedAssessments(): Builder
+    {
+        $q = \App\Models\Assessment::query();
+        return $this->user ? $this->user->organisationScope($q) : $q;
+    }
+
     public function complianceSummary(): array
     {
         $row = DB::table('controls')
@@ -56,17 +58,11 @@ class GrcMetricsService
         ];
     }
 
-    /**
-     * Risk counts broken down by level using Risk::levelThresholds() as the canonical source.
-     *
-     * @return array{total: int, critical: int, high: int, medium: int, low: int,
-     *               open: int, closed: int, avg_score: float}
-     */
     public function riskCounts(): array
     {
-        $t = Risk::levelThresholds(); // ['critical' => 15, 'high' => 10, 'medium' => 5]
+        $t = Risk::levelThresholds();
 
-        $row = DB::table('risks')
+        $row = $this->scopedRisks()
             ->selectRaw("
                 COUNT(*) AS total,
                 SUM(CASE WHEN likelihood * impact >= {$t['critical']}                                    THEN 1 ELSE 0 END) AS critical,
@@ -91,12 +87,6 @@ class GrcMetricsService
         ];
     }
 
-    /**
-     * Evidence counts by status — all four in one query.
-     *
-     * @return array{total: int, approved: int, pending: int, rejected: int,
-     *               approval_rate: float}
-     */
     public function evidenceCounts(): array
     {
         $row = DB::table('evidence')
@@ -120,16 +110,9 @@ class GrcMetricsService
         ];
     }
 
-    /**
-     * Assessment counts — total, completed, in_progress, and overdue — in a single
-     * aggregate query, plus the average evidence-weighted score for completed assessments.
-     *
-     * @return array{total: int, completed: int, in_progress: int, overdue: int,
-     *               evidence_weighted_avg: float|null}
-     */
     public function assessmentSummary(): array
     {
-        $row = DB::table('assessments')
+        $row = $this->scopedAssessments()
             ->selectRaw("
                 COUNT(*) AS total,
                 SUM(CASE WHEN status = 'completed'   THEN 1 ELSE 0 END) AS completed,
@@ -140,7 +123,7 @@ class GrcMetricsService
             ")
             ->first();
 
-        $ewAvg = DB::table('assessments')
+        $ewAvg = $this->scopedAssessments()
             ->where('status', 'completed')
             ->whereNotNull('evidence_weighted_score')
             ->avg('evidence_weighted_score');
@@ -154,12 +137,6 @@ class GrcMetricsService
         ];
     }
 
-    /**
-     * Evidence expiry counts in two targeted queries.
-     *
-     * @param  int  $soonDays  Days ahead to consider "expiring soon" (default 14)
-     * @return array{expiring_soon: int, expired: int}
-     */
     public function evidenceExpiry(int $soonDays = 14): array
     {
         $now = now();
@@ -177,16 +154,10 @@ class GrcMetricsService
         ];
     }
 
-    /**
-     * Open-risk counts split by severity level — one aggregate query, using
-     * Risk::levelThresholds() as the canonical threshold source.
-     *
-     * @return array{critical: int, high: int, medium: int, low: int}
-     */
     public function openRisksByLevel(): array
     {
         $t = Risk::levelThresholds();
-        $row = DB::table('risks')
+        $row = $this->scopedRisks()
             ->where('status', 'open')
             ->selectRaw("
                 SUM(CASE WHEN likelihood * impact >= {$t['critical']}                                              THEN 1 ELSE 0 END) AS critical,
@@ -204,16 +175,6 @@ class GrcMetricsService
         ];
     }
 
-    /**
-     * Per-framework compliance percentage derived from the controls table via a
-     * single GROUP BY query — replaces Framework::with(['controls']) + PHP filtering.
-     * Uses the same formula as complianceSummary(): compliant=1.0, partial=0.5.
-     * Frameworks with no active controls are excluded.
-     *
-     * @return \Illuminate\Support\Collection<int, array{name: string, full_name: string,
-     *     total_controls: int, compliant: int, partial: int,
-     *     non_compliant: int, compliance_pct: float}>
-     */
     public function frameworkCompliance(): \Illuminate\Support\Collection
     {
         return DB::table('controls')
@@ -256,20 +217,17 @@ class GrcMetricsService
             ->values();
     }
 
-    /**
-     * Per-framework assessment scores — latest compliance %, evidence-weighted score,
-     * and a 5-point trend — from the most recent completed assessment per framework.
-     * Replaces Framework::with(['assessments']) + PHP map in multiple controllers.
-     *
-     * @return \Illuminate\Support\Collection<int, array{id: int, name: string, full_name: string,
-     *     latest_score: float|null, evidence_score: float|null,
-     *     assessments_count: int, trend: \Illuminate\Support\Collection}>
-     */
     public function frameworkAssessmentScores(): \Illuminate\Support\Collection
     {
+        $user = $this->user;
+
         return Framework::where('is_active', true)
-            ->with(['assessments' => fn ($q) => $q->where('status', 'completed')->orderBy('created_at', 'desc'),
-            ])
+            ->with(['assessments' => function ($q) use ($user) {
+                $q->where('status', 'completed')->orderBy('created_at', 'desc');
+                if ($user) {
+                    $user->organisationScope($q);
+                }
+            }])
             ->get()
             ->map(fn ($fw) => [
                 'id' => $fw->id,

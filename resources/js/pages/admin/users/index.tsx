@@ -17,11 +17,16 @@ import { StatStrip } from '@/components/ui/stat-strip';
 import { Plus, Search, Users, Shield, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
+interface Role {
+    id: number;
+    name: string;
+}
+
 interface User {
     id: number;
     name: string;
     email: string;
-    role: string;
+    roles: Role[];
     created_at: string;
 }
 
@@ -70,11 +75,11 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
                             Users & Roles
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Manage user accounts and role-based access control
+                            Manage user accounts and role-based permissions
                         </p>
                     </div>
                     <Link href={route('admin.users.create')}>
@@ -195,7 +200,7 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                         {[
                                             'Name',
                                             'Email',
-                                            'Role',
+                                            'Roles',
                                             'Joined',
                                             'Actions',
                                         ].map((h) => (
@@ -227,7 +232,7 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent">
-                                                            <span className="text-xs font-semibold text-foreground dark:text-foreground">>
+                                                            <span className="text-xs font-semibold text-foreground dark:text-foreground">
                                                                 {user.name
                                                                     .split(' ')
                                                                     .map(
@@ -251,12 +256,25 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                                     {user.email}
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <Badge
-                                                        variant="outline"
-                                                        className={`capitalize ${roleColors[user.role]}`}
-                                                    >
-                                                        {user.role}
-                                                    </Badge>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {user.roles && user.roles.length > 0 ? (
+                                                            user.roles.map(
+                                                                (role) => (
+                                                                    <Badge
+                                                                        key={role.id}
+                                                                        variant="outline"
+                                                                        className={`capitalize ${roleColors[role.name] || 'bg-muted text-foreground'}`}
+                                                                    >
+                                                                        {role.name}
+                                                                    </Badge>
+                                                                ),
+                                                            )
+                                                        ) : (
+                                                            <span className="text-muted-foreground">
+                                                                No roles
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </td>
                                                 <td className="px-4 py-3 text-muted-foreground">
                                                     {new Date(
@@ -300,29 +318,28 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                 </tbody>
                             </table>
                         </div>
-                        {users.links.length > 3 && (
-                            <div className="flex items-center justify-center gap-1 border-t p-4">
-                                {users.links.map((link, i) => (
-                                    <Button
-                                        key={i}
-                                        variant={
-                                            link.active ? 'default' : 'outline'
-                                        }
-                                        size="sm"
-                                        disabled={!link.url}
-                                        onClick={() =>
-                                            link.url && router.get(link.url)
-                                        }
-                                        dangerouslySetInnerHTML={{
-                                            __html: link.label,
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                        )}
                     </CardContent>
                 </Card>
+
+                {/* Pagination */}
+                {users.links && users.links.length > 0 && (
+                    <div className="flex items-center justify-center gap-1">
+                        {users.links.map((link, idx) => (
+                            <Link key={idx} href={link.url || '#'}>
+                                <Button
+                                    variant={link.active ? 'default' : 'outline'}
+                                    size="sm"
+                                    disabled={!link.url}
+                                    dangerouslySetInnerHTML={{
+                                        __html: link.label,
+                                    }}
+                                />
+                            </Link>
+                        ))}
+                    </div>
+                )}
             </div>
         </AdminLayout>
     );
 }
+

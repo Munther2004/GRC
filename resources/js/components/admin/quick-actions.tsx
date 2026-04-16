@@ -20,30 +20,30 @@ export function QuickActions() {
                     className="inline-flex items-center gap-2 rounded px-4 py-2 font-display text-[10px] uppercase tracking-[0.15em] transition-all duration-200"
                     style={action.primary
                         ? {
-                            background: 'linear-gradient(135deg, #C9A962 0%, #B8944A 100%)',
-                            color: '#1C1714',
-                            boxShadow: '0 2px 8px rgba(201,169,98,0.3)',
+                            background: 'linear-gradient(135deg, #408A71 0%, #285A48 100%)',
+                            color: '#091413',
+                            boxShadow: '0 2px 8px rgba(64,138,113,0.3)',
                         }
                         : {
                             background: 'transparent',
-                            border: '1px solid #4A3F35',
-                            color: '#9C8B7A',
+                            border: '1px solid #285A48',
+                            color: '#7ABFA8',
                         }
                     }
                     onMouseEnter={e => {
                         if (action.primary) {
-                            e.currentTarget.style.boxShadow = '0 4px 16px rgba(201,169,98,0.45)';
+                            e.currentTarget.style.boxShadow = '0 4px 16px rgba(64,138,113,0.45)';
                         } else {
-                            e.currentTarget.style.borderColor = '#C9A962';
-                            e.currentTarget.style.color = '#C9A962';
+                            e.currentTarget.style.borderColor = '#408A71';
+                            e.currentTarget.style.color = '#408A71';
                         }
                     }}
                     onMouseLeave={e => {
                         if (action.primary) {
-                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(201,169,98,0.3)';
+                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(64,138,113,0.3)';
                         } else {
-                            e.currentTarget.style.borderColor = '#4A3F35';
-                            e.currentTarget.style.color = '#9C8B7A';
+                            e.currentTarget.style.borderColor = '#285A48';
+                            e.currentTarget.style.color = '#7ABFA8';
                         }
                     }}
                 >

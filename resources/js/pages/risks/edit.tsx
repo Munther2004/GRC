@@ -138,7 +138,7 @@ export default function RiskEdit({
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
                             Edit Risk
                         </h1>
                         <p className="max-w-md truncate text-sm text-muted-foreground">
@@ -261,7 +261,7 @@ export default function RiskEdit({
                                                 e.target.value,
                                             )
                                         }
-                                        className="w-full" style={{ accentColor: "#C9A962" }}
+                                        className="w-full" style={{ accentColor: "#408A71" }}
                                     />
                                     <div className="flex justify-between text-xs text-muted-foreground/70">
                                         <span>Rare</span>
@@ -281,7 +281,7 @@ export default function RiskEdit({
                                         onChange={(
                                             e: React.ChangeEvent<HTMLInputElement>,
                                         ) => setData('impact', e.target.value)}
-                                        className="w-full" style={{ accentColor: "#C9A962" }}
+                                        className="w-full" style={{ accentColor: "#408A71" }}
                                     />
                                     <div className="flex justify-between text-xs text-muted-foreground/70">
                                         <span>Negligible</span>
@@ -300,7 +300,7 @@ export default function RiskEdit({
                                     type="button"
                                     size="sm"
                                     variant="outline"
-                                    className="gap-1.5" style={{ borderColor: "rgba(201,169,98,0.4)", color: "#C9A962" }}
+                                    className="gap-1.5" style={{ borderColor: "rgba(64,138,113,0.4)", color: "#408A71" }}
                                     onClick={validateScores}
                                     disabled={loadingValidation || !canValidate}
                                 >
@@ -344,14 +344,14 @@ export default function RiskEdit({
                             {validationResult &&
                                 !validationResult.error &&
                                 validationResult.valid && (
-                                    <div className="rounded" style={{ background: "rgba(139,158,107,0.08)", border: "1px solid rgba(139,158,107,0.3)" }}>
-                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(139,158,107,0.15)" }}>
-                                            <CheckCircle2 className="h-4 w-4" style={{ color: "#8B9E6B" }} />
-                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#8B9E6B" }}>
+                                    <div className="rounded" style={{ background: "rgba(176,228,204,0.08)", border: "1px solid rgba(176,228,204,0.3)" }}>
+                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(176,228,204,0.15)" }}>
+                                            <CheckCircle2 className="h-4 w-4" style={{ color: "#B0E4CC" }} />
+                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#B0E4CC" }}>
                                                 Scores Validated — Looks Good
                                             </span>
                                             <span
-                                                className="ml-auto font-display rounded px-1.5 py-0.5 text-[9px] uppercase tracking-widest" style={{ color: validationResult.confidence === 'high' ? '#8B9E6B' : validationResult.confidence === 'medium' ? '#C9A962' : '#9C8B7A' }}
+                                                className="ml-auto font-display rounded px-1.5 py-0.5 text-[9px] uppercase tracking-widest" style={{ color: validationResult.confidence === 'high' ? '#B0E4CC' : validationResult.confidence === 'medium' ? '#408A71' : '#7ABFA8' }}
                                             >
                                                 {validationResult.confidence}{' '}
                                                 confidence
@@ -368,15 +368,15 @@ export default function RiskEdit({
                             {validationResult &&
                                 !validationResult.error &&
                                 !validationResult.valid && (
-                                    <div className="rounded" style={{ background: "rgba(176,120,64,0.08)", border: "1px solid rgba(176,120,64,0.3)" }}>
-                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(176,120,64,0.15)" }}>
-                                            <AlertTriangle className="h-4 w-4" style={{ color: "#B07840" }} />
-                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#B07840" }}>
+                                    <div className="rounded" style={{ background: "rgba(40,90,72,0.08)", border: "1px solid rgba(40,90,72,0.3)" }}>
+                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(40,90,72,0.15)" }}>
+                                            <AlertTriangle className="h-4 w-4" style={{ color: "#285A48" }} />
+                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#285A48" }}>
                                                 Scores Adjusted —
                                                 Recommendations Available
                                             </span>
                                             <span
-                                                className="ml-auto font-display rounded px-1.5 py-0.5 text-[9px] uppercase tracking-widest" style={{ color: validationResult.confidence === 'high' ? '#8B9E6B' : validationResult.confidence === 'medium' ? '#C9A962' : '#9C8B7A' }}
+                                                className="ml-auto font-display rounded px-1.5 py-0.5 text-[9px] uppercase tracking-widest" style={{ color: validationResult.confidence === 'high' ? '#B0E4CC' : validationResult.confidence === 'medium' ? '#408A71' : '#7ABFA8' }}
                                             >
                                                 {validationResult.confidence}{' '}
                                                 confidence
@@ -415,7 +415,7 @@ export default function RiskEdit({
                                                 <Button
                                                     type="button"
                                                     size="sm"
-                                                    className="shrink-0" style={{ background: "#C9A962", color: "#1C1714" }}
+                                                    className="shrink-0" style={{ background: "#408A71", color: "#091413" }}
                                                     onClick={
                                                         applyRecommendations
                                                     }

@@ -8,16 +8,19 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
         $users = User::query()
+            ->with('roles')
             ->when($request->search, fn ($q) => $q->where('name', 'like', "%{$request->search}%")
                 ->orWhere('email', 'like', "%{$request->search}%")
             )
-            ->when($request->role, fn ($q) => $q->where('role', $request->role)
+            ->when($request->role, fn ($q) => $q->whereHas('roles', fn ($q2) => $q2->where('name', $request->role))
             )
             ->orderBy('created_at', 'desc')
             ->paginate(15)
@@ -25,9 +28,9 @@ class UserController extends Controller
 
         $stats = [
             'total' => User::count(),
-            'admins' => User::where('role', 'admin')->count(),
-            'auditors' => User::where('role', 'auditor')->count(),
-            'users' => User::where('role', 'user')->count(),
+            'admins' => User::role('admin')->count(),
+            'auditors' => User::role('auditor')->count(),
+            'users' => User::role('user')->count(),
         ];
 
         return Inertia::render('admin/users/index', [
@@ -39,7 +42,9 @@ class UserController extends Controller
 
     public function create()
     {
-        return Inertia::render('admin/users/create');
+        return Inertia::render('admin/users/create', [
+            'roles' => Role::all(),
+        ]);
     }
 
     public function store(Request $request)
@@ -48,17 +53,23 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,auditor,user',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'exists:roles,id',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
         ]);
 
-        AuditLog::record('created', 'User', $user->id, "User '{$user->name}' created with role '{$user->role}'");
+        // Assign roles to user
+        $roleIds = $validated['roles'];
+        $roles = Role::whereIn('id', $roleIds)->get();
+        $user->syncRoles($roles);
+
+        $roleNames = $roles->pluck('name')->join(', ');
+        AuditLog::record('created', 'User', $user->id, "User '{$user->name}' created with roles: {$roleNames}");
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User created successfully.');
@@ -67,7 +78,9 @@ class UserController extends Controller
     public function edit(User $user)
     {
         return Inertia::render('admin/users/edit', [
-            'user' => $user,
+            'user' => $user->load('roles'),
+            'roles' => Role::all(),
+            'userRoles' => $user->roles->pluck('id')->toArray(),
         ]);
     }
 
@@ -76,18 +89,24 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$user->id,
-            'role' => 'required|in:admin,auditor,user',
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'exists:roles,id',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'role' => $validated['role'],
             ...($validated['password'] ? ['password' => Hash::make($validated['password'])] : []),
         ]);
 
-        AuditLog::record('updated', 'User', $user->id, "User '{$user->name}' updated — role: '{$user->role}'");
+        // Sync roles to user
+        $roleIds = $validated['roles'];
+        $roles = Role::whereIn('id', $roleIds)->get();
+        $user->syncRoles($roles);
+
+        $roleNames = $roles->pluck('name')->join(', ');
+        AuditLog::record('updated', 'User', $user->id, "User '{$user->name}' updated with roles: {$roleNames}");
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated successfully.');

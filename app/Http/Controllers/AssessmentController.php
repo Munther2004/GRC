@@ -24,7 +24,11 @@ class AssessmentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Assessment::with(['user', 'framework'])
+        $user = Auth::user();
+        $scoped = fn () => $user->organisationScope(Assessment::query());
+
+        $query = $scoped()
+            ->with(['user', 'framework'])
             ->withCount('items')
             ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
             )
@@ -37,10 +41,10 @@ class AssessmentController extends Controller
             ->withQueryString();
 
         $stats = [
-            'total' => Assessment::count(),
-            'in_progress' => Assessment::where('status', 'in_progress')->count(),
-            'completed' => Assessment::where('status', 'completed')->count(),
-            'avg_compliance' => round(Assessment::where('status', 'completed')->avg('compliance_percentage') ?? 0),
+            'total' => $scoped()->count(),
+            'in_progress' => $scoped()->where('status', 'in_progress')->count(),
+            'completed' => $scoped()->where('status', 'completed')->count(),
+            'avg_compliance' => round($scoped()->where('status', 'completed')->avg('compliance_percentage') ?? 0),
         ];
 
         return Inertia::render('assessments/index', [
@@ -72,6 +76,7 @@ class AssessmentController extends Controller
         $assessment = Assessment::create([
             ...$validated,
             'user_id' => Auth::id(),
+            'corporation_id' => Auth::user()->corporation_id,
             'status' => 'draft',
             'compliance_percentage' => 0,
         ]);

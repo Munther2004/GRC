@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class RemediationTask extends Model
 {
     protected $fillable = [
-        'control_id', 'assessment_id', 'title', 'description',
+        'control_id', 'assessment_id', 'corporation_id', 'title', 'description',
         'assigned_to', 'due_date', 'priority', 'status',
         'completion_notes', 'auto_closed', 'closed_at', 'created_by',
     ];

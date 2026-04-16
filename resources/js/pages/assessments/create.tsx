@@ -63,7 +63,7 @@ export default function AssessmentCreate({ frameworks }: Props) {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
                             New Assessment
                         </h1>
                         <p className="text-sm text-muted-foreground">

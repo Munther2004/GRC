@@ -4,8 +4,11 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\Corporation;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -31,6 +34,7 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+        $this->configureAuthentication();
     }
 
     /**
@@ -86,6 +90,35 @@ class FortifyServiceProvider extends ServiceProvider
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
+        });
+    }
+
+    /**
+     * Configure custom authentication to support both email and username.
+     */
+    private function configureAuthentication(): void
+    {
+        Fortify::authenticateUsing(function (Request $request) {
+            $login = $request->input('email'); // Fortify sends the field as 'email'
+            $password = $request->input('password');
+
+            // Try to find user by email
+            $user = User::where('email', $login)->first();
+
+            // If not found by email, try to find by corporation manager username
+            if (!$user) {
+                $corporation = Corporation::where('manager_username', $login)->first();
+                if ($corporation && $corporation->manager_user_id) {
+                    $user = $corporation->manager()->first();
+                }
+            }
+
+            // Check if user exists and password is correct
+            if ($user && Hash::check($password, $user->password)) {
+                return $user;
+            }
+
+            return null;
         });
     }
 }

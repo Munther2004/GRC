@@ -74,6 +74,28 @@ export const route = (name: string, params?: any): string => {
         'controls.status-requests.review-evidence': `/controls/status-requests/${id}/review-evidence`,
         'controls.approvals': '/controls/approvals',
 
+        // Corporate dashboard (manager)
+        'corporate.dashboard': '/corporate/dashboard',
+        'corporate.company-details': '/corporate/company-details',
+        'corporate.team': '/corporate/team',
+        'corporate.show-dashboard': `/corporate/${id}/dashboard`,
+
+        // Corporations
+        'corporations.register': '/corporation/register',
+        'corporations.store': '/corporation/register',
+        'corporations.registration-pending': `/corporation/${id}/pending`,
+        'corporations.verify-code': `/corporation/${id}/verify-code`,
+        'corporations.manager-signup': `/corporation/${id}/manager-signup`,
+        'corporations.manager-register': `/corporation/${id}/manager-signup`,
+
+        // Admin — Corporations
+        'admin.corporations.index': '/admin/corporations',
+        'admin.corporations.show': `/admin/corporations/${id}`,
+        'admin.corporations.destroy': `/admin/corporations/${id}`,
+        'admin.corporations.approve': `/admin/corporations/${id}/approve`,
+        'admin.corporations.reject': `/admin/corporations/${id}/reject`,
+        'admin.corporations.regenerate-code': `/admin/corporations/${id}/regenerate-code`,
+
         // Notifications
         'notifications.index': '/notifications',
         'notifications.read': `/notifications/${id}/read`,

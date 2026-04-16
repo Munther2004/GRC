@@ -8,7 +8,7 @@ export default function Error403() {
             <Head title="403 — Forbidden" />
             <div
                 className="flex min-h-screen items-center justify-center p-6"
-                style={{ background: '#1C1714' }}
+                style={{ background: '#091413' }}
             >
                 <div className="max-w-md text-center">
                     <div className="mb-6 flex justify-center">
@@ -19,16 +19,16 @@ export default function Error403() {
                             <ShieldOff className="h-10 w-10" style={{ color: '#8B2635' }} strokeWidth={1.5} />
                         </div>
                     </div>
-                    <p className="font-display mb-1 text-[10px] uppercase tracking-[0.3em]" style={{ color: '#9C8B7A' }}>
+                    <p className="font-display mb-1 text-[10px] uppercase tracking-[0.3em]" style={{ color: '#7ABFA8' }}>
                         Error
                     </p>
                     <h1 className="font-heading mb-2 text-7xl font-normal" style={{ color: '#8B2635' }}>
                         403
                     </h1>
-                    <h2 className="font-heading mb-3 text-xl font-normal" style={{ color: '#E8DFD4' }}>
+                    <h2 className="font-heading mb-3 text-xl font-normal" style={{ color: '#E0F5EC' }}>
                         Access Denied
                     </h2>
-                    <p className="font-body mb-8 italic" style={{ color: '#9C8B7A' }}>
+                    <p className="font-body mb-8 italic" style={{ color: '#7ABFA8' }}>
                         You don't have permission to access this page. Contact
                         your administrator if you believe this is a mistake.
                     </p>

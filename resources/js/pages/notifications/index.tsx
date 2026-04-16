@@ -39,10 +39,10 @@ function timeAgo(dateStr: string): string {
 
 const typeStyle: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
     overdue_assessment: { icon: Clock,          color: '#8B2635', bg: 'rgba(139,38,53,0.1)'  },
-    pending_evidence:   { icon: FileCheck,      color: '#C9A962', bg: 'rgba(201,169,98,0.1)' },
+    pending_evidence:   { icon: FileCheck,      color: '#408A71', bg: 'rgba(64,138,113,0.1)' },
     critical_risk:      { icon: AlertTriangle,  color: '#8B2635', bg: 'rgba(139,38,53,0.1)'  },
-    overdue_risk:       { icon: Shield,         color: '#B07840', bg: 'rgba(176,120,64,0.1)' },
-    default:            { icon: Bell,           color: '#9C8B7A', bg: 'rgba(156,139,122,0.1)' },
+    overdue_risk:       { icon: Shield,         color: '#285A48', bg: 'rgba(40,90,72,0.1)' },
+    default:            { icon: Bell,           color: '#7ABFA8', bg: 'rgba(156,139,122,0.1)' },
 };
 
 const tabs: { key: FilterTab; label: string }[] = [
@@ -103,18 +103,18 @@ export default function NotificationsPage({ notifications }: Props) {
                 </PageHeader>
 
                 {/* Filter tabs */}
-                <div className="flex flex-wrap gap-1 pb-0" style={{ borderBottom: '1px solid #4A3F35' }}>
+                <div className="flex flex-wrap gap-1 pb-0" style={{ borderBottom: '1px solid #285A48' }}>
                     {tabs.map((tab) => (
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
                             className="-mb-px px-3 py-2 font-display text-[10px] uppercase tracking-[0.15em] transition-colors"
                             style={activeTab === tab.key
-                                ? { borderBottom: '2px solid #C9A962', color: '#C9A962' }
-                                : { borderBottom: '2px solid transparent', color: '#9C8B7A' }
+                                ? { borderBottom: '2px solid #408A71', color: '#408A71' }
+                                : { borderBottom: '2px solid transparent', color: '#7ABFA8' }
                             }
-                            onMouseEnter={e => { if (activeTab !== tab.key) e.currentTarget.style.color = '#E8DFD4'; }}
-                            onMouseLeave={e => { if (activeTab !== tab.key) e.currentTarget.style.color = '#9C8B7A'; }}
+                            onMouseEnter={e => { if (activeTab !== tab.key) e.currentTarget.style.color = '#E0F5EC'; }}
+                            onMouseLeave={e => { if (activeTab !== tab.key) e.currentTarget.style.color = '#7ABFA8'; }}
                         >
                             {tab.label}
                         </button>
@@ -126,7 +126,7 @@ export default function NotificationsPage({ notifications }: Props) {
                     {filtered.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center">
                             <Bell className="mb-4 h-10 w-10" style={{ color: 'rgba(156,139,122,0.3)' }} />
-                            <p className="font-body italic" style={{ color: '#9C8B7A' }}>No notifications found</p>
+                            <p className="font-body italic" style={{ color: '#7ABFA8' }}>No notifications found</p>
                         </div>
                     ) : (
                         filtered.map((n) => {
@@ -137,8 +137,8 @@ export default function NotificationsPage({ notifications }: Props) {
                                     key={n.id}
                                     className="flex items-start gap-4 rounded p-4 transition-colors"
                                     style={n.is_read
-                                        ? { background: '#251E19', border: '1px solid #4A3F35' }
-                                        : { background: 'rgba(201,169,98,0.04)', border: '1px solid rgba(201,169,98,0.25)', borderLeft: '3px solid #C9A962' }
+                                        ? { background: '#0D1F1C', border: '1px solid #285A48' }
+                                        : { background: 'rgba(64,138,113,0.04)', border: '1px solid rgba(64,138,113,0.25)', borderLeft: '3px solid #408A71' }
                                     }
                                 >
                                     {/* Icon */}
@@ -150,11 +150,11 @@ export default function NotificationsPage({ notifications }: Props) {
                                     <div className="min-w-0 flex-1">
                                         <p
                                             className="font-body text-sm"
-                                            style={{ color: n.is_read ? '#9C8B7A' : '#E8DFD4', fontStyle: n.is_read ? 'italic' : 'normal' }}
+                                            style={{ color: n.is_read ? '#7ABFA8' : '#E0F5EC', fontStyle: n.is_read ? 'italic' : 'normal' }}
                                         >
                                             {n.title}
                                         </p>
-                                        <p className="font-body mt-0.5 text-sm italic" style={{ color: '#9C8B7A' }}>
+                                        <p className="font-body mt-0.5 text-sm italic" style={{ color: '#7ABFA8' }}>
                                             {n.message}
                                         </p>
                                         <p className="font-display mt-1 text-[9px] uppercase tracking-widest" style={{ color: 'rgba(156,139,122,0.5)' }}>
@@ -188,8 +188,8 @@ export default function NotificationsPage({ notifications }: Props) {
                                 href={`/notifications?page=${page}`}
                                 className="flex h-8 w-8 items-center justify-center rounded font-display text-[10px] transition-colors"
                                 style={page === notifications.current_page
-                                    ? { background: '#C9A962', color: '#1C1714' }
-                                    : { color: '#9C8B7A', border: '1px solid #4A3F35' }
+                                    ? { background: '#408A71', color: '#091413' }
+                                    : { color: '#7ABFA8', border: '1px solid #285A48' }
                                 }
                             >
                                 {page}

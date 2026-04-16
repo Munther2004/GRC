@@ -566,7 +566,7 @@ export default function RemediationTasksIndex({
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                     <Card>
                         <CardContent className="p-4">
-                            <p className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
+                            <p className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
                                 {stats.total}
                             </p>
                             <p className="mt-0.5 text-xs text-muted-foreground">

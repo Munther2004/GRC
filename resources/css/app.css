@@ -8,113 +8,108 @@
 /* 2. Custom dark mode variant */
 @custom-variant dark (&:is(.dark *));
 
-/* ─── Academia / Classical Design Tokens ─────────────────────────────────── */
-/* Always-on warm dark library palette — no light mode toggle needed.         */
+/* ─── GRC Green Design Tokens ─────────────────────────────────────────────── */
 
 :root {
-    /* Deep Mahogany — page foundation */
-    --background:           #1C1714;
-    --foreground:           #E8DFD4;
+    /* Deep Forest — page foundation */
+    --background:           #091413;
+    --foreground:           #E0F5EC;
 
-    /* Aged Oak — elevated surfaces (cards, panels) */
-    --card:                 #251E19;
-    --card-foreground:      #E8DFD4;
+    /* Canopy — elevated surfaces (cards, panels) */
+    --card:                 #0D1F1C;
+    --card-foreground:      #E0F5EC;
 
     /* Popover — same as card */
-    --popover:              #251E19;
-    --popover-foreground:   #E8DFD4;
+    --popover:              #0D1F1C;
+    --popover-foreground:   #E0F5EC;
 
-    /* Polished Brass — primary interactive color */
-    --primary:              #C9A962;
-    --primary-foreground:   #1C1714;
+    /* Sage — primary interactive color */
+    --primary:              #408A71;
+    --primary-foreground:   #091413;
 
-    /* Worn Leather — secondary surfaces */
-    --secondary:            #3D332B;
-    --secondary-foreground: #E8DFD4;
+    /* Undergrowth — secondary surfaces */
+    --secondary:            #122B22;
+    --secondary-foreground: #E0F5EC;
 
-    /* Worn Leather — muted backgrounds */
-    --muted:                #3D332B;
-    --muted-foreground:     #9C8B7A;
+    /* Undergrowth — muted backgrounds */
+    --muted:                #122B22;
+    --muted-foreground:     #7ABFA8;
 
-    /* Worn Leather — hover/accent states */
-    --accent:               #3D332B;
-    --accent-foreground:    #E8DFD4;
+    /* Undergrowth — hover/accent states */
+    --accent:               #122B22;
+    --accent-foreground:    #E0F5EC;
 
-    /* Library Crimson — destructive/emphasis */
+    /* Crimson — destructive/emphasis */
     --destructive:          #8B2635;
-    --destructive-foreground: #E8DFD4;
+    --destructive-foreground: #E0F5EC;
 
-    /* Wood Grain — borders and dividers */
-    --border:               #4A3F35;
-    --input:                #4A3F35;
-    --ring:                 #C9A962;
+    /* Fern — borders and dividers */
+    --border:               #285A48;
+    --input:                #285A48;
+    --ring:                 #408A71;
 
-    /* Charts — warm academic palette */
-    --chart-1:              #C9A962;
-    --chart-2:              #8B9E6B;
-    --chart-3:              #6B8BA8;
+    /* Charts — forest palette */
+    --chart-1:              #408A71;
+    --chart-2:              #B0E4CC;
+    --chart-3:              #6BA8C8;
     --chart-4:              #8B2635;
-    --chart-5:              #B07840;
+    --chart-5:              #285A48;
 
-    /* Sidebar — same mahogany foundation */
-    --sidebar:              #1C1714;
-    --sidebar-foreground:   #E8DFD4;
-    --sidebar-primary:      #C9A962;
-    --sidebar-primary-foreground: #1C1714;
-    --sidebar-accent:       #3D332B;
-    --sidebar-accent-foreground: #E8DFD4;
-    --sidebar-border:       #4A3F35;
-    --sidebar-ring:         #C9A962;
+    /* Sidebar */
+    --sidebar:              #091413;
+    --sidebar-foreground:   #E0F5EC;
+    --sidebar-primary:      #408A71;
+    --sidebar-primary-foreground: #091413;
+    --sidebar-accent:       #122B22;
+    --sidebar-accent-foreground: #E0F5EC;
+    --sidebar-border:       #285A48;
+    --sidebar-ring:         #408A71;
 
-    /* Border radius — traditional, subtle corners */
     --radius: 0.25rem;
 }
 
-/* Dark class mirrors root — the app is always in "library mode" */
 .dark {
-    --background:           #1C1714;
-    --foreground:           #E8DFD4;
-    --card:                 #251E19;
-    --card-foreground:      #E8DFD4;
-    --popover:              #251E19;
-    --popover-foreground:   #E8DFD4;
-    --primary:              #C9A962;
-    --primary-foreground:   #1C1714;
-    --secondary:            #3D332B;
-    --secondary-foreground: #E8DFD4;
-    --muted:                #3D332B;
-    --muted-foreground:     #9C8B7A;
-    --accent:               #3D332B;
-    --accent-foreground:    #E8DFD4;
+    --background:           #091413;
+    --foreground:           #E0F5EC;
+    --card:                 #0D1F1C;
+    --card-foreground:      #E0F5EC;
+    --popover:              #0D1F1C;
+    --popover-foreground:   #E0F5EC;
+    --primary:              #408A71;
+    --primary-foreground:   #091413;
+    --secondary:            #122B22;
+    --secondary-foreground: #E0F5EC;
+    --muted:                #122B22;
+    --muted-foreground:     #7ABFA8;
+    --accent:               #122B22;
+    --accent-foreground:    #E0F5EC;
     --destructive:          #8B2635;
-    --destructive-foreground: #E8DFD4;
-    --border:               #4A3F35;
-    --input:                #4A3F35;
-    --ring:                 #C9A962;
-    --chart-1:              #C9A962;
-    --chart-2:              #8B9E6B;
-    --chart-3:              #6B8BA8;
+    --destructive-foreground: #E0F5EC;
+    --border:               #285A48;
+    --input:                #285A48;
+    --ring:                 #408A71;
+    --chart-1:              #408A71;
+    --chart-2:              #B0E4CC;
+    --chart-3:              #6BA8C8;
     --chart-4:              #8B2635;
-    --chart-5:              #B07840;
-    --sidebar:              #1C1714;
-    --sidebar-foreground:   #E8DFD4;
-    --sidebar-primary:      #C9A962;
-    --sidebar-primary-foreground: #1C1714;
-    --sidebar-accent:       #3D332B;
-    --sidebar-accent-foreground: #E8DFD4;
-    --sidebar-border:       #4A3F35;
-    --sidebar-ring:         #C9A962;
+    --chart-5:              #285A48;
+    --sidebar:              #091413;
+    --sidebar-foreground:   #E0F5EC;
+    --sidebar-primary:      #408A71;
+    --sidebar-primary-foreground: #091413;
+    --sidebar-accent:       #122B22;
+    --sidebar-accent-foreground: #E0F5EC;
+    --sidebar-border:       #285A48;
+    --sidebar-ring:         #408A71;
     --radius: 0.25rem;
 }
 
 @theme inline {
-    /* Academia typefaces */
     --font-sans:    'Crimson Pro', 'Georgia', serif;
     --font-heading: 'Cormorant Garamond', 'Georgia', serif;
     --font-display: 'Cinzel', 'Trajan Pro', serif;
     --font-mono:    'Courier New', 'Courier', monospace;
 
-    /* Color token mappings */
     --color-background:             var(--background);
     --color-foreground:             var(--foreground);
     --color-card:                   var(--card);
@@ -174,44 +169,40 @@
         font-weight: 400;
         line-height: 1.15;
         letter-spacing: -0.01em;
-        color: #E8DFD4;
+        color: #E0F5EC;
     }
 
-    /* Refined parchment selection */
     ::selection {
-        background: #C9A962;
-        color: #1C1714;
+        background: #408A71;
+        color: #091413;
     }
 
-    /* Warm wood scrollbar */
     ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
     }
     ::-webkit-scrollbar-track {
-        background: #1C1714;
+        background: #091413;
     }
     ::-webkit-scrollbar-thumb {
-        background: #4A3F35;
+        background: #285A48;
         border-radius: 999px;
-        border: 2px solid #1C1714;
+        border: 2px solid #091413;
     }
     ::-webkit-scrollbar-thumb:hover {
-        background: #C9A962;
-        border-color: #1C1714;
+        background: #408A71;
+        border-color: #091413;
     }
 
-    /* Smooth page entrance */
     main {
-        animation: academiaFadeIn 0.5s ease-out;
+        animation: fadeIn 0.5s ease-out;
     }
 
-    @keyframes academiaFadeIn {
+    @keyframes fadeIn {
         from { opacity: 0; transform: translateY(6px); }
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Cursor behaviour */
     a, button, input[type='button'], input[type='submit'], [role='button'] {
         cursor: pointer;
     }
@@ -221,30 +212,21 @@
     }
 }
 
-/* ─── Academia Utility Classes ────────────────────────────────────────────── */
+/* ─── Utility Classes ─────────────────────────────────────────────────────── */
 
 @layer utilities {
-    /* Font families as utilities */
     .font-heading  { font-family: 'Cormorant Garamond', Georgia, serif; }
     .font-display  { font-family: 'Cinzel', 'Trajan Pro', serif; }
     .font-body     { font-family: 'Crimson Pro', Georgia, serif; }
 
-    /* Engraved text effect (for buttons, special headings) */
     .text-engraved {
-        text-shadow: 1px 1px 1px rgba(0,0,0,0.4), -1px -1px 1px rgba(255,255,255,0.08);
+        text-shadow: 1px 1px 1px rgba(0,0,0,0.4), -1px -1px 1px rgba(255,255,255,0.06);
     }
 
-    /* Brass gradient background */
-    .bg-brass {
-        background: linear-gradient(180deg, #D4B872 0%, #C9A962 50%, #B8953F 100%);
+    .bg-primary-gradient {
+        background: linear-gradient(135deg, #408A71, #285A48);
     }
 
-    /* Arch-top image container — cathedral window border radius */
-    .arch-top {
-        border-radius: 40% 40% 0 0 / 20% 20% 0 0;
-    }
-
-    /* Ornate corner flourish frame */
     .ornate-frame {
         position: relative;
     }
@@ -254,7 +236,7 @@
         position: absolute;
         width: 28px;
         height: 28px;
-        border: 1px solid #C9A962;
+        border: 1px solid #408A71;
         opacity: 0.5;
         transition: opacity 0.3s ease;
         pointer-events: none;
@@ -272,46 +254,15 @@
         opacity: 1;
     }
 
-    /* Drop cap for introductory paragraphs */
-    .drop-cap::first-letter {
-        font-family: 'Cinzel', serif;
-        font-size: 3.5rem;
-        font-weight: 600;
-        float: left;
-        line-height: 0.8;
-        margin-right: 0.1em;
-        color: #C9A962;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-    }
-
-    /* Sepia image treatment */
-    .img-sepia {
-        filter: sepia(0.6) contrast(0.95) brightness(0.9);
-        transition: filter 0.7s ease-out;
-    }
-    .img-sepia:hover {
-        filter: sepia(0) contrast(1) brightness(1);
-    }
-
-    /* Wax seal badge */
-    .wax-seal {
-        background: radial-gradient(circle at 35% 35%, #A83048, #8B2635 60%, #6B1A28);
-        box-shadow:
-            inset 0 2px 4px rgba(255,255,255,0.2),
-            inset 0 -2px 4px rgba(0,0,0,0.3),
-            0 4px 8px rgba(0,0,0,0.4);
-    }
-
-    /* Ornate divider */
     .ornate-divider {
         position: relative;
         height: 1px;
         background: linear-gradient(
             90deg,
             transparent 0%,
-            #4A3F35 20%,
-            #C9A962 50%,
-            #4A3F35 80%,
+            #285A48 20%,
+            #408A71 50%,
+            #285A48 80%,
             transparent 100%
         );
     }
@@ -321,14 +272,13 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        color: #C9A962;
+        color: #408A71;
         font-size: 10px;
         background: var(--background);
         padding: 0 10px;
         line-height: 1;
     }
 
-    /* Vignette overlay (apply to fixed full-screen wrapper) */
     .vignette::after {
         content: "";
         position: fixed;
@@ -337,7 +287,7 @@
             ellipse at center,
             transparent 0%,
             transparent 55%,
-            rgba(28,23,20,0.45) 100%
+            rgba(9,20,19,0.45) 100%
         );
         pointer-events: none;
         z-index: 0;
@@ -347,7 +297,6 @@
 /* ─── Animations ──────────────────────────────────────────────────────────── */
 
 @layer base {
-    @keyframes fadeIn    { from { opacity: 0 } to { opacity: 1 } }
     @keyframes slideUp   { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: translateY(0) } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px) } to { opacity: 1; transform: translateY(0) } }
     @keyframes scaleIn   { from { opacity: 0; transform: scale(0.97) } to { opacity: 1; transform: scale(1) } }
@@ -369,6 +318,4 @@
     .animate-shimmer      { animation: shimmer 2s infinite; background-size: 200% 100%; }
     .slide-in-from-top-4  { animation: slideDown 0.3s ease-out forwards; }
     .slide-in-from-bottom-4 { animation: slideUp 0.3s ease-out forwards; }
-    .slide-in-from-left   { animation: slideInLeft 0.3s ease-out forwards; }
-    .slide-in-from-right  { animation: slideInRight 0.3s ease-out forwards; }
 }

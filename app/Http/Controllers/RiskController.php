@@ -20,7 +20,11 @@ class RiskController extends Controller
 {
     public function index(Request $request)
     {
-        $paginator = Risk::with(['user', 'sourceControl.framework'])
+        $user = Auth::user();
+
+        $baseQuery = fn () => $user->organisationScope(Risk::query()->with(['user', 'sourceControl.framework']));
+
+        $paginator = $baseQuery()
             ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
                 ->orWhere('description', 'like', "%{$request->search}%")
             )
@@ -51,12 +55,12 @@ class RiskController extends Controller
 
         // Client filter: escalated_only — collect escalated IDs if appetite active
         if ($request->escalated_only && $appetite) {
-            $allRisks = Risk::all();
+            $allRisks = $user->organisationScope(Risk::query())->get();
             $escalatedIds = $allRisks
                 ->filter(fn ($r) => $appetite->classifyRisk($r)['band'] === 'escalated')
                 ->pluck('id')
                 ->toArray();
-            $paginator = Risk::with(['user', 'sourceControl.framework'])
+            $paginator = $baseQuery()
                 ->whereIn('id', $escalatedIds)
                 ->orderByRaw('likelihood * impact DESC')
                 ->paginate(15)
@@ -70,11 +74,12 @@ class RiskController extends Controller
         ]));
 
         $tc = Risk::levelThresholds();
+        $scopedRisks = $user->organisationScope(Risk::query());
         $stats = [
-            'total' => Risk::count(),
-            'open' => Risk::where('status', 'open')->count(),
-            'critical' => Risk::whereRaw("likelihood * impact >= {$tc['critical']}")->count(),
-            'overdue' => Risk::where('due_date', '<', now())
+            'total' => (clone $scopedRisks)->count(),
+            'open' => (clone $scopedRisks)->where('status', 'open')->count(),
+            'critical' => (clone $scopedRisks)->whereRaw("likelihood * impact >= {$tc['critical']}")->count(),
+            'overdue' => (clone $scopedRisks)->where('due_date', '<', now())
                 ->whereNotIn('status', ['closed'])
                 ->count(),
         ];
@@ -123,6 +128,7 @@ class RiskController extends Controller
         $risk = Risk::create([
             ...$validated,
             'user_id' => Auth::id(),
+            'corporation_id' => Auth::user()->corporation_id,
         ]);
 
         AuditLog::record(
@@ -364,7 +370,7 @@ class RiskController extends Controller
 
     public function heatmap()
     {
-        $risks = Risk::with(['user', 'sourceControl.framework'])
+        $risks = Auth::user()->organisationScope(Risk::query()->with(['user', 'sourceControl.framework']))
             ->orderByRaw('likelihood * impact DESC')
             ->get();
 

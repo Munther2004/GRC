@@ -31,23 +31,23 @@ function FlashToast() {
         <div
             className="fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded px-4 py-3 text-sm ornate-frame"
             style={{
-                background: '#251E19',
-                border: `1px solid ${isSuccess ? 'rgba(201,169,98,0.4)' : 'rgba(139,38,53,0.4)'}`,
+                background: '#0D1F1C',
+                border: `1px solid ${isSuccess ? 'rgba(64,138,113,0.4)' : 'rgba(139,38,53,0.4)'}`,
                 boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
                 backdropFilter: 'blur(12px)',
             }}
         >
             {isSuccess
-                ? <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: '#C9A962' }} />
+                ? <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: '#408A71' }} />
                 : <XCircle    className="mt-0.5 h-4 w-4 shrink-0" style={{ color: '#8B2635' }} />
             }
-            <span className="flex-1 font-body" style={{ color: '#E8DFD4' }}>{text}</span>
+            <span className="flex-1 font-body" style={{ color: '#E0F5EC' }}>{text}</span>
             <button
                 onClick={() => setVisible(false)}
                 className="shrink-0 transition-colors duration-200"
-                style={{ color: '#9C8B7A' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#C9A962')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#9C8B7A')}
+                style={{ color: '#7ABFA8' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#408A71')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
             >
                 <X className="h-3.5 w-3.5" />
             </button>
@@ -59,13 +59,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
         <div
             className="min-h-screen"
-            style={{ background: '#1C1714', color: '#E8DFD4' }}
+            style={{ background: '#091413', color: '#E0F5EC' }}
         >
             {/* Atmospheric vignette */}
             <div
                 className="pointer-events-none fixed inset-0 z-0"
                 style={{
-                    background: 'radial-gradient(ellipse at center, transparent 0%, transparent 55%, rgba(28,23,20,0.5) 100%)',
+                    background: 'radial-gradient(ellipse at center, transparent 0%, transparent 55%, rgba(9,20,19,0.5) 100%)',
                 }}
                 aria-hidden
             />

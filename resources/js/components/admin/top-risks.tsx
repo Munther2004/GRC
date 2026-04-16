@@ -19,19 +19,19 @@ type Props = { risks?: Risk[] };
 const levelColor = (level: string): string => {
     switch (level) {
         case 'critical': return '#8B2635';
-        case 'high':     return '#B07840';
-        case 'medium':   return '#C9A962';
-        default:         return '#8B9E6B';
+        case 'high':     return '#285A48';
+        case 'medium':   return '#408A71';
+        default:         return '#B0E4CC';
     }
 };
 
 const statusColor = (status: string): string => {
     switch (status) {
         case 'open':         return '#8B2635';
-        case 'in_progress':  return '#C9A962';
-        case 'under_review': return '#B07840';
-        case 'closed':       return '#8B9E6B';
-        default:             return '#9C8B7A';
+        case 'in_progress':  return '#408A71';
+        case 'under_review': return '#285A48';
+        case 'closed':       return '#B0E4CC';
+        default:             return '#7ABFA8';
     }
 };
 
@@ -43,16 +43,16 @@ export function TopRisks({ risks = [] }: Props) {
                     <CardTitle className="font-heading text-lg font-normal">
                         Top Risks
                     </CardTitle>
-                    <p className="font-body mt-0.5 text-[11px] italic" style={{ color: '#9C8B7A' }}>
+                    <p className="font-body mt-0.5 text-[11px] italic" style={{ color: '#7ABFA8' }}>
                         Ranked by ISO/IEC 27005 likelihood × impact
                     </p>
                 </div>
                 <Link
                     href="/risks"
                     className="font-display inline-flex items-center gap-1 text-[10px] uppercase tracking-widest transition-colors"
-                    style={{ color: '#9C8B7A' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#C9A962')}
-                    onMouseLeave={e => (e.currentTarget.style.color = '#9C8B7A')}
+                    style={{ color: '#7ABFA8' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#408A71')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
                 >
                     View all <ArrowUpRight className="h-3 w-3" />
                 </Link>
@@ -60,38 +60,38 @@ export function TopRisks({ risks = [] }: Props) {
             <CardContent className="p-0">
                 {risks.length === 0 ? (
                     <div className="px-5 py-12 text-center">
-                        <p className="font-body text-sm italic" style={{ color: '#9C8B7A' }}>
+                        <p className="font-body text-sm italic" style={{ color: '#7ABFA8' }}>
                             No risks recorded yet
                         </p>
                         <Link
                             href="/risks/create"
                             className="font-display mt-3 inline-flex items-center gap-1 text-[10px] uppercase tracking-widest transition-colors"
-                            style={{ color: '#C9A962' }}
-                            onMouseEnter={e => (e.currentTarget.style.color = '#E8DFD4')}
-                            onMouseLeave={e => (e.currentTarget.style.color = '#C9A962')}
+                            style={{ color: '#408A71' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = '#E0F5EC')}
+                            onMouseLeave={e => (e.currentTarget.style.color = '#408A71')}
                         >
                             Add first risk <ArrowUpRight className="h-3 w-3" />
                         </Link>
                     </div>
                 ) : (
-                    <div style={{ borderTop: '1px solid #4A3F35' }}>
+                    <div style={{ borderTop: '1px solid #285A48' }}>
                         {risks.map((risk) => (
                             <Link
                                 key={risk.id}
                                 href={`/risks/${risk.id}`}
                                 className="group grid grid-cols-[auto_1fr_auto] items-center gap-4 px-5 py-3 transition-colors last:border-0 md:grid-cols-[auto_2fr_1fr_auto_auto]"
-                                style={{ borderBottom: '1px solid rgba(74,63,53,0.5)' }}
+                                style={{ borderBottom: '1px solid rgba(40,90,72,0.5)' }}
                                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(61,51,43,0.4)')}
                                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                             >
-                                <span className="font-display text-[10px] tabular-nums" style={{ color: '#9C8B7A' }}>
+                                <span className="font-display text-[10px] tabular-nums" style={{ color: '#7ABFA8' }}>
                                     RSK-{String(risk.id).padStart(3, '0')}
                                 </span>
                                 <div className="min-w-0">
-                                    <p className="font-body truncate text-sm" style={{ color: '#E8DFD4' }}>
+                                    <p className="font-body truncate text-sm" style={{ color: '#E0F5EC' }}>
                                         {risk.title}
                                     </p>
-                                    <p className="font-body truncate text-[11px] italic" style={{ color: '#9C8B7A' }}>
+                                    <p className="font-body truncate text-[11px] italic" style={{ color: '#7ABFA8' }}>
                                         {risk.category || '—'}
                                         {risk.owner ? <> · <span>{risk.owner}</span></> : null}
                                     </p>
@@ -114,9 +114,9 @@ export function TopRisks({ risks = [] }: Props) {
                                         · {risk.status.replace('_', ' ')}
                                     </span>
                                 </div>
-                                <span className="font-heading text-sm tabular-nums" style={{ color: '#C9A962' }}>
+                                <span className="font-heading text-sm tabular-nums" style={{ color: '#408A71' }}>
                                     {risk.risk_score}
-                                    <span className="font-display text-[10px]" style={{ color: '#9C8B7A' }}>/25</span>
+                                    <span className="font-display text-[10px]" style={{ color: '#7ABFA8' }}>/25</span>
                                 </span>
                                 <ArrowUpRight
                                     className="h-3.5 w-3.5 transition-colors"

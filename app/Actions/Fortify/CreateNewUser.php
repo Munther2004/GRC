@@ -22,12 +22,21 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             ...$this->profileRules(),
             'password' => $this->passwordRules(),
+            'corporation_code' => 'nullable|string|exists:corporations,registration_code',
         ])->validate();
+
+        $corporation = null;
+        if (!empty($input['corporation_code'])) {
+            $corporation = \App\Models\Corporation::where('registration_code', $input['corporation_code'])
+                ->where('status', 'approved')
+                ->firstOrFail();
+        }
 
         return User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
+            'corporation_id' => $corporation?->id,
         ]);
     }
 }

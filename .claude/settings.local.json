@@ -62,7 +62,14 @@
       "Bash(sed -i '' 's/className=\"mt-0.5 h-4 w-4 shrink-0 text-red-500\"/className=\"mt-0.5 h-4 w-4 shrink-0\" style={{ color: \"#8B2635\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
       "Bash(sed -i '' 's/className=\"text-sm text-red-700\"/className=\"font-body text-sm italic\" style={{ color: \"#8B2635\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
       "Bash(sed -i '' 's/className=\"rounded-lg border border-red-200 bg-red-50\"/className=\"rounded\" style={{ background: \"rgba\\(139,38,53,0.08\\)\", border: \"1px solid rgba\\(139,38,53,0.3\\)\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
-      "Bash(sed -i '' 's/className=\"flex items-center gap-2 rounded-t-lg bg-red-100 px-4 py-2\"/className=\"flex items-center gap-2 rounded-t px-4 py-2\" style={{ background: \"rgba\\(139,38,53,0.15\\)\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)"
+      "Bash(sed -i '' 's/className=\"flex items-center gap-2 rounded-t-lg bg-red-100 px-4 py-2\"/className=\"flex items-center gap-2 rounded-t px-4 py-2\" style={{ background: \"rgba\\(139,38,53,0.15\\)\" }}/g' /Users/abdurahmanal-essa/GRC/resources/js/pages/risks/create.tsx)",
+      "Bash(php -l app/Http/Controllers/Admin/CorporationController.php)",
+      "Bash(php -l app/Mail/CorporationApproved.php)",
+      "Bash(grep -h \"corporation_id\" /Users/abdurahmanal-essa/GRC/database/migrations/*.php)",
+      "Bash(grep -rn \"corporation_id\" /Users/abdurahmanal-essa/GRC/app/Models/*.php)",
+      "Bash(php -l app/Http/Controllers/RemediationTaskController.php)",
+      "Bash(php -l app/Services/GrcMetricsService.php)",
+      "Bash(php -l app/Models/User.php)"
     ]
   }
 }

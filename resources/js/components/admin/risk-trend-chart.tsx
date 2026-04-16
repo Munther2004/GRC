@@ -24,9 +24,9 @@ type Props = {
 
 const COLORS = {
     critical: '#8B2635',
-    high: '#B07840',
-    medium: '#C9A962',
-    low: '#8B9E6B',
+    high: '#285A48',
+    medium: '#408A71',
+    low: '#B0E4CC',
 };
 
 export function RiskTrendChart({ trendData = [] }: Props) {
@@ -38,7 +38,7 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                 <CardTitle className="font-heading text-lg font-normal">
                     Risk Trend
                 </CardTitle>
-                <p className="font-body text-[11px] italic" style={{ color: '#9C8B7A' }}>
+                <p className="font-body text-[11px] italic" style={{ color: '#7ABFA8' }}>
                     Risk levels over time — ISO/IEC 27005 scoring
                 </p>
             </CardHeader>
@@ -46,7 +46,7 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                 {!hasData ? (
                     <div className="flex h-64 items-center justify-center">
                         <div className="text-center">
-                            <p className="font-body text-sm italic" style={{ color: '#9C8B7A' }}>
+                            <p className="font-body text-sm italic" style={{ color: '#7ABFA8' }}>
                                 No trend data available yet
                             </p>
                             <p className="font-body mt-1 text-xs italic" style={{ color: 'rgba(156,139,122,0.6)' }}>
@@ -69,29 +69,29 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                                         </linearGradient>
                                     ))}
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#4A3F35" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#285A48" vertical={false} />
                                 <XAxis
                                     dataKey="month"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#9C8B7A', fontSize: 10, fontFamily: "'Cinzel', serif" }}
+                                    tick={{ fill: '#7ABFA8', fontSize: 10, fontFamily: "'Cinzel', serif" }}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#9C8B7A', fontSize: 10, fontFamily: "'Cinzel', serif" }}
+                                    tick={{ fill: '#7ABFA8', fontSize: 10, fontFamily: "'Cinzel', serif" }}
                                 />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: '#251E19',
-                                        border: '1px solid #4A3F35',
+                                        backgroundColor: '#0D1F1C',
+                                        border: '1px solid #285A48',
                                         borderRadius: '4px',
                                         fontSize: '11px',
                                         padding: '6px 10px',
                                         fontFamily: "'Crimson Pro', serif",
-                                        color: '#E8DFD4',
+                                        color: '#E0F5EC',
                                     }}
-                                    labelStyle={{ color: '#C9A962', fontFamily: "'Cinzel', serif", fontSize: '10px' }}
+                                    labelStyle={{ color: '#408A71', fontFamily: "'Cinzel', serif", fontSize: '10px' }}
                                 />
                                 <Legend
                                     iconType="circle"
@@ -101,7 +101,7 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                                         paddingTop: '10px',
                                         fontFamily: "'Cinzel', serif",
                                         letterSpacing: '0.05em',
-                                        color: '#9C8B7A',
+                                        color: '#7ABFA8',
                                     }}
                                 />
                                 <Area type="monotone" dataKey="low"      stackId="1" stroke={COLORS.low}      fill="url(#color-low)"      strokeWidth={1.5} />

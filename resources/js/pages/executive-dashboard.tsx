@@ -317,7 +317,7 @@ export default function ExecutiveDashboard({
                                 </span>
                             </div>
                             <div>
-                                <p className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
+                                <p className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
                                     {healthScore.health_score}
                                 </p>
                                 <p className="text-xs leading-tight text-muted-foreground">

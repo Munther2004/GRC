@@ -17,9 +17,9 @@ type Metric = {
 };
 
 const toneColor: Record<Metric['tone'], string> = {
-    neutral: '#9C8B7A',
-    warn:    '#B07840',
-    ok:      '#8B9E6B',
+    neutral: '#7ABFA8',
+    warn:    '#285A48',
+    ok:      '#B0E4CC',
     bad:     '#8B2635',
 };
 
@@ -54,30 +54,30 @@ export function MetricsCards({ stats }: { stats: Stats }) {
     return (
         <div
             className="grid grid-cols-2 overflow-hidden rounded lg:grid-cols-4"
-            style={{ gap: '1px', background: '#4A3F35' }}
+            style={{ gap: '1px', background: '#285A48' }}
         >
             {metrics.map((metric, idx) => (
                 <Card
                     key={metric.title}
                     className="rounded-none border-0 shadow-none"
-                    style={{ background: '#251E19' }}
+                    style={{ background: '#0D1F1C' }}
                 >
                     <div
                         className="px-5 py-4"
-                        style={idx === 0 ? { borderLeft: '2px solid #C9A962' } : {}}
+                        style={idx === 0 ? { borderLeft: '2px solid #408A71' } : {}}
                     >
                         <div className="flex items-center gap-1.5">
                             <span
                                 className="h-1 w-1 rounded-full shrink-0"
                                 style={{ background: toneColor[metric.tone] }}
                             />
-                            <p className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: '#9C8B7A' }}>
+                            <p className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: '#7ABFA8' }}>
                                 {metric.title}
                             </p>
                         </div>
                         <p
                             className="font-heading mt-2.5 text-3xl font-normal tabular-nums"
-                            style={{ color: toneColor[metric.tone] === '#9C8B7A' ? '#E8DFD4' : toneColor[metric.tone] }}
+                            style={{ color: toneColor[metric.tone] === '#7ABFA8' ? '#E0F5EC' : toneColor[metric.tone] }}
                         >
                             {metric.value}
                         </p>

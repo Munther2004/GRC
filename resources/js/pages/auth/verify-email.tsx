@@ -16,7 +16,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
             <Head title="Email verification" />
 
             {status === 'verification-link-sent' && (
-                <div className="font-body mb-4 text-center text-sm italic" style={{ color: '#8B9E6B' }}>
+                <div className="font-body mb-4 text-center text-sm italic" style={{ color: '#B0E4CC' }}>
                     A new verification link has been sent to the email address
                     you provided during registration.
                 </div>

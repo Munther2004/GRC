@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AIController as AdminAIController;
 use App\Http\Controllers\Admin\ControlController as AdminControlController;
+use App\Http\Controllers\Admin\CorporationController as AdminCorporationController;
 use App\Http\Controllers\Admin\FrameworkController as AdminFrameworkController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AssessmentComparisonController;
@@ -10,6 +11,8 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\ComplianceChatbotController;
 use App\Http\Controllers\ControlHubController;
 use App\Http\Controllers\ControlStatusRequestController;
+use App\Http\Controllers\CorporationRegistrationController;
+use App\Http\Controllers\CorporateDashboardController;
 use App\Http\Controllers\CrosswalkController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EvidenceController;
@@ -33,7 +36,21 @@ Route::inertia('/', 'welcome', [
 Route::inertia('/about', 'about')->name('about');
 Route::inertia('/team', 'team')->name('team');
 
+// ── Corporation Registration — public routes ──────────────────────────────────
+Route::get('/corporation/register', [CorporationRegistrationController::class, 'showRegistrationForm'])->name('corporations.register');
+Route::post('/corporation/register', [CorporationRegistrationController::class, 'register'])->name('corporations.store');
+Route::get('/corporation/{corporation}/pending', [CorporationRegistrationController::class, 'pending'])->name('corporations.registration-pending');
+Route::post('/corporation/{corporation}/verify-code', [CorporationRegistrationController::class, 'verifyCode'])->name('corporations.verify-code');
+Route::get('/corporation/{corporation}/manager-signup', [CorporationRegistrationController::class, 'showManagerSignup'])->name('corporations.manager-signup');
+Route::post('/corporation/{corporation}/manager-signup', [CorporationRegistrationController::class, 'registerManager'])->name('corporations.manager-register');
+
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    // ── Corporate Dashboard — for corporation managers ──────────────────────────
+    Route::get('/corporate/dashboard', [CorporateDashboardController::class, 'index'])->name('corporate.dashboard');
+    Route::get('/corporate/{corporation}/dashboard', [CorporateDashboardController::class, 'show'])->name('corporate.show-dashboard');
+    Route::get('/corporate/company-details', [CorporateDashboardController::class, 'companyDetails'])->name('corporate.company-details');
+    Route::get('/corporate/team', [CorporateDashboardController::class, 'teamMembers'])->name('corporate.team');
 
     // ── Notifications ─────────────────────────────────────────────────────────
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -41,6 +58,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::delete('/notifications', [NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
+    
+    // ── API Notifications ─────────────────────────────────────────────────────
+    Route::get('/api/notifications', [NotificationController::class, 'getNotifications'])->name('api.notifications.index');
+    Route::post('/api/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('api.notifications.mark-as-read');
 
     // ── Everyone ──────────────────────────────────────────────────────────────
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -146,7 +167,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // ── Admin Panel — admin only ──────────────────────────────────────────────
-    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('auth', 'verified', 'role:admin')->group(function () {
+        Route::resource('corporations', AdminCorporationController::class)->only(['index', 'show', 'destroy']);
+        Route::post('corporations/{corporation}/approve', [AdminCorporationController::class, 'approve'])->name('corporations.approve');
+        Route::post('corporations/{corporation}/reject', [AdminCorporationController::class, 'reject'])->name('corporations.reject');
+        Route::post('corporations/{corporation}/regenerate-code', [AdminCorporationController::class, 'regenerateCode'])->name('corporations.regenerate-code');
         Route::resource('users', AdminUserController::class);
         Route::post('frameworks/{framework}/toggle', [AdminFrameworkController::class, 'toggle'])->name('frameworks.toggle');
         Route::resource('frameworks', AdminFrameworkController::class)->only(['index', 'edit', 'update']);

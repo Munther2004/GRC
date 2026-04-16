@@ -16,11 +16,11 @@ type Props = {
 };
 
 function getCellColors(score: number): { bg: string; text: string } {
-    if (score >= 20) return { bg: 'rgba(139,38,53,0.85)',  text: '#E8DFD4' };
-    if (score >= 15) return { bg: 'rgba(139,38,53,0.6)',   text: '#E8DFD4' };
-    if (score >= 10) return { bg: 'rgba(176,120,64,0.55)', text: '#E8DFD4' };
-    if (score >= 5)  return { bg: 'rgba(201,169,98,0.35)', text: '#E8DFD4' };
-    return             { bg: 'rgba(139,158,107,0.25)', text: '#9C8B7A' };
+    if (score >= 20) return { bg: 'rgba(139,38,53,0.85)',  text: '#E0F5EC' };
+    if (score >= 15) return { bg: 'rgba(139,38,53,0.6)',   text: '#E0F5EC' };
+    if (score >= 10) return { bg: 'rgba(40,90,72,0.55)', text: '#E0F5EC' };
+    if (score >= 5)  return { bg: 'rgba(64,138,113,0.35)', text: '#E0F5EC' };
+    return             { bg: 'rgba(176,228,204,0.25)', text: '#7ABFA8' };
 }
 
 export function RiskHeatmap({ risks, fullscreen = false }: Props) {
@@ -54,11 +54,11 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
             <div className="h-screen w-screen overflow-hidden bg-background p-6 flex flex-col">
                 <div className="mb-4 flex flex-row items-start justify-between gap-4">
                     <div className="space-y-1">
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
                             Risk Heat Map
                         </h1>
-                        <p className="font-body text-sm" style={{ color: '#9C8B7A' }}>
-                            <span className="font-heading not-italic" style={{ color: '#E8DFD4' }}>
+                        <p className="font-body text-sm" style={{ color: '#7ABFA8' }}>
+                            <span className="font-heading not-italic" style={{ color: '#E0F5EC' }}>
                                 {totalPlotted}
                             </span>{' '}
                             plotted
@@ -122,7 +122,7 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                                                             background: colors.bg,
                                                             opacity: isEmpty ? 0.2 : 1,
                                                             cursor: isEmpty ? 'default' : 'pointer',
-                                                            outline: isHighlighted ? `2px solid #C9A962` : 'none',
+                                                            outline: isHighlighted ? `2px solid #408A71` : 'none',
                                                             transform: isHovered && !isEmpty ? 'scale(1.08)' : 'scale(1)',
                                                             boxShadow: isHovered && !isEmpty ? '0 8px 24px rgba(0,0,0,0.5)' : 'none',
                                                         }}
@@ -141,29 +141,29 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                                                                 <div
                                                                     className="rounded p-4 text-left"
                                                                     style={{
-                                                                        background: '#251E19',
-                                                                        border: '1px solid #4A3F35',
+                                                                        background: '#0D1F1C',
+                                                                        border: '1px solid #285A48',
                                                                         boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
                                                                     }}
                                                                 >
                                                                     <div
                                                                         className="mb-2 flex items-center justify-between gap-3 pb-2"
-                                                                        style={{ borderBottom: '1px solid rgba(74,63,53,0.6)' }}
+                                                                        style={{ borderBottom: '1px solid rgba(40,90,72,0.6)' }}
                                                                     >
-                                                                        <span className="font-display text-xs tracking-wider uppercase" style={{ color: '#9C8B7A' }}>
+                                                                        <span className="font-display text-xs tracking-wider uppercase" style={{ color: '#7ABFA8' }}>
                                                                             L{likelihood} · I{impact}
                                                                         </span>
-                                                                        <span className="font-heading text-base" style={{ color: '#C9A962' }}>
+                                                                        <span className="font-heading text-base" style={{ color: '#408A71' }}>
                                                                             {score}
                                                                         </span>
                                                                     </div>
                                                                     {cellRisks.slice(0, 5).map((r) => (
-                                                                        <p key={r.id} className="font-body truncate py-1 text-sm leading-tight" style={{ color: '#E8DFD4' }}>
+                                                                        <p key={r.id} className="font-body truncate py-1 text-sm leading-tight" style={{ color: '#E0F5EC' }}>
                                                                             {r.title}
                                                                         </p>
                                                                     ))}
                                                                     {cellRisks.length > 5 && (
-                                                                        <p className="font-body mt-2 text-xs italic" style={{ color: '#9C8B7A' }}>
+                                                                        <p className="font-body mt-2 text-xs italic" style={{ color: '#7ABFA8' }}>
                                                                             +{cellRisks.length - 5} more
                                                                         </p>
                                                                     )}
@@ -198,30 +198,30 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                             </div>
 
                             {/* Legend */}
-                            <div className="mt-8 pt-6" style={{ borderTop: '1px solid #4A3F35' }}>
+                            <div className="mt-8 pt-6" style={{ borderTop: '1px solid #285A48' }}>
                                 <div className="flex items-center justify-between gap-4">
-                                    <span className="font-display text-xs tracking-wider uppercase" style={{ color: '#9C8B7A' }}>Low</span>
+                                    <span className="font-display text-xs tracking-wider uppercase" style={{ color: '#7ABFA8' }}>Low</span>
                                     <div
                                         className="h-2 flex-1 rounded-full"
-                                        style={{ background: 'linear-gradient(to right, rgba(139,158,107,0.3), rgba(201,169,98,0.5), rgba(176,120,64,0.6), rgba(139,38,53,0.85))' }}
+                                        style={{ background: 'linear-gradient(to right, rgba(176,228,204,0.3), rgba(64,138,113,0.5), rgba(40,90,72,0.6), rgba(139,38,53,0.85))' }}
                                     />
-                                    <span className="font-display text-xs tracking-wider uppercase" style={{ color: '#9C8B7A' }}>Critical</span>
+                                    <span className="font-display text-xs tracking-wider uppercase" style={{ color: '#7ABFA8' }}>Critical</span>
                                 </div>
                             </div>
 
                             {/* Selected risks */}
                             {highlighted && highlighted.length > 0 && (
-                                <div className="mt-6 rounded p-4" style={{ background: 'rgba(201,169,98,0.05)', border: '1px solid rgba(201,169,98,0.2)' }}>
+                                <div className="mt-6 rounded p-4" style={{ background: 'rgba(64,138,113,0.05)', border: '1px solid rgba(64,138,113,0.2)' }}>
                                     <div className="mb-3 flex items-center justify-between">
-                                        <span className="font-display text-xs tracking-wider uppercase" style={{ color: '#9C8B7A' }}>
+                                        <span className="font-display text-xs tracking-wider uppercase" style={{ color: '#7ABFA8' }}>
                                             Selected · {highlighted.length}
                                         </span>
                                         <button
                                             onClick={() => setHighlighted(null)}
                                             className="font-display text-xs tracking-wider uppercase transition-colors"
-                                            style={{ color: '#9C8B7A' }}
-                                            onMouseEnter={e => (e.currentTarget.style.color = '#C9A962')}
-                                            onMouseLeave={e => (e.currentTarget.style.color = '#9C8B7A')}
+                                            style={{ color: '#7ABFA8' }}
+                                            onMouseEnter={e => (e.currentTarget.style.color = '#408A71')}
+                                            onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
                                         >
                                             Clear
                                         </button>
@@ -229,8 +229,8 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                                     <ul className="space-y-2 max-h-48 overflow-y-auto">
                                         {risks.filter((r) => highlighted.includes(r.id)).map((r) => (
                                             <li key={r.id} className="flex items-center justify-between gap-3">
-                                                <span className="font-body truncate text-sm" style={{ color: '#E8DFD4' }}>{r.title}</span>
-                                                <span className="font-heading shrink-0 text-base tabular-nums" style={{ color: '#C9A962' }}>{r.score}</span>
+                                                <span className="font-body truncate text-sm" style={{ color: '#E0F5EC' }}>{r.title}</span>
+                                                <span className="font-heading shrink-0 text-base tabular-nums" style={{ color: '#408A71' }}>{r.score}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -250,8 +250,8 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                     <CardTitle className="font-heading text-lg font-normal">
                         Risk Heat Map
                     </CardTitle>
-                    <p className="font-body text-[11px] italic" style={{ color: '#9C8B7A' }}>
-                        <span className="font-heading not-italic" style={{ color: '#E8DFD4' }}>
+                    <p className="font-body text-[11px] italic" style={{ color: '#7ABFA8' }}>
+                        <span className="font-heading not-italic" style={{ color: '#E0F5EC' }}>
                             {totalPlotted}
                         </span>{' '}
                         plotted
@@ -315,7 +315,7 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                                                         background: colors.bg,
                                                         opacity: isEmpty ? 0.2 : 1,
                                                         cursor: isEmpty ? 'default' : 'pointer',
-                                                        outline: isHighlighted ? `1px solid #C9A962` : 'none',
+                                                        outline: isHighlighted ? `1px solid #408A71` : 'none',
                                                         transform: isHovered && !isEmpty ? 'scale(1.06)' : 'scale(1)',
                                                         boxShadow: isHovered && !isEmpty ? '0 4px 12px rgba(0,0,0,0.4)' : 'none',
                                                     }}
@@ -334,29 +334,29 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                                                             <div
                                                                 className="rounded p-2.5 text-left"
                                                                 style={{
-                                                                    background: '#251E19',
-                                                                    border: '1px solid #4A3F35',
+                                                                    background: '#0D1F1C',
+                                                                    border: '1px solid #285A48',
                                                                     boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
                                                                 }}
                                                             >
                                                                 <div
                                                                     className="mb-1.5 flex items-center justify-between gap-3 pb-1.5"
-                                                                    style={{ borderBottom: '1px solid rgba(74,63,53,0.6)' }}
+                                                                    style={{ borderBottom: '1px solid rgba(40,90,72,0.6)' }}
                                                                 >
-                                                                    <span className="font-display text-[9px] tracking-wider uppercase" style={{ color: '#9C8B7A' }}>
+                                                                    <span className="font-display text-[9px] tracking-wider uppercase" style={{ color: '#7ABFA8' }}>
                                                                         L{likelihood} · I{impact}
                                                                     </span>
-                                                                    <span className="font-heading text-sm" style={{ color: '#C9A962' }}>
+                                                                    <span className="font-heading text-sm" style={{ color: '#408A71' }}>
                                                                         {score}
                                                                     </span>
                                                                 </div>
                                                                 {cellRisks.slice(0, 4).map((r) => (
-                                                                    <p key={r.id} className="font-body truncate py-0.5 text-[11px] leading-tight" style={{ color: '#E8DFD4' }}>
+                                                                    <p key={r.id} className="font-body truncate py-0.5 text-[11px] leading-tight" style={{ color: '#E0F5EC' }}>
                                                                         {r.title}
                                                                     </p>
                                                                 ))}
                                                                 {cellRisks.length > 4 && (
-                                                                    <p className="font-body mt-1 text-[10px] italic" style={{ color: '#9C8B7A' }}>
+                                                                    <p className="font-body mt-1 text-[10px] italic" style={{ color: '#7ABFA8' }}>
                                                                         +{cellRisks.length - 4} more
                                                                     </p>
                                                                 )}
@@ -391,30 +391,30 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                         </div>
 
                         {/* Legend */}
-                        <div className="mt-5 pt-4" style={{ borderTop: '1px solid #4A3F35' }}>
+                        <div className="mt-5 pt-4" style={{ borderTop: '1px solid #285A48' }}>
                             <div className="flex items-center justify-between gap-2">
-                                <span className="font-display text-[9px] tracking-wider uppercase" style={{ color: '#9C8B7A' }}>Low</span>
+                                <span className="font-display text-[9px] tracking-wider uppercase" style={{ color: '#7ABFA8' }}>Low</span>
                                 <div
                                     className="h-1 flex-1 rounded-full"
-                                    style={{ background: 'linear-gradient(to right, rgba(139,158,107,0.3), rgba(201,169,98,0.5), rgba(176,120,64,0.6), rgba(139,38,53,0.85))' }}
+                                    style={{ background: 'linear-gradient(to right, rgba(176,228,204,0.3), rgba(64,138,113,0.5), rgba(40,90,72,0.6), rgba(139,38,53,0.85))' }}
                                 />
-                                <span className="font-display text-[9px] tracking-wider uppercase" style={{ color: '#9C8B7A' }}>Critical</span>
+                                <span className="font-display text-[9px] tracking-wider uppercase" style={{ color: '#7ABFA8' }}>Critical</span>
                             </div>
                         </div>
 
                         {/* Selected risks */}
                         {highlighted && highlighted.length > 0 && (
-                            <div className="mt-4 rounded p-3" style={{ background: 'rgba(201,169,98,0.05)', border: '1px solid rgba(201,169,98,0.2)' }}>
+                            <div className="mt-4 rounded p-3" style={{ background: 'rgba(64,138,113,0.05)', border: '1px solid rgba(64,138,113,0.2)' }}>
                                 <div className="mb-2 flex items-center justify-between">
-                                    <span className="font-display text-[9px] tracking-wider uppercase" style={{ color: '#9C8B7A' }}>
+                                    <span className="font-display text-[9px] tracking-wider uppercase" style={{ color: '#7ABFA8' }}>
                                         Selected · {highlighted.length}
                                     </span>
                                     <button
                                         onClick={() => setHighlighted(null)}
                                         className="font-display text-[9px] tracking-wider uppercase transition-colors"
-                                        style={{ color: '#9C8B7A' }}
-                                        onMouseEnter={e => (e.currentTarget.style.color = '#C9A962')}
-                                        onMouseLeave={e => (e.currentTarget.style.color = '#9C8B7A')}
+                                        style={{ color: '#7ABFA8' }}
+                                        onMouseEnter={e => (e.currentTarget.style.color = '#408A71')}
+                                        onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
                                     >
                                         Clear
                                     </button>
@@ -422,8 +422,8 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                                 <ul className="space-y-1">
                                     {risks.filter((r) => highlighted.includes(r.id)).map((r) => (
                                         <li key={r.id} className="flex items-center justify-between gap-3">
-                                            <span className="font-body truncate text-xs" style={{ color: '#E8DFD4' }}>{r.title}</span>
-                                            <span className="font-heading shrink-0 text-sm tabular-nums" style={{ color: '#C9A962' }}>{r.score}</span>
+                                            <span className="font-body truncate text-xs" style={{ color: '#E0F5EC' }}>{r.title}</span>
+                                            <span className="font-heading shrink-0 text-sm tabular-nums" style={{ color: '#408A71' }}>{r.score}</span>
                                         </li>
                                     ))}
                                 </ul>

@@ -1,16 +1,11 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import type { SharedProps } from '@/types';
 import { route } from '@/lib/routes';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Card,
     CardContent,
@@ -20,18 +15,37 @@ import {
 } from '@/components/ui/card';
 import { ArrowLeft, Save } from 'lucide-react';
 
+interface Role {
+    id: number;
+    name: string;
+    description?: string;
+}
+
+interface Props extends SharedProps {
+    roles: Role[];
+}
+
 export default function UserCreate() {
+    const { roles } = usePage<Props>().props;
+
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
-        role: 'user',
+        roles: [] as number[],
     });
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route('admin.users.store'));
+    };
+
+    const toggleRole = (roleId: number) => {
+        const updatedRoles = data.roles.includes(roleId)
+            ? data.roles.filter((id) => id !== roleId)
+            : [...data.roles, roleId];
+        setData('roles', updatedRoles);
     };
 
     return (
@@ -46,7 +60,7 @@ export default function UserCreate() {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E8DFD4' }}>
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
                             Add User
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -100,37 +114,6 @@ export default function UserCreate() {
                                 )}
                             </div>
                             <div className="space-y-1">
-                                <Label>Role *</Label>
-                                <Select
-                                    value={data.role}
-                                    onValueChange={(v: string) =>
-                                        setData('role', v)
-                                    }
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="user">
-                                            User — Complete assessments, manage
-                                            risks
-                                        </SelectItem>
-                                        <SelectItem value="auditor">
-                                            Auditor — Read-only access to all
-                                            data
-                                        </SelectItem>
-                                        <SelectItem value="admin">
-                                            Admin — Full system access
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors.role && (
-                                    <p className="text-xs text-red-500">
-                                        {errors.role}
-                                    </p>
-                                )}
-                            </div>
-                            <div className="space-y-1">
                                 <Label htmlFor="password">Password *</Label>
                                 <Input
                                     id="password"
@@ -169,6 +152,54 @@ export default function UserCreate() {
                         </CardContent>
                     </Card>
 
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base">
+                                Assign Roles *
+                            </CardTitle>
+                            <CardDescription>
+                                Select one or more roles for this user
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {roles.length > 0 ? (
+                                roles.map((role) => (
+                                    <div
+                                        key={role.id}
+                                        className="flex items-center gap-3 rounded border border-border p-3"
+                                    >
+                                        <Checkbox
+                                            id={`role-${role.id}`}
+                                            checked={data.roles.includes(
+                                                role.id,
+                                            )}
+                                            onCheckedChange={() =>
+                                                toggleRole(role.id)
+                                            }
+                                        />
+                                        <div className="flex-1">
+                                            <Label
+                                                htmlFor={`role-${role.id}`}
+                                                className="font-medium capitalize"
+                                            >
+                                                {role.name}
+                                            </Label>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-sm text-muted-foreground">
+                                    No roles available
+                                </p>
+                            )}
+                            {errors.roles && (
+                                <p className="text-xs text-red-500">
+                                    {errors.roles}
+                                </p>
+                            )}
+                        </CardContent>
+                    </Card>
+
                     <div className="flex justify-end gap-3">
                         <Link href={route('admin.users.index')}>
                             <Button variant="outline">Cancel</Button>
@@ -187,3 +218,4 @@ export default function UserCreate() {
         </AdminLayout>
     );
 }
+

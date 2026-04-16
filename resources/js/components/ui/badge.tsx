@@ -16,16 +16,16 @@ const badgeVariants = cva(
       variant: {
         // Brass — default emphasis
         default:
-          "border-[#C9A962]/50 bg-[#C9A962]/15 text-[#C9A962]",
+          "border-[#408A71]/50 bg-[#408A71]/15 text-[#408A71]",
         // Crimson — secondary/special
         secondary:
-          "border-[#8B2635]/50 bg-[#8B2635]/15 text-[#C9A962]",
+          "border-[#8B2635]/50 bg-[#8B2635]/15 text-[#408A71]",
         // Crimson — destructive
         destructive:
-          "border-[#8B2635]/60 bg-[#8B2635]/20 text-[#E8DFD4]",
+          "border-[#8B2635]/60 bg-[#8B2635]/20 text-[#E0F5EC]",
         // Outlined — subtle
         outline:
-          "border-[#4A3F35] bg-transparent text-[#9C8B7A]",
+          "border-[#285A48] bg-transparent text-[#7ABFA8]",
       },
     },
     defaultVariants: {

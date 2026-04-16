@@ -18,7 +18,10 @@ class RemediationTaskController extends Controller
     {
         $today = now()->toDateString();
 
-        $query = RemediationTask::with(['control.framework', 'assessment', 'createdBy'])
+        $user = Auth::user();
+        $scoped = fn () => $user->organisationScope(RemediationTask::query());
+
+        $query = $scoped()->with(['control.framework', 'assessment', 'createdBy'])
             ->when($request->status && $request->status !== 'all', fn ($q) => $q->where('status', $request->status)
             )
             ->when($request->priority && $request->priority !== 'all', fn ($q) => $q->where('priority', $request->priority)
@@ -42,19 +45,15 @@ class RemediationTaskController extends Controller
 
         $tasks = $query->through(fn ($task) => $this->mapTask($task));
 
-        // KPI counts — one aggregate query replaces RemediationTask::all() + PHP filtering
-        $statsRow = DB::table('remediation_tasks')->selectRaw("
-            COUNT(*) AS total,
-            SUM(CASE WHEN status IN ('open', 'in_progress') THEN 1 ELSE 0 END) AS open_in_progress
-        ")->first();
+        // KPI counts scoped to this user's organisation
         $stats = [
-            'total' => (int) ($statsRow->total ?? 0),
-            'open_in_progress' => (int) ($statsRow->open_in_progress ?? 0),
-            'overdue' => RemediationTask::whereNotIn('status', ['completed', 'cancelled'])
+            'total' => $scoped()->count(),
+            'open_in_progress' => $scoped()->whereIn('status', ['open', 'in_progress'])->count(),
+            'overdue' => $scoped()->whereNotIn('status', ['completed', 'cancelled'])
                 ->whereNotNull('due_date')
                 ->where('due_date', '<', $today)
                 ->count(),
-            'completed_this_month' => RemediationTask::where('status', 'completed')
+            'completed_this_month' => $scoped()->where('status', 'completed')
                 ->whereMonth('closed_at', now()->month)
                 ->whereYear('closed_at', now()->year)
                 ->count(),
@@ -106,6 +105,7 @@ class RemediationTaskController extends Controller
         $task = RemediationTask::create([
             ...$validated,
             'created_by' => Auth::id(),
+            'corporation_id' => Auth::user()->corporation_id,
             'closed_at' => in_array($validated['status'], ['completed', 'cancelled']) ? now() : null,
         ]);
 

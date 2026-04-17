@@ -3,10 +3,6 @@ import { RecentAlerts } from '@/components/admin/recent-alerts';
 import { RiskHeatmap } from '@/components/admin/risk-heatmap';
 import { RiskTrendChart } from '@/components/admin/risk-trend-chart';
 import { TopRisks } from '@/components/admin/top-risks';
-import {
-    ScrollFocusMode,
-    FocusScrollWrapper,
-} from '@/components/ui/scroll-focus-mode';
 import AdminLayout from '@/layouts/admin-layout';
 import { Link, usePage } from '@inertiajs/react';
 import type { SharedProps } from '@/types';
@@ -652,40 +648,6 @@ export default function AdminDashboard({
         (n) => n.type === 'critical_risk' || n.type === 'overdue_risk',
     );
 
-    // Heatmap expansion state based on scroll position
-    const [heatmapScale, setHeatmapScale] = useState(1);
-    const heatmapRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            if (!heatmapRef.current) return;
-
-            const rect = heatmapRef.current.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            
-            // Distance from center of viewport to center of element
-            const elementCenter = rect.top + rect.height / 2;
-            const viewportCenter = windowHeight / 2;
-            const distance = Math.abs(elementCenter - viewportCenter);
-            
-            // Maximum distance (beyond which we don't expand)
-            const maxDistance = windowHeight * 0.6;
-            
-            // Calculate scale: expands as element moves toward center
-            if (distance < maxDistance) {
-                const progress = 1 - (distance / maxDistance);
-                const scale = 1 + progress * 0.6; // Expands to 1.6x
-                setHeatmapScale(scale);
-            } else {
-                setHeatmapScale(1);
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); // Call once on mount
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
     // Unified stat tiles (merges MetricsCards + KpiCards into one bar)
     const tiles: StatTile[] = [
         {
@@ -749,7 +711,6 @@ export default function AdminDashboard({
 
     return (
         <AdminLayout>
-            <ScrollFocusMode />
             <div className="space-y-6">
                 <DashboardHero healthScore={healthScore} />
 
@@ -814,30 +775,14 @@ export default function AdminDashboard({
 
                 <ExecutiveSummaryCard />
 
-                <FocusScrollWrapper className="grid gap-4 lg:grid-cols-3">
-                    <div
-                        ref={heatmapRef}
-                        className="animate-in slide-in-from-bottom-4 lg:col-span-2 origin-center transition-transform duration-300 ease-out"
-                        style={{
-                            animationDelay: '0ms',
-                            transform: `scaleX(${1 + (heatmapScale - 1) * 0.6}) scaleY(${1 - (heatmapScale - 1) * 0.4})`,
-                        }}
-                    >
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <div className="animate-in slide-in-from-bottom-4 lg:col-span-2">
                         <RiskHeatmap risks={heatmap} />
                     </div>
-                    {heatmapScale < 1.15 && (
-                        <div
-                            className="animate-in slide-in-from-bottom-4 transition-opacity duration-300"
-                            style={{
-                                animationDelay: '100ms',
-                                opacity: heatmapScale < 1.15 ? 1 : 0,
-                                pointerEvents: heatmapScale < 1.15 ? 'auto' : 'none',
-                            }}
-                        >
-                            <HealthBreakdown healthScore={healthScore} />
-                        </div>
-                    )}
-                </FocusScrollWrapper>
+                    <div className="animate-in slide-in-from-bottom-4" style={{ animationDelay: '100ms' }}>
+                        <HealthBreakdown healthScore={healthScore} />
+                    </div>
+                </div>
 
                 <div
                     className="animate-in slide-in-from-bottom-4"

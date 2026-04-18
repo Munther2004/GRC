@@ -13,10 +13,10 @@ class RiskTreatmentPlan extends Model
     ];
 
     protected $casts = [
-        'due_date'             => 'date',
-        'progress'             => 'integer',
-        'residual_likelihood'  => 'integer',
-        'residual_impact'      => 'integer',
+        'due_date' => 'date',
+        'progress' => 'integer',
+        'residual_likelihood' => 'integer',
+        'residual_impact' => 'integer',
     ];
 
     public function risk()
@@ -29,16 +29,26 @@ class RiskTreatmentPlan extends Model
         if ($this->residual_likelihood && $this->residual_impact) {
             return $this->residual_likelihood * $this->residual_impact;
         }
+
         return null;
     }
 
     public function getResidualLevelAttribute(): ?string
     {
         $score = $this->residual_score;
-        if ($score === null) return null;
-        if ($score >= 15) return 'critical';
-        if ($score >= 10) return 'high';
-        if ($score >= 5)  return 'medium';
+        if ($score === null) {
+            return null;
+        }
+        if ($score >= 15) {
+            return 'critical';
+        }
+        if ($score >= 10) {
+            return 'high';
+        }
+        if ($score >= 5) {
+            return 'medium';
+        }
+
         return 'low';
     }
 }

@@ -18,19 +18,18 @@ class RemediationTaskController extends Controller
     {
         $today = now()->toDateString();
 
-        $query = RemediationTask::with(['control.framework', 'assessment', 'createdBy'])
-            ->when($request->status && $request->status !== 'all', fn ($q) =>
-                $q->where('status', $request->status)
+        $user = Auth::user();
+        $scoped = fn () => $user->organisationScope(RemediationTask::query());
+
+        $query = $scoped()->with(['control.framework', 'assessment', 'createdBy'])
+            ->when($request->status && $request->status !== 'all', fn ($q) => $q->where('status', $request->status)
             )
-            ->when($request->priority && $request->priority !== 'all', fn ($q) =>
-                $q->where('priority', $request->priority)
+            ->when($request->priority && $request->priority !== 'all', fn ($q) => $q->where('priority', $request->priority)
             )
-            ->when($request->search, fn ($q) =>
-                $q->where('title', 'like', "%{$request->search}%")
-                  ->orWhereHas('control', fn ($cq) =>
-                      $cq->where('control_id', 'like', "%{$request->search}%")
-                         ->orWhere('title', 'like', "%{$request->search}%")
-                  )
+            ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
+                ->orWhereHas('control', fn ($cq) => $cq->where('control_id', 'like', "%{$request->search}%")
+                    ->orWhere('title', 'like', "%{$request->search}%")
+                )
             )
             // Overdue first, then by due_date ASC, then by priority
             ->orderByRaw("
@@ -46,22 +45,18 @@ class RemediationTaskController extends Controller
 
         $tasks = $query->through(fn ($task) => $this->mapTask($task));
 
-        // KPI counts — one aggregate query replaces RemediationTask::all() + PHP filtering
-        $statsRow = DB::table('remediation_tasks')->selectRaw("
-            COUNT(*) AS total,
-            SUM(CASE WHEN status IN ('open', 'in_progress') THEN 1 ELSE 0 END) AS open_in_progress
-        ")->first();
+        // KPI counts scoped to this user's organisation
         $stats = [
-            'total'                => (int) ($statsRow->total           ?? 0),
-            'open_in_progress'     => (int) ($statsRow->open_in_progress ?? 0),
-            'overdue'              => RemediationTask::whereNotIn('status', ['completed', 'cancelled'])
-                                          ->whereNotNull('due_date')
-                                          ->where('due_date', '<', $today)
-                                          ->count(),
-            'completed_this_month' => RemediationTask::where('status', 'completed')
-                                          ->whereMonth('closed_at', now()->month)
-                                          ->whereYear('closed_at', now()->year)
-                                          ->count(),
+            'total' => $scoped()->count(),
+            'open_in_progress' => $scoped()->whereIn('status', ['open', 'in_progress'])->count(),
+            'overdue' => $scoped()->whereNotIn('status', ['completed', 'cancelled'])
+                ->whereNotNull('due_date')
+                ->where('due_date', '<', $today)
+                ->count(),
+            'completed_this_month' => $scoped()->where('status', 'completed')
+                ->whereMonth('closed_at', now()->month)
+                ->whereYear('closed_at', now()->year)
+                ->count(),
         ];
 
         // Controls for the "Add Task" form — grouped by framework
@@ -72,10 +67,10 @@ class RemediationTaskController extends Controller
             ->limit(500)
             ->get(['id', 'control_id', 'title', 'framework_id'])
             ->map(fn ($c) => [
-                'id'         => $c->id,
+                'id' => $c->id,
                 'control_id' => $c->control_id,
-                'title'      => $c->title,
-                'framework'  => $c->framework->short_name,
+                'title' => $c->title,
+                'framework' => $c->framework->short_name,
             ]);
 
         $assessments = Assessment::orderBy('created_at', 'desc')
@@ -83,25 +78,25 @@ class RemediationTaskController extends Controller
             ->map(fn ($a) => ['id' => $a->id, 'title' => $a->title]);
 
         return Inertia::render('remediation-tasks/index', [
-            'tasks'       => $tasks,
-            'stats'       => $stats,
-            'controls'    => $controls,
+            'tasks' => $tasks,
+            'stats' => $stats,
+            'controls' => $controls,
             'assessments' => $assessments,
-            'filters'     => $request->only(['search', 'status', 'priority']),
+            'filters' => $request->only(['search', 'status', 'priority']),
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'control_id'    => 'required|exists:controls,id',
+            'control_id' => 'required|exists:controls,id',
             'assessment_id' => 'nullable|exists:assessments,id',
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'assigned_to'   => 'nullable|string|max:255',
-            'due_date'      => 'nullable|date',
-            'priority'      => 'required|in:critical,high,medium,low',
-            'status'        => 'required|in:open,in_progress,completed,cancelled',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'assigned_to' => 'nullable|string|max:255',
+            'due_date' => 'nullable|date',
+            'priority' => 'required|in:critical,high,medium,low',
+            'status' => 'required|in:open,in_progress,completed,cancelled',
             'completion_notes' => 'nullable|string',
         ]);
 
@@ -110,7 +105,8 @@ class RemediationTaskController extends Controller
         $task = RemediationTask::create([
             ...$validated,
             'created_by' => Auth::id(),
-            'closed_at'  => in_array($validated['status'], ['completed', 'cancelled']) ? now() : null,
+            'corporation_id' => Auth::user()->corporation_id,
+            'closed_at' => in_array($validated['status'], ['completed', 'cancelled']) ? now() : null,
         ]);
 
         AuditLog::record(
@@ -127,16 +123,16 @@ class RemediationTaskController extends Controller
     public function update(Request $request, RemediationTask $task)
     {
         $validated = $request->validate([
-            'title'            => 'required|string|max:255',
-            'description'      => 'nullable|string',
-            'assigned_to'      => 'nullable|string|max:255',
-            'due_date'         => 'nullable|date',
-            'priority'         => 'required|in:critical,high,medium,low',
-            'status'           => 'required|in:open,in_progress,completed,cancelled',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'assigned_to' => 'nullable|string|max:255',
+            'due_date' => 'nullable|date',
+            'priority' => 'required|in:critical,high,medium,low',
+            'status' => 'required|in:open,in_progress,completed,cancelled',
             'completion_notes' => 'nullable|string',
         ]);
 
-        $wasOpen = !in_array($task->status, ['completed', 'cancelled']);
+        $wasOpen = ! in_array($task->status, ['completed', 'cancelled']);
         $nowClosed = in_array($validated['status'], ['completed', 'cancelled']);
 
         $task->update([
@@ -158,7 +154,7 @@ class RemediationTaskController extends Controller
     public function destroy(RemediationTask $task)
     {
         $title = $task->title;
-        $id    = $task->id;
+        $id = $task->id;
         $task->delete();
 
         AuditLog::record(
@@ -180,7 +176,7 @@ class RemediationTaskController extends Controller
         }
 
         $task->update([
-            'status'    => 'completed',
+            'status' => 'completed',
             'closed_at' => now(),
         ]);
 
@@ -200,26 +196,26 @@ class RemediationTaskController extends Controller
     private function mapTask(RemediationTask $task): array
     {
         return [
-            'id'               => $task->id,
-            'title'            => $task->title,
-            'description'      => $task->description,
-            'assigned_to'      => $task->assigned_to,
-            'due_date'         => $task->due_date?->format('Y-m-d'),
-            'priority'         => $task->priority,
-            'status'           => $task->status,
+            'id' => $task->id,
+            'title' => $task->title,
+            'description' => $task->description,
+            'assigned_to' => $task->assigned_to,
+            'due_date' => $task->due_date?->format('Y-m-d'),
+            'priority' => $task->priority,
+            'status' => $task->status,
             'completion_notes' => $task->completion_notes,
-            'auto_closed'      => $task->auto_closed,
-            'closed_at'        => $task->closed_at?->toDateTimeString(),
-            'is_overdue'       => $task->is_overdue,
-            'created_at'       => $task->created_at->toDateTimeString(),
+            'auto_closed' => $task->auto_closed,
+            'closed_at' => $task->closed_at?->toDateTimeString(),
+            'is_overdue' => $task->is_overdue,
+            'created_at' => $task->created_at->toDateTimeString(),
             'control' => [
-                'id'         => $task->control->id,
+                'id' => $task->control->id,
                 'control_id' => $task->control->control_id,
-                'title'      => $task->control->title,
-                'framework'  => $task->control->framework->short_name,
+                'title' => $task->control->title,
+                'framework' => $task->control->framework->short_name,
             ],
-            'assessment'   => $task->assessment ? [
-                'id'    => $task->assessment->id,
+            'assessment' => $task->assessment ? [
+                'id' => $task->assessment->id,
                 'title' => $task->assessment->title,
             ] : null,
             'created_by_name' => $task->createdBy?->name,

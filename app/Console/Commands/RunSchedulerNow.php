@@ -11,17 +11,18 @@ use Illuminate\Support\Facades\Cache;
 
 class RunSchedulerNow extends Command
 {
-    protected $signature   = 'scheduler:run-now';
+    protected $signature = 'scheduler:run-now';
+
     protected $description = 'Manually trigger all nightly scheduled jobs immediately';
 
     public function handle(): void
     {
         $this->info('Running nightly scheduled jobs...');
 
-        $this->runJob('CheckExpiredEvidenceJob',    new CheckExpiredEvidenceJob());
-        $this->runJob('CheckExpiringEvidenceJob',   new CheckExpiringEvidenceJob());
-        $this->runJob('CheckOverdueRisksJob',       new CheckOverdueRisksJob());
-        $this->runJob('CheckOverdueAssessmentsJob', new CheckOverdueAssessmentsJob());
+        $this->runJob('CheckExpiredEvidenceJob', new CheckExpiredEvidenceJob);
+        $this->runJob('CheckExpiringEvidenceJob', new CheckExpiringEvidenceJob);
+        $this->runJob('CheckOverdueRisksJob', new CheckOverdueRisksJob);
+        $this->runJob('CheckOverdueAssessmentsJob', new CheckOverdueAssessmentsJob);
 
         Cache::put('scheduler_last_run', now()->toDateTimeString());
 
@@ -32,6 +33,6 @@ class RunSchedulerNow extends Command
     {
         $this->line("  → Running {$name}...");
         $job->handle();
-        $this->line("    ✓ Done");
+        $this->line('    ✓ Done');
     }
 }

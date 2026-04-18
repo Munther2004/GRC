@@ -27,13 +27,13 @@ class CheckOverdueAssessmentsJob implements ShouldQueue
                     );
 
                     AuditLog::create([
-                        'user_id'     => null,
-                        'user_name'   => 'System',
-                        'action'      => 'updated',
-                        'model_type'  => 'Assessment',
-                        'model_id'    => $assessment->id,
+                        'user_id' => null,
+                        'user_name' => 'System',
+                        'action' => 'updated',
+                        'model_type' => 'Assessment',
+                        'model_id' => $assessment->id,
                         'description' => "Scheduler: Assessment #{$assessment->id} marked as overdue",
-                        'ip_address'  => null,
+                        'ip_address' => null,
                     ]);
                 }
             });

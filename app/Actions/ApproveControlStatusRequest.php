@@ -22,30 +22,30 @@ class ApproveControlStatusRequest
 {
     public function execute(ControlStatusRequest $statusRequest, string $reviewerNotes = ''): void
     {
-        $control   = $statusRequest->control;
+        $control = $statusRequest->control;
         $oldStatus = $control->current_status;
         $newStatus = $statusRequest->requested_status === 'not_set'
             ? null
             : $statusRequest->requested_status;
 
         $control->update([
-            'current_status'     => $newStatus,
+            'current_status' => $newStatus,
             'last_remediated_at' => now(),
-            'remediation_notes'  => $statusRequest->justification ?? $control->remediation_notes,
+            'remediation_notes' => $statusRequest->justification ?? $control->remediation_notes,
         ]);
 
         ControlStatusHistory::create([
             'control_id' => $control->id,
-            'user_id'    => Auth::id(),
+            'user_id' => Auth::id(),
             'old_status' => $oldStatus,
             'new_status' => $newStatus ?? 'not_set',
-            'notes'      => trim(implode(' — ', array_filter([
+            'notes' => trim(implode(' — ', array_filter([
                 $statusRequest->justification,
                 $reviewerNotes ? "Reviewer: {$reviewerNotes}" : null,
             ]))),
         ]);
 
-        $engine = new RulesEngine();
+        $engine = new RulesEngine;
         $control->load('risks');
 
         if ($newStatus === 'non_compliant') {
@@ -54,7 +54,7 @@ class ApproveControlStatusRequest
             $engine->applyRule2ForControl($control, $oldStatus ?? '');
 
             // Remove AI-generated risks linked to this control
-            $aiRisks      = $control->risks()->where('auto_generated', true)->get();
+            $aiRisks = $control->risks()->where('auto_generated', true)->get();
             $removedCount = $aiRisks->count();
             foreach ($aiRisks as $risk) {
                 $risk->controls()->detach();
@@ -63,8 +63,8 @@ class ApproveControlStatusRequest
             if ($removedCount > 0) {
                 AuditLog::record(
                     'deleted', 'Control', $control->id,
-                    "Control '{$control->control_id}' marked Compliant — {$removedCount} AI-generated risk" .
-                    ($removedCount !== 1 ? 's' : '') . " removed"
+                    "Control '{$control->control_id}' marked Compliant — {$removedCount} AI-generated risk".
+                    ($removedCount !== 1 ? 's' : '').' removed'
                 );
             }
 
@@ -75,9 +75,9 @@ class ApproveControlStatusRequest
 
             foreach ($openTasks as $remTask) {
                 $remTask->update([
-                    'status'           => 'completed',
-                    'auto_closed'      => true,
-                    'closed_at'        => now(),
+                    'status' => 'completed',
+                    'auto_closed' => true,
+                    'closed_at' => now(),
                     'completion_notes' => "Auto-closed: control {$control->control_id} became compliant.",
                 ]);
 
@@ -91,10 +91,10 @@ class ApproveControlStatusRequest
                 if ($remTask->created_by) {
                     Notification::create([
                         'user_id' => $remTask->created_by,
-                        'type'    => 'remediation_task_auto_closed',
-                        'title'   => 'Remediation Task Auto-Closed',
+                        'type' => 'remediation_task_auto_closed',
+                        'title' => 'Remediation Task Auto-Closed',
                         'message' => "Your remediation task \"{$remTask->title}\" was automatically closed because {$control->control_id} is now compliant.",
-                        'url'     => '/remediation-tasks',
+                        'url' => '/remediation-tasks',
                         'is_read' => false,
                     ]);
                 }

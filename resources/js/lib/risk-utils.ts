@@ -7,27 +7,31 @@
  */
 
 export interface ValidationResult {
-    error?:                 boolean;
-    valid:                  boolean;
+    error?: boolean;
+    valid: boolean;
     recommended_likelihood: number;
-    recommended_impact:     number;
-    reasoning:              string;
-    confidence:             string;
+    recommended_impact: number;
+    reasoning: string;
+    confidence: string;
 }
 
-/** Colour classes for each 1-5 slider value on the L/I badges. */
+/** Academia colour classes for each 1-5 slider value on the L/I badges. */
 export const levelColors: Record<number, string> = {
-    1: 'bg-green-100 text-green-700',
-    2: 'bg-lime-100 text-lime-700',
-    3: 'bg-yellow-100 text-yellow-700',
-    4: 'bg-orange-100 text-orange-700',
-    5: 'bg-red-100 text-red-700',
+    1: 'bg-[rgba(139,158,107,0.15)] text-[#B0E4CC]',
+    2: 'bg-[rgba(139,158,107,0.1)] text-[#B0E4CC]',
+    3: 'bg-[rgba(64,138,113,0.15)] text-[#408A71]',
+    4: 'bg-[rgba(176,120,64,0.15)] text-[#285A48]',
+    5: 'bg-[rgba(139,38,53,0.15)] text-[#8B2635]',
 };
 
-/** Risk-level label + colour for the score banner (threshold: ≥20 Critical, ≥13 High, ≥7 Medium). */
-export function levelFromScore(score: number): { label: string; color: string } {
-    if (score >= 20) return { label: 'Critical', color: 'text-red-500 bg-red-50 border-red-200' };
-    if (score >= 13) return { label: 'High',     color: 'text-orange-500 bg-orange-50 border-orange-200' };
-    if (score >= 7)  return { label: 'Medium',   color: 'text-yellow-600 bg-yellow-50 border-yellow-200' };
-    return                   { label: 'Low',     color: 'text-green-600 bg-green-50 border-green-200' };
+/** Risk-level label + inline style for the score banner. */
+export function levelFromScore(score: number): {
+    label: string;
+    color: string;
+    style: React.CSSProperties;
+} {
+    if (score >= 20) return { label: 'Critical', color: '', style: { color: 'var(--destructive)', background: 'rgba(var(--color-destructive) / 0.15)', borderColor: 'rgba(var(--color-destructive) / 0.4)' } };
+    if (score >= 13) return { label: 'High',     color: '', style: { color: 'var(--border)', background: 'rgba(var(--color-border) / 0.15)', borderColor: 'rgba(var(--color-border) / 0.4)' } };
+    if (score >= 7)  return { label: 'Medium',   color: '', style: { color: 'var(--primary)', background: 'rgba(var(--color-primary) / 0.15)', borderColor: 'rgba(var(--color-primary) / 0.4)' } };
+    return                  { label: 'Low',      color: '', style: { color: 'var(--chart-1)', background: 'rgba(var(--color-chart-1) / 0.15)', borderColor: 'rgba(var(--color-chart-1) / 0.4)' } };
 }

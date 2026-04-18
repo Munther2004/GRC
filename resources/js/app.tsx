@@ -4,6 +4,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
 import { initializeTheme } from '@/hooks/use-appearance';
+import { initializeThemePreset } from '@/hooks/use-theme';
+import { initializeFont } from '@/hooks/use-font';
+import { initializePreferences } from '@/hooks/use-preferences';
 import { route } from '@/lib/routes';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -32,3 +35,6 @@ createInertiaApp({
 });
 
 initializeTheme();
+initializeThemePreset();
+initializeFont();
+initializePreferences();

@@ -6,20 +6,34 @@ export default function Error403() {
     return (
         <>
             <Head title="403 — Forbidden" />
-            <div className="min-h-screen bg-background dark flex items-center justify-center p-6">
-                <div className="text-center max-w-md">
-                    <div className="flex justify-center mb-6">
-                        <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center">
-                            <ShieldOff className="w-10 h-10 text-red-500" />
+            <div
+                className="flex min-h-screen items-center justify-center p-6"
+                style={{ background: '#091413' }}
+            >
+                <div className="max-w-md text-center">
+                    <div className="mb-6 flex justify-center">
+                        <div
+                            className="flex h-20 w-20 items-center justify-center rounded-full"
+                            style={{ background: 'rgba(139,38,53,0.12)', border: '1px solid rgba(139,38,53,0.4)' }}
+                        >
+                            <ShieldOff className="h-10 w-10" style={{ color: '#8B2635' }} strokeWidth={1.5} />
                         </div>
                     </div>
-                    <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-2">403</h1>
-                    <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-3">Access Denied</h2>
-                    <p className="text-gray-500 dark:text-gray-400 mb-8">
-                        You don't have permission to access this page. Contact your administrator if you believe this is a mistake.
+                    <p className="font-display mb-1 text-[10px] uppercase tracking-[0.3em]" style={{ color: '#7ABFA8' }}>
+                        Error
+                    </p>
+                    <h1 className="font-heading mb-2 text-7xl font-normal" style={{ color: '#8B2635' }}>
+                        403
+                    </h1>
+                    <h2 className="font-heading mb-3 text-xl font-normal" style={{ color: '#E0F5EC' }}>
+                        Access Denied
+                    </h2>
+                    <p className="font-body mb-8 italic" style={{ color: '#7ABFA8' }}>
+                        You don't have permission to access this page. Contact
+                        your administrator if you believe this is a mistake.
                     </p>
                     <Link href="/">
-                        <Button>Go to Dashboard</Button>
+                        <Button>Return to Dashboard</Button>
                     </Link>
                 </div>
             </div>

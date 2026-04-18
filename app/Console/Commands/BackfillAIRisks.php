@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 class BackfillAIRisks extends Command
 {
     protected $signature = 'risks:backfill-ai';
+
     protected $description = 'Generate AI risks for non-compliant controls that do not yet have one';
 
     public function handle(): void
@@ -32,24 +33,27 @@ class BackfillAIRisks extends Command
 
         if ($pending->isEmpty()) {
             $this->info('No controls require backfill. All non-compliant controls already have AI risks.');
+
             return;
         }
 
-        $generator = new AIRiskGenerator();
+        $generator = new AIRiskGenerator;
         $count = 0;
 
         foreach ($pending as $item) {
             $control = Control::with('framework')->find($item->control_id);
 
-            if (!$control) {
+            if (! $control) {
                 $this->warn("Control {$item->control_id} not found, skipping.");
+
                 continue;
             }
 
             $assessment = \App\Models\Assessment::find($item->assessment_id);
 
-            if (!$assessment) {
+            if (! $assessment) {
                 $this->warn("Assessment {$item->assessment_id} not found for control {$item->control_id}, skipping.");
+
                 continue;
             }
 

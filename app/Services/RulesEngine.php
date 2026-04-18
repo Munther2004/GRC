@@ -19,7 +19,9 @@ class RulesEngine
             ->get();
 
         foreach ($nonCompliantItems as $item) {
-            if (!$item->control) continue;
+            if (! $item->control) {
+                continue;
+            }
 
             foreach ($item->control->risks as $risk) {
                 if ($item->compliance_status === 'non_compliant') {
@@ -81,7 +83,9 @@ class RulesEngine
      */
     public function applyRule2ForControl(Control $control, string $oldStatus): void
     {
-        if ($oldStatus !== 'non_compliant') return;
+        if ($oldStatus !== 'non_compliant') {
+            return;
+        }
 
         foreach ($control->risks as $risk) {
             $oldLikelihood = $risk->likelihood;
@@ -114,7 +118,9 @@ class RulesEngine
             ->with(['control.risks'])
             ->get();
 
-        if ($compliantItems->isEmpty()) return;
+        if ($compliantItems->isEmpty()) {
+            return;
+        }
 
         // Batch: in one query, find which control IDs were previously non-compliant
         // in other completed assessments — avoids one subquery per item
@@ -123,15 +129,19 @@ class RulesEngine
         $previouslyNonCompliantControlIds = AssessmentItem::whereIn('control_id', $compliantControlIds)
             ->whereNot('assessment_id', $assessment->id)
             ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
-            ->whereHas('assessment', fn($q) => $q->where('status', 'completed'))
+            ->whereHas('assessment', fn ($q) => $q->where('status', 'completed'))
             ->pluck('control_id')
             ->flip()
             ->all();
 
         foreach ($compliantItems as $item) {
-            if (!$item->control) continue;
+            if (! $item->control) {
+                continue;
+            }
 
-            if (!isset($previouslyNonCompliantControlIds[$item->control_id])) continue;
+            if (! isset($previouslyNonCompliantControlIds[$item->control_id])) {
+                continue;
+            }
 
             foreach ($item->control->risks as $risk) {
                 $oldLikelihood = $risk->likelihood;

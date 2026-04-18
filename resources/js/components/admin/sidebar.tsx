@@ -3,6 +3,7 @@ import {
     AlertTriangle,
     BarChart3,
     Bell,
+    Building2,
     ClipboardList,
     Clock,
     FileCheck,
@@ -10,22 +11,20 @@ import {
     GitCompare,
     LayoutDashboard,
     LayoutGrid,
+    LogOut,
     ScrollText,
     Settings,
     Shield,
     Sliders,
     Sparkles,
+    Palette,
     Users,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type SharedProps = {
     auth: {
-        user: {
-            name: string
-            email: string
-            role: string
-        }
+        user: { name: string; email: string; role: string }
     }
     notifications: {
         unread_count: number
@@ -35,29 +34,31 @@ type SharedProps = {
 }
 
 const mainNavigation = [
-    { name: "Dashboard",         href: "/dashboard",         icon: LayoutDashboard, roles: ['admin', 'auditor', 'user'] },
-    { name: "AI Assistant",      href: "/chatbot",            icon: Sparkles,        roles: ['admin', 'auditor', 'user'] },
-    { name: "Risk Register",     href: "/risks",              icon: AlertTriangle,   roles: ['admin', 'auditor', 'user'] },
-    { name: "Assessments",       href: "/assessments",        icon: ClipboardList,   roles: ['admin', 'auditor', 'user'] },
-    { name: "Evidence",          href: "/evidence",           icon: FolderOpen,      roles: ['admin', 'auditor', 'user'] },
-    { name: "Gap Analysis",      href: "/gap-analysis",       icon: FileCheck,       roles: ['admin', 'auditor', 'user'] },
-    { name: "Crosswalk",         href: "/crosswalk",          icon: GitCompare,      roles: ['admin', 'auditor', 'user'] },
-    { name: "Controls Hub",      href: "/controls/hub",       icon: LayoutGrid,      roles: ['admin', 'auditor', 'user'] },
-    { name: "Remediation Tasks", href: "/remediation-tasks",  icon: ClipboardList,   roles: ['admin', 'user'], badgeKey: 'remediation' },
-    { name: "Reports",           href: "/reports",            icon: BarChart3,       roles: ['admin', 'auditor', 'user'] },
+    { name: "Dashboard",    href: "/dashboard",        icon: LayoutDashboard, roles: ['admin','auditor','user'] },
+    { name: "AI Assistant", href: "/chatbot",           icon: Sparkles,        roles: ['admin','auditor','user'] },
+    { name: "Risk Register",href: "/risks",             icon: AlertTriangle,   roles: ['admin','auditor','user'] },
+    { name: "Assessments",  href: "/assessments",       icon: ClipboardList,   roles: ['admin','auditor','user'] },
+    { name: "Evidence",     href: "/evidence",          icon: FolderOpen,      roles: ['admin','auditor','user'] },
+    { name: "Gap Analysis", href: "/gap-analysis",      icon: FileCheck,       roles: ['admin','auditor','user'] },
+    { name: "Crosswalk",    href: "/crosswalk",         icon: GitCompare,      roles: ['admin','auditor','user'] },
+    { name: "Controls Hub", href: "/controls/hub",      icon: LayoutGrid,      roles: ['admin','auditor','user'] },
+    { name: "Remediation",  href: "/remediation-tasks", icon: ClipboardList,   roles: ['admin','user'],           badgeKey: 'remediation' },
+    { name: "Reports",      href: "/reports",           icon: BarChart3,       roles: ['admin','auditor','user'] },
 ]
 
 const reviewNavigation = [
-    { name: "Approval Queue", href: "/controls/approvals", icon: Clock,      roles: ['admin', 'auditor'], badgeKey: 'approvals' },
-    { name: "Audit Logs",     href: "/audit-logs",         icon: ScrollText, roles: ['admin', 'auditor'] },
-    { name: "Notifications",  href: "/notifications",      icon: Bell,       roles: ['admin', 'auditor', 'user'], badgeKey: 'notifications' },
+    { name: "Approvals",     href: "/controls/approvals", icon: Clock,      roles: ['admin','auditor'], badgeKey: 'approvals' },
+    { name: "Audit Logs",    href: "/audit-logs",         icon: ScrollText, roles: ['admin','auditor'] },
+    { name: "Notifications", href: "/notifications",      icon: Bell,       roles: ['admin','auditor','user'], badgeKey: 'notifications' },
 ]
 
 const adminNavigation = [
-    { name: "Users & Roles",    href: "/admin/users",      icon: Users },
-    { name: "Frameworks",       href: "/admin/frameworks", icon: Shield },
-    { name: "Controls Library", href: "/admin/controls",   icon: Settings },
-    { name: "Risk Appetite",    href: "/risk-appetite",    icon: Sliders },
+    { name: "Users",            href: "/admin/users",           icon: Users    },
+    { name: "Corporations",     href: "/admin/corporations",    icon: Building2 },
+    { name: "Frameworks",       href: "/admin/frameworks",      icon: Shield   },
+    { name: "Controls Library", href: "/admin/controls",        icon: Settings },
+    { name: "Risk Appetite",    href: "/risk-appetite",         icon: Sliders  },
+    { name: "Appearance",       href: "/settings/appearance",   icon: Palette  },
 ]
 
 export function AdminSidebar() {
@@ -69,76 +70,79 @@ export function AdminSidebar() {
     const isAdmin   = auth.user.role === 'admin'
     const isAuditor = auth.user.role === 'auditor'
     const initials  = auth.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
-    const roleName  = isAdmin ? 'Administrator' : isAuditor ? 'Auditor' : 'User'
+    const roleName  = isAdmin ? 'Admin' : isAuditor ? 'Auditor' : 'Member'
 
-    const getBadge = (badgeKey?: string): number | undefined => {
-        if (!badgeKey) return undefined
-        if (badgeKey === 'notifications' && unreadCount > 0)          return unreadCount
-        if (badgeKey === 'approvals'     && pendingApprovals > 0)     return pendingApprovals
-        if (badgeKey === 'remediation'   && openRemediationTasks > 0) return openRemediationTasks
+    const getBadge = (key?: string): number | undefined => {
+        if (!key) return undefined
+        if (key === 'notifications' && unreadCount > 0)          return unreadCount
+        if (key === 'approvals'     && pendingApprovals > 0)     return pendingApprovals
+        if (key === 'remediation'   && openRemediationTasks > 0) return openRemediationTasks
         return undefined
     }
 
     return (
         <aside className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
-            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-sidebar border-r border-sidebar-border px-4 pb-4">
-
-                {/* Logo */}
-                <div className="flex h-16 shrink-0 items-center gap-3 px-2">
-                    <div className="w-8 h-8 bg-sidebar-primary rounded-sm flex items-center justify-center flex-shrink-0">
-                        <Shield className="w-4 h-4 text-sidebar-primary-foreground" />
+            <div
+                className="flex grow flex-col overflow-y-auto"
+                style={{ background: 'var(--sidebar)', borderRight: '1px solid var(--sidebar-border)' }}
+            >
+                {/* ── Wordmark ───────────────────────────────────────────── */}
+                <div
+                    className="flex h-16 shrink-0 items-center gap-3 px-5"
+                    style={{ borderBottom: '1px solid var(--sidebar-border)' }}
+                >
+                    <div
+                        className="flex items-center justify-center w-7 h-7 rounded-sm"
+                        style={{ border: '1px solid color-mix(in srgb, var(--sidebar-primary) 60%, transparent)', background: 'color-mix(in srgb, var(--sidebar-primary) 10%, transparent)' }}
+                    >
+                        <Shield className="w-3.5 h-3.5" style={{ color: 'var(--sidebar-primary)' }} strokeWidth={1.5} />
                     </div>
-                    <div>
-                        <p className="font-semibold text-sm text-sidebar-foreground leading-tight">GRC System</p>
-                        <p className="text-xs text-sidebar-foreground/50">Management Platform</p>
-                    </div>
+                    <span className="font-display text-xs uppercase tracking-[0.25em]" style={{ color: 'var(--sidebar-foreground)' }}>
+                        GRC
+                    </span>
+                    <span
+                        className="ml-auto font-display text-[9px] uppercase tracking-[0.2em] px-1.5 py-0.5 rounded-sm"
+                        style={{ color: 'var(--muted-foreground)', border: '1px solid var(--sidebar-border)' }}
+                    >
+                        {roleName}
+                    </span>
                 </div>
 
-                <nav className="flex flex-1 flex-col gap-y-6">
+                {/* Ornate divider */}
+                <div style={{ position: 'relative', height: '1px', margin: '0 16px', background: 'linear-gradient(90deg, transparent, var(--sidebar-border) 30%, var(--sidebar-primary) 50%, var(--sidebar-border) 70%, transparent)' }}>
+                    <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', color: 'var(--sidebar-primary)', fontSize: '8px', background: 'var(--sidebar)', padding: '0 8px' }}>✶</span>
+                </div>
 
-                    {/* Main Navigation — filtered by role */}
-                    <ul role="list" className="flex flex-col gap-y-1">
+                <nav className="flex flex-1 flex-col gap-5 px-3 py-4">
+                    {/* Main */}
+                    <ul className="flex flex-col gap-0.5">
                         {mainNavigation
                             .filter(item => item.roles.includes(auth.user.role))
-                            .map((item) => (
-                                <NavItem
-                                    key={item.name}
-                                    item={item}
-                                    currentUrl={url}
-                                    badge={getBadge((item as any).badgeKey)}
-                                />
+                            .map(item => (
+                                <NavItem key={item.name} item={item} currentUrl={url} badge={getBadge((item as any).badgeKey)} />
                             ))
                         }
                     </ul>
 
-                    {/* Review Section */}
+                    {/* Review */}
                     <div>
-                        <p className="px-3 text-xs font-semibold text-sidebar-foreground/40 uppercase tracking-wider mb-1">
-                            Review
-                        </p>
-                        <ul role="list" className="flex flex-col gap-y-1">
+                        <SectionLabel>Review</SectionLabel>
+                        <ul className="flex flex-col gap-0.5">
                             {reviewNavigation
                                 .filter(item => item.roles.includes(auth.user.role))
-                                .map((item) => (
-                                    <NavItem
-                                        key={item.name}
-                                        item={item}
-                                        currentUrl={url}
-                                        badge={getBadge((item as any).badgeKey)}
-                                    />
+                                .map(item => (
+                                    <NavItem key={item.name} item={item} currentUrl={url} badge={getBadge((item as any).badgeKey)} />
                                 ))
                             }
                         </ul>
                     </div>
 
-                    {/* Admin Section — Admin only */}
+                    {/* Admin */}
                     {isAdmin && (
                         <div>
-                            <p className="px-3 text-xs font-semibold text-sidebar-foreground/40 uppercase tracking-wider mb-1">
-                                Administration
-                            </p>
-                            <ul role="list" className="flex flex-col gap-y-1">
-                                {adminNavigation.map((item) => (
+                            <SectionLabel>Administration</SectionLabel>
+                            <ul className="flex flex-col gap-0.5">
+                                {adminNavigation.map(item => (
                                     <NavItem key={item.name} item={item} currentUrl={url} />
                                 ))}
                             </ul>
@@ -146,31 +150,35 @@ export function AdminSidebar() {
                     )}
                 </nav>
 
-                {/* User Footer */}
-                <div className="border-t border-sidebar-border pt-4">
-                    <div className="flex items-center gap-3 px-2">
-                        <div className="w-9 h-9 rounded-full bg-sidebar-primary flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm font-medium text-sidebar-primary-foreground">
-                                {initials}
-                            </span>
+                {/* ── User footer ───────────────────────────────────────── */}
+                <div style={{ borderTop: '1px solid var(--sidebar-border)', padding: '12px' }}>
+                    <div className="flex items-center gap-2.5 rounded px-2 py-1.5">
+                        {/* Initials medallion */}
+                        <div
+                            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                            style={{ background: 'color-mix(in srgb, var(--sidebar-primary) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--sidebar-primary) 50%, transparent)' }}
+                        >
+                            <span className="font-display text-[10px]" style={{ color: 'var(--sidebar-primary)' }}>{initials}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-sidebar-foreground truncate">
+                            <p className="font-heading text-sm truncate leading-tight" style={{ color: 'var(--sidebar-foreground)' }}>
                                 {auth.user.name}
                             </p>
-                            <p className="text-xs text-sidebar-foreground/50 truncate">{roleName}</p>
+                            <p className="font-body text-[11px] italic truncate leading-tight" style={{ color: 'var(--muted-foreground)' }}>
+                                {auth.user.email}
+                            </p>
                         </div>
                         <Link
                             href="/logout"
                             method="post"
                             as="button"
-                            className="text-sidebar-foreground/40 hover:text-sidebar-foreground transition-colors"
                             title="Log out"
+                            className="transition-colors duration-200"
+                            style={{ color: 'var(--muted-foreground)' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--sidebar-primary)')}
+                            onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
+                            <LogOut className="w-3.5 h-3.5" />
                         </Link>
                     </div>
                 </div>
@@ -179,27 +187,48 @@ export function AdminSidebar() {
     )
 }
 
-function NavItem({ item, currentUrl, badge }: { item: { name: string; href: string; icon: any }; currentUrl: string; badge?: number }) {
-    const isActive = currentUrl.startsWith(item.href) && (item.href !== '/dashboard' || currentUrl === '/dashboard')
+function SectionLabel({ children }: { children: React.ReactNode }) {
+    return (
+        <p className="px-3 pb-2 font-display text-[9px] uppercase tracking-[0.25em]" style={{ color: 'var(--muted-foreground)' }}>
+            {children}
+        </p>
+    )
+}
+
+function NavItem({
+    item,
+    currentUrl,
+    badge,
+}: {
+    item: { name: string; href: string; icon: any }
+    currentUrl: string
+    badge?: number
+}) {
+    const isActive = currentUrl.startsWith(item.href) &&
+        (item.href !== '/dashboard' || currentUrl === '/dashboard')
 
     return (
         <li>
             <Link
                 href={item.href}
                 className={cn(
-                    "group flex gap-x-3 rounded-lg p-3 text-sm font-medium leading-6 transition-colors",
-                    isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    "group flex items-center gap-2.5 rounded px-3 py-2 transition-all duration-200",
+                    "font-display text-[10px] uppercase tracking-[0.14em]",
                 )}
+                style={isActive
+                    ? { color: 'var(--sidebar-primary)', background: 'color-mix(in srgb, var(--sidebar-primary) 10%, transparent)', borderLeft: '2px solid var(--sidebar-primary)', paddingLeft: '10px' }
+                    : { color: 'var(--muted-foreground)', background: 'transparent', borderLeft: '2px solid transparent', paddingLeft: '10px' }
+                }
+                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.color = 'var(--sidebar-foreground)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--sidebar-primary) 8%, transparent)' } }}
+                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.color = 'var(--muted-foreground)'; e.currentTarget.style.background = 'transparent' } }}
             >
-                <item.icon className={cn(
-                    "h-5 w-5 shrink-0",
-                    isActive ? "text-sidebar-primary" : "text-sidebar-foreground/50"
-                )} />
-                <span className="flex-1">{item.name}</span>
+                <item.icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+                <span className="flex-1 truncate">{item.name}</span>
                 {badge !== undefined && badge > 0 && (
-                    <span className="min-w-[18px] h-[18px] px-1 bg-destructive rounded-full flex items-center justify-center text-[10px] font-bold text-destructive-foreground leading-none">
+                    <span
+                        className="font-display text-[9px] px-1.5 py-0.5 rounded-full tabular-nums"
+                        style={{ background: 'color-mix(in srgb, var(--destructive) 25%, transparent)', color: 'var(--sidebar-primary)', border: '1px solid color-mix(in srgb, var(--destructive) 40%, transparent)' }}
+                    >
                         {badge > 99 ? '99+' : badge}
                     </span>
                 )}

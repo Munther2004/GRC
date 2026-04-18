@@ -13,19 +13,23 @@ class AIService
     //   MODEL_DEFAULT    — complex reasoning tasks (risk scoring, evidence review, chatbot)
     //   MODEL_ANALYTICAL — long-form structured reports (executive summaries, gap analysis,
     //                      control explanations) where prose quality matters most
-    private const MODEL_DEFAULT    = 'claude-opus-4-5';
+    private const MODEL_DEFAULT = 'claude-opus-4-5';
+
     private const MODEL_ANALYTICAL = 'claude-sonnet-4-20250514';
 
     // ── API constants ──────────────────────────────────────────────────────────
-    private const API_URL     = 'https://api.anthropic.com/v1/messages';
+    private const API_URL = 'https://api.anthropic.com/v1/messages';
+
     private const API_VERSION = '2023-06-01';
 
     // ── Canonical verdict values ───────────────────────────────────────────────
     // All AI methods that return an evidence verdict MUST use exactly these strings.
     // Consumers (EvidenceScoringService, AssessmentComparisonController, frontend)
     // must match these values exactly — do not lowercase or underscore them.
-    public const VERDICT_ADEQUATE  = 'Adequate';
-    public const VERDICT_PARTIAL   = 'Partially Adequate';
+    public const VERDICT_ADEQUATE = 'Adequate';
+
+    public const VERDICT_PARTIAL = 'Partially Adequate';
+
     public const VERDICT_INSUFFICIENT = 'Insufficient';
 
     public const VERDICTS = [
@@ -39,30 +43,30 @@ class AIService
     /**
      * Single raw Anthropic API call. Every public AI method routes through here.
      *
-     * @param  array        $messages   Array of {role, content} turns.
-     *                                  Content may be a plain string or an array of
-     *                                  content blocks (multimodal: image, document, text).
-     * @param  string       $model      Use one of the MODEL_* class constants.
-     * @param  int          $maxTokens  Max completion tokens.
-     * @param  string|null  $system     Optional system prompt.
-     * @return string  Raw response text with markdown fences already stripped.
-     *                 Returns '' on any API or network failure (callers handle that).
+     * @param  array  $messages  Array of {role, content} turns.
+     *                           Content may be a plain string or an array of
+     *                           content blocks (multimodal: image, document, text).
+     * @param  string  $model  Use one of the MODEL_* class constants.
+     * @param  int  $maxTokens  Max completion tokens.
+     * @param  string|null  $system  Optional system prompt.
+     * @return string Raw response text with markdown fences already stripped.
+     *                Returns '' on any API or network failure (callers handle that).
      *
      * TODO(perf): Move long-running callers (reviewEvidence, generateGapAnalysis,
      *             generateExecutiveSummary) to queued Laravel jobs so HTTP requests
      *             are not held open during AI inference. See finding #3.
      */
     private function callClaudeApi(
-        array   $messages,
-        string  $model     = self::MODEL_DEFAULT,
-        int     $maxTokens = 1024,
-        ?string $system    = null,
+        array $messages,
+        string $model = self::MODEL_DEFAULT,
+        int $maxTokens = 1024,
+        ?string $system = null,
     ): string {
         try {
             $body = [
-                'model'      => $model,
+                'model' => $model,
                 'max_tokens' => $maxTokens,
-                'messages'   => $messages,
+                'messages' => $messages,
             ];
 
             if ($system !== null) {
@@ -71,17 +75,18 @@ class AIService
 
             $response = Http::withoutVerifying()
                 ->withHeaders([
-                    'x-api-key'         => config('services.anthropic.key'),
+                    'x-api-key' => config('services.anthropic.key'),
                     'anthropic-version' => self::API_VERSION,
-                    'Content-Type'      => 'application/json',
+                    'Content-Type' => 'application/json',
                 ])->post(self::API_URL, $body);
 
             if ($response->failed()) {
                 Log::error('AIService: API error', [
                     'status' => $response->status(),
-                    'body'   => $response->body(),
-                    'model'  => $model,
+                    'body' => $response->body(),
+                    'model' => $model,
                 ]);
+
                 return '';
             }
 
@@ -90,8 +95,9 @@ class AIService
         } catch (\Throwable $e) {
             Log::error('AIService: API exception', [
                 'message' => $e->getMessage(),
-                'model'   => $model,
+                'model' => $model,
             ]);
+
             return '';
         }
     }
@@ -102,9 +108,9 @@ class AIService
     {
         try {
             Log::info('validateRiskScores called', [
-                'title'      => $title,
+                'title' => $title,
                 'likelihood' => $likelihood,
-                'impact'     => $impact,
+                'impact' => $impact,
             ]);
 
             $prompt = <<<PROMPT
@@ -139,12 +145,12 @@ PROMPT;
 
             if (empty($raw)) {
                 return [
-                    'error'                  => true,
-                    'valid'                  => false,
+                    'error' => true,
+                    'valid' => false,
                     'recommended_likelihood' => $likelihood,
-                    'recommended_impact'     => $impact,
-                    'reasoning'              => 'AI validation unavailable. Please check your API configuration.',
-                    'confidence'             => 'low',
+                    'recommended_impact' => $impact,
+                    'reasoning' => 'AI validation unavailable. Please check your API configuration.',
+                    'confidence' => 'low',
                 ];
             }
 
@@ -152,37 +158,38 @@ PROMPT;
 
             Log::info('Parsed result', ['parsed' => $parsed]);
 
-            if (!is_array($parsed)) {
+            if (! is_array($parsed)) {
                 return [
-                    'error'                  => true,
-                    'valid'                  => false,
+                    'error' => true,
+                    'valid' => false,
                     'recommended_likelihood' => $likelihood,
-                    'recommended_impact'     => $impact,
-                    'reasoning'              => 'Could not parse AI response.',
-                    'confidence'             => 'low',
+                    'recommended_impact' => $impact,
+                    'reasoning' => 'Could not parse AI response.',
+                    'confidence' => 'low',
                 ];
             }
 
             return [
-                'valid'                  => (bool)   ($parsed['valid']                  ?? true),
+                'valid' => (bool) ($parsed['valid'] ?? true),
                 'recommended_likelihood' => max(1, min(5, (int) ($parsed['recommended_likelihood'] ?? $likelihood))),
-                'recommended_impact'     => max(1, min(5, (int) ($parsed['recommended_impact']     ?? $impact))),
-                'reasoning'              => (string)  ($parsed['reasoning']              ?? ''),
-                'confidence'             => in_array($parsed['confidence'] ?? '', ['high', 'medium', 'low'])
+                'recommended_impact' => max(1, min(5, (int) ($parsed['recommended_impact'] ?? $impact))),
+                'reasoning' => (string) ($parsed['reasoning'] ?? ''),
+                'confidence' => in_array($parsed['confidence'] ?? '', ['high', 'medium', 'low'])
                                                 ? $parsed['confidence'] : 'medium',
             ];
         } catch (\Throwable $e) {
             Log::error('validateRiskScores exception', [
                 'message' => $e->getMessage(),
-                'class'   => get_class($e),
+                'class' => get_class($e),
             ]);
+
             return [
-                'error'                  => true,
-                'valid'                  => false,
+                'error' => true,
+                'valid' => false,
                 'recommended_likelihood' => $likelihood,
-                'recommended_impact'     => $impact,
-                'reasoning'              => 'An unexpected error occurred during validation.',
-                'confidence'             => 'low',
+                'recommended_impact' => $impact,
+                'reasoning' => 'An unexpected error occurred during validation.',
+                'confidence' => 'low',
             ];
         }
     }
@@ -191,7 +198,7 @@ PROMPT;
      * Compliance chatbot — sends a user message with full conversation history and a live GRC
      * context snapshot to Claude, returning a plain-English markdown response.
      *
-     * @param  array<int, array{role: 'user'|'assistant', content: string}> $history
+     * @param  array<int, array{role: 'user'|'assistant', content: string}>  $history
      */
     public function complianceChatbot(string $userMessage, array $context, array $history = []): string
     {
@@ -211,7 +218,7 @@ PROMPT;
 
             $messages = [];
             foreach ($history as $turn) {
-                $role    = $turn['role']    ?? '';
+                $role = $turn['role'] ?? '';
                 $content = $turn['content'] ?? '';
                 if (in_array($role, ['user', 'assistant'], true) && $content !== '') {
                     $messages[] = ['role' => $role, 'content' => (string) $content];
@@ -220,10 +227,10 @@ PROMPT;
             $messages[] = ['role' => 'user', 'content' => $userMessage];
 
             $reply = $this->callClaudeApi(
-                messages:  $messages,
-                model:     self::MODEL_DEFAULT,
+                messages: $messages,
+                model: self::MODEL_DEFAULT,
                 maxTokens: 2048,
-                system:    $systemPrompt,
+                system: $systemPrompt,
             );
 
             if (empty($reply)) {
@@ -234,6 +241,7 @@ PROMPT;
 
         } catch (\Throwable $e) {
             Log::error('AIService::complianceChatbot exception', ['message' => $e->getMessage()]);
+
             return '';
         }
     }
@@ -244,20 +252,20 @@ PROMPT;
      * @param  array  $evidenceData  Metadata keys: control_title, control_description, framework,
      *                               evidence_title, evidence_description, file_name, file_type,
      *                               upload_date, expiry_date, uploaded_by
-     * @param  string $fileContent   Plain text, or base64-encoded bytes for images/PDFs.
-     * @param  string $contentType   'text' | 'image/png' | 'image/jpeg' | 'image/webp' |
+     * @param  string  $fileContent  Plain text, or base64-encoded bytes for images/PDFs.
+     * @param  string  $contentType  'text' | 'image/png' | 'image/jpeg' | 'image/webp' |
      *                               'image/gif' | 'application/pdf' | 'unsupported'
      * @return array{verdict: string, confidence: string, strengths: string, gaps: string, recommendation: string}
      */
     public function reviewEvidence(array $evidenceData, string $fileContent, string $contentType): array
     {
         $default = [
-            'verdict'        => self::VERDICT_INSUFFICIENT,
-            'confidence'     => 'Low',
-            'strengths'      => '',
-            'gaps'           => 'AI review could not be completed.',
+            'verdict' => self::VERDICT_INSUFFICIENT,
+            'confidence' => 'Low',
+            'strengths' => '',
+            'gaps' => 'AI review could not be completed.',
             'recommendation' => 'Please retry the AI review.',
-            'is_relevant'    => true,
+            'is_relevant' => true,
         ];
 
         try {
@@ -281,76 +289,79 @@ Return ONLY a JSON object with exactly these six fields: verdict, confidence, st
 PROMPT;
 
             $meta = implode("\n", [
-                'Control ID: '          . ($evidenceData['control_id']            ?? 'N/A'),
-                'Control Title: '       . ($evidenceData['control_title']         ?? 'N/A'),
-                'Control Description: ' . ($evidenceData['control_description']   ?? 'N/A'),
-                'Framework: '           . ($evidenceData['framework']             ?? 'N/A'),
-                'Evidence Title: '      . ($evidenceData['evidence_title']        ?? 'N/A'),
-                'Evidence Description: '. ($evidenceData['evidence_description']  ?? ''),
-                'File Name: '           . ($evidenceData['file_name']             ?? 'N/A'),
-                'File Type: '           . ($evidenceData['file_type']             ?? 'N/A'),
-                'Upload Date: '         . ($evidenceData['upload_date']           ?? 'N/A'),
-                'Expiry Date: '         . ($evidenceData['expiry_date']           ?? 'No expiry'),
-                'Uploaded By: '         . ($evidenceData['uploaded_by']           ?? 'Unknown'),
+                'Control ID: '.($evidenceData['control_id'] ?? 'N/A'),
+                'Control Title: '.($evidenceData['control_title'] ?? 'N/A'),
+                'Control Description: '.($evidenceData['control_description'] ?? 'N/A'),
+                'Framework: '.($evidenceData['framework'] ?? 'N/A'),
+                'Evidence Title: '.($evidenceData['evidence_title'] ?? 'N/A'),
+                'Evidence Description: '.($evidenceData['evidence_description'] ?? ''),
+                'File Name: '.($evidenceData['file_name'] ?? 'N/A'),
+                'File Type: '.($evidenceData['file_type'] ?? 'N/A'),
+                'Upload Date: '.($evidenceData['upload_date'] ?? 'N/A'),
+                'Expiry Date: '.($evidenceData['expiry_date'] ?? 'No expiry'),
+                'Uploaded By: '.($evidenceData['uploaded_by'] ?? 'Unknown'),
             ]);
 
             // Build message content — multimodal for images/PDFs, plain text otherwise
             if (str_starts_with($contentType, 'image/')) {
                 $userContent = [
                     ['type' => 'image', 'source' => [
-                        'type'       => 'base64',
+                        'type' => 'base64',
                         'media_type' => $contentType,
-                        'data'       => $fileContent,
+                        'data' => $fileContent,
                     ]],
-                    ['type' => 'text', 'text' => $meta . "\n\nThe image above is the uploaded evidence file. Assess it thoroughly."],
+                    ['type' => 'text', 'text' => $meta."\n\nThe image above is the uploaded evidence file. Assess it thoroughly."],
                 ];
             } elseif ($contentType === 'application/pdf') {
                 $userContent = [
                     ['type' => 'document', 'source' => [
-                        'type'       => 'base64',
+                        'type' => 'base64',
                         'media_type' => 'application/pdf',
-                        'data'       => $fileContent,
+                        'data' => $fileContent,
                     ]],
-                    ['type' => 'text', 'text' => $meta . "\n\nThe PDF above is the uploaded evidence file. Assess it thoroughly."],
+                    ['type' => 'text', 'text' => $meta."\n\nThe PDF above is the uploaded evidence file. Assess it thoroughly."],
                 ];
             } elseif ($contentType === 'unsupported') {
-                $userContent = $meta . "\n\nNote: " . $fileContent . "\n\nPlease assess based on the metadata above.";
+                $userContent = $meta."\n\nNote: ".$fileContent."\n\nPlease assess based on the metadata above.";
             } else {
-                $userContent = $meta . "\n\n--- FILE CONTENT ---\n" . $fileContent;
+                $userContent = $meta."\n\n--- FILE CONTENT ---\n".$fileContent;
             }
 
             $text = $this->callClaudeApi(
-                messages:  [['role' => 'user', 'content' => $userContent]],
-                model:     self::MODEL_DEFAULT,
+                messages: [['role' => 'user', 'content' => $userContent]],
+                model: self::MODEL_DEFAULT,
                 maxTokens: 1024,
-                system:    $systemPrompt,
+                system: $systemPrompt,
             );
 
             if (empty($text)) {
                 Log::error('AIService::reviewEvidence: empty response');
+
                 return $default;
             }
 
             $parsed = json_decode($text, true);
 
-            if (!is_array($parsed)) {
+            if (! is_array($parsed)) {
                 Log::warning('AIService::reviewEvidence: invalid JSON', ['response' => $text]);
+
                 return $default;
             }
 
             return [
-                'verdict'        => in_array($parsed['verdict'] ?? '', self::VERDICTS, true)
+                'verdict' => in_array($parsed['verdict'] ?? '', self::VERDICTS, true)
                     ? $parsed['verdict'] : self::VERDICT_INSUFFICIENT,
-                'confidence'     => in_array($parsed['confidence'] ?? '', ['High', 'Medium', 'Low'], true)
+                'confidence' => in_array($parsed['confidence'] ?? '', ['High', 'Medium', 'Low'], true)
                     ? $parsed['confidence'] : 'Medium',
-                'strengths'      => (string) ($parsed['strengths']      ?? ''),
-                'gaps'           => (string) ($parsed['gaps']           ?? ''),
+                'strengths' => (string) ($parsed['strengths'] ?? ''),
+                'gaps' => (string) ($parsed['gaps'] ?? ''),
                 'recommendation' => (string) ($parsed['recommendation'] ?? ''),
-                'is_relevant'    => isset($parsed['is_relevant']) ? (bool) $parsed['is_relevant'] : true,
+                'is_relevant' => isset($parsed['is_relevant']) ? (bool) $parsed['is_relevant'] : true,
             ];
 
         } catch (\Throwable $e) {
             Log::error('AIService::reviewEvidence exception', ['message' => $e->getMessage()]);
+
             return $default;
         }
     }
@@ -359,13 +370,13 @@ PROMPT;
      * Generate an AI-written executive summary narrative + prioritised recommendations
      * from a structured GRC data snapshot.
      *
-     * @param  array $data  Pre-gathered GRC metrics (compliance, risks, evidence, frameworks…)
+     * @param  array  $data  Pre-gathered GRC metrics (compliance, risks, evidence, frameworks…)
      * @return array{narrative: string, recommendations: string[]}
      */
     public function generateExecutiveSummary(array $data): array
     {
         $default = [
-            'narrative'       => 'The AI executive summary could not be generated at this time. Please review the data tables below for a manual assessment of the current security posture.',
+            'narrative' => 'The AI executive summary could not be generated at this time. Please review the data tables below for a manual assessment of the current security posture.',
             'recommendations' => [
                 'Review all critical and high-severity risks immediately.',
                 'Ensure all pending evidence items are reviewed and approved.',
@@ -397,29 +408,31 @@ Rules for "recommendations":
 PROMPT;
 
             $contextJson = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            $userPrompt  = "Generate a professional executive summary based on the following GRC system data:\n\n{$contextJson}";
+            $userPrompt = "Generate a professional executive summary based on the following GRC system data:\n\n{$contextJson}";
 
             $text = $this->callClaudeApi(
-                messages:  [['role' => 'user', 'content' => $userPrompt]],
-                model:     self::MODEL_ANALYTICAL,
+                messages: [['role' => 'user', 'content' => $userPrompt]],
+                model: self::MODEL_ANALYTICAL,
                 maxTokens: 2048,
-                system:    $systemPrompt,
+                system: $systemPrompt,
             );
 
             if (empty($text)) {
                 Log::error('AIService::generateExecutiveSummary: empty response');
+
                 return $default;
             }
 
             $parsed = json_decode($text, true);
 
-            if (!is_array($parsed) || empty($parsed['narrative'])) {
+            if (! is_array($parsed) || empty($parsed['narrative'])) {
                 Log::warning('AIService::generateExecutiveSummary: invalid JSON', ['raw' => $text]);
+
                 return $default;
             }
 
             return [
-                'narrative'       => (string) ($parsed['narrative'] ?? $default['narrative']),
+                'narrative' => (string) ($parsed['narrative'] ?? $default['narrative']),
                 'recommendations' => is_array($parsed['recommendations'] ?? null)
                     ? array_values(array_filter($parsed['recommendations'], 'is_string'))
                     : $default['recommendations'],
@@ -427,6 +440,7 @@ PROMPT;
 
         } catch (\Throwable $e) {
             Log::error('AIService::generateExecutiveSummary exception', ['message' => $e->getMessage()]);
+
             return $default;
         }
     }
@@ -455,14 +469,14 @@ Be specific. Cite control IDs. Keep findings concise but actionable.
 SYS;
 
         $userPrompt = 'Generate a professional compliance gap analysis report based on this GRC system data: '
-            . json_encode($data, JSON_UNESCAPED_UNICODE);
+            .json_encode($data, JSON_UNESCAPED_UNICODE);
 
         try {
             $text = $this->callClaudeApi(
-                messages:  [['role' => 'user', 'content' => $userPrompt]],
-                model:     self::MODEL_ANALYTICAL,
+                messages: [['role' => 'user', 'content' => $userPrompt]],
+                model: self::MODEL_ANALYTICAL,
                 maxTokens: 3000,
-                system:    $systemPrompt,
+                system: $systemPrompt,
             );
 
             if (empty($text)) {
@@ -470,7 +484,7 @@ SYS;
             }
 
             $parsed = json_decode($text, true);
-            if (!is_array($parsed)) {
+            if (! is_array($parsed)) {
                 Log::warning('AIService::generateGapAnalysis: invalid JSON', ['raw' => $text]);
                 throw new \RuntimeException('AI returned invalid JSON');
             }
@@ -487,34 +501,34 @@ SYS;
      * Explain a compliance control in plain language for use during an assessment.
      *
      * @param  array  $controlData  Keys: code, name, description, framework, domain
-     * @return string  Raw JSON string with explanation fields
+     * @return string Raw JSON string with explanation fields
      */
     public function explainControl(array $controlData): string
     {
         $default = json_encode([
-            'plain_english'        => 'This control requires your organization to implement appropriate measures as defined by the framework.',
-            'what_it_requires'     => [
+            'plain_english' => 'This control requires your organization to implement appropriate measures as defined by the framework.',
+            'what_it_requires' => [
                 'Review the control description and understand its scope',
                 'Implement appropriate policies and procedures',
                 'Assign ownership and accountability for the control',
                 'Maintain documented evidence of compliance',
             ],
-            'evidence_examples'    => [
+            'evidence_examples' => [
                 'Policy document signed by management',
                 'Procedure documentation',
                 'Audit or review records',
                 'System configuration screenshots',
             ],
             'compliant_looks_like' => 'A compliant organization has documented policies, implemented procedures, and maintains evidence that the control is operating effectively.',
-            'non_compliant_risks'  => 'Failure to implement this control may expose the organization to compliance violations and security risks.',
+            'non_compliant_risks' => 'Failure to implement this control may expose the organization to compliance violations and security risks.',
         ]);
 
         try {
-            $code        = $controlData['code']        ?? '';
-            $name        = $controlData['name']        ?? '';
+            $code = $controlData['code'] ?? '';
+            $name = $controlData['name'] ?? '';
             $description = $controlData['description'] ?? '';
-            $framework   = $controlData['framework']   ?? '';
-            $domain      = $controlData['domain']      ?? '';
+            $framework = $controlData['framework'] ?? '';
+            $domain = $controlData['domain'] ?? '';
 
             $prompt = <<<PROMPT
 You are a GRC expert helping an organization understand their compliance controls during a self-assessment.
@@ -545,19 +559,21 @@ Be specific and practical. Write as if explaining to an IT manager, not a securi
 PROMPT;
 
             $text = $this->callClaudeApi(
-                messages:  [['role' => 'user', 'content' => $prompt]],
-                model:     self::MODEL_ANALYTICAL,
+                messages: [['role' => 'user', 'content' => $prompt]],
+                model: self::MODEL_ANALYTICAL,
                 maxTokens: 1024,
             );
 
             if (empty($text)) {
                 Log::error('AIService::explainControl: empty response');
+
                 return $default;
             }
 
             $parsed = json_decode($text, true);
-            if (!is_array($parsed)) {
+            if (! is_array($parsed)) {
                 Log::warning('AIService::explainControl: invalid JSON', ['raw' => $text]);
+
                 return $default;
             }
 
@@ -565,6 +581,7 @@ PROMPT;
 
         } catch (\Throwable $e) {
             Log::error('AIService::explainControl exception', ['message' => $e->getMessage()]);
+
             return $default;
         }
     }
@@ -578,8 +595,8 @@ PROMPT;
     public function callClaude(string $prompt): string
     {
         return $this->callClaudeApi(
-            messages:  [['role' => 'user', 'content' => $prompt]],
-            model:     self::MODEL_DEFAULT,
+            messages: [['role' => 'user', 'content' => $prompt]],
+            model: self::MODEL_DEFAULT,
             maxTokens: 1024,
         );
     }
@@ -593,8 +610,9 @@ PROMPT;
     private function stripFences(string $text): string
     {
         $text = preg_replace('/^```json\s*/i', '', trim($text));
-        $text = preg_replace('/^```\s*/i',     '', trim($text));
-        $text = preg_replace('/```$/m',        '', trim($text));
+        $text = preg_replace('/^```\s*/i', '', trim($text));
+        $text = preg_replace('/```$/m', '', trim($text));
+
         return trim($text);
     }
 }

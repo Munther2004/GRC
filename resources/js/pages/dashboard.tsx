@@ -1,353 +1,305 @@
-import { ComplianceChart } from "@/components/admin/compliance-chart"
-import { MetricsCards } from "@/components/admin/metrics-cards"
-import { QuickActions } from "@/components/admin/quick-actions"
-import { RecentAlerts } from "@/components/admin/recent-alerts"
-import { RiskHeatmap } from "@/components/admin/risk-heatmap"
-import { RiskTrendChart } from "@/components/admin/risk-trend-chart"
-import { TopRisks } from "@/components/admin/top-risks"
-import AdminLayout from "@/layouts/admin-layout"
-import { Link, usePage } from "@inertiajs/react"
-import type { SharedProps } from "@/types"
-import { AlertTriangle, Clock, FileCheck, Zap, ShieldAlert, Sparkles, Loader2, XCircle, Activity, Sliders } from "lucide-react"
-import { useState, useEffect } from "react"
-import { downloadPdf } from "@/lib/download-pdf"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ComplianceChart } from '@/components/admin/compliance-chart';
+import { RecentAlerts } from '@/components/admin/recent-alerts';
+import { RiskHeatmap } from '@/components/admin/risk-heatmap';
+import { RiskTrendChart } from '@/components/admin/risk-trend-chart';
+import { TopRisks } from '@/components/admin/top-risks';
+import AdminLayout from '@/layouts/admin-layout';
+import { Link, usePage } from '@inertiajs/react';
+import type { SharedProps } from '@/types';
 import {
-    LineChart, Line, BarChart, Bar,
-    XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-} from 'recharts'
-
+    AlertTriangle,
+    ArrowRight,
+    ArrowUpRight,
+    FileText,
+    Loader2,
+    Plus,
+    Sparkles,
+    Upload,
+    XCircle,
+    Zap,
+} from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { downloadPdf } from '@/lib/download-pdf';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    LineChart,
+    Line,
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+} from 'recharts';
 
 type Stats = {
-    total_risks: number
-    critical_risks: number
-    high_risks: number
-    medium_risks: number
-    low_risks: number
-    open_risks: number
-    compliance_score: number
-    total_assessments: number
-    evidence_files: number
-    pending_evidence: number
-}
+    total_risks: number;
+    critical_risks: number;
+    high_risks: number;
+    medium_risks: number;
+    low_risks: number;
+    open_risks: number;
+    compliance_score: number;
+    total_assessments: number;
+    evidence_files: number;
+    pending_evidence: number;
+};
 
 type Risk = {
-    id: number
-    title: string
-    category: string
-    owner: string
-    impact: number
-    likelihood: number
-    risk_level: string
-    risk_score: number
-    status: string
-}
+    id: number;
+    title: string;
+    category: string;
+    owner: string;
+    impact: number;
+    likelihood: number;
+    risk_level: string;
+    risk_score: number;
+    status: string;
+};
 
 type HeatmapRisk = {
-    id: number
-    title: string
-    likelihood: number
-    impact: number
-    score: number
-    status: string
-}
+    id: number;
+    title: string;
+    likelihood: number;
+    impact: number;
+    score: number;
+    status: string;
+};
 
 type Kpis = {
-    risk_exposure: number
-    avg_risk_score: number
-    evidence_approval_rate: number
-    open_risks_by_level: { critical: number; high: number; medium: number; low: number }
-    assessments_due_soon: number
-    pending_evidence: number
-    compliance_this_week: number
-    compliance_last_week: number
-    evidence_weighted_compliance: number | null
-}
+    risk_exposure: number;
+    avg_risk_score: number;
+    evidence_approval_rate: number;
+    open_risks_by_level: {
+        critical: number;
+        high: number;
+        medium: number;
+        low: number;
+    };
+    assessments_due_soon: number;
+    pending_evidence: number;
+    compliance_this_week: number;
+    compliance_last_week: number;
+    evidence_weighted_compliance: number | null;
+};
 
-type NotificationItem = {
-    id: number
-    type: string
-    is_read: boolean
-}
+type NotificationItem = { id: number; type: string; is_read: boolean };
 
 type KriSnapshot = {
-    snapshot_date: string
-    compliance_percentage: number
-    open_risks_critical: number
-    open_risks_high: number
-    open_risks_medium: number
-    open_risks_low: number
-    overdue_risks: number
-    overdue_assessments: number
-    evidence_approval_rate: number
-    ai_generated_risks: number
-    total_risks: number
-    total_controls: number
-    compliant_controls: number
-}
+    snapshot_date: string;
+    compliance_percentage: number;
+    open_risks_critical: number;
+    open_risks_high: number;
+    open_risks_medium: number;
+    open_risks_low: number;
+    overdue_risks: number;
+    overdue_assessments: number;
+    evidence_approval_rate: number;
+    ai_generated_risks: number;
+    total_risks: number;
+    total_controls: number;
+    compliant_controls: number;
+};
 
 type HealthScore = {
-    health_score: number
-    grade: 'A' | 'B' | 'C' | 'D' | 'F'
+    health_score: number;
+    grade: 'A' | 'B' | 'C' | 'D' | 'F';
     components: {
-        compliance: number
-        critical_risks: number
-        evidence_quality: number
-        overdue_items: number
-        open_risks: number
-    }
+        compliance: number;
+        critical_risks: number;
+        evidence_quality: number;
+        overdue_items: number;
+        open_risks: number;
+    };
     raw: {
-        critical_risks: number
-        open_risks: number
-        overdue_items: number
-        approval_rate: number
-        compliance_basis: 'evidence' | 'self_assessed'
-    }
-}
+        critical_risks: number;
+        open_risks: number;
+        overdue_items: number;
+        approval_rate: number;
+        compliance_basis: 'evidence' | 'self_assessed';
+    };
+};
 
 type AppetiteCounts = {
-    name: string
-    escalated: number
-    review: number
-    acceptable: number
-    labels: { escalated: string; review: string; acceptable: string }
-}
+    name: string;
+    escalated: number;
+    review: number;
+    acceptable: number;
+    labels: { escalated: string; review: string; acceptable: string };
+};
 
 type Props = {
-    stats: Stats
-    recentRisks: Risk[]
-    recentActivity: any[]
-    trendData: any[]
-    heatmap: HeatmapRisk[]
-    kpis: Kpis
-    ruleAdjustments: number
-    lastSchedulerRun: string | null
-    kriSnapshots: KriSnapshot[]
-    healthScore: HealthScore
-    appetiteCounts: AppetiteCounts | null
-}
+    stats: Stats;
+    recentRisks: Risk[];
+    recentActivity: any[];
+    trendData: any[];
+    heatmap: HeatmapRisk[];
+    kpis: Kpis;
+    ruleAdjustments: number;
+    lastSchedulerRun: string | null;
+    kriSnapshots: KriSnapshot[];
+    healthScore: HealthScore;
+    appetiteCounts: AppetiteCounts | null;
+};
 
-function KpiCards({ kpis, stats }: { kpis: Kpis; stats: Stats }) {
-    const approvalRate    = kpis.evidence_approval_rate
-    const exposure        = kpis.risk_exposure
-    const compliance      = stats.compliance_score
+// -----------------------------------------------------------------------
+// Unified stat tile — replaces both MetricsCards and KpiCards clutter
+// -----------------------------------------------------------------------
 
-    const approvalColor =
-        approvalRate >= 70 ? 'text-green-500' :
-        approvalRate >= 40 ? 'text-yellow-500' : 'text-red-500'
+type StatTile = {
+    label: string;
+    value: string;
+    hint?: string;
+    tone?: 'neutral' | 'ok' | 'warn' | 'bad';
+    trend?: { value: number; unit?: string } | null;
+    progress?: number | null;
+};
 
-    const exposureColor =
-        exposure > 50 ? 'text-red-500' :
-        exposure >= 20 ? 'text-amber-500' : 'text-green-500'
+const toneCol: Record<string, string> = {
+    neutral: 'var(--muted-foreground)', ok: 'var(--chart-1)', warn: 'var(--border)', bad: 'var(--destructive)',
+};
 
-    const exposureBarColor =
-        exposure > 50 ? 'bg-red-500' :
-        exposure >= 20 ? 'bg-amber-500' : 'bg-green-500'
-
+function StatTiles({ tiles }: { tiles: StatTile[] }) {
     return (
-        <div className="space-y-3">
-            <h2 className="text-base font-semibold tracking-tight">Key Performance Indicators</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-
-                {/* Card 0 — Risk Exposure */}
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide flex items-center gap-1.5">
-                            <ShieldAlert className="w-3.5 h-3.5" />
-                            Risk Exposure
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <p className={`text-3xl font-bold ${exposureColor}`}>{exposure}%</p>
-                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                            <div
-                                className={`h-full rounded-full transition-all ${exposureBarColor}`}
-                                style={{ width: `${Math.min(exposure, 100)}%` }}
-                            />
+        <div
+            className="grid grid-cols-2 overflow-hidden rounded md:grid-cols-3 lg:grid-cols-5"
+            style={{ borderColor: 'var(--border)', borderWidth: '1px', gap: '1px', background: 'var(--border)' }}
+        >
+            {tiles.map((t, i) => {
+                const dot = toneCol[t.tone ?? 'neutral'];
+                const p   = t.progress ?? null;
+                return (
+                    <div key={t.label} className="relative flex flex-col justify-between px-5 py-4 bg-card" style={{ minHeight: '100px' }}>
+                        {i === 0 && <div className="absolute left-0 top-3 bottom-3 w-px" style={{ background: 'var(--primary)', opacity: 0.6 }} />}
+                        <div className="flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: dot }} />
+                            <p className="font-display text-[9px] uppercase tracking-[0.2em] text-muted-foreground">{t.label}</p>
                         </div>
-                        <p className="text-xs text-muted-foreground">Avg Risk Score: {kpis.avg_risk_score} / 25</p>
-                    </CardContent>
-                </Card>
-
-                {/* Card 1 — Evidence Approval Rate */}
-                <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Evidence Approved</CardTitle></CardHeader>
-                    <CardContent className="space-y-2">
-                        <p className={`text-3xl font-bold ${approvalColor}`}>{approvalRate}%</p>
-                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                            <div
-                                className={`h-full rounded-full transition-all ${approvalRate >= 70 ? 'bg-green-500' : approvalRate >= 40 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                                style={{ width: `${approvalRate}%` }}
-                            />
-                        </div>
-                        <p className="text-xs text-muted-foreground">of all evidence files</p>
-                    </CardContent>
-                </Card>
-
-                {/* Card 2 — Assessments Due Soon */}
-                <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Due in Next 7 Days</CardTitle></CardHeader>
-                    <CardContent className="space-y-1">
-                        <div className="flex items-center gap-2">
-                            <Clock className={`w-5 h-5 ${kpis.assessments_due_soon > 0 ? 'text-red-500' : 'text-green-500'}`} />
-                            <p className={`text-3xl font-bold ${kpis.assessments_due_soon > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                                {kpis.assessments_due_soon}
-                            </p>
-                        </div>
-                        <p className="text-xs text-muted-foreground">assessments pending</p>
-                    </CardContent>
-                </Card>
-
-                {/* Card 3 — Compliance Score (evidence-weighted primary) */}
-                <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Compliance Score</CardTitle></CardHeader>
-                    <CardContent className="space-y-2">
-                        {kpis.evidence_weighted_compliance !== null ? (
-                            <>
-                                <p className={`text-3xl font-bold ${kpis.evidence_weighted_compliance >= 70 ? 'text-green-500' : kpis.evidence_weighted_compliance >= 40 ? 'text-amber-500' : 'text-red-500'}`}>
-                                    {kpis.evidence_weighted_compliance}%
-                                </p>
-                                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                                    <div
-                                        className={`h-full rounded-full transition-all ${kpis.evidence_weighted_compliance >= 70 ? 'bg-green-500' : kpis.evidence_weighted_compliance >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
-                                        style={{ width: `${kpis.evidence_weighted_compliance}%` }}
-                                    />
+                        <div className="mt-2">
+                            <p className="font-heading text-3xl font-normal tabular-nums leading-none text-foreground">{t.value}</p>
+                            {p !== null && (
+                                <div className="mt-2 h-px w-full overflow-hidden" style={{ background: 'var(--border)' }}>
+                                    <div className="h-full" style={{ width: `${Math.min(p, 100)}%`, background: dot, transition: 'width 0.5s ease' }} />
                                 </div>
-                                <p className="text-xs text-muted-foreground">
-                                    evidence-backed &middot; self-assessed: {compliance}%
-                                </p>
-                            </>
-                        ) : (
-                            <>
-                                <p className={`text-3xl font-bold ${compliance >= 70 ? 'text-green-500' : compliance >= 40 ? 'text-amber-500' : 'text-red-500'}`}>
-                                    {compliance}%
-                                </p>
-                                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                                    <div
-                                        className={`h-full rounded-full transition-all ${compliance >= 70 ? 'bg-green-500' : compliance >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
-                                        style={{ width: `${compliance}%` }}
-                                    />
-                                </div>
-                                <p className="text-xs text-muted-foreground">live from controls · no evidence reviews yet</p>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Card 4 — Pending Evidence */}
-                <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Pending Review</CardTitle></CardHeader>
-                    <CardContent className="space-y-1">
-                        <div className="flex items-center gap-2">
-                            <FileCheck className={`w-5 h-5 ${kpis.pending_evidence > 0 ? 'text-red-500' : 'text-green-500'}`} />
-                            <p className={`text-3xl font-bold ${kpis.pending_evidence > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                                {kpis.pending_evidence}
-                            </p>
+                            )}
+                            {t.hint && <p className="mt-1.5 font-body text-[11px] italic text-muted-foreground">{t.hint}</p>}
                         </div>
-                        <p className="text-xs text-muted-foreground">evidence files</p>
-                    </CardContent>
-                </Card>
-            </div>
+                    </div>
+                );
+            })}
         </div>
-    )
+    );
 }
 
-function formatSnapshotDate(dateStr: string): string {
-    const d = new Date(dateStr + 'T00:00:00')
-    return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
-}
+// -----------------------------------------------------------------------
+// Hero — page header + grade + quick actions
+// -----------------------------------------------------------------------
 
-function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
-    const lastSnapshot = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null
+const gradeColor: Record<string, string> = {
+    A: 'var(--chart-1)', B: 'var(--primary)', C: 'var(--border)', D: 'var(--border)', F: 'var(--destructive)',
+};
 
-    const chartData = snapshots.map(s => ({
-        date:     formatSnapshotDate(s.snapshot_date),
-        compliance: s.compliance_percentage,
-        critical: s.open_risks_critical,
-        high:     s.open_risks_high,
-        medium:   s.open_risks_medium,
-        low:      s.open_risks_low,
-    }))
-
+function DashboardHero({ healthScore }: { healthScore: HealthScore }) {
+    const gradeC = gradeColor[healthScore.grade] ?? gradeColor.F;
     return (
-        <div className="space-y-3">
-            <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold tracking-tight">KRI Trends</h2>
-                {lastSnapshot && (
-                    <span className="text-xs text-muted-foreground">
-                        Last snapshot: {formatSnapshotDate(lastSnapshot.snapshot_date)}
-                    </span>
-                )}
-            </div>
+        <div
+            className="relative overflow-hidden rounded ornate-frame bg-card border"
+            style={{}}
+        >
+            {/* Subtle warm grid */}
+            <div className="absolute inset-0 opacity-20" aria-hidden style={{
+                backgroundImage: 'linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)',
+                backgroundSize: '48px 48px',
+            }} />
+            <div className="absolute inset-0" aria-hidden style={{ background: 'linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.3) 100%)' }} />
 
-            {snapshots.length < 2 ? (
-                <Card>
-                    <CardContent className="p-8 text-center text-muted-foreground text-sm">
-                        <p className="mb-1 font-medium">Not enough data yet</p>
-                        <p>Trends will appear after the first few nightly snapshots.</p>
-                        <p className="mt-2 font-mono text-xs bg-muted inline-block px-2 py-1 rounded">
-                            php artisan kri:snapshot
-                        </p>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="grid lg:grid-cols-2 gap-6">
-                    {/* Compliance Trend */}
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Compliance % Trend</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <LineChart data={chartData} margin={{ top: 5, right: 16, left: 0, bottom: 5 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.1} />
-                                    <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                                    <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" />
-                                    <Tooltip formatter={(v) => [`${v}%`, 'Compliance']} />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="compliance"
-                                        stroke="#16a34a"
-                                        strokeWidth={2}
-                                        dot={{ r: 3 }}
-                                        activeDot={{ r: 5 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-
-                    {/* Risk Distribution Trend */}
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium">Open Risk Distribution</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={chartData} margin={{ top: 5, right: 16, left: 0, bottom: 5 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.1} />
-                                    <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                                    <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-                                    <Tooltip />
-                                    <Legend wrapperStyle={{ fontSize: 11 }} />
-                                    <Bar dataKey="critical" name="Critical" stackId="a" fill="#dc2626" />
-                                    <Bar dataKey="high"     name="High"     stackId="a" fill="#f97316" />
-                                    <Bar dataKey="medium"   name="Medium"   stackId="a" fill="#eab308" />
-                                    <Bar dataKey="low"      name="Low"      stackId="a" fill="#16a34a" radius={[2, 2, 0, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
+            <div className="relative flex flex-col gap-6 p-6 md:flex-row md:items-end md:justify-between md:p-8">
+                <div className="space-y-2">
+                    <p className="font-display text-[9px] uppercase tracking-[0.3em] text-primary">
+                        Overview · GRC Command Centre
+                    </p>
+                    <h1 className="font-heading text-4xl font-normal leading-tight md:text-5xl text-foreground">
+                        Good to see you back.
+                    </h1>
+                    <p className="max-w-md font-body italic text-base text-muted-foreground">
+                        Live view of your risks, controls, and compliance posture.
+                    </p>
                 </div>
-            )}
+                <div className="flex items-center gap-6">
+                    <div className="text-right">
+                        <p className="font-display text-[9px] uppercase tracking-[0.25em] mb-1 text-muted-foreground">Health</p>
+                        <p className="font-heading text-6xl leading-none" style={{ color: gradeC }}>{healthScore.grade}</p>
+                        <p className="mt-1 font-display text-[10px] uppercase tracking-wider tabular-nums text-muted-foreground">
+                            {healthScore.health_score}/100
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
-    )
+    );
 }
 
-function ExecutiveSummaryButton() {
+// -----------------------------------------------------------------------
+// Quick action strip — minimal pill buttons
+// -----------------------------------------------------------------------
+
+function ActionStrip() {
+    const actions = [
+        { href: '/risks/create',        label: 'New Risk',         icon: Plus,     primary: true  },
+        { href: '/assessments/create',  label: 'Start Assessment', icon: Sparkles, primary: false },
+        { href: '/evidence/upload',     label: 'Upload Evidence',  icon: Upload,   primary: false },
+        { href: '/reports',             label: 'Reports',          icon: FileText, primary: false },
+    ];
+    return (
+        <div className="flex flex-wrap items-center gap-2">
+            {actions.map(a => (
+                <Link
+                    key={a.label}
+                    href={a.href}
+                    className="group inline-flex items-center gap-2 rounded-full px-4 py-2 font-display text-[11px] uppercase tracking-[0.12em] transition-all duration-200"
+                    style={a.primary
+                        ? { background: 'var(--primary)', color: 'var(--primary-foreground)', border: '1px solid transparent' }
+                        : { background: 'var(--card)', color: 'var(--muted-foreground)', border: '1px solid var(--border)' }
+                    }
+                    onMouseEnter={e => {
+                        if (a.primary) {
+                            e.currentTarget.style.filter = 'brightness(1.1)';
+                        } else {
+                            e.currentTarget.style.borderColor = 'var(--primary)';
+                            e.currentTarget.style.color = 'var(--primary)';
+                            e.currentTarget.style.background = 'color-mix(in srgb, var(--primary) 6%, transparent)';
+                        }
+                    }}
+                    onMouseLeave={e => {
+                        if (a.primary) {
+                            e.currentTarget.style.filter = '';
+                        } else {
+                            e.currentTarget.style.borderColor = 'var(--border)';
+                            e.currentTarget.style.color = 'var(--muted-foreground)';
+                            e.currentTarget.style.background = 'var(--card)';
+                        }
+                    }}
+                >
+                    <a.icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+                    {a.label}
+                </Link>
+            ))}
+        </div>
+    );
+}
+
+// -----------------------------------------------------------------------
+// Executive summary — restyled for Vercel aesthetic
+// -----------------------------------------------------------------------
+
+function ExecutiveSummaryCard() {
     const [generating, setGenerating] = useState(false);
-    const [toast, setToast]           = useState<{ type: 'error'; text: string } | null>(null);
+    const [toast, setToast] = useState<{ type: 'error'; text: string } | null>(
+        null,
+    );
 
     useEffect(() => {
         if (!toast) return;
@@ -361,300 +313,539 @@ function ExecutiveSummaryButton() {
         try {
             await downloadPdf(
                 '/reports/executive-summary',
-                `executive-summary-${new Date().toISOString().split('T')[0]}.pdf`
+                `executive-summary-${new Date().toISOString().split('T')[0]}.pdf`,
             );
         } catch {
-            setToast({ type: 'error', text: 'Failed to generate report. Please try again.' });
+            setToast({ type: 'error', text: 'Failed to generate report.' });
         } finally {
             setGenerating(false);
         }
     };
 
+    const cardBase: React.CSSProperties = { background: 'var(--card)', borderColor: 'var(--border)', borderWidth: '1px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.3s ease' };
     return (
         <>
-            <Card className="border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40">
-                <CardContent className="p-4 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center shrink-0">
-                            <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="grid gap-3 md:grid-cols-2">
+                <button
+                    onClick={generate}
+                    disabled={generating}
+                    className="group relative text-left disabled:opacity-50 ornate-frame"
+                    style={cardBase}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 50%, transparent)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--border) 40%, transparent)')}
+                >
+                    <div className="flex items-center gap-3 p-4">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded" style={{ borderColor: 'rgba(var(--color-primary) / 0.4)', borderWidth: '1px', background: 'rgba(var(--color-primary) / 0.08)' }}>
+                            <Sparkles className="h-4 w-4 text-primary" />
                         </div>
-                        <div>
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white">AI Executive Summary</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">One-click board-ready PDF with AI narrative</p>
+                        <div className="min-w-0 flex-1">
+                            <p className="font-heading text-base font-normal text-foreground">AI Executive Summary</p>
+                            <p className="font-body italic text-xs text-muted-foreground">Board-ready PDF with AI narrative</p>
                         </div>
+                        {generating ? <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" /> : <ArrowRight className="h-4 w-4 shrink-0 transition-all group-hover:translate-x-0.5 text-muted-foreground" />}
                     </div>
-                    <Button
-                        size="sm"
-                        className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shrink-0"
-                        onClick={generate}
-                        disabled={generating}
-                    >
-                        {generating
-                            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating…</>
-                            : <><Sparkles className="w-3.5 h-3.5" /> Generate</>}
-                    </Button>
-                </CardContent>
-            </Card>
-
-            {/* Generating overlay */}
+                </button>
+                <Link href="/executive-dashboard" className="group relative ornate-frame" style={cardBase}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 50%, transparent)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--border) 40%, transparent)')}
+                >
+                    <div className="flex items-center gap-3 p-4">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded" style={{ borderColor: 'color-mix(in srgb, var(--primary) 40%, transparent)', borderWidth: '1px', background: 'color-mix(in srgb, var(--primary) 8%, transparent)' }}>
+                            <FileText className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <p className="font-heading text-base font-normal text-foreground">Executive Dashboard</p>
+                            <p className="font-body italic text-xs text-muted-foreground">Printable one-page compliance view</p>
+                        </div>
+                        <ArrowRight className="h-4 w-4 shrink-0 transition-all group-hover:translate-x-0.5 text-muted-foreground" />
+                    </div>
+                </Link>
+            </div>
             {generating && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
-                        <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-950 flex items-center justify-center">
-                            <Sparkles className="w-7 h-7 text-blue-600 animate-pulse" />
-                        </div>
-                        <div className="text-center">
-                            <p className="font-semibold text-gray-900 dark:text-white">Generating Executive Summary</p>
-                            <p className="text-sm text-gray-500 mt-1">AI is analysing your GRC data&hellip;</p>
-                        </div>
-                        <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>
+                    <div className="mx-4 flex max-w-xs flex-col items-center gap-3 rounded p-6 ornate-frame bg-card border">
+                        <Sparkles className="h-6 w-6 animate-pulse text-primary" />
+                        <p className="font-heading text-lg font-normal text-foreground">Generating summary…</p>
+                        <p className="text-center font-body italic text-sm text-muted-foreground">The AI is analysing your GRC data</p>
                     </div>
                 </div>
             )}
-
-            {/* Error toast */}
             {toast && (
-                <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-sm font-medium bg-red-600 text-white">
-                    <XCircle className="w-4 h-4 shrink-0" />
-                    <span>{toast.text}</span>
+                <div className="fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded px-4 py-3 text-sm bg-card border" style={{ borderColor: 'color-mix(in srgb, var(--destructive) 40%, transparent)' }}>
+                    <XCircle className="h-4 w-4 shrink-0 text-destructive" />
+                    <span className="font-body text-foreground">{toast.text}</span>
                 </div>
             )}
         </>
     );
 }
 
-const gradeColors: Record<string, { text: string; bg: string; border: string; bar: string }> = {
-    A: { text: 'text-green-600',  bg: 'bg-green-50 dark:bg-green-950/40',  border: 'border-green-200 dark:border-green-800',  bar: 'bg-green-500' },
-    B: { text: 'text-teal-600',   bg: 'bg-teal-50 dark:bg-teal-950/40',    border: 'border-teal-200 dark:border-teal-800',    bar: 'bg-teal-500' },
-    C: { text: 'text-amber-600',  bg: 'bg-amber-50 dark:bg-amber-950/40',  border: 'border-amber-200 dark:border-amber-800',  bar: 'bg-amber-500' },
-    D: { text: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/40',border: 'border-orange-200 dark:border-orange-800',bar: 'bg-orange-500' },
-    F: { text: 'text-red-600',    bg: 'bg-red-50 dark:bg-red-950/40',      border: 'border-red-200 dark:border-red-800',      bar: 'bg-red-500' },
-}
+// -----------------------------------------------------------------------
+// Health breakdown — compact horizontal bars
+// -----------------------------------------------------------------------
 
-function HealthScoreCard({ healthScore }: { healthScore: HealthScore }) {
-    const colors = gradeColors[healthScore.grade] ?? gradeColors['F']
+function HealthBreakdown({ healthScore }: { healthScore: HealthScore }) {
     const components = [
-        { label: 'Compliance',      value: healthScore.components.compliance,       max: 40, hint: `${healthScore.raw.compliance_basis === 'evidence' ? 'Evidence-weighted' : 'Self-assessed'} · 40 pts max` },
-        { label: 'Critical Risks',  value: healthScore.components.critical_risks,   max: 20, hint: `${healthScore.raw.critical_risks} critical risks · 20 pts max` },
-        { label: 'Evidence Quality',value: healthScore.components.evidence_quality, max: 20, hint: `${healthScore.raw.approval_rate}% approval rate · 20 pts max` },
-        { label: 'Overdue Items',   value: healthScore.components.overdue_items,    max: 10, hint: `${healthScore.raw.overdue_items} overdue · 10 pts max` },
-        { label: 'Open Risks',      value: healthScore.components.open_risks,       max: 10, hint: `${healthScore.raw.open_risks} open risks · 10 pts max` },
-    ]
+        {
+            label: 'Compliance',
+            value: healthScore.components.compliance,
+            max: 40,
+        },
+        {
+            label: 'Critical Risks',
+            value: healthScore.components.critical_risks,
+            max: 20,
+        },
+        {
+            label: 'Evidence Quality',
+            value: healthScore.components.evidence_quality,
+            max: 20,
+        },
+        {
+            label: 'Overdue Items',
+            value: healthScore.components.overdue_items,
+            max: 10,
+        },
+        {
+            label: 'Open Risks',
+            value: healthScore.components.open_risks,
+            max: 10,
+        },
+    ];
 
     return (
-        <Card className={`${colors.bg} ${colors.border}`}>
-            <CardContent className="p-5">
-                <div className="flex items-start gap-5">
-                    {/* Grade badge */}
-                    <div className="shrink-0 text-center">
-                        <div title="Blends compliance score, risk levels, evidence quality, and overdue items">
-                            <div className={`text-6xl font-extrabold leading-none ${colors.text}`}>{healthScore.grade}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">{healthScore.health_score} / 100</div>
-                        </div>
-                    </div>
-
-                    {/* Divider */}
-                    <div className="w-px self-stretch bg-border" />
-
-                    {/* Details */}
-                    <div className="flex-1 space-y-2 min-w-0">
-                        <div className="flex items-center gap-2">
-                            <Activity className="w-4 h-4 text-gray-400" />
-                            <span className="text-sm font-semibold text-gray-900 dark:text-white">Compliance Health Score</span>
-                            <span className="text-xs text-gray-400 ml-auto">Score breakdown (100 pts total)</span>
-                        </div>
-                        {components.map(({ label, value, max, hint }) => (
-                            <div key={label}>
-                                <div className="flex justify-between text-xs mb-0.5">
-                                    <span className="text-gray-600 dark:text-gray-300">{label}</span>
-                                    <span className="text-gray-500">{value} / {max} pts</span>
-                                </div>
-                                <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden" title={hint}>
-                                    <div
-                                        className={`h-full rounded-full transition-all ${colors.bar}`}
-                                        style={{ width: `${(value / max) * 100}%` }}
-                                    />
-                                </div>
+        <Card>
+            <CardHeader className="pb-2">
+                <CardTitle className="font-heading text-lg font-normal">Health Breakdown</CardTitle>
+                <p className="font-body italic text-xs" style={{ color: themeColors.muted }}>
+                    {healthScore.raw.compliance_basis === 'evidence' ? 'Evidence-weighted' : 'Self-assessed'} · 100 pts total
+                </p>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                {components.map((c) => {
+                    const pct  = (c.value / c.max) * 100;
+                    const barC = pct >= 70 ? 'var(--chart-1)' : pct >= 40 ? 'var(--border)' : 'var(--destructive)';
+                    return (
+                        <div key={c.label}>
+                            <div className="mb-1.5 flex items-center justify-between">
+                                <span className="font-display text-[9px] uppercase tracking-[0.15em] text-muted-foreground">{c.label}</span>
+                                <span className="font-heading text-sm tabular-nums text-foreground">
+                                    {c.value}<span className="text-muted-foreground" style={{ opacity: 0.5 }}>/{c.max}</span>
+                                </span>
                             </div>
-                        ))}
-                    </div>
-                </div>
+                            <div className="h-px w-full overflow-hidden" style={{ background: 'var(--border)' }}>
+                                <div className="h-full" style={{ width: `${pct}%`, background: barC, transition: 'width 0.5s ease' }} />
+                            </div>
+                        </div>
+                    );
+                })}
             </CardContent>
         </Card>
-    )
+    );
 }
 
-export default function AdminDashboard({ stats, recentRisks, recentActivity, trendData, heatmap, kpis, ruleAdjustments, lastSchedulerRun, kriSnapshots, healthScore, appetiteCounts }: Props) {
-    const { notifications } = usePage<SharedProps>().props
-    const unreadCount = notifications?.unread_count ?? 0
-    const recent: NotificationItem[] = notifications?.recent ?? []
+// -----------------------------------------------------------------------
+// KRI trends — minimal dark charts
+// -----------------------------------------------------------------------
 
-    const hasCritical = recent.some(n => n.type === 'critical_risk' || n.type === 'overdue_risk')
-    const hasPending  = recent.some(n => n.type === 'pending_evidence' || n.type === 'overdue_assessment')
+function formatSnapshotDate(dateStr: string): string {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+}
+
+function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
+    if (snapshots.length < 2) {
+        return (
+            <Card>
+                <CardHeader className="pb-2">
+                    <CardTitle className="font-heading text-lg font-normal">
+                        KRI Trends
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="py-8 text-center">
+                        <p className="text-sm text-muted-foreground">
+                            Not enough data yet
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground/70">
+                            Trends appear after the first few nightly snapshots.
+                        </p>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    const chartData = snapshots.map((s) => ({
+        date: formatSnapshotDate(s.snapshot_date),
+        compliance: s.compliance_percentage,
+        critical: s.open_risks_critical,
+        high: s.open_risks_high,
+        medium: s.open_risks_medium,
+        low: s.open_risks_low,
+    }));
+
+    const tooltipStyle = {
+        backgroundColor: 'var(--card)',
+        borderColor: 'var(--border)',
+        borderWidth: '1px',
+        borderRadius: '4px',
+        fontSize: '11px',
+        padding: '6px 10px',
+        fontFamily: "'Crimson Pro', serif",
+        color: 'var(--foreground)',
+    };
+
+    return (
+        <div className="grid gap-4 lg:grid-cols-2">
+            <Card>
+                <CardHeader className="pb-2">
+                    <CardTitle className="font-heading text-lg font-normal">
+                        Compliance Trend
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ResponsiveContainer width="100%" height={220}>
+                        <LineChart
+                            data={chartData}
+                            margin={{ top: 5, right: 8, left: -16, bottom: 0 }}
+                        >
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="var(--border)"
+                                vertical={false}
+                            />
+                            <XAxis
+                                dataKey="date"
+                                tick={{ fontSize: 10, fill: 'var(--muted-foreground)', fontFamily: "'Cinzel', serif" }}
+                                axisLine={false}
+                                tickLine={false}
+                            />
+                            <YAxis
+                                domain={[0, 100]}
+                                tick={{ fontSize: 10, fill: 'var(--muted-foreground)', fontFamily: "'Cinzel', serif" }}
+                                axisLine={false}
+                                tickLine={false}
+                                unit="%"
+                            />
+                            <Tooltip
+                                contentStyle={tooltipStyle}
+                                formatter={(v) => [`${v}%`, 'Compliance']}
+                            />
+                            <Line
+                                type="monotone"
+                                dataKey="compliance"
+                                stroke="var(--chart-1)"
+                                strokeWidth={1.5}
+                                dot={{ r: 2, fill: 'var(--chart-1)' }}
+                                activeDot={{ r: 4 }}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader className="pb-2">
+                    <CardTitle className="font-heading text-lg font-normal">
+                        Open Risks Distribution
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ResponsiveContainer width="100%" height={220}>
+                        <BarChart
+                            data={chartData}
+                            margin={{ top: 5, right: 8, left: -16, bottom: 0 }}
+                        >
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="var(--border)"
+                                vertical={false}
+                            />
+                            <XAxis
+                                dataKey="date"
+                                tick={{ fontSize: 10, fill: themeColors.muted, fontFamily: "'Cinzel', serif" }}
+                                axisLine={false}
+                                tickLine={false}
+                            />
+                            <YAxis
+                                allowDecimals={false}
+                                tick={{ fontSize: 10, fill: themeColors.muted, fontFamily: "'Cinzel', serif" }}
+                                axisLine={false}
+                                tickLine={false}
+                            />
+                            <Tooltip contentStyle={tooltipStyle} />
+                            <Legend
+                                wrapperStyle={{ fontSize: 10, paddingTop: 4 }}
+                                iconType="circle"
+                                iconSize={6}
+                            />
+                            <Bar
+                                dataKey="critical"
+                                name="Critical"
+                                stackId="a"
+                                fill="var(--destructive)"
+                            />
+                            <Bar
+                                dataKey="high"
+                                name="High"
+                                stackId="a"
+                                fill="var(--chart-5)"
+                            />
+                            <Bar
+                                dataKey="medium"
+                                name="Medium"
+                                stackId="a"
+                                fill="var(--chart-4)"
+                            />
+                            <Bar
+                                dataKey="low"
+                                name="Low"
+                                stackId="a"
+                                fill="var(--chart-1)"
+                                radius={[2, 2, 0, 0]}
+                            />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+const themeColors = {
+    background: 'var(--background)',
+    foreground: 'var(--foreground)',
+    card:        'var(--card)',
+    primary:     'var(--primary)',
+    border:      'var(--border)',
+    destructive: 'var(--destructive)',
+    success:     'var(--chart-1)',
+    muted:       'var(--muted-foreground)',
+};
+
+// -----------------------------------------------------------------------
+// Main dashboard
+// -----------------------------------------------------------------------
+
+export default function AdminDashboard({
+    stats,
+    recentRisks,
+    recentActivity,
+    trendData,
+    heatmap,
+    kpis,
+    ruleAdjustments,
+    lastSchedulerRun,
+    kriSnapshots,
+    healthScore,
+    appetiteCounts,
+}: Props) {
+    const { notifications } = usePage<SharedProps>().props;
+    const unreadCount = notifications?.unread_count ?? 0;
+    const recent: NotificationItem[] = notifications?.recent ?? [];
+
+    const hasCritical = recent.some(
+        (n) => n.type === 'critical_risk' || n.type === 'overdue_risk',
+    );
+
+    // Unified stat tiles (merges MetricsCards + KpiCards into one bar)
+    const tiles: StatTile[] = [
+        {
+            label: 'Risk Exposure',
+            value: `${kpis.risk_exposure}%`,
+            hint: `avg ${kpis.avg_risk_score}/25`,
+            tone:
+                kpis.risk_exposure > 50
+                    ? 'bad'
+                    : kpis.risk_exposure >= 20
+                      ? 'warn'
+                      : 'ok',
+            progress: kpis.risk_exposure,
+        },
+        {
+            label: 'Compliance',
+            value:
+                kpis.evidence_weighted_compliance !== null
+                    ? `${kpis.evidence_weighted_compliance}%`
+                    : `${stats.compliance_score}%`,
+            hint:
+                kpis.evidence_weighted_compliance !== null
+                    ? 'evidence-backed'
+                    : 'self-assessed',
+            tone:
+                (kpis.evidence_weighted_compliance ?? stats.compliance_score) >=
+                70
+                    ? 'ok'
+                    : (kpis.evidence_weighted_compliance ??
+                            stats.compliance_score) >= 40
+                      ? 'warn'
+                      : 'bad',
+            progress:
+                kpis.evidence_weighted_compliance ?? stats.compliance_score,
+        },
+        {
+            label: 'Evidence Approved',
+            value: `${kpis.evidence_approval_rate}%`,
+            hint: `${kpis.pending_evidence} pending`,
+            tone:
+                kpis.evidence_approval_rate >= 70
+                    ? 'ok'
+                    : kpis.evidence_approval_rate >= 40
+                      ? 'warn'
+                      : 'bad',
+            progress: kpis.evidence_approval_rate,
+        },
+        {
+            label: 'Critical Risks',
+            value: stats.critical_risks.toString(),
+            hint: `${stats.open_risks} open total`,
+            tone: stats.critical_risks > 0 ? 'bad' : 'ok',
+        },
+        {
+            label: 'Due in 7d',
+            value: kpis.assessments_due_soon.toString(),
+            hint: 'assessments',
+            tone: kpis.assessments_due_soon > 0 ? 'warn' : 'ok',
+        },
+    ];
 
     return (
         <AdminLayout>
             <div className="space-y-6">
-                <div className="flex flex-col gap-1">
-                    <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-                    <p className="text-muted-foreground text-sm">Your risk overview at a glance</p>
-                </div>
+                <DashboardHero healthScore={healthScore} />
 
-                {/* Notification banners */}
+                {/* Notification strip */}
                 {unreadCount > 0 && (
-                    <div className="flex flex-col gap-3">
-                        {hasCritical && (
-                            <div className="bg-red-950 border border-red-800 rounded-lg p-4 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
-                                    <div>
-                                        <p className="text-sm font-semibold text-red-200">
-                                            Critical risks require your attention
-                                        </p>
-                                        <p className="text-xs text-red-400">
-                                            Overdue risk treatments or critical alerts detected
-                                        </p>
-                                    </div>
-                                </div>
-                                <Link href="/notifications">
-                                    <Button size="sm" variant="outline" className="border-red-700 text-red-300 hover:bg-red-900">
-                                        View All
-                                    </Button>
-                                </Link>
-                            </div>
-                        )}
-                        {hasPending && (
-                            <div className="bg-yellow-950 border border-yellow-800 rounded-lg p-4 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <AlertTriangle className="w-5 h-5 text-yellow-400 shrink-0" />
-                                    <div>
-                                        <p className="text-sm font-semibold text-yellow-200">
-                                            {unreadCount} item{unreadCount > 1 ? 's' : ''} require your attention
-                                        </p>
-                                        <p className="text-xs text-yellow-400">
-                                            Pending evidence or overdue assessments
-                                        </p>
-                                    </div>
-                                </div>
-                                <Link href="/notifications">
-                                    <Button size="sm" variant="outline" className="border-yellow-700 text-yellow-300 hover:bg-yellow-900">
-                                        View All
-                                    </Button>
-                                </Link>
-                            </div>
-                        )}
-                        {!hasCritical && !hasPending && (
-                            <div className="bg-red-950 border border-red-800 rounded-lg p-4 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
-                                    <div>
-                                        <p className="text-sm font-semibold text-red-200">
-                                            {unreadCount} item{unreadCount > 1 ? 's' : ''} require your attention
-                                        </p>
-                                        <p className="text-xs text-red-400">
-                                            Overdue risks, pending evidence, or critical alerts
-                                        </p>
-                                    </div>
-                                </div>
-                                <Link href="/notifications">
-                                    <Button size="sm" variant="outline" className="border-red-700 text-red-300 hover:bg-red-900">
-                                        View All
-                                    </Button>
-                                </Link>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                <MetricsCards stats={stats} />
-                <QuickActions />
-                <ExecutiveSummaryButton />
-
-                {/* Executive Dashboard entry point */}
-                <Link href="/executive-dashboard">
-                    <Card className="border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 hover:shadow-md transition-shadow cursor-pointer">
-                        <CardContent className="p-4 flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center shrink-0">
-                                    <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Executive Dashboard</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Printable one-page compliance &amp; risk summary for stakeholders</p>
-                                </div>
-                            </div>
-                            <Button size="sm" className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 pointer-events-none">
-                                <Activity className="w-3.5 h-3.5" /> Open
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </Link>
-
-                {/* Health Score */}
-                <HealthScoreCard healthScore={healthScore} />
-
-                {/* KPI Section */}
-                <KpiCards kpis={kpis} stats={stats} />
-
-                {/* Risk Appetite Summary */}
-                {appetiteCounts && (
-                    <Link href="/risk-appetite">
-                        <div className="flex flex-wrap items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer">
-                            <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
-                                <Sliders className="w-4 h-4 text-gray-500" />
-                                <span>{appetiteCounts.name}:</span>
-                            </div>
-                            <div className="flex flex-wrap items-center gap-2">
-                                {appetiteCounts.escalated > 0 && (
-                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700">
-                                        ⚠️ {appetiteCounts.escalated} {appetiteCounts.labels.escalated}
-                                    </span>
-                                )}
-                                {appetiteCounts.review > 0 && (
-                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700">
-                                        {appetiteCounts.review} {appetiteCounts.labels.review}
-                                    </span>
-                                )}
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700">
-                                    {appetiteCounts.acceptable} {appetiteCounts.labels.acceptable}
-                                </span>
-                            </div>
-                            <span className="ml-auto text-xs text-gray-400 shrink-0">Configure →</span>
-                        </div>
+                    <Link
+                        href="/notifications"
+                        className="group flex items-center gap-3 rounded px-4 py-3 transition-all duration-200"
+                        style={{
+                            borderColor: hasCritical ? 'color-mix(in srgb, var(--destructive) 40%, transparent)' : 'color-mix(in srgb, var(--primary) 30%, transparent)',
+                            borderWidth: '1px',
+                            background: hasCritical ? 'color-mix(in srgb, var(--destructive) 8%, transparent)' : 'color-mix(in srgb, var(--primary) 6%, transparent)',
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = hasCritical ? 'color-mix(in srgb, var(--destructive) 14%, transparent)' : 'color-mix(in srgb, var(--primary) 10%, transparent)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = hasCritical ? 'color-mix(in srgb, var(--destructive) 8%, transparent)' : 'color-mix(in srgb, var(--primary) 6%, transparent)')}
+                    >
+                        <span className="inline-flex h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: hasCritical ? 'var(--destructive)' : 'var(--border)' }} />
+                        <AlertTriangle className="h-4 w-4 shrink-0" style={{ color: hasCritical ? 'var(--destructive)' : 'var(--border)' }} />
+                        <p className="min-w-0 flex-1 font-body text-sm text-foreground">
+                            <span style={{ fontWeight: 500 }}>{unreadCount} item{unreadCount > 1 ? 's' : ''}</span>
+                            <span className="text-muted-foreground"> require your attention</span>
+                        </p>
+                        <ArrowUpRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" style={{ color: themeColors.muted }} />
                     </Link>
                 )}
 
-                {/* KRI Trends */}
-                <KriTrends snapshots={kriSnapshots} />
+                <ActionStrip />
 
-                {/* Rule Adjustments Indicator */}
-                <div className="flex items-center gap-2 px-4 py-3 rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 text-sm">
-                    <Zap className="w-4 h-4 text-blue-500 shrink-0" />
-                    <span className="text-blue-700 dark:text-blue-300">
-                        <strong>{ruleAdjustments}</strong> risk score{ruleAdjustments !== 1 ? 's' : ''} auto-adjusted by compliance rules in the last 30 days
-                    </span>
-                </div>
+                <StatTiles tiles={tiles} />
 
-                <div className="grid lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
+                {/* Risk appetite — minimal */}
+                {appetiteCounts && (
+                    <Link href="/risk-appetite" className="group flex items-center gap-3 rounded px-4 py-2.5 transition-all duration-200"
+                        style={{ border: '1px solid var(--border)', background: 'var(--card)' }}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 50%, transparent)')}
+                        onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+                    >
+                        <span className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: themeColors.muted }}>{appetiteCounts.name}</span>
+                        <span className="flex items-center gap-3">
+                            {appetiteCounts.escalated > 0 && (
+                                <span className="inline-flex items-center gap-1 font-display text-[9px] uppercase tracking-wider" style={{ color: themeColors.destructive }}>
+                                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: themeColors.destructive }} />
+                                    {appetiteCounts.escalated} {appetiteCounts.labels.escalated}
+                                </span>
+                            )}
+                            {appetiteCounts.review > 0 && (
+                                <span className="inline-flex items-center gap-1 font-display text-[9px] uppercase tracking-wider" style={{ color: themeColors.border }}>
+                                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: themeColors.border }} />
+                                    {appetiteCounts.review} {appetiteCounts.labels.review}
+                                </span>
+                            )}
+                            <span className="inline-flex items-center gap-1 font-display text-[9px] uppercase tracking-wider" style={{ color: themeColors.success }}>
+                                <span className="h-1.5 w-1.5 rounded-full" style={{ background: themeColors.success }} />
+                                {appetiteCounts.acceptable} {appetiteCounts.labels.acceptable}
+                            </span>
+                        </span>
+                        <span className="ml-auto flex items-center gap-1 font-display text-[9px] uppercase tracking-wider transition-colors duration-200" style={{ color: themeColors.muted }}>
+                            Configure <ArrowRight className="h-3 w-3" />
+                        </span>
+                    </Link>
+                )}
+
+                <ExecutiveSummaryCard />
+
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <div className="animate-in slide-in-from-bottom-4 lg:col-span-2">
                         <RiskHeatmap risks={heatmap} />
                     </div>
-                    <div>
+                    <div className="animate-in slide-in-from-bottom-4" style={{ animationDelay: '100ms' }}>
+                        <HealthBreakdown healthScore={healthScore} />
+                    </div>
+                </div>
+
+                <div
+                    className="animate-in slide-in-from-bottom-4"
+                    style={{ animationDelay: '200ms' }}
+                >
+                    <KriTrends snapshots={kriSnapshots} />
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <div
+                        className="animate-in slide-in-from-bottom-4 lg:col-span-2"
+                        style={{ animationDelay: '300ms' }}
+                    >
+                        <RiskTrendChart trendData={trendData} />
+                    </div>
+                    <div
+                        className="animate-in slide-in-from-bottom-4"
+                        style={{ animationDelay: '400ms' }}
+                    >
                         <RecentAlerts activity={recentActivity} />
                     </div>
                 </div>
 
-                <div className="grid lg:grid-cols-2 gap-6">
-                    <RiskTrendChart trendData={trendData} />
-                    <ComplianceChart score={stats.compliance_score} />
+                <div className="grid gap-4 lg:grid-cols-2">
+                    <div
+                        className="animate-in slide-in-from-bottom-4"
+                        style={{ animationDelay: '500ms' }}
+                    >
+                        <ComplianceChart score={stats.compliance_score} />
+                    </div>
+                    <div
+                        className="animate-in slide-in-from-bottom-4"
+                        style={{ animationDelay: '600ms' }}
+                    >
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="flex items-center gap-2 font-heading text-lg font-normal">
+                                    <Zap className="h-4 w-4" style={{ color: themeColors.primary }} strokeWidth={1.5} />
+                                    Rule Adjustments
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="font-heading text-4xl font-normal tabular-nums" style={{ color: themeColors.foreground }}>
+                                    {ruleAdjustments}
+                                </p>
+                                <p className="mt-2 font-body italic text-sm" style={{ color: themeColors.muted }}>
+                                    risk score{ruleAdjustments !== 1 ? 's' : ''} auto-adjusted by compliance rules in the last 30 days
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
 
                 <TopRisks risks={recentRisks} />
 
-                <p className="text-xs text-gray-400 dark:text-gray-600 text-center pb-2">
-                    🕐 Nightly checks run at 02:00 — Last run: {lastSchedulerRun ?? 'Never'}
-                </p>
+                {/* Ornate footer */}
+                <div className="pb-4 text-center space-y-2">
+                    <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent)', opacity: 0.5 }} />
+                    <p className="font-display text-[9px] uppercase tracking-[0.25em] text-muted-foreground opacity-40">
+                        Nightly checks · 02:00 · last run {lastSchedulerRun ?? 'never'}
+                    </p>
+                </div>
             </div>
         </AdminLayout>
-    )
+    );
 }

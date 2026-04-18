@@ -38,16 +38,16 @@ export default function Login({
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">Email or Username</Label>
                                 <Input
                                     id="email"
-                                    type="email"
+                                    type="text"
                                     name="email"
                                     required
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@example.com"
+                                    placeholder="your@email.com or username"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -99,7 +99,7 @@ export default function Login({
                         </div>
 
                         {canRegister && (
-                            <div className="text-center text-sm text-muted-foreground">
+                            <div className="font-body text-center text-sm italic" style={{ color: '#7ABFA8' }}>
                                 Don't have an account?{' '}
                                 <TextLink href={register()} tabIndex={5}>
                                     Sign up
@@ -111,7 +111,7 @@ export default function Login({
             </Form>
 
             {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                <div className="font-body mb-4 text-center text-sm italic" style={{ color: '#B0E4CC' }}>
                     {status}
                 </div>
             )}

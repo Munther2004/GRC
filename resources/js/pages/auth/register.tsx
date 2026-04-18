@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, usePage } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -8,8 +8,17 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
+import type { SharedProps } from '@/types';
+
+interface Props extends SharedProps {
+    query?: {
+        corporation_code?: string;
+    };
+}
 
 export default function Register() {
+    const { query } = usePage<Props>().props;
+    const corporationCode = query?.corporation_code || '';
     return (
         <AuthLayout
             title="Create an account"
@@ -98,9 +107,17 @@ export default function Register() {
                                 {processing && <Spinner />}
                                 Create account
                             </Button>
+
+                            {corporationCode && (
+                                <input
+                                    type="hidden"
+                                    name="corporation_code"
+                                    value={corporationCode}
+                                />
+                            )}
                         </div>
 
-                        <div className="text-center text-sm text-muted-foreground">
+                        <div className="font-body text-center text-sm italic" style={{ color: '#7ABFA8' }}>
                             Already have an account?{' '}
                             <TextLink href={login()} tabIndex={6}>
                                 Log in

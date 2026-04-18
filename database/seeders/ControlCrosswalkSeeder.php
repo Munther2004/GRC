@@ -89,18 +89,18 @@ class ControlCrosswalkSeeder extends Seeder
 
         $inserted = 0;
         foreach ($this->mappings as [$primaryId, $mappedId, $type, $notes]) {
-            if (!isset($controls[$primaryId]) || !isset($controls[$mappedId])) {
+            if (! isset($controls[$primaryId]) || ! isset($controls[$mappedId])) {
                 continue; // skip if either control doesn't exist in this install
             }
 
             ControlCrosswalk::firstOrCreate(
                 [
                     'primary_control_id' => $controls[$primaryId],
-                    'mapped_control_id'  => $controls[$mappedId],
+                    'mapped_control_id' => $controls[$mappedId],
                 ],
                 [
                     'mapping_type' => $type,
-                    'notes'        => $notes,
+                    'notes' => $notes,
                 ]
             );
             $inserted++;

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class AIControlLinker
 {
-    public function __construct(private AIService $ai = new AIService()) {}
+    public function __construct(private AIService $ai = new AIService) {}
 
     public function linkControlsToRisk(Risk $risk): void
     {
@@ -38,8 +38,7 @@ class AIControlLinker
             }
 
             // Build controls list string
-            $controlsList = $controls->map(fn($c) =>
-                "{$c->id} | {$c->control_id} | {$c->title} | {$c->framework->short_name} | {$c->category}"
+            $controlsList = $controls->map(fn ($c) => "{$c->id} | {$c->control_id} | {$c->title} | {$c->framework->short_name} | {$c->category}"
             )->implode("\n");
 
             $prompt = <<<PROMPT
@@ -71,8 +70,9 @@ PROMPT;
             $cleaned = preg_replace('/```$/', '', trim($cleaned));
             $data = json_decode(trim($cleaned), true);
 
-            if (!is_array($suggestions)) {
+            if (! is_array($suggestions)) {
                 Log::warning('AIControlLinker: invalid JSON response', ['response' => $responseText]);
+
                 return;
             }
 
@@ -80,9 +80,11 @@ PROMPT;
 
             foreach ($suggestions as $suggestion) {
                 $controlId = $suggestion['control_id'] ?? null;
-                $reason    = $suggestion['reason'] ?? null;
+                $reason = $suggestion['reason'] ?? null;
 
-                if (!$controlId) continue;
+                if (! $controlId) {
+                    continue;
+                }
 
                 // Skip if already linked
                 $exists = DB::table('control_risk')
@@ -90,19 +92,23 @@ PROMPT;
                     ->where('control_id', $controlId)
                     ->exists();
 
-                if ($exists) continue;
+                if ($exists) {
+                    continue;
+                }
 
                 // Verify control exists
-                if (!$controls->contains('id', $controlId)) continue;
+                if (! $controls->contains('id', $controlId)) {
+                    continue;
+                }
 
                 DB::table('control_risk')->insert([
-                    'control_id'  => $controlId,
-                    'risk_id'     => $risk->id,
+                    'control_id' => $controlId,
+                    'risk_id' => $risk->id,
                     'auto_linked' => true,
-                    'link_type'   => 'ai',
+                    'link_type' => 'ai',
                     'link_reason' => $reason,
-                    'created_at'  => now(),
-                    'updated_at'  => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
 
                 $linked++;

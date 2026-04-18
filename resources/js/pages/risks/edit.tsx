@@ -6,45 +6,83 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, Save, AlertTriangle, Sparkles, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
+import {
+    ArrowLeft,
+    Save,
+    AlertTriangle,
+    Sparkles,
+    Loader2,
+    CheckCircle2,
+    XCircle,
+} from 'lucide-react';
 import { useState } from 'react';
 import axios from 'axios';
-import { levelColors, levelFromScore, ValidationResult } from '@/lib/risk-utils';
+import {
+    levelColors,
+    levelFromScore,
+    ValidationResult,
+} from '@/lib/risk-utils';
 
 interface Risk {
-    id: number; title: string; description: string; category: string;
-    owner: string; likelihood: number; impact: number; status: string;
-    treatment: string; treatment_plan: string | null; due_date: string | null;
+    id: number;
+    title: string;
+    description: string;
+    category: string;
+    owner: string;
+    likelihood: number;
+    impact: number;
+    status: string;
+    treatment: string;
+    treatment_plan: string | null;
+    due_date: string | null;
     ai_validated: boolean;
 }
 
 interface Props {
     risk: Risk;
     categories: string[];
-    statuses:   { value: string; label: string }[];
+    statuses: { value: string; label: string }[];
     treatments: { value: string; label: string }[];
 }
 
-export default function RiskEdit({ risk, categories, statuses, treatments }: Props) {
+export default function RiskEdit({
+    risk,
+    categories,
+    statuses,
+    treatments,
+}: Props) {
     const { data, setData, put, processing, errors } = useForm({
-        title:          risk.title,
-        description:    risk.description,
-        category:       risk.category,
-        owner:          risk.owner,
-        likelihood:     String(risk.likelihood),
-        impact:         String(risk.impact),
-        status:         risk.status,
-        treatment:      risk.treatment,
+        title: risk.title,
+        description: risk.description,
+        category: risk.category,
+        owner: risk.owner,
+        likelihood: String(risk.likelihood),
+        impact: String(risk.impact),
+        status: risk.status,
+        treatment: risk.treatment,
         treatment_plan: risk.treatment_plan ?? '',
-        due_date:       risk.due_date?.split('T')[0] ?? '',
-        ai_validated:   risk.ai_validated ?? false,
+        due_date: risk.due_date?.split('T')[0] ?? '',
+        ai_validated: risk.ai_validated ?? false,
     });
 
-    const [validationResult, setValidationResult]   = useState<ValidationResult | null>(null);
+    const [validationResult, setValidationResult] =
+        useState<ValidationResult | null>(null);
     const [loadingValidation, setLoadingValidation] = useState(false);
-    const [validationError, setValidationError]     = useState('');
+    const [validationError, setValidationError] = useState('');
 
     const score = Number(data.likelihood) * Number(data.impact);
     const level = levelFromScore(score);
@@ -58,10 +96,10 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
         setValidationResult(null);
         try {
             const res = await axios.post('/risks/validate-scores', {
-                title:       data.title,
+                title: data.title,
                 description: data.description,
-                likelihood:  Number(data.likelihood),
-                impact:      Number(data.impact),
+                likelihood: Number(data.likelihood),
+                impact: Number(data.impact),
             });
             setValidationResult(res.data);
             if (!res.data.error) setData('ai_validated', true);
@@ -76,8 +114,8 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
         if (!validationResult) return;
         setData({
             ...data,
-            likelihood:   String(validationResult.recommended_likelihood),
-            impact:       String(validationResult.recommended_impact),
+            likelihood: String(validationResult.recommended_likelihood),
+            impact: String(validationResult.recommended_impact),
             ai_validated: true,
         });
         setValidationResult(null);
@@ -92,21 +130,29 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
         <AdminLayout>
             <Head title={`Edit — ${risk.title}`} />
 
-            <div className="max-w-3xl mx-auto space-y-6">
+            <div className="mx-auto max-w-3xl space-y-6">
                 <div className="flex items-center gap-3">
                     <Link href={route('risks.show', risk.id)}>
-                        <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon">
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Risk</h1>
-                        <p className="text-sm text-gray-500 truncate max-w-md">{risk.title}</p>
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                            Edit Risk
+                        </h1>
+                        <p className="max-w-md truncate text-sm text-muted-foreground">
+                            {risk.title}
+                        </p>
                     </div>
                 </div>
 
                 <form onSubmit={submit} className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">Risk Details</CardTitle>
+                            <CardTitle className="text-base">
+                                Risk Details
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-1">
@@ -114,27 +160,52 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
                                 <Input
                                     id="title"
                                     value={data.title}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('title', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => setData('title', e.target.value)}
                                 />
-                                {errors.title && <p className="text-xs text-red-500">{errors.title}</p>}
+                                {errors.title && (
+                                    <p className="font-body text-xs italic" style={{ color: "#8B2635" }}>
+                                        {errors.title}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-1">
-                                <Label htmlFor="description">Description *</Label>
+                                <Label htmlFor="description">
+                                    Description *
+                                </Label>
                                 <Textarea
                                     id="description"
                                     value={data.description}
-                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLTextAreaElement>,
+                                    ) => setData('description', e.target.value)}
                                     rows={4}
                                 />
-                                {errors.description && <p className="text-xs text-red-500">{errors.description}</p>}
+                                {errors.description && (
+                                    <p className="font-body text-xs italic" style={{ color: "#8B2635" }}>
+                                        {errors.description}
+                                    </p>
+                                )}
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <Label>Category *</Label>
-                                    <Select value={data.category} onValueChange={(v: string) => setData('category', v)}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <Select
+                                        value={data.category}
+                                        onValueChange={(v: string) =>
+                                            setData('category', v)
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
                                         <SelectContent>
-                                            {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                            {categories.map((c) => (
+                                                <SelectItem key={c} value={c}>
+                                                    {c}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -143,7 +214,9 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
                                     <Input
                                         id="owner"
                                         value={data.owner}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('owner', e.target.value)}
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>,
+                                        ) => setData('owner', e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -154,12 +227,17 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base">Risk Scoring</CardTitle>
-                                    <CardDescription>ISO/IEC 27005 — Likelihood × Impact</CardDescription>
+                                    <CardTitle className="text-base">
+                                        Risk Scoring
+                                    </CardTitle>
+                                    <CardDescription>
+                                        ISO/IEC 27005 — Likelihood × Impact
+                                    </CardDescription>
                                 </div>
                                 {data.ai_validated && (
-                                    <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-xs">
-                                        <Sparkles className="w-3 h-3 mr-1" />AI Validated
+                                    <Badge className="text-xs">
+                                        <Sparkles className="mr-1 h-3 w-3" />
+                                        AI Validated
                                     </Badge>
                                 )}
                             </div>
@@ -167,25 +245,50 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label>Likelihood: {data.likelihood}/5</Label>
+                                    <Label>
+                                        Likelihood: {data.likelihood}/5
+                                    </Label>
                                     <input
-                                        type="range" min="1" max="5" value={data.likelihood}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('likelihood', e.target.value)}
-                                        className="w-full accent-blue-600"
+                                        type="range"
+                                        min="1"
+                                        max="5"
+                                        value={data.likelihood}
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>,
+                                        ) =>
+                                            setData(
+                                                'likelihood',
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="w-full" style={{ accentColor: "#408A71" }}
                                     />
-                                    <div className="flex justify-between text-xs text-gray-400">
-                                        <span>Rare</span><span>Unlikely</span><span>Possible</span><span>Likely</span><span>Almost Certain</span>
+                                    <div className="flex justify-between text-xs text-muted-foreground/70">
+                                        <span>Rare</span>
+                                        <span>Unlikely</span>
+                                        <span>Possible</span>
+                                        <span>Likely</span>
+                                        <span>Almost Certain</span>
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Impact: {data.impact}/5</Label>
                                     <input
-                                        type="range" min="1" max="5" value={data.impact}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('impact', e.target.value)}
-                                        className="w-full accent-blue-600"
+                                        type="range"
+                                        min="1"
+                                        max="5"
+                                        value={data.impact}
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>,
+                                        ) => setData('impact', e.target.value)}
+                                        className="w-full" style={{ accentColor: "#408A71" }}
                                     />
-                                    <div className="flex justify-between text-xs text-gray-400">
-                                        <span>Negligible</span><span>Minor</span><span>Moderate</span><span>Major</span><span>Catastrophic</span>
+                                    <div className="flex justify-between text-xs text-muted-foreground/70">
+                                        <span>Negligible</span>
+                                        <span>Minor</span>
+                                        <span>Moderate</span>
+                                        <span>Major</span>
+                                        <span>Catastrophic</span>
                                     </div>
                                 </div>
                             </div>
@@ -197,90 +300,147 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
                                     type="button"
                                     size="sm"
                                     variant="outline"
-                                    className="gap-1.5 border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400"
+                                    className="gap-1.5" style={{ borderColor: "rgba(64,138,113,0.4)", color: "#408A71" }}
                                     onClick={validateScores}
                                     disabled={loadingValidation || !canValidate}
                                 >
+                                    {loadingValidation ? (
+                                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                    ) : (
+                                        <Sparkles className="h-3.5 w-3.5" />
+                                    )}
                                     {loadingValidation
-                                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                        : <Sparkles className="w-3.5 h-3.5" />
-                                    }
-                                    {loadingValidation ? 'Validating...' : '✨ Validate Scores'}
+                                        ? 'Validating...'
+                                        : '✨ Validate Scores'}
                                 </Button>
                             </div>
 
                             {validationError && (
-                                <div className="flex items-start gap-2 p-3 rounded-lg border border-red-200 bg-red-50">
-                                    <XCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                                    <p className="text-sm text-red-700">{validationError}</p>
+                                <div className="flex items-start gap-2 rounded p-3" style={{ background: "rgba(139,38,53,0.1)", border: "1px solid rgba(139,38,53,0.3)" }}>
+                                    <XCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "#8B2635" }} />
+                                    <p className="font-body text-sm italic" style={{ color: "#8B2635" }}>
+                                        {validationError}
+                                    </p>
                                 </div>
                             )}
 
-                            {validationResult && validationResult.error === true && (
-                                <div className="rounded-lg border border-red-200 bg-red-50">
-                                    <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-red-100">
-                                        <XCircle className="w-4 h-4 text-red-600" />
-                                        <span className="text-sm font-semibold text-red-800">Validation Unavailable</span>
-                                    </div>
-                                    <div className="px-4 py-3">
-                                        <p className="text-sm text-red-700">{validationResult.reasoning}</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {validationResult && !validationResult.error && validationResult.valid && (
-                                <div className="rounded-lg border border-green-200 bg-green-50">
-                                    <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-green-100">
-                                        <CheckCircle2 className="w-4 h-4 text-green-600" />
-                                        <span className="text-sm font-semibold text-green-800">Scores Validated — Looks Good</span>
-                                        <span className={`ml-auto text-xs px-1.5 py-0.5 rounded capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}>
-                                            {validationResult.confidence} confidence
-                                        </span>
-                                    </div>
-                                    <div className="px-4 py-3">
-                                        <p className="text-sm text-gray-700">{validationResult.reasoning}</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {validationResult && !validationResult.error && !validationResult.valid && (
-                                <div className="rounded-lg border border-amber-200 bg-amber-50">
-                                    <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-amber-100">
-                                        <AlertTriangle className="w-4 h-4 text-amber-600" />
-                                        <span className="text-sm font-semibold text-amber-800">Scores Adjusted — Recommendations Available</span>
-                                        <span className={`ml-auto text-xs px-1.5 py-0.5 rounded capitalize ${validationResult.confidence === 'high' ? 'bg-green-200 text-green-800' : validationResult.confidence === 'medium' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}>
-                                            {validationResult.confidence} confidence
-                                        </span>
-                                    </div>
-                                    <div className="px-4 py-3 space-y-3">
-                                        <p className="text-sm text-gray-700">{validationResult.reasoning}</p>
-                                        <div className="flex items-center justify-between gap-4 pt-1">
-                                            <div className="flex items-center gap-3 text-sm">
-                                                <span className="text-gray-500">Recommended:</span>
-                                                <span className="font-medium">Likelihood <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${levelColors[validationResult.recommended_likelihood]}`}>{validationResult.recommended_likelihood}</span></span>
-                                                <span className="font-medium">Impact <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${levelColors[validationResult.recommended_impact]}`}>{validationResult.recommended_impact}</span></span>
-                                            </div>
-                                            <Button
-                                                type="button"
-                                                size="sm"
-                                                className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white"
-                                                onClick={applyRecommendations}
-                                            >
-                                                Apply Recommendations
-                                            </Button>
+                            {validationResult &&
+                                validationResult.error === true && (
+                                    <div className="rounded" style={{ background: "rgba(139,38,53,0.08)", border: "1px solid rgba(139,38,53,0.3)" }}>
+                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(139,38,53,0.15)" }}>
+                                            <XCircle className="h-4 w-4" style={{ color: "#8B2635" }} />
+                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#8B2635" }}>
+                                                Validation Unavailable
+                                            </span>
+                                        </div>
+                                        <div className="px-4 py-3">
+                                            <p className="font-body text-sm italic" style={{ color: "#8B2635" }}>
+                                                {validationResult.reasoning}
+                                            </p>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            <div className={`flex items-center justify-between p-4 rounded-lg border ${level.color}`}>
+                            {validationResult &&
+                                !validationResult.error &&
+                                validationResult.valid && (
+                                    <div className="rounded" style={{ background: "rgba(176,228,204,0.08)", border: "1px solid rgba(176,228,204,0.3)" }}>
+                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(176,228,204,0.15)" }}>
+                                            <CheckCircle2 className="h-4 w-4" style={{ color: "#B0E4CC" }} />
+                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#B0E4CC" }}>
+                                                Scores Validated — Looks Good
+                                            </span>
+                                            <span
+                                                className="ml-auto font-display rounded px-1.5 py-0.5 text-[9px] uppercase tracking-widest" style={{ color: validationResult.confidence === 'high' ? '#B0E4CC' : validationResult.confidence === 'medium' ? '#408A71' : '#7ABFA8' }}
+                                            >
+                                                {validationResult.confidence}{' '}
+                                                confidence
+                                            </span>
+                                        </div>
+                                        <div className="px-4 py-3">
+                                            <p className="text-sm text-muted-foreground">
+                                                {validationResult.reasoning}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                            {validationResult &&
+                                !validationResult.error &&
+                                !validationResult.valid && (
+                                    <div className="rounded" style={{ background: "rgba(40,90,72,0.08)", border: "1px solid rgba(40,90,72,0.3)" }}>
+                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(40,90,72,0.15)" }}>
+                                            <AlertTriangle className="h-4 w-4" style={{ color: "#285A48" }} />
+                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#285A48" }}>
+                                                Scores Adjusted —
+                                                Recommendations Available
+                                            </span>
+                                            <span
+                                                className="ml-auto font-display rounded px-1.5 py-0.5 text-[9px] uppercase tracking-widest" style={{ color: validationResult.confidence === 'high' ? '#B0E4CC' : validationResult.confidence === 'medium' ? '#408A71' : '#7ABFA8' }}
+                                            >
+                                                {validationResult.confidence}{' '}
+                                                confidence
+                                            </span>
+                                        </div>
+                                        <div className="space-y-3 px-4 py-3">
+                                            <p className="text-sm text-muted-foreground">
+                                                {validationResult.reasoning}
+                                            </p>
+                                            <div className="flex items-center justify-between gap-4 pt-1">
+                                                <div className="flex items-center gap-3 text-sm">
+                                                    <span className="text-muted-foreground">
+                                                        Recommended:
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        Likelihood{' '}
+                                                        <span
+                                                            className={`rounded px-1.5 py-0.5 text-xs font-bold ${levelColors[validationResult.recommended_likelihood]}`}
+                                                        >
+                                                            {
+                                                                validationResult.recommended_likelihood
+                                                            }
+                                                        </span>
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        Impact{' '}
+                                                        <span
+                                                            className={`rounded px-1.5 py-0.5 text-xs font-bold ${levelColors[validationResult.recommended_impact]}`}
+                                                        >
+                                                            {
+                                                                validationResult.recommended_impact
+                                                            }
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    className="shrink-0" style={{ background: "#408A71", color: "#091413" }}
+                                                    onClick={
+                                                        applyRecommendations
+                                                    }
+                                                >
+                                                    Apply Recommendations
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                            <div
+                                className="flex items-center justify-between rounded border p-4" style={level.style}
+                            >
                                 <div className="flex items-center gap-2">
-                                    <AlertTriangle className="w-5 h-5" />
-                                    <span className="font-semibold">Risk Level: {level.label}</span>
+                                    <AlertTriangle className="h-5 w-5" />
+                                    <span className="font-semibold">
+                                        Risk Level: {level.label}
+                                    </span>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-3xl font-bold">{score}</span>
-                                    <span className="text-sm ml-1">/ 25</span>
+                                    <span className="text-3xl font-bold">
+                                        {score}
+                                    </span>
+                                    <span className="ml-1 text-sm">/ 25</span>
                                 </div>
                             </div>
                         </CardContent>
@@ -288,35 +448,74 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">Risk Treatment</CardTitle>
+                            <CardTitle className="text-base">
+                                Risk Treatment
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <Label>Treatment Strategy *</Label>
-                                    <Select value={data.treatment} onValueChange={(v: string) => setData('treatment', v)}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <Select
+                                        value={data.treatment}
+                                        onValueChange={(v: string) =>
+                                            setData('treatment', v)
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
                                         <SelectContent>
-                                            {treatments.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                                            {treatments.map((t) => (
+                                                <SelectItem
+                                                    key={t.value}
+                                                    value={t.value}
+                                                >
+                                                    {t.label}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div className="space-y-1">
                                     <Label>Status *</Label>
-                                    <Select value={data.status} onValueChange={(v: string) => setData('status', v)}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <Select
+                                        value={data.status}
+                                        onValueChange={(v: string) =>
+                                            setData('status', v)
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
                                         <SelectContent>
-                                            {statuses.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                                            {statuses.map((s) => (
+                                                <SelectItem
+                                                    key={s.value}
+                                                    value={s.value}
+                                                >
+                                                    {s.label}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
                             <div className="space-y-1">
-                                <Label htmlFor="treatment_plan">Treatment Plan</Label>
+                                <Label htmlFor="treatment_plan">
+                                    Treatment Plan
+                                </Label>
                                 <Textarea
                                     id="treatment_plan"
                                     value={data.treatment_plan}
-                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('treatment_plan', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLTextAreaElement>,
+                                    ) =>
+                                        setData(
+                                            'treatment_plan',
+                                            e.target.value,
+                                        )
+                                    }
                                     rows={3}
                                 />
                             </div>
@@ -326,7 +525,9 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
                                     id="due_date"
                                     type="date"
                                     value={data.due_date}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('due_date', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => setData('due_date', e.target.value)}
                                 />
                             </div>
                         </CardContent>
@@ -336,8 +537,12 @@ export default function RiskEdit({ risk, categories, statuses, treatments }: Pro
                         <Link href={route('risks.show', risk.id)}>
                             <Button variant="outline">Cancel</Button>
                         </Link>
-                        <Button type="submit" disabled={processing} className="gap-2">
-                            <Save className="w-4 h-4" />
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            className="gap-2"
+                        >
+                            <Save className="h-4 w-4" />
                             {processing ? 'Saving...' : 'Update Risk'}
                         </Button>
                     </div>

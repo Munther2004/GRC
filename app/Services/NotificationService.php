@@ -30,8 +30,8 @@ class NotificationService
     {
         return match ($role) {
             'auditor' => ['pending_evidence', 'overdue_assessment', 'expiring_evidence', 'expired_evidence', 'status_request_pending'],
-            'user'    => ['overdue_assessment', 'critical_risk', 'overdue_risk', 'status_request_approved', 'status_request_rejected'],
-            default   => null, // admin sees everything
+            'user' => ['overdue_assessment', 'critical_risk', 'overdue_risk', 'status_request_approved', 'status_request_rejected'],
+            default => null, // admin sees everything
         };
     }
 
@@ -42,7 +42,7 @@ class NotificationService
         $query = Notification::where('is_read', false)
             ->where(function ($q) use ($user) {
                 $q->whereNull('user_id')
-                  ->orWhere('user_id', $user->id);
+                    ->orWhere('user_id', $user->id);
             });
 
         if ($types !== null) {
@@ -167,10 +167,11 @@ class NotificationService
 
         if ($existing && $updateExisting) {
             $existing->update(['message' => $message, 'is_read' => false]);
+
             return;
         }
 
-        if (!$existing) {
+        if (! $existing) {
             Notification::firstOrCreate(
                 ['type' => $type, 'url' => $url, 'is_read' => false],
                 ['user_id' => null, 'title' => $title, 'message' => $message]

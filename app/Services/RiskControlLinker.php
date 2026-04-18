@@ -9,9 +9,9 @@ class RiskControlLinker
 {
     public function linkAll(): int
     {
-        $risks    = Risk::all();
+        $risks = Risk::all();
         $controls = Control::all();
-        $count    = 0;
+        $count = 0;
 
         foreach ($risks as $risk) {
             $count += $this->linkRiskToControls($risk, $controls);
@@ -23,6 +23,7 @@ class RiskControlLinker
     public function linkForRisk(Risk $risk): int
     {
         $controls = Control::all();
+
         return $this->linkRiskToControls($risk, $controls);
     }
 
@@ -34,7 +35,7 @@ class RiskControlLinker
         foreach ($risks as $risk) {
             if ($this->isMatch($risk, $control)) {
                 $existing = $risk->controls()->where('control_id', $control->id)->exists();
-                if (!$existing) {
+                if (! $existing) {
                     $risk->controls()->attach($control->id, ['auto_linked' => true]);
                     $count++;
                 }
@@ -51,7 +52,7 @@ class RiskControlLinker
         foreach ($controls as $control) {
             if ($this->isMatch($risk, $control)) {
                 $existing = $risk->controls()->where('controls.id', $control->id)->exists();
-                if (!$existing) {
+                if (! $existing) {
                     $risk->controls()->attach($control->id, ['auto_linked' => true]);
                     $count++;
                 }
@@ -67,23 +68,23 @@ class RiskControlLinker
      */
     private array $categoryMap = [
         'information security' => ['organisational', 'technological', 'security', 'access', 'cryptograph', 'information'],
-        'technical'            => ['technological', 'technical', 'system', 'software', 'network', 'infrastructure'],
-        'operational'          => ['organisational', 'operational', 'process', 'change', 'incident', 'business'],
-        'compliance'           => ['organisational', 'compliance', 'legal', 'regulatory', 'audit', 'policy'],
-        'legal'                => ['legal', 'regulatory', 'contractual', 'statutory', 'compliance'],
-        'financial'            => ['organisational', 'financial', 'supplier', 'contract', 'procurement'],
-        'strategic'            => ['organisational', 'governance', 'risk', 'strategy', 'management'],
-        'human resources'      => ['people', 'human resource', 'personnel', 'staff', 'training', 'awareness'],
-        'third party'          => ['supplier', 'third.party', 'vendor', 'outsourc', 'cloud', 'service provider'],
-        'physical'             => ['physical', 'environmental', 'facility', 'equipment', 'clear desk'],
+        'technical' => ['technological', 'technical', 'system', 'software', 'network', 'infrastructure'],
+        'operational' => ['organisational', 'operational', 'process', 'change', 'incident', 'business'],
+        'compliance' => ['organisational', 'compliance', 'legal', 'regulatory', 'audit', 'policy'],
+        'legal' => ['legal', 'regulatory', 'contractual', 'statutory', 'compliance'],
+        'financial' => ['organisational', 'financial', 'supplier', 'contract', 'procurement'],
+        'strategic' => ['organisational', 'governance', 'risk', 'strategy', 'management'],
+        'human resources' => ['people', 'human resource', 'personnel', 'staff', 'training', 'awareness'],
+        'third party' => ['supplier', 'third.party', 'vendor', 'outsourc', 'cloud', 'service provider'],
+        'physical' => ['physical', 'environmental', 'facility', 'equipment', 'clear desk'],
     ];
 
     private function isMatch(Risk $risk, Control $control): bool
     {
-        $riskCategory    = strtolower($risk->category ?? '');
+        $riskCategory = strtolower($risk->category ?? '');
         $controlCategory = strtolower($control->category ?? '');
-        $riskTitle       = strtolower($risk->title ?? '');
-        $controlTitle    = strtolower($control->title ?? '');
+        $riskTitle = strtolower($risk->title ?? '');
+        $controlTitle = strtolower($control->title ?? '');
 
         // 1. Direct category substring match
         if ($riskCategory && $controlCategory && (
@@ -107,9 +108,9 @@ class RiskControlLinker
         // 3. Extract meaningful keywords (4+ chars) from risk category → search control title
         if ($riskCategory) {
             $stopWords = ['and', 'the', 'for', 'with', 'from', 'that', 'this'];
-            $keywords  = array_filter(
+            $keywords = array_filter(
                 preg_split('/[\s,_\-\/]+/', $riskCategory),
-                fn($k) => strlen($k) >= 4 && !in_array($k, $stopWords)
+                fn ($k) => strlen($k) >= 4 && ! in_array($k, $stopWords)
             );
             foreach ($keywords as $keyword) {
                 if (str_contains($controlTitle, $keyword) || str_contains($controlCategory, $keyword)) {
@@ -121,9 +122,9 @@ class RiskControlLinker
         // 4. Extract meaningful keywords from control title → search risk title + category
         if ($controlTitle) {
             $stopWords = ['and', 'the', 'for', 'with', 'from', 'that', 'this', 'use', 'all'];
-            $keywords  = array_filter(
+            $keywords = array_filter(
                 preg_split('/[\s,_\-\/]+/', $controlTitle),
-                fn($k) => strlen($k) >= 5 && !in_array($k, $stopWords)
+                fn ($k) => strlen($k) >= 5 && ! in_array($k, $stopWords)
             );
             foreach ($keywords as $keyword) {
                 if (str_contains($riskTitle, $keyword) || str_contains($riskCategory, $keyword)) {

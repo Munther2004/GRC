@@ -24,12 +24,12 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        $middleware->alias(['role' => \App\Http\Middleware\CheckRole::class,]);
+        $middleware->alias(['role' => \App\Http\Middleware\CheckRole::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (HttpException $e, \Illuminate\Http\Request $request) {
             $status = $e->getStatusCode();
-            $pages  = [403 => 'errors/403', 404 => 'errors/404', 500 => 'errors/500'];
+            $pages = [403 => 'errors/403', 404 => 'errors/404', 500 => 'errors/500'];
 
             if (isset($pages[$status])) {
                 return Inertia::render($pages[$status])

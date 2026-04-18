@@ -17,7 +17,7 @@ class RiskAppetiteController extends Controller
     public function index()
     {
         return Inertia::render('risk-appetite/index', [
-            'appetites'       => RiskAppetite::orderByDesc('is_active')->orderBy('name')->get(),
+            'appetites' => RiskAppetite::orderByDesc('is_active')->orderBy('name')->get(),
             'active_appetite' => RiskAppetite::getActive(),
         ]);
     }
@@ -58,7 +58,7 @@ class RiskAppetiteController extends Controller
     public function activate(RiskAppetite $appetite)
     {
         // Capture which risks were escalated before switching
-        $previousActive      = RiskAppetite::getActive();
+        $previousActive = RiskAppetite::getActive();
         $previouslyEscalated = [];
 
         if ($previousActive) {
@@ -75,10 +75,10 @@ class RiskAppetiteController extends Controller
         });
 
         // Notify for newly escalated risks
-        if ($appetite->notify_on_escalation && !empty($appetite->escalation_notification_roles)) {
-            $allRisks     = Risk::all();
+        if ($appetite->notify_on_escalation && ! empty($appetite->escalation_notification_roles)) {
+            $allRisks = Risk::all();
             $nowEscalated = $allRisks->filter(fn ($r) => $appetite->classifyRisk($r)['band'] === 'escalated');
-            $newlyEscalated = $nowEscalated->filter(fn ($r) => !in_array($r->id, $previouslyEscalated));
+            $newlyEscalated = $nowEscalated->filter(fn ($r) => ! in_array($r->id, $previouslyEscalated));
 
             if ($newlyEscalated->isNotEmpty()) {
                 $notifyUsers = User::whereIn('role', $appetite->escalation_notification_roles)->get();
@@ -87,11 +87,11 @@ class RiskAppetiteController extends Controller
                     foreach ($notifyUsers as $user) {
                         Notification::create([
                             'user_id' => $user->id,
-                            'type'    => 'risk_escalated',
-                            'title'   => 'Risk Escalated',
+                            'type' => 'risk_escalated',
+                            'title' => 'Risk Escalated',
                             'message' => "Risk '{$risk->title}' (score {$risk->risk_score}) is now in the "
-                                       . "'{$appetite->escalated_label}' band under '{$appetite->name}'.",
-                            'url'     => '/risks/' . $risk->id,
+                                       ."'{$appetite->escalated_label}' band under '{$appetite->name}'.",
+                            'url' => '/risks/'.$risk->id,
                             'is_read' => false,
                         ]);
                     }
@@ -116,7 +116,7 @@ class RiskAppetiteController extends Controller
         }
 
         $name = $appetite->name;
-        $id   = $appetite->id;
+        $id = $appetite->id;
         $appetite->delete();
 
         AuditLog::record(
@@ -134,20 +134,20 @@ class RiskAppetiteController extends Controller
     private function validateAppetite(Request $request): array
     {
         return $request->validate([
-            'name'                            => 'required|string|max:255',
-            'acceptable_max_score'            => 'required|integer|min:1|max:24',
-            'review_max_score'                => 'required|integer|min:2|max:25|gt:acceptable_max_score',
-            'escalated_min_score'             => 'required|integer|min:2|max:25',
-            'acceptable_label'                => 'required|string|max:100',
-            'review_label'                    => 'required|string|max:100',
-            'escalated_label'                 => 'required|string|max:100',
-            'acceptable_color'                => 'required|string|max:50',
-            'review_color'                    => 'required|string|max:50',
-            'escalated_color'                 => 'required|string|max:50',
-            'notify_on_escalation'            => 'boolean',
-            'escalation_notification_roles'   => 'nullable|array',
+            'name' => 'required|string|max:255',
+            'acceptable_max_score' => 'required|integer|min:1|max:24',
+            'review_max_score' => 'required|integer|min:2|max:25|gt:acceptable_max_score',
+            'escalated_min_score' => 'required|integer|min:2|max:25',
+            'acceptable_label' => 'required|string|max:100',
+            'review_label' => 'required|string|max:100',
+            'escalated_label' => 'required|string|max:100',
+            'acceptable_color' => 'required|string|max:50',
+            'review_color' => 'required|string|max:50',
+            'escalated_color' => 'required|string|max:50',
+            'notify_on_escalation' => 'boolean',
+            'escalation_notification_roles' => 'nullable|array',
             'escalation_notification_roles.*' => 'in:admin,auditor,user',
-            'notes'                           => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
     }
 }

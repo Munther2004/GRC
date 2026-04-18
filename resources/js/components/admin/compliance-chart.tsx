@@ -1,34 +1,42 @@
-import { RadialBarChart, RadialBar, ResponsiveContainer, Legend, PolarAngleAxis } from "recharts"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    RadialBarChart,
+    RadialBar,
+    ResponsiveContainer,
+    Legend,
+    PolarAngleAxis,
+} from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type FrameworkScore = {
-    name: string
-    value: number
-    fill: string
-}
+    name: string;
+    value: number;
+    fill: string;
+};
 
 type Props = {
-    score?: number
-    frameworkScores?: FrameworkScore[]
-}
+    score?: number;
+    frameworkScores?: FrameworkScore[];
+};
 
 const defaultFrameworks: FrameworkScore[] = [
-    { name: "ISO 27001",      value: 0, fill: "#3b82f6" },
-    { name: "NIST 800-53",    value: 0, fill: "#8b5cf6" },
-    { name: "OWASP ASVS",     value: 0, fill: "#f59e0b" },
-    { name: "CIS Benchmarks", value: 0, fill: "#22c55e" },
-]
+    { name: 'ISO 27001', value: 0, fill: 'var(--chart-1)' },
+    { name: 'NIST 800-53', value: 0, fill: 'var(--chart-2)' },
+    { name: 'OWASP ASVS', value: 0, fill: 'var(--chart-3)' },
+    { name: 'CIS Benchmarks', value: 0, fill: 'var(--chart-4)' },
+];
 
 export function ComplianceChart({ score = 0, frameworkScores }: Props) {
-    const data = frameworkScores ?? defaultFrameworks
+    const data = frameworkScores ?? defaultFrameworks;
 
     return (
-        <Card className="bg-card border-border">
-            <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-medium">Compliance Status by Framework</CardTitle>
+        <Card>
+            <CardHeader className="pb-3">
+                <CardTitle className="font-heading text-lg font-normal">
+                    Compliance by Framework
+                </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="w-full" style={{ height: 280, position: 'relative' }}>
+                <div className="relative h-[280px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <RadialBarChart
                             cx="50%"
@@ -47,7 +55,7 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                                 tick={false}
                             />
                             <RadialBar
-                                background={{ fill: 'rgba(255,255,255,0.05)' }}
+                                background={{ fill: 'color-mix(in srgb, var(--primary) 12%, transparent)' }}
                                 dataKey="value"
                                 cornerRadius={6}
                             />
@@ -56,9 +64,12 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                                 layout="horizontal"
                                 verticalAlign="bottom"
                                 align="center"
-                                wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }}
+                                wrapperStyle={{
+                                    fontSize: '12px',
+                                    paddingTop: '20px',
+                                }}
                                 formatter={(value: string, entry: any) => (
-                                    <span style={{ color: '#888' }}>
+                                    <span style={{ color: 'var(--muted-foreground)', fontFamily: "'Cinzel', serif", fontSize: '10px', letterSpacing: '0.05em' }}>
                                         {value} ({entry.payload.value}%)
                                     </span>
                                 )}
@@ -67,25 +78,34 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                     </ResponsiveContainer>
 
                     {/* Center score */}
-                    <div style={{
-                        position: 'absolute', inset: 0,
-                        display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', pointerEvents: 'none',
-                        marginTop: '-40px'
-                    }}>
+                    <div
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            pointerEvents: 'none',
+                            marginTop: '-40px',
+                        }}
+                    >
                         <div style={{ textAlign: 'center' }}>
-                            <div className="text-3xl font-bold">{Math.round(score)}%</div>
-                            <div className="text-xs text-muted-foreground">Overall</div>
+                            <div className="font-heading text-3xl font-normal" style={{ color: 'var(--foreground)' }}>
+                                {Math.round(score)}%
+                            </div>
+                            <div className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: 'var(--muted-foreground)' }}>
+                                Overall
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {data.every(d => d.value === 0) && (
-                    <p className="text-xs text-muted-foreground text-center mt-2">
+                {data.every((d) => d.value === 0) && (
+                    <p className="mt-2 text-center text-xs text-muted-foreground">
                         Complete assessments to see compliance scores
                     </p>
                 )}
             </CardContent>
         </Card>
-    )
+    );
 }

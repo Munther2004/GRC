@@ -24,38 +24,38 @@ class ControlStatusRequestController extends Controller
             ->latest()
             ->get()
             ->map(fn ($r) => [
-                'id'               => $r->id,
-                'control_id'       => $r->control->control_id,
-                'control_title'    => $r->control->title,
-                'framework'        => $r->control->framework->short_name,
-                'requested_by'     => $r->requester->name,
-                'current_status'   => $r->current_status,
+                'id' => $r->id,
+                'control_id' => $r->control->control_id,
+                'control_title' => $r->control->title,
+                'framework' => $r->control->framework->short_name,
+                'requested_by' => $r->requester->name,
+                'current_status' => $r->current_status,
                 'requested_status' => $r->requested_status,
-                'justification'    => $r->justification,
-                'created_at'       => $r->created_at->toDateTimeString(),
-                'evidence'         => $r->evidence ? [
-                    'id'               => $r->evidence->id,
-                    'title'            => $r->evidence->title,
-                    'description'      => $r->evidence->description,
-                    'file_name'        => $r->evidence->file_name,
-                    'file_type'        => $r->evidence->file_type ?? 'application/octet-stream',
-                    'file_path'        => $r->evidence->file_path,
-                    'status'           => $r->evidence->status,
-                    'expiry_date'      => $r->evidence->expiry_date,
-                    'is_expired'       => (bool) $r->evidence->is_expired,
-                    'expires_soon'     => (bool) $r->evidence->expires_soon,
-                    'created_at'       => $r->evidence->created_at->toDateTimeString(),
-                    'ai_verdict'       => $r->evidence->ai_verdict,
-                    'ai_confidence'    => $r->evidence->ai_confidence,
-                    'ai_strengths'     => $r->evidence->ai_strengths,
-                    'ai_gaps'          => $r->evidence->ai_gaps,
-                    'ai_recommendation'=> $r->evidence->ai_recommendation,
-                    'ai_is_relevant'   => $r->evidence->ai_is_relevant,
-                    'ai_reviewed_at'   => $r->evidence->ai_reviewed_at?->toDateTimeString(),
-                    'ai_review'        => null,
-                    'user'             => null,
-                    'control'          => null,
-                    'assessment_item'  => null,
+                'justification' => $r->justification,
+                'created_at' => $r->created_at->toDateTimeString(),
+                'evidence' => $r->evidence ? [
+                    'id' => $r->evidence->id,
+                    'title' => $r->evidence->title,
+                    'description' => $r->evidence->description,
+                    'file_name' => $r->evidence->file_name,
+                    'file_type' => $r->evidence->file_type ?? 'application/octet-stream',
+                    'file_path' => $r->evidence->file_path,
+                    'status' => $r->evidence->status,
+                    'expiry_date' => $r->evidence->expiry_date,
+                    'is_expired' => (bool) $r->evidence->is_expired,
+                    'expires_soon' => (bool) $r->evidence->expires_soon,
+                    'created_at' => $r->evidence->created_at->toDateTimeString(),
+                    'ai_verdict' => $r->evidence->ai_verdict,
+                    'ai_confidence' => $r->evidence->ai_confidence,
+                    'ai_strengths' => $r->evidence->ai_strengths,
+                    'ai_gaps' => $r->evidence->ai_gaps,
+                    'ai_recommendation' => $r->evidence->ai_recommendation,
+                    'ai_is_relevant' => $r->evidence->ai_is_relevant,
+                    'ai_reviewed_at' => $r->evidence->ai_reviewed_at?->toDateTimeString(),
+                    'ai_review' => null,
+                    'user' => null,
+                    'control' => null,
+                    'assessment_item' => null,
                 ] : null,
             ]);
 
@@ -69,10 +69,10 @@ class ControlStatusRequestController extends Controller
     public function store(Request $request, Control $control)
     {
         $request->validate([
-            'new_status'           => 'required|in:compliant,partially_compliant,non_compliant,not_applicable,not_set',
-            'justification'        => 'nullable|string|max:2000',
-            'file'                 => 'nullable|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
-            'evidence_title'       => 'nullable|string|max:255',
+            'new_status' => 'required|in:compliant,partially_compliant,non_compliant,not_applicable,not_set',
+            'justification' => 'nullable|string|max:2000',
+            'file' => 'nullable|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
+            'evidence_title' => 'nullable|string|max:255',
             'evidence_description' => 'nullable|string',
         ]);
 
@@ -84,12 +84,12 @@ class ControlStatusRequestController extends Controller
         }
 
         $statusRequest = ControlStatusRequest::create([
-            'control_id'       => $control->id,
-            'requested_by'     => Auth::id(),
+            'control_id' => $control->id,
+            'requested_by' => Auth::id(),
             'requested_status' => $request->input('new_status'),
-            'current_status'   => $control->current_status,
-            'justification'    => $request->input('justification'),
-            'status'           => 'pending',
+            'current_status' => $control->current_status,
+            'justification' => $request->input('justification'),
+            'status' => 'pending',
         ]);
 
         // Upload evidence and link it to this status request
@@ -98,15 +98,15 @@ class ControlStatusRequestController extends Controller
             $file = $request->file('file');
             $path = $file->store("evidence/control-{$control->id}", 'public');
             $uploadedEvidence = Evidence::create([
-                'user_id'                    => Auth::id(),
-                'control_id'                 => $control->id,
-                'control_status_request_id'  => $statusRequest->id,
-                'title'                      => $request->input('evidence_title') ?: $file->getClientOriginalName(),
-                'description'                => $request->input('evidence_description'),
-                'file_path'                  => $path,
-                'file_name'                  => $file->getClientOriginalName(),
-                'file_type'                  => $file->getMimeType(),
-                'status'                     => 'pending',
+                'user_id' => Auth::id(),
+                'control_id' => $control->id,
+                'control_status_request_id' => $statusRequest->id,
+                'title' => $request->input('evidence_title') ?: $file->getClientOriginalName(),
+                'description' => $request->input('evidence_description'),
+                'file_path' => $path,
+                'file_name' => $file->getClientOriginalName(),
+                'file_type' => $file->getMimeType(),
+                'status' => 'pending',
             ]);
 
             AuditLog::record(
@@ -122,11 +122,11 @@ class ControlStatusRequestController extends Controller
         foreach ($reviewers as $reviewer) {
             Notification::create([
                 'user_id' => $reviewer->id,
-                'type'    => 'status_request_pending',
-                'title'   => 'Control Status Update Requested',
-                'message' => Auth::user()->name . " requested to change '{$control->control_id}' to " .
+                'type' => 'status_request_pending',
+                'title' => 'Control Status Update Requested',
+                'message' => Auth::user()->name." requested to change '{$control->control_id}' to ".
                              $this->formatStatus($request->input('new_status')),
-                'url'     => '/controls/approvals',
+                'url' => '/controls/approvals',
                 'is_read' => false,
             ]);
         }
@@ -135,22 +135,22 @@ class ControlStatusRequestController extends Controller
             'created',
             'ControlStatusRequest',
             $statusRequest->id,
-            "Status update request submitted for '{$control->control_id}' → " .
-            $this->formatStatus($request->input('new_status')) .
+            "Status update request submitted for '{$control->control_id}' → ".
+            $this->formatStatus($request->input('new_status')).
             ($request->input('justification') ? " — {$request->input('justification')}" : '')
         );
 
         return response()->json([
-            'success'          => true,
-            'pending_request'  => [
-                'id'               => $statusRequest->id,
+            'success' => true,
+            'pending_request' => [
+                'id' => $statusRequest->id,
                 'requested_status' => $statusRequest->requested_status,
-                'requested_by'     => Auth::user()->name,
-                'created_at'       => $statusRequest->created_at->toDateTimeString(),
+                'requested_by' => Auth::user()->name,
+                'created_at' => $statusRequest->created_at->toDateTimeString(),
             ],
             'evidence_uploaded' => $uploadedEvidence ? [
-                'id'        => $uploadedEvidence->id,
-                'title'     => $uploadedEvidence->title,
+                'id' => $uploadedEvidence->id,
+                'title' => $uploadedEvidence->title,
                 'file_name' => $uploadedEvidence->file_name,
             ] : null,
         ]);
@@ -166,7 +166,7 @@ class ControlStatusRequestController extends Controller
             return response()->json(['error' => 'This request is no longer pending.'], 422);
         }
 
-        (new ApproveControlStatusRequest())->execute($statusRequest, $request->notes ?? '');
+        (new ApproveControlStatusRequest)->execute($statusRequest, $request->notes ?? '');
 
         $control = $statusRequest->control;
 
@@ -175,21 +175,21 @@ class ControlStatusRequestController extends Controller
         }
 
         $statusRequest->update([
-            'status'      => 'approved',
+            'status' => 'approved',
             'reviewed_by' => Auth::id(),
             'reviewed_at' => now(),
-            'notes'       => $request->notes,
+            'notes' => $request->notes,
         ]);
 
         Notification::create([
             'user_id' => $statusRequest->requested_by,
-            'type'    => 'status_request_approved',
-            'title'   => 'Status Update Approved',
-            'message' => "Your request to change '{$control->control_id}' to " .
-                         $this->formatStatus($statusRequest->requested_status) .
-                         " was approved by " . Auth::user()->name .
+            'type' => 'status_request_approved',
+            'title' => 'Status Update Approved',
+            'message' => "Your request to change '{$control->control_id}' to ".
+                         $this->formatStatus($statusRequest->requested_status).
+                         ' was approved by '.Auth::user()->name.
                          ($request->notes ? ". Note: {$request->notes}" : '.'),
-            'url'     => '/controls/hub',
+            'url' => '/controls/hub',
             'is_read' => false,
         ]);
 
@@ -197,9 +197,9 @@ class ControlStatusRequestController extends Controller
             'approved',
             'ControlStatusRequest',
             $statusRequest->id,
-            "'{$control->control_id}' status change to " .
-            $this->formatStatus($statusRequest->requested_status) .
-            " approved by " . Auth::user()->name
+            "'{$control->control_id}' status change to ".
+            $this->formatStatus($statusRequest->requested_status).
+            ' approved by '.Auth::user()->name
         );
 
         return response()->json(['success' => true]);
@@ -223,22 +223,22 @@ class ControlStatusRequestController extends Controller
         }
 
         $statusRequest->update([
-            'status'      => 'rejected',
+            'status' => 'rejected',
             'reviewed_by' => Auth::id(),
             'reviewed_at' => now(),
-            'notes'       => $request->notes,
+            'notes' => $request->notes,
         ]);
 
         // Notify the requester
         Notification::create([
             'user_id' => $statusRequest->requested_by,
-            'type'    => 'status_request_rejected',
-            'title'   => 'Status Update Rejected',
-            'message' => "Your request to change '{$control->control_id}' to " .
-                         $this->formatStatus($statusRequest->requested_status) .
-                         " was rejected by " . Auth::user()->name .
+            'type' => 'status_request_rejected',
+            'title' => 'Status Update Rejected',
+            'message' => "Your request to change '{$control->control_id}' to ".
+                         $this->formatStatus($statusRequest->requested_status).
+                         ' was rejected by '.Auth::user()->name.
                          ($request->notes ? ". Reason: {$request->notes}" : '.'),
-            'url'     => '/controls/hub',
+            'url' => '/controls/hub',
             'is_read' => false,
         ]);
 
@@ -247,10 +247,10 @@ class ControlStatusRequestController extends Controller
             'rejected',
             'ControlStatusRequest',
             $statusRequest->id,
-            "'{$control->control_id}' status change to " .
-            $this->formatStatus($statusRequest->requested_status) .
-            " rejected by " . Auth::user()->name .
-            ($request->notes ? " — {$request->notes}" : '') .
+            "'{$control->control_id}' status change to ".
+            $this->formatStatus($statusRequest->requested_status).
+            ' rejected by '.Auth::user()->name.
+            ($request->notes ? " — {$request->notes}" : '').
             $evidenceNote
         );
 
@@ -263,7 +263,7 @@ class ControlStatusRequestController extends Controller
     {
         $request->validate([
             'decision' => 'required|in:accept,reject',
-            'notes'    => 'nullable|string|max:2000',
+            'notes' => 'nullable|string|max:2000',
         ]);
 
         if ($statusRequest->status !== 'pending') {
@@ -278,27 +278,27 @@ class ControlStatusRequestController extends Controller
 
         if ($request->decision === 'accept') {
             // Accept evidence → approve the status change via shared domain logic
-            (new ApproveControlStatusRequest())->execute($statusRequest, $request->notes ?? '');
+            (new ApproveControlStatusRequest)->execute($statusRequest, $request->notes ?? '');
 
             $statusRequest->evidence->update(['status' => 'approved']);
 
             $statusRequest->update([
-                'status'      => 'approved',
+                'status' => 'approved',
                 'reviewed_by' => Auth::id(),
                 'reviewed_at' => now(),
-                'notes'       => $request->notes,
+                'notes' => $request->notes,
             ]);
 
             Notification::create([
                 'user_id' => $statusRequest->requested_by,
-                'type'    => 'status_request_approved',
-                'title'   => 'Status Update Approved',
-                'message' => "Your request to change '{$control->control_id}' to " .
-                             $this->formatStatus($statusRequest->requested_status) .
-                             " was approved by " . Auth::user()->name .
-                             " — evidence accepted" .
+                'type' => 'status_request_approved',
+                'title' => 'Status Update Approved',
+                'message' => "Your request to change '{$control->control_id}' to ".
+                             $this->formatStatus($statusRequest->requested_status).
+                             ' was approved by '.Auth::user()->name.
+                             ' — evidence accepted'.
                              ($request->notes ? ". Note: {$request->notes}" : '.'),
-                'url'     => '/controls/hub',
+                'url' => '/controls/hub',
                 'is_read' => false,
             ]);
 
@@ -306,31 +306,31 @@ class ControlStatusRequestController extends Controller
                 'approved',
                 'ControlStatusRequest',
                 $statusRequest->id,
-                "'{$control->control_id}' status change to " .
-                $this->formatStatus($statusRequest->requested_status) .
-                " approved by " . Auth::user()->name . " — evidence accepted"
+                "'{$control->control_id}' status change to ".
+                $this->formatStatus($statusRequest->requested_status).
+                ' approved by '.Auth::user()->name.' — evidence accepted'
             );
         } else {
             // Reject evidence → reject the request, do NOT change control status
             $statusRequest->evidence->update(['status' => 'rejected']);
 
             $statusRequest->update([
-                'status'      => 'rejected',
+                'status' => 'rejected',
                 'reviewed_by' => Auth::id(),
                 'reviewed_at' => now(),
-                'notes'       => $request->notes,
+                'notes' => $request->notes,
             ]);
 
             Notification::create([
                 'user_id' => $statusRequest->requested_by,
-                'type'    => 'status_request_rejected',
-                'title'   => 'Status Update Rejected',
-                'message' => "Your request to change '{$control->control_id}' to " .
-                             $this->formatStatus($statusRequest->requested_status) .
-                             " was rejected by " . Auth::user()->name .
-                             " — evidence rejected" .
+                'type' => 'status_request_rejected',
+                'title' => 'Status Update Rejected',
+                'message' => "Your request to change '{$control->control_id}' to ".
+                             $this->formatStatus($statusRequest->requested_status).
+                             ' was rejected by '.Auth::user()->name.
+                             ' — evidence rejected'.
                              ($request->notes ? ". Reason: {$request->notes}" : '.'),
-                'url'     => '/controls/hub',
+                'url' => '/controls/hub',
                 'is_read' => false,
             ]);
 
@@ -338,8 +338,8 @@ class ControlStatusRequestController extends Controller
                 'rejected',
                 'ControlStatusRequest',
                 $statusRequest->id,
-                "Status request rejected — evidence rejected by " . Auth::user()->name .
-                " for '{$control->control_id}'" .
+                'Status request rejected — evidence rejected by '.Auth::user()->name.
+                " for '{$control->control_id}'".
                 ($request->notes ? " — {$request->notes}" : '')
             );
         }
@@ -352,12 +352,12 @@ class ControlStatusRequestController extends Controller
     private function formatStatus(string $status): string
     {
         return match ($status) {
-            'compliant'           => 'Compliant',
+            'compliant' => 'Compliant',
             'partially_compliant' => 'Partially Compliant',
-            'non_compliant'       => 'Non-Compliant',
-            'not_applicable'      => 'Not Applicable',
-            'not_set'             => 'Not Set',
-            default               => $status,
+            'non_compliant' => 'Non-Compliant',
+            'not_applicable' => 'Not Applicable',
+            'not_set' => 'Not Set',
+            default => $status,
         };
     }
 }

@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assessment;
-use App\Models\AssessmentItem;
 use App\Models\Risk;
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\GrcMetricsService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -14,18 +13,18 @@ class ReportController extends Controller
 {
     private function gatherReportData(): array
     {
-        $grc = new GrcMetricsService();
+        $grc = new GrcMetricsService;
 
         // Compliance per framework (assessment-based scores)
         $fwScores = $grc->frameworkAssessmentScores();
 
         $complianceByFramework = $fwScores->map(fn ($fw) => [
-            'id'                => $fw['id'],
-            'name'              => $fw['full_name'],
-            'short_name'        => $fw['name'],
-            'latest_score'      => $fw['latest_score'],
+            'id' => $fw['id'],
+            'name' => $fw['full_name'],
+            'short_name' => $fw['name'],
+            'latest_score' => $fw['latest_score'],
             'assessments_count' => $fw['assessments_count'],
-            'trend'             => $fw['trend'],
+            'trend' => $fw['trend'],
         ]);
 
         $overallCompliance = round(
@@ -33,7 +32,7 @@ class ReportController extends Controller
         );
 
         // Risk summary — one aggregate query using canonical level thresholds
-        $t      = Risk::levelThresholds();
+        $t = Risk::levelThresholds();
         $riskRow = DB::table('risks')->selectRaw("
             COUNT(*)                                                                                      AS total,
             SUM(CASE WHEN likelihood * impact >= {$t['critical']}                             THEN 1 ELSE 0 END) AS critical,
@@ -47,22 +46,22 @@ class ReportController extends Controller
         ")->first();
 
         $riskByLevel = [
-            'critical' => (int) ($riskRow->critical    ?? 0),
-            'high'     => (int) ($riskRow->high        ?? 0),
-            'medium'   => (int) ($riskRow->medium      ?? 0),
-            'low'      => (int) ($riskRow->low         ?? 0),
+            'critical' => (int) ($riskRow->critical ?? 0),
+            'high' => (int) ($riskRow->high ?? 0),
+            'medium' => (int) ($riskRow->medium ?? 0),
+            'low' => (int) ($riskRow->low ?? 0),
         ];
 
         $riskByStatus = [
-            'open'         => (int) ($riskRow->open         ?? 0),
-            'in_progress'  => (int) ($riskRow->in_progress  ?? 0),
+            'open' => (int) ($riskRow->open ?? 0),
+            'in_progress' => (int) ($riskRow->in_progress ?? 0),
             'under_review' => (int) ($riskRow->under_review ?? 0),
-            'closed'       => (int) ($riskRow->closed       ?? 0),
+            'closed' => (int) ($riskRow->closed ?? 0),
         ];
 
         $riskTotals = [
             'total_risks' => (int) ($riskRow->total ?? 0),
-            'open_risks'  => (int) ($riskRow->open  ?? 0),
+            'open_risks' => (int) ($riskRow->open ?? 0),
         ];
 
         // Risk by category — single grouped query
@@ -78,23 +77,23 @@ class ReportController extends Controller
             ->where('status', 'completed')
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(fn($a) => [
-                'id'                    => $a->id,
-                'title'                 => $a->title,
-                'framework'             => $a->framework->short_name,
+            ->map(fn ($a) => [
+                'id' => $a->id,
+                'title' => $a->title,
+                'framework' => $a->framework->short_name,
                 'compliance_percentage' => $a->compliance_percentage,
-                'period'                => $a->period,
-                'completed_at'          => $a->updated_at->format('Y-m-d'),
-                'user'                  => $a->user->name,
+                'period' => $a->period,
+                'completed_at' => $a->updated_at->format('Y-m-d'),
+                'user' => $a->user->name,
             ]);
 
         // Monthly trend (last 6 months)
         $monthlyTrend = Assessment::where('status', 'completed')
             ->where('created_at', '>=', now()->subMonths(6))
             ->get()
-            ->groupBy(fn($a) => $a->created_at->format('M Y'))
-            ->map(fn($g) => round($g->avg('compliance_percentage'), 1))
-            ->map(fn($score, $month) => ['month' => $month, 'score' => $score])
+            ->groupBy(fn ($a) => $a->created_at->format('M Y'))
+            ->map(fn ($g) => round($g->avg('compliance_percentage'), 1))
+            ->map(fn ($score, $month) => ['month' => $month, 'score' => $score])
             ->values();
 
         $totalFrameworks = $complianceByFramework->count();
@@ -111,18 +110,18 @@ class ReportController extends Controller
         $data = $this->gatherReportData();
 
         return Inertia::render('reports/index', [
-            'overallCompliance'     => $data['overallCompliance'],
+            'overallCompliance' => $data['overallCompliance'],
             'complianceByFramework' => $data['complianceByFramework'],
-            'riskByLevel'           => $data['riskByLevel'],
-            'riskByCategory'        => $data['riskByCategory'],
-            'riskByStatus'          => $data['riskByStatus'],
-            'assessmentHistory'     => $data['assessmentHistory'],
-            'monthlyTrend'          => $data['monthlyTrend'],
+            'riskByLevel' => $data['riskByLevel'],
+            'riskByCategory' => $data['riskByCategory'],
+            'riskByStatus' => $data['riskByStatus'],
+            'assessmentHistory' => $data['assessmentHistory'],
+            'monthlyTrend' => $data['monthlyTrend'],
             'stats' => [
-                'total_risks'       => $data['riskTotals']['total_risks'],
-                'open_risks'        => $data['riskTotals']['open_risks'],
+                'total_risks' => $data['riskTotals']['total_risks'],
+                'open_risks' => $data['riskTotals']['open_risks'],
                 'total_assessments' => Assessment::where('status', 'completed')->count(),
-                'total_frameworks'  => $data['totalFrameworks'],
+                'total_frameworks' => $data['totalFrameworks'],
             ],
         ]);
     }
@@ -132,14 +131,15 @@ class ReportController extends Controller
         $data = $this->gatherReportData();
 
         $pdf = Pdf::loadView('reports.pdf', [
-            'overallCompliance'     => $data['overallCompliance'],
+            'overallCompliance' => $data['overallCompliance'],
             'complianceByFramework' => $data['complianceByFramework'],
-            'riskByLevel'           => $data['riskByLevel'],
-            'assessmentHistory'     => $data['assessmentHistory'],
-            'generatedAt'           => now()->format('Y-m-d H:i'),
+            'riskByLevel' => $data['riskByLevel'],
+            'assessmentHistory' => $data['assessmentHistory'],
+            'generatedAt' => now()->format('Y-m-d H:i'),
         ]);
 
         $pdf->setPaper('A4', 'portrait');
-        return $pdf->download('grc-report-' . now()->format('Y-m-d') . '.pdf');
+
+        return $pdf->download('grc-report-'.now()->format('Y-m-d').'.pdf');
     }
 }

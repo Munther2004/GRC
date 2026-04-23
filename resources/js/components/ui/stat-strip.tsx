@@ -36,15 +36,15 @@ export function StatStrip({ stats, className }: { stats: Stat[]; className?: str
                         )}
                         <div className="flex items-center gap-1.5 mb-2">
                             <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: dot }} />
-                            <p className="font-display text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+                            <p className="font-display text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
                                 {s.label}
                             </p>
                         </div>
-                        <p className="font-heading text-3xl font-normal tabular-nums leading-none text-foreground">
+                        <p className="font-numeric text-3xl tabular-nums leading-none text-foreground">
                             {s.value}
                         </p>
                         {s.hint && (
-                            <p className="mt-1.5 font-body text-xs italic text-muted-foreground">{s.hint}</p>
+                            <p className="mt-1.5 font-body text-xs text-muted-foreground">{s.hint}</p>
                         )}
                     </div>
                 )

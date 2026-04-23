@@ -15,9 +15,8 @@ class CheckRole
 
         $user = $request->user();
 
-        // Check if user has any of the specified roles using Spatie
         foreach ($roles as $role) {
-            if ($user->hasRole($role)) {
+            if ($user->hasRole($role) || $user->role === $role) {
                 return $next($request);
             }
         }

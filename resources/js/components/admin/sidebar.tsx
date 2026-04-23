@@ -15,6 +15,7 @@ import {
     ScrollText,
     Settings,
     Shield,
+    ShieldAlert,
     Sliders,
     Sparkles,
     Palette,
@@ -30,6 +31,7 @@ type SharedProps = {
         unread_count: number
         pending_approvals_count: number
         open_remediation_tasks: number
+        security_audits_in_progress: number
     }
 }
 
@@ -40,6 +42,7 @@ const mainNavigation = [
     { name: "Assessments",  href: "/assessments",       icon: ClipboardList,   roles: ['admin','auditor','user'] },
     { name: "Evidence",     href: "/evidence",          icon: FolderOpen,      roles: ['admin','auditor','user'] },
     { name: "Gap Analysis", href: "/gap-analysis",      icon: FileCheck,       roles: ['admin','auditor','user'] },
+    { name: "Security Audit", href: "/security-audits", icon: ShieldAlert,     roles: ['admin','auditor','user'], badgeKey: 'security_audits' },
     { name: "Crosswalk",    href: "/crosswalk",         icon: GitCompare,      roles: ['admin','auditor','user'] },
     { name: "Controls Hub", href: "/controls/hub",      icon: LayoutGrid,      roles: ['admin','auditor','user'] },
     { name: "Remediation",  href: "/remediation-tasks", icon: ClipboardList,   roles: ['admin','user'],           badgeKey: 'remediation' },
@@ -66,6 +69,7 @@ export function AdminSidebar() {
     const unreadCount          = notifications?.unread_count ?? 0
     const pendingApprovals     = notifications?.pending_approvals_count ?? 0
     const openRemediationTasks = notifications?.open_remediation_tasks ?? 0
+    const securityAuditsInProgress = notifications?.security_audits_in_progress ?? 0
     const url       = usePage().url as string
     const isAdmin   = auth.user.role === 'admin'
     const isAuditor = auth.user.role === 'auditor'
@@ -77,6 +81,7 @@ export function AdminSidebar() {
         if (key === 'notifications' && unreadCount > 0)          return unreadCount
         if (key === 'approvals'     && pendingApprovals > 0)     return pendingApprovals
         if (key === 'remediation'   && openRemediationTasks > 0) return openRemediationTasks
+        if (key === 'security_audits' && securityAuditsInProgress > 0) return securityAuditsInProgress
         return undefined
     }
 
@@ -161,10 +166,10 @@ export function AdminSidebar() {
                             <span className="font-display text-[10px]" style={{ color: 'var(--sidebar-primary)' }}>{initials}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="font-heading text-sm truncate leading-tight" style={{ color: 'var(--sidebar-foreground)' }}>
+                            <p className="text-sm font-semibold truncate leading-tight" style={{ color: 'var(--sidebar-foreground)' }}>
                                 {auth.user.name}
                             </p>
-                            <p className="font-body text-[11px] italic truncate leading-tight" style={{ color: 'var(--muted-foreground)' }}>
+                            <p className="text-xs truncate leading-tight" style={{ color: 'var(--muted-foreground)' }}>
                                 {auth.user.email}
                             </p>
                         </div>
@@ -189,7 +194,7 @@ export function AdminSidebar() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
-        <p className="px-3 pb-2 font-display text-[9px] uppercase tracking-[0.25em]" style={{ color: 'var(--muted-foreground)' }}>
+        <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.1em]" style={{ color: 'var(--muted-foreground)' }}>
             {children}
         </p>
     )
@@ -213,7 +218,7 @@ function NavItem({
                 href={item.href}
                 className={cn(
                     "group flex items-center gap-2.5 rounded px-3 py-2 transition-all duration-200",
-                    "font-display text-[10px] uppercase tracking-[0.14em]",
+                    "text-sm font-medium",
                 )}
                 style={isActive
                     ? { color: 'var(--sidebar-primary)', background: 'color-mix(in srgb, var(--sidebar-primary) 10%, transparent)', borderLeft: '2px solid var(--sidebar-primary)', paddingLeft: '10px' }
@@ -226,7 +231,7 @@ function NavItem({
                 <span className="flex-1 truncate">{item.name}</span>
                 {badge !== undefined && badge > 0 && (
                     <span
-                        className="font-display text-[9px] px-1.5 py-0.5 rounded-full tabular-nums"
+                        className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full tabular-nums"
                         style={{ background: 'color-mix(in srgb, var(--destructive) 25%, transparent)', color: 'var(--sidebar-primary)', border: '1px solid color-mix(in srgb, var(--destructive) 40%, transparent)' }}
                     >
                         {badge > 99 ? '99+' : badge}

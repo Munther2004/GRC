@@ -586,6 +586,69 @@ PROMPT;
         }
     }
 
+    public function analyzeSecurityConfig(string $content, string $fileType, string $fileName, array $frameworkControls): array
+    {
+        try {
+            $frameworkControlsJson = json_encode($frameworkControls, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+            $systemPrompt = <<<PROMPT
+You are a senior information security auditor performing a configuration security review.
+
+File name: {$fileName}
+Detected file type: {$fileType}
+Active framework controls: {$frameworkControlsJson}
+
+Analyze the provided file content for security issues, misconfigurations, and compliance concerns.
+
+Analysis guidelines based on file type:
+- CSV/XLSX user lists: Check for shared accounts, generic naming (admin, test, user1), missing expiry dates, excessive admin accounts, inactive accounts, blank emails, backdoor accounts
+- Password/security policies: Check against ISO 27001 A.9.4.3 and NIST SP 800-63B — minimum length (should be 12+), complexity, rotation period, MFA, lockout policy, password history, dictionary words
+- Config files (INI/YAML/JSON/CONF/TXT): Check for hardcoded credentials/API keys/secrets, debug mode enabled, insecure protocols, binding to 0.0.0.0, SSL verification disabled, expose_php On, open CORS, FTP enabled, display_errors On
+
+Respond ONLY with a valid JSON object, no markdown fences, no preamble:
+{
+  "summary": "Executive summary in 2-3 sentences",
+  "compliance_score": 0-100,
+  "file_type_detected": "csv_user_list" or "password_policy" or "config_file" or "generic",
+  "findings": [
+    {
+      "finding_number": 1,
+      "severity": "critical" or "high" or "medium" or "low" or "info",
+      "title": "Short title",
+      "description": "Detailed description",
+      "affected_item": "Specific line or row affected",
+      "recommendation": "How to fix this",
+      "control_reference": "ISO 27001 or NIST control ID or null",
+      "compliance_impact": "How this affects compliance"
+    }
+  ]
+}
+PROMPT;
+
+            $text = $this->callClaudeApi(
+                messages: [['role' => 'user', 'content' => "Please analyze the following file content:\n\n{$content}"]],
+                model: self::MODEL_ANALYTICAL,
+                maxTokens: 4096,
+                system: $systemPrompt,
+            );
+
+            if (empty($text)) {
+                return ['error' => true, 'message' => 'API request failed'];
+            }
+
+            $parsed = json_decode($text, true);
+
+            if (! is_array($parsed)) {
+                return ['error' => true, 'message' => 'Could not parse AI response'];
+            }
+
+            return $parsed;
+
+        } catch (\Throwable $e) {
+            return ['error' => true, 'message' => 'API request failed: '.$e->getMessage()];
+        }
+    }
+
     /**
      * Simple single-turn Claude call. Public for callers that need a raw AI completion
      * without building a full messages array (e.g. validateRiskScores).

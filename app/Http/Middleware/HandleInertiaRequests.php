@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\ControlStatusRequest;
 use App\Models\Notification;
 use App\Models\RemediationTask;
+use App\Models\SecurityAudit;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -53,11 +54,18 @@ class HandleInertiaRequests extends Middleware
                     )
                     : 0;
 
+                $securityAuditsInProgress = Cache::remember(
+                    'badge:security_audits_in_progress:'.$user->id,
+                    30,
+                    fn () => SecurityAudit::whereIn('status', ['pending', 'analyzing'])->count(),
+                );
+
                 return [
                     'unread_count' => (clone $base)->count(),
                     'recent' => (clone $base)->orderBy('created_at', 'desc')->take(5)->get(),
                     'pending_approvals_count' => $pendingApprovals,
                     'open_remediation_tasks' => $openRemediationTasks,
+                    'security_audits_in_progress' => $securityAuditsInProgress,
                 ];
             },
         ];

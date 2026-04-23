@@ -8,6 +8,7 @@ use App\Models\Control;
 use App\Models\Evidence;
 use App\Models\KriSnapshot;
 use App\Models\Risk;
+use App\Models\SecurityAudit;
 use App\Services\AIService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -60,6 +61,19 @@ class ComplianceChatbotController extends Controller
 
         $lastKri = KriSnapshot::latest('snapshot_date')->first();
 
+        $recentSecurityAudits = SecurityAudit::where('status', 'completed')
+            ->latest('analyzed_at')
+            ->limit(5)
+            ->get(['id', 'file_name', 'compliance_score', 'critical_count', 'high_count', 'total_findings', 'analyzed_at'])
+            ->map(fn ($a) => [
+                'file_name' => $a->file_name,
+                'compliance_score' => $a->compliance_score,
+                'critical_findings' => $a->critical_count,
+                'high_findings' => $a->high_count,
+                'total_findings' => $a->total_findings,
+                'analyzed_at' => $a->analyzed_at?->toDateTimeString(),
+            ]);
+
         return [
             'snapshot_taken_at' => now()->toDateTimeString(),
             'controls' => [
@@ -93,6 +107,13 @@ class ComplianceChatbotController extends Controller
                 ],
             ],
             'recent_audit_logs' => $recentAuditLogs,
+            'security_audits' => [
+                'total_completed' => SecurityAudit::where('status', 'completed')->count(),
+                'in_progress' => SecurityAudit::whereIn('status', ['pending', 'analyzing'])->count(),
+                'critical_findings_total' => (int) SecurityAudit::sum('critical_count'),
+                'high_findings_total' => (int) SecurityAudit::sum('high_count'),
+                'recent' => $recentSecurityAudits,
+            ],
             'last_kri_snapshot' => $lastKri ? [
                 'date' => $lastKri->snapshot_date->toDateString(),
                 'compliance_percentage' => $lastKri->compliance_percentage,

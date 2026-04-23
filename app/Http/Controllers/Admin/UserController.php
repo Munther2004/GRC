@@ -68,6 +68,11 @@ class UserController extends Controller
         $roles = Role::whereIn('id', $roleIds)->get();
         $user->syncRoles($roles);
 
+        $primaryRole = $roles->contains('name', 'admin') ? 'admin'
+            : ($roles->contains('name', 'auditor') ? 'auditor' : 'user');
+        $user->role = $primaryRole;
+        $user->save();
+
         $roleNames = $roles->pluck('name')->join(', ');
         AuditLog::record('created', 'User', $user->id, "User '{$user->name}' created with roles: {$roleNames}");
 
@@ -104,6 +109,13 @@ class UserController extends Controller
         $roleIds = $validated['roles'];
         $roles = Role::whereIn('id', $roleIds)->get();
         $user->syncRoles($roles);
+
+        $primaryRole = $roles->contains('name', 'admin') ? 'admin'
+            : ($roles->contains('name', 'auditor') ? 'auditor' : 'user');
+        if ($user->role !== $primaryRole) {
+            $user->role = $primaryRole;
+            $user->save();
+        }
 
         $roleNames = $roles->pluck('name')->join(', ');
         AuditLog::record('updated', 'User', $user->id, "User '{$user->name}' updated with roles: {$roleNames}");

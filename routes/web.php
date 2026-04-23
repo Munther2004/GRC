@@ -25,6 +25,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RiskAppetiteController;
 use App\Http\Controllers\RiskController;
 use App\Http\Controllers\RiskTreatmentPlanController;
+use App\Http\Controllers\SecurityAuditController;
 use App\Models\KriSnapshot;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
@@ -74,6 +75,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');
     Route::get('/reports/executive-summary', [ExecutiveSummaryController::class, 'generate'])->name('reports.executive-summary');
+    // ── Security Configuration Auditor ────────────────────────────────────────
+    Route::get('/security-audits', [SecurityAuditController::class, 'index'])->name('security-audits.index');
+    Route::post('/security-audits', [SecurityAuditController::class, 'upload'])->name('security-audits.upload');
+    Route::get('/security-audits/{securityAudit}', [SecurityAuditController::class, 'show'])->name('security-audits.show');
+    Route::post('/security-audits/{securityAudit}/generate-risks', [SecurityAuditController::class, 'generateRisks'])->name('security-audits.generate-risks');
+    Route::post('/security-audits/{securityAudit}/save-as-evidence', [SecurityAuditController::class, 'saveAsEvidence'])->name('security-audits.save-as-evidence');
+    Route::get('/security-audits/{securityAudit}/export-pdf', [SecurityAuditController::class, 'exportPdf'])->name('security-audits.export-pdf');
+    Route::delete('/security-audits/{securityAudit}', [SecurityAuditController::class, 'destroy'])->name('security-audits.destroy');
+
     Route::get('/gap-analysis', [GapAnalysisController::class, 'index'])->name('gap-analysis.index');
     Route::get('/gap-analysis/report', [GapAnalysisController::class, 'generateReport'])->name('gap-analysis.report');
     Route::get('/crosswalk', [CrosswalkController::class, 'index'])->name('crosswalk.index');

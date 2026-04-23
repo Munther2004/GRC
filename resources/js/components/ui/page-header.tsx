@@ -14,17 +14,17 @@ export function PageHeader({ title, description, children, className, volume }: 
     return (
         <div className={cn('space-y-1 pb-5', className)}>
             {volume && (
-                <p className="font-display text-[9px] uppercase tracking-[0.3em] text-primary">
+                <p className="font-display text-[10px] font-medium uppercase tracking-[0.12em] text-primary">
                     Volume {volume}
                 </p>
             )}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="font-heading text-3xl font-normal leading-tight text-foreground">
+                    <h1 className="font-heading text-2xl font-semibold leading-tight tracking-tight text-foreground">
                         {title}
                     </h1>
                     {description && (
-                        <p className="font-body italic text-base text-muted-foreground">
+                        <p className="font-body text-sm text-muted-foreground">
                             {description}
                         </p>
                     )}

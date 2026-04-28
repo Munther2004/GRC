@@ -1,11 +1,4 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { PageHeader } from '@/components/ui/page-header';
-import { StatStrip } from '@/components/ui/stat-strip';
 import {
     Shield,
     Pencil,
@@ -13,6 +6,13 @@ import {
     ToggleRight,
     BookOpen,
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
 
 interface Framework {
     id: number;
@@ -50,7 +50,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                    <h1 className="font-heading text-4xl font-normal" style={{ color: 'var(--foreground)' }}>
                         Frameworks
                     </h1>
                     <p className="text-sm text-muted-foreground">

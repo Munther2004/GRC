@@ -1,0 +1,31 @@
+- generic [ref=e5]:
+  - generic [ref=e6]:
+    - link "GRC Platform" [ref=e7] [cursor=pointer]:
+      - /url: /
+      - img [ref=e9]
+      - generic [ref=e11]: GRC Platform
+    - generic [ref=e13]: ✶
+    - generic [ref=e14]:
+      - heading "Log in to your account" [level=1] [ref=e15]
+      - paragraph [ref=e16]: Enter your email and password below to log in
+  - generic [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - generic [ref=e21]: Email or Username
+        - textbox "Email or Username" [active] [ref=e22]:
+          - /placeholder: your@email.com or username
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - generic [ref=e25]: Password
+          - link "Forgot password?" [ref=e26] [cursor=pointer]:
+            - /url: /forgot-password
+        - textbox "Password" [ref=e27]
+      - generic [ref=e28]:
+        - checkbox "Remember me" [ref=e29] [cursor=pointer]
+        - checkbox
+        - generic [ref=e30]: Remember me
+      - button "Log in" [ref=e31] [cursor=pointer]
+    - generic [ref=e32]:
+      - text: Don't have an account?
+      - link "Sign up" [ref=e33] [cursor=pointer]:
+        - /url: /register

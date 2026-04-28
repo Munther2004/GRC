@@ -1,11 +1,6 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import type { SharedProps } from '@/types';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
+import { ArrowLeft, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
     Card,
     CardContent,
@@ -13,35 +8,79 @@ import {
     CardTitle,
     CardDescription,
 } from '@/components/ui/card';
-import { ArrowLeft, Save } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from '@/components/ui/select';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import type { SharedProps } from '@/types';
+import { ROLE_LABELS } from '@/types/auth';
 
-interface Role {
+interface RoleObj {
     id: number;
     name: string;
-    description?: string;
 }
 
-interface User {
+interface Corporation {
+    id: number;
+    name: string;
+}
+
+interface UserModel {
     id: number;
     name: string;
     email: string;
-    roles?: Role[];
+    role: string;
+    corporation_id: number | null;
+    corporation?: Corporation | null;
+    roles?: RoleObj[];
+}
+
+interface Permissions {
+    is_super_admin: boolean;
+    grantable_roles: string[];
+    fixed_corporation_id: number | null;
 }
 
 interface Props extends SharedProps {
-    user: User | null;
-    roles: Role[];
-    userRoles: number[];
+    user: UserModel | null;
+    roles: RoleObj[];
+    currentRole: string;
+    corporations?: Corporation[];
+    permissions: Permissions;
 }
 
-// Inner component — only renders when user exists
-function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userRoles: number[] }) {
-    const { data, setData, put, processing, errors } = useForm({
+function EditForm({
+    user,
+    currentRole,
+    corporations,
+    permissions,
+}: {
+    user: UserModel;
+    currentRole: string;
+    corporations: Corporation[];
+    permissions: Permissions;
+}) {
+    const { data, setData, put, processing, errors } = useForm<{
+        name: string;
+        email: string;
+        role: string;
+        password: string;
+        password_confirmation: string;
+        corporation_id: string;
+    }>({
         name: user.name,
         email: user.email,
-        roles: userRoles,
+        role: currentRole,
         password: '',
         password_confirmation: '',
+        corporation_id: user.corporation_id ? String(user.corporation_id) : '',
     });
 
     const submit = (e: React.FormEvent) => {
@@ -49,12 +88,10 @@ function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userR
         put(route('admin.users.update', user.id));
     };
 
-    const toggleRole = (roleId: number) => {
-        const updatedRoles = data.roles.includes(roleId)
-            ? data.roles.filter((id) => id !== roleId)
-            : [...data.roles, roleId];
-        setData('roles', updatedRoles);
-    };
+    const showCorporationPicker =
+        permissions.is_super_admin && data.role !== 'super_admin';
+
+    const grantable = Array.from(new Set([currentRole, ...permissions.grantable_roles]));
 
     return (
         <>
@@ -67,7 +104,7 @@ function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userR
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: 'var(--foreground)' }}>
                             Edit User
                         </h1>
                         <p className="text-sm text-muted-foreground">{user.email}</p>
@@ -77,12 +114,8 @@ function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userR
                 <form onSubmit={submit} className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">
-                                Account Details
-                            </CardTitle>
-                            <CardDescription>
-                                Leave password blank to keep unchanged
-                            </CardDescription>
+                            <CardTitle className="text-base">Account Details</CardTitle>
+                            <CardDescription>Leave password blank to keep unchanged</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-1">
@@ -90,15 +123,11 @@ function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userR
                                 <Input
                                     id="name"
                                     value={data.name}
-                                    onChange={(
-                                        e: React.ChangeEvent<HTMLInputElement>,
-                                    ) => setData('name', e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        setData('name', e.target.value)
+                                    }
                                 />
-                                {errors.name && (
-                                    <p className="text-xs text-red-500">
-                                        {errors.name}
-                                    </p>
-                                )}
+                                {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="email">Email Address *</Label>
@@ -106,15 +135,11 @@ function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userR
                                     id="email"
                                     type="email"
                                     value={data.email}
-                                    onChange={(
-                                        e: React.ChangeEvent<HTMLInputElement>,
-                                    ) => setData('email', e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        setData('email', e.target.value)
+                                    }
                                 />
-                                {errors.email && (
-                                    <p className="text-xs text-red-500">
-                                        {errors.email}
-                                    </p>
-                                )}
+                                {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="password">New Password</Label>
@@ -122,32 +147,21 @@ function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userR
                                     id="password"
                                     type="password"
                                     value={data.password}
-                                    onChange={(
-                                        e: React.ChangeEvent<HTMLInputElement>,
-                                    ) => setData('password', e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        setData('password', e.target.value)
+                                    }
                                     placeholder="Leave blank to keep current password"
                                 />
-                                {errors.password && (
-                                    <p className="text-xs text-red-500">
-                                        {errors.password}
-                                    </p>
-                                )}
+                                {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
                             </div>
                             <div className="space-y-1">
-                                <Label htmlFor="password_confirmation">
-                                    Confirm New Password
-                                </Label>
+                                <Label htmlFor="password_confirmation">Confirm New Password</Label>
                                 <Input
                                     id="password_confirmation"
                                     type="password"
                                     value={data.password_confirmation}
-                                    onChange={(
-                                        e: React.ChangeEvent<HTMLInputElement>,
-                                    ) =>
-                                        setData(
-                                            'password_confirmation',
-                                            e.target.value,
-                                        )
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        setData('password_confirmation', e.target.value)
                                     }
                                     placeholder="Repeat new password"
                                 />
@@ -157,48 +171,53 @@ function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userR
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-base">
-                                Assign Roles *
-                            </CardTitle>
+                            <CardTitle className="text-base">Role *</CardTitle>
                             <CardDescription>
-                                Select one or more roles for this user
+                                {permissions.is_super_admin
+                                    ? 'Choose any role.'
+                                    : 'You can grant Auditor or User roles within your corporation.'}
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-3">
-                            {roles.length > 0 ? (
-                                roles.map((role) => (
-                                    <div
-                                        key={role.id}
-                                        className="flex items-center gap-3 rounded border border-border p-3"
+                        <CardContent className="space-y-4">
+                            <Select
+                                value={data.role}
+                                onValueChange={(v: string) => setData('role', v)}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {grantable.map((r) => (
+                                        <SelectItem key={r} value={r}>
+                                            {ROLE_LABELS[r as keyof typeof ROLE_LABELS] ?? r}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.role && <p className="text-xs text-red-500">{errors.role}</p>}
+
+                            {showCorporationPicker && (
+                                <div className="space-y-1">
+                                    <Label>Corporation</Label>
+                                    <Select
+                                        value={data.corporation_id}
+                                        onValueChange={(v: string) => setData('corporation_id', v)}
                                     >
-                                        <Checkbox
-                                            id={`role-${role.id}`}
-                                            checked={data.roles.includes(
-                                                role.id,
-                                            )}
-                                            onCheckedChange={() =>
-                                                toggleRole(role.id)
-                                            }
-                                        />
-                                        <div className="flex-1">
-                                            <Label
-                                                htmlFor={`role-${role.id}`}
-                                                className="font-medium capitalize"
-                                            >
-                                                {role.name}
-                                            </Label>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-sm text-muted-foreground">
-                                    No roles available
-                                </p>
-                            )}
-                            {errors.roles && (
-                                <p className="text-xs text-red-500">
-                                    {errors.roles}
-                                </p>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select corporation" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {corporations.map((c) => (
+                                                <SelectItem key={c.id} value={String(c.id)}>
+                                                    {c.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.corporation_id && (
+                                        <p className="text-xs text-red-500">{errors.corporation_id}</p>
+                                    )}
+                                </div>
                             )}
                         </CardContent>
                     </Card>
@@ -207,11 +226,7 @@ function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userR
                         <Link href={route('admin.users.index')}>
                             <Button variant="outline">Cancel</Button>
                         </Link>
-                        <Button
-                            type="submit"
-                            disabled={processing}
-                            className="gap-2"
-                        >
+                        <Button type="submit" disabled={processing} className="gap-2">
                             <Save className="h-4 w-4" />
                             {processing ? 'Saving...' : 'Save Changes'}
                         </Button>
@@ -222,14 +237,18 @@ function EditForm({ user, roles, userRoles }: { user: User; roles: Role[]; userR
     );
 }
 
-// Outer component — handles the guard safely
 export default function UserEdit() {
-    const { user, roles, userRoles } = usePage<Props>().props;
+    const { user, currentRole, corporations, permissions } = usePage<Props>().props;
 
     return (
         <AdminLayout>
             {user ? (
-                <EditForm user={user} roles={roles} userRoles={userRoles} />
+                <EditForm
+                    user={user}
+                    currentRole={currentRole}
+                    corporations={corporations ?? []}
+                    permissions={permissions}
+                />
             ) : (
                 <div className="flex h-64 items-center justify-center">
                     <p className="text-muted-foreground">Loading...</p>
@@ -238,4 +257,3 @@ export default function UserEdit() {
         </AdminLayout>
     );
 }
-

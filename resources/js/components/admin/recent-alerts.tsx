@@ -1,5 +1,5 @@
-import { Info, ArrowUpRight } from 'lucide-react';
 import { Link } from '@inertiajs/react';
+import { Info, ArrowUpRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type ActivityLog = {

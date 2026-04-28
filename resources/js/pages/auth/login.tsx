@@ -99,7 +99,7 @@ export default function Login({
                         </div>
 
                         {canRegister && (
-                            <div className="font-body text-center text-sm italic" style={{ color: '#7ABFA8' }}>
+                            <div className="font-body text-center text-sm italic" style={{ color: 'var(--muted-foreground)' }}>
                                 Don't have an account?{' '}
                                 <TextLink href={register()} tabIndex={5}>
                                     Sign up
@@ -111,7 +111,7 @@ export default function Login({
             </Form>
 
             {status && (
-                <div className="font-body mb-4 text-center text-sm italic" style={{ color: '#B0E4CC' }}>
+                <div className="font-body mb-4 text-center text-sm italic" style={{ color: 'var(--primary)' }}>
                     {status}
                 </div>
             )}

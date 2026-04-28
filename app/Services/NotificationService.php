@@ -24,14 +24,18 @@ class NotificationService
 
     /**
      * Returns the notification types visible to a given role.
-     * null means "all types" (admin).
+     * null means "all types" (super_admin and admin).
+     *
+     * Unknown / null roles are treated as 'user' so they never accidentally
+     * receive privileged notifications meant for admins.
      */
-    public static function typesForRole(string $role): ?array
+    public static function typesForRole(?string $role): ?array
     {
         return match ($role) {
-            'auditor' => ['pending_evidence', 'overdue_assessment', 'expiring_evidence', 'expired_evidence', 'status_request_pending'],
-            'user' => ['overdue_assessment', 'critical_risk', 'overdue_risk', 'status_request_approved', 'status_request_rejected'],
-            default => null, // admin sees everything
+            User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN => null,
+            User::ROLE_AUDITOR => ['pending_evidence', 'overdue_assessment', 'expiring_evidence', 'expired_evidence', 'status_request_pending'],
+            // user (and any unknown/null role) — minimal operational set only
+            default => ['overdue_assessment', 'critical_risk', 'overdue_risk', 'status_request_approved', 'status_request_rejected'],
         };
     }
 

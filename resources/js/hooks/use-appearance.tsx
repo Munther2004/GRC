@@ -1,7 +1,11 @@
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { applyThemeByName } from '@/lib/themes';
 
 export type ResolvedAppearance = 'light' | 'dark';
 export type Appearance = ResolvedAppearance | 'system';
+
+const LIGHT_PRESET = 'cohere-light';
+const DARK_PRESET = 'forest-grc';
 
 export type UseAppearanceReturn = {
     readonly appearance: Appearance;
@@ -41,6 +45,9 @@ const applyTheme = (appearance: Appearance): void => {
 
     document.documentElement.classList.toggle('dark', isDark);
     document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+
+    // Sync the active theme preset so CSS variables reflect light/dark.
+    applyThemeByName(isDark ? DARK_PRESET : LIGHT_PRESET);
 };
 
 const subscribe = (callback: () => void) => {

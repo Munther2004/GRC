@@ -1,21 +1,21 @@
 import { Head, Link } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { PageHeader } from '@/components/ui/page-header';
-import { StatStrip } from '@/components/ui/stat-strip';
-import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-    ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend,
-} from 'recharts';
 import {
     AlertTriangle, ClipboardList, TrendingUp, CheckCircle,
     XCircle, Clock, Eye, Download, Sparkles, Loader2,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import {
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+    ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend,
+} from 'recharts';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
+import AdminLayout from '@/layouts/admin-layout';
 import { downloadPdf } from '@/lib/download-pdf';
+import { route } from '@/lib/routes';
 
 interface Props {
     overallCompliance: number;

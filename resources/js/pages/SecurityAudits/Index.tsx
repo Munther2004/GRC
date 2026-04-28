@@ -1,11 +1,4 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { useEffect, useRef, useState } from 'react';
-import AdminLayout from '@/layouts/admin-layout';
-import { PageHeader } from '@/components/ui/page-header';
-import { StatStrip } from '@/components/ui/stat-strip';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
     Upload,
     FileText,
@@ -16,6 +9,13 @@ import {
     Eye,
     AlertTriangle,
 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
+import AdminLayout from '@/layouts/admin-layout';
 
 interface AuditRow {
     id: number;
@@ -142,7 +142,6 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
             <PageHeader
                 title="Security Configuration Auditor"
                 description="Upload a configuration file and let Claude analyse it against best-practice security baselines."
-                volume="VII"
             />
 
             <StatStrip

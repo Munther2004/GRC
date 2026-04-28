@@ -1,20 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
-import { StatStrip } from '@/components/ui/stat-strip';
-import { FilterBar } from '@/components/ui/filter-bar';
+import axios from 'axios';
 import {
     Search,
     XCircle,
@@ -27,7 +12,22 @@ import {
     ArrowRight,
 } from 'lucide-react';
 import { useState } from 'react';
-import axios from 'axios';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FilterBar } from '@/components/ui/filter-bar';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
 
 interface Item {
     id: number;

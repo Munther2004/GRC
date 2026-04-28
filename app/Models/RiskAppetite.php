@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class RiskAppetite extends Model
 {
     protected $fillable = [
+        'corporation_id',
         'name',
         'is_active',
         'acceptable_max_score',
@@ -30,6 +31,11 @@ class RiskAppetite extends Model
         'escalation_notification_roles' => 'array',
     ];
 
+    public function corporation()
+    {
+        return $this->belongsTo(Corporation::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -40,9 +46,40 @@ class RiskAppetite extends Model
         return $query->where('is_active', true);
     }
 
-    public static function getActive(): ?self
+    public function scopeForCorporation($query, ?int $corporationId)
     {
-        return static::where('is_active', true)->first();
+        return $query->where('corporation_id', $corporationId);
+    }
+
+    /**
+     * Resolve the active risk appetite for the given corporation.
+     *
+     * Pass NULL only for super_admin scenarios where you want the first
+     * active row across the platform; in normal corp-scoped reads always
+     * pass the user's corporation_id.
+     */
+    public static function getActiveForCorporation(?int $corporationId): ?self
+    {
+        if ($corporationId === null) {
+            return null;
+        }
+
+        return static::where('corporation_id', $corporationId)
+            ->where('is_active', true)
+            ->first();
+    }
+
+    /**
+     * Resolve the active appetite from an authenticated user context.
+     * Returns NULL if there is no usable corporation context.
+     */
+    public static function getActiveForUser(?User $user): ?self
+    {
+        if (! $user) {
+            return null;
+        }
+
+        return static::getActiveForCorporation($user->corporation_id);
     }
 
     /**

@@ -1,9 +1,9 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Plus, Search, Users, Shield, Eye, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -12,41 +12,57 @@ import {
     SelectContent,
     SelectItem,
 } from '@/components/ui/select';
-import { PageHeader } from '@/components/ui/page-header';
-import { StatStrip } from '@/components/ui/stat-strip';
-import { Plus, Search, Users, Shield, Eye, Pencil, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import type { SharedProps } from '@/types';
+import { ROLE_LABELS } from '@/types/auth';
 
-interface Role {
+interface RoleObj {
     id: number;
     name: string;
 }
 
-interface User {
+interface Corporation {
+    id: number;
+    name: string;
+}
+
+interface UserRow {
     id: number;
     name: string;
     email: string;
-    roles: Role[];
+    role: string;
+    corporation?: Corporation | null;
+    roles: RoleObj[];
     created_at: string;
 }
 
-interface Props {
+interface Permissions {
+    is_super_admin: boolean;
+    grantable_roles: string[];
+}
+
+interface Props extends SharedProps {
     users: {
-        data: User[];
+        data: UserRow[];
         links: { url: string | null; label: string; active: boolean }[];
         total: number;
     };
-    stats: { total: number; admins: number; auditors: number; users: number };
+    stats: { total: number; super_admins: number; admins: number; auditors: number; users: number };
     filters: { search?: string; role?: string };
+    permissions: Permissions;
 }
 
 const roleColors: Record<string, string> = {
+    super_admin: 'bg-purple-950 text-purple-300 border-purple-300/40',
     admin: 'bg-red-950 text-red-400 border-red-200',
     auditor: 'bg-accent text-foreground border-primary/20',
     user: 'bg-muted text-foreground/75 border-border',
 };
 
-export default function UsersIndex({ users, stats, filters }: Props) {
+export default function UsersIndex() {
+    const { users, stats, filters, permissions } = usePage<Props>().props;
+
     const [search, setSearch] = useState(filters.search ?? '');
     const [role, setRole] = useState(filters.role ?? 'all');
 
@@ -67,19 +83,37 @@ export default function UsersIndex({ users, stats, filters }: Props) {
         router.delete(route('admin.users.destroy', id));
     };
 
+    const filterRoles = ['all', ...permissions.grantable_roles];
+    if (permissions.is_super_admin && !filterRoles.includes('super_admin')) {
+        filterRoles.splice(1, 0, 'super_admin');
+    }
+
+    const statTiles: { label: string; value: number; color: string; icon: React.ElementType }[] = [
+        { label: 'Total Users', value: stats.total, color: 'text-primary', icon: Users },
+    ];
+    if (permissions.is_super_admin) {
+        statTiles.push({ label: 'Super Admins', value: stats.super_admins, color: 'text-purple-400', icon: Shield });
+    }
+    statTiles.push(
+        { label: 'Admins', value: stats.admins, color: 'text-red-500', icon: Shield },
+        { label: 'Auditors', value: stats.auditors, color: 'text-primary', icon: Eye },
+        { label: 'Users', value: stats.users, color: 'text-muted-foreground', icon: Users },
+    );
+
     return (
         <AdminLayout>
             <Head title="Users & Roles" />
 
             <div className="space-y-6">
-                {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                        <h1 className="font-heading text-4xl font-normal text-foreground">
                             Users & Roles
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Manage user accounts and role-based permissions
+                            {permissions.is_super_admin
+                                ? 'Manage users across all corporations.'
+                                : 'Manage users in your corporation.'}
                         </p>
                     </div>
                     <Link href={route('admin.users.create')}>
@@ -89,51 +123,20 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                     </Link>
                 </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                    {[
-                        {
-                            label: 'Total Users',
-                            value: stats.total,
-                            color: 'text-primary',
-                            icon: Users,
-                        },
-                        {
-                            label: 'Admins',
-                            value: stats.admins,
-                            color: 'text-red-500',
-                            icon: Shield,
-                        },
-                        {
-                            label: 'Auditors',
-                            value: stats.auditors,
-                            color: 'text-primary',
-                            icon: Eye,
-                        },
-                        {
-                            label: 'Users',
-                            value: stats.users,
-                            color: 'text-muted-foreground',
-                            icon: Users,
-                        },
-                    ].map(({ label, value, color, icon: Icon }) => (
+                <div className={`grid grid-cols-2 gap-4 md:grid-cols-${statTiles.length}`}>
+                    {statTiles.map(({ label, value, color, icon: Icon }) => (
                         <Card key={label}>
                             <CardContent className="flex items-center gap-3 p-4">
                                 <Icon className={`h-8 w-8 ${color}`} />
                                 <div>
-                                    <p className="text-2xl font-bold">
-                                        {value}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {label}
-                                    </p>
+                                    <p className="text-2xl font-bold">{value}</p>
+                                    <p className="text-xs text-muted-foreground">{label}</p>
                                 </div>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
 
-                {/* Filters */}
                 <Card>
                     <CardContent className="p-4">
                         <div className="flex flex-wrap gap-3">
@@ -142,12 +145,9 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                 <Input
                                     placeholder="Search by name or email..."
                                     value={search}
-                                    onChange={(
-                                        e: React.ChangeEvent<HTMLInputElement>,
-                                    ) => setSearch(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                                     onKeyDown={(e: React.KeyboardEvent) =>
-                                        e.key === 'Enter' &&
-                                        applyFilters({ search })
+                                        e.key === 'Enter' && applyFilters({ search })
                                     }
                                     className="pl-9"
                                 />
@@ -156,36 +156,27 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                 value={role}
                                 onValueChange={(v: string) => {
                                     setRole(v);
-                                    applyFilters({
-                                        role: v === 'all' ? '' : v,
-                                    });
+                                    applyFilters({ role: v === 'all' ? '' : v });
                                 }}
                             >
                                 <SelectTrigger className="w-[150px]">
                                     <SelectValue placeholder="Role" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">
-                                        All Roles
-                                    </SelectItem>
-                                    <SelectItem value="admin">Admin</SelectItem>
-                                    <SelectItem value="auditor">
-                                        Auditor
-                                    </SelectItem>
-                                    <SelectItem value="user">User</SelectItem>
+                                    {filterRoles.map((r) => (
+                                        <SelectItem key={r} value={r}>
+                                            {r === 'all' ? 'All Roles' : ROLE_LABELS[r as keyof typeof ROLE_LABELS] ?? r}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
-                            <Button
-                                variant="outline"
-                                onClick={() => applyFilters({ search })}
-                            >
+                            <Button variant="outline" onClick={() => applyFilters({ search })}>
                                 Search
                             </Button>
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Table */}
                 <Card>
                     <CardHeader className="pb-0">
                         <CardTitle className="text-base">
@@ -200,7 +191,8 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                         {[
                                             'Name',
                                             'Email',
-                                            'Roles',
+                                            'Role',
+                                            ...(permissions.is_super_admin ? ['Corporation'] : []),
                                             'Joined',
                                             'Actions',
                                         ].map((h) => (
@@ -217,83 +209,51 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                     {users.data.length === 0 ? (
                                         <tr>
                                             <td
-                                                colSpan={5}
+                                                colSpan={permissions.is_super_admin ? 6 : 5}
                                                 className="px-4 py-12 text-center text-muted-foreground"
                                             >
                                                 No users found.
                                             </td>
                                         </tr>
                                     ) : (
-                                        users.data.map((user) => (
-                                            <tr
-                                                key={user.id}
-                                                className="transition-colors hover:bg-accent/30"
-                                            >
+                                        users.data.map((u) => (
+                                            <tr key={u.id} className="transition-colors hover:bg-accent/30">
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent">
-                                                            <span className="text-xs font-semibold text-foreground dark:text-foreground">
-                                                                {user.name
+                                                            <span className="text-xs font-semibold text-foreground">
+                                                                {u.name
                                                                     .split(' ')
-                                                                    .map(
-                                                                        (n) =>
-                                                                            n[0],
-                                                                    )
+                                                                    .map((n) => n[0])
                                                                     .join('')
-                                                                    .substring(
-                                                                        0,
-                                                                        2,
-                                                                    )
+                                                                    .substring(0, 2)
                                                                     .toUpperCase()}
                                                             </span>
                                                         </div>
-                                                        <span className="font-medium text-foreground">
-                                                            {user.name}
-                                                        </span>
+                                                        <span className="font-medium text-foreground">{u.name}</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3 text-foreground/80">
-                                                    {user.email}
-                                                </td>
+                                                <td className="px-4 py-3 text-foreground/80">{u.email}</td>
                                                 <td className="px-4 py-3">
-                                                    <div className="flex flex-wrap gap-1">
-                                                        {user.roles && user.roles.length > 0 ? (
-                                                            user.roles.map(
-                                                                (role) => (
-                                                                    <Badge
-                                                                        key={role.id}
-                                                                        variant="outline"
-                                                                        className={`capitalize ${roleColors[role.name] || 'bg-muted text-foreground'}`}
-                                                                    >
-                                                                        {role.name}
-                                                                    </Badge>
-                                                                ),
-                                                            )
-                                                        ) : (
-                                                            <span className="text-muted-foreground">
-                                                                No roles
-                                                            </span>
-                                                        )}
-                                                    </div>
+                                                    <Badge
+                                                        variant="outline"
+                                                        className={`capitalize ${roleColors[u.role] || 'bg-muted text-foreground'}`}
+                                                    >
+                                                        {ROLE_LABELS[u.role as keyof typeof ROLE_LABELS] ?? u.role}
+                                                    </Badge>
                                                 </td>
+                                                {permissions.is_super_admin && (
+                                                    <td className="px-4 py-3 text-foreground/80">
+                                                        {u.corporation?.name ?? '—'}
+                                                    </td>
+                                                )}
                                                 <td className="px-4 py-3 text-muted-foreground">
-                                                    {new Date(
-                                                        user.created_at,
-                                                    ).toLocaleDateString()}
+                                                    {new Date(u.created_at).toLocaleDateString()}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-1">
-                                                        <Link
-                                                            href={route(
-                                                                'admin.users.edit',
-                                                                user.id,
-                                                            )}
-                                                        >
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-8 w-8"
-                                                            >
+                                                        <Link href={route('admin.users.edit', u.id)}>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8">
                                                                 <Pencil className="h-4 w-4" />
                                                             </Button>
                                                         </Link>
@@ -301,12 +261,7 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                                             variant="ghost"
                                                             size="icon"
                                                             className="h-8 w-8 text-red-500 hover:bg-red-50"
-                                                            onClick={() =>
-                                                                deleteUser(
-                                                                    user.id,
-                                                                    user.name,
-                                                                )
-                                                            }
+                                                            onClick={() => deleteUser(u.id, u.name)}
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </Button>
@@ -321,7 +276,6 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                     </CardContent>
                 </Card>
 
-                {/* Pagination */}
                 {users.links && users.links.length > 0 && (
                     <div className="flex items-center justify-center gap-1">
                         {users.links.map((link, idx) => (
@@ -330,9 +284,7 @@ export default function UsersIndex({ users, stats, filters }: Props) {
                                     variant={link.active ? 'default' : 'outline'}
                                     size="sm"
                                     disabled={!link.url}
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
+                                    dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             </Link>
                         ))}
@@ -342,4 +294,3 @@ export default function UsersIndex({ users, stats, filters }: Props) {
         </AdminLayout>
     );
 }
-

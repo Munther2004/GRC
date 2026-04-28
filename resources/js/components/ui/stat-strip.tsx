@@ -24,7 +24,7 @@ export function StatStrip({ stats, className }: { stats: Stat[]; className?: str
 
     return (
         <div
-            className={cn('grid overflow-hidden rounded', cols, className)}
+            className={cn('grid overflow-hidden rounded-lg elev-1', cols, className)}
             style={{ border: '1px solid var(--border)', gap: '1px', background: 'var(--border)' }}
         >
             {stats.map((s, i) => {

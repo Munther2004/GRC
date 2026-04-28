@@ -1,10 +1,10 @@
+import { usePage }       from '@inertiajs/react';
+import { CheckCircle, XCircle, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { AdminHeader }   from '@/components/admin/header';
 import { AdminSidebar }  from '@/components/admin/sidebar';
 import { CommandPalette } from '@/components/ui/command-palette';
-import { usePage }       from '@inertiajs/react';
 import type { SharedProps } from '@/types';
-import { useEffect, useRef, useState } from 'react';
-import { CheckCircle, XCircle, X } from 'lucide-react';
 
 function FlashToast() {
     const { flash } = usePage<SharedProps>().props;

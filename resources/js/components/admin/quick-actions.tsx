@@ -1,5 +1,5 @@
-import { Plus, FileText, ClipboardList, AlertCircle, Upload, ShieldCheck } from 'lucide-react';
 import { Link } from '@inertiajs/react';
+import { Plus, FileText, ClipboardList, AlertCircle, Upload, ShieldCheck } from 'lucide-react';
 
 const actions = [
     { label: 'New Risk',         icon: Plus,         primary: true,  href: '/risks/create' },

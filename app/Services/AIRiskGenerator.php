@@ -14,6 +14,29 @@ class AIRiskGenerator
 {
     public function __construct(private AIService $ai = new AIService) {}
 
+    private function resolveOwnerId(Assessment $assessment): int
+    {
+        if ($assessment->user_id) {
+            return $assessment->user_id;
+        }
+
+        if ($assessment->corporation_id) {
+            $corpAdmin = \App\Models\User::where('corporation_id', $assessment->corporation_id)
+                ->where('role', \App\Models\User::ROLE_ADMIN)
+                ->value('id');
+            if ($corpAdmin) {
+                return $corpAdmin;
+            }
+        }
+
+        $super = \App\Models\User::where('role', \App\Models\User::ROLE_SUPER_ADMIN)->value('id');
+        if ($super) {
+            return $super;
+        }
+
+        return (int) \App\Models\User::query()->value('id');
+    }
+
     public function generateRisksFromAssessment(Assessment $assessment): void
     {
         $items = AssessmentItem::where('assessment_id', $assessment->id)
@@ -104,8 +127,14 @@ PROMPT;
             // Only reference the assessment if it still exists in the DB
             $assessmentId = Assessment::where('id', $assessment->id)->value('id');
 
+            // Owner of the AI-generated risk: prefer the assessment's owner so
+            // the risk lives inside the assessment's corporation. Fall back to
+            // a corp admin in that tenant, then any super_admin, then any user.
+            $ownerId = $this->resolveOwnerId($assessment);
+
             $risk = Risk::create([
-                'user_id' => \App\Models\User::where('role', 'admin')->first()->id,
+                'user_id' => $ownerId,
+                'corporation_id' => $assessment->corporation_id,
                 'title' => substr($data['title'], 0, 255),
                 'description' => $data['description'],
                 'category' => $control->category ?? 'Information Security',

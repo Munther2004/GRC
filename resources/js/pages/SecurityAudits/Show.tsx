@@ -1,10 +1,4 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { useEffect, useMemo, useState } from 'react';
-import AdminLayout from '@/layouts/admin-layout';
-import { PageHeader } from '@/components/ui/page-header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
     ArrowLeft,
     AlertTriangle,
@@ -21,6 +15,12 @@ import {
     ChevronDown,
     ChevronUp,
 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
+import AdminLayout from '@/layouts/admin-layout';
 
 interface Audit {
     id: number;
@@ -157,7 +157,6 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
             <PageHeader
                 title={audit.file_name}
                 description={`${audit.file_type} · ${formatBytes(audit.file_size)} · uploaded by ${audit.user?.name ?? 'Unknown'}`}
-                volume="VII"
             >
                 {audit.status === 'completed' && (
                     <>

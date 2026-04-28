@@ -1,10 +1,6 @@
 import { Head } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import { usePage } from '@inertiajs/react';
+import axios from 'axios';
 import {
     CheckCircle2,
     XCircle,
@@ -15,15 +11,20 @@ import {
     Loader2,
 } from 'lucide-react';
 import { useState } from 'react';
-import { usePage } from '@inertiajs/react';
-import type { SharedProps } from '@/types';
-import axios from 'axios';
-import {
+import type {
     EvidenceItem,
-    AiReview,
+    AiReview} from '@/components/evidence-row';
+import {
     EvidenceRow,
     getReviewFromItem,
 } from '@/components/evidence-row';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import type { SharedProps } from '@/types';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -233,7 +234,7 @@ export default function ApprovalQueue({ requests: initial }: Props) {
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                    <h1 className="font-heading text-4xl font-normal" style={{ color: 'var(--foreground)' }}>
                         Approval Queue
                     </h1>
                     <p className="text-sm text-muted-foreground">

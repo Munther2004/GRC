@@ -1,0 +1,672 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e8]
+        - generic [ref=e10]: GRC
+        - generic [ref=e11]: Super Admin
+      - generic [ref=e12]: ✶
+      - navigation [ref=e13]:
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Dashboard" [ref=e16] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e17]
+              - generic [ref=e22]: Dashboard
+          - listitem [ref=e23]:
+            - link "AI Assistant" [ref=e24] [cursor=pointer]:
+              - /url: /chatbot
+              - img [ref=e25]
+              - generic [ref=e27]: AI Assistant
+          - listitem [ref=e28]:
+            - link "Risk Register" [ref=e29] [cursor=pointer]:
+              - /url: /risks
+              - img [ref=e30]
+              - generic [ref=e32]: Risk Register
+          - listitem [ref=e33]:
+            - link "Assessments" [ref=e34] [cursor=pointer]:
+              - /url: /assessments
+              - img [ref=e35]
+              - generic [ref=e38]: Assessments
+          - listitem [ref=e39]:
+            - link "Evidence" [ref=e40] [cursor=pointer]:
+              - /url: /evidence
+              - img [ref=e41]
+              - generic [ref=e43]: Evidence
+          - listitem [ref=e44]:
+            - link "Gap Analysis" [ref=e45] [cursor=pointer]:
+              - /url: /gap-analysis
+              - img [ref=e46]
+              - generic [ref=e50]: Gap Analysis
+          - listitem [ref=e51]:
+            - link "Security Audit" [ref=e52] [cursor=pointer]:
+              - /url: /security-audits
+              - img [ref=e53]
+              - generic [ref=e55]: Security Audit
+          - listitem [ref=e56]:
+            - link "Crosswalk" [ref=e57] [cursor=pointer]:
+              - /url: /crosswalk
+              - img [ref=e58]
+              - generic [ref=e63]: Crosswalk
+          - listitem [ref=e64]:
+            - link "Controls Hub" [ref=e65] [cursor=pointer]:
+              - /url: /controls/hub
+              - img [ref=e66]
+              - generic [ref=e71]: Controls Hub
+          - listitem [ref=e72]:
+            - link "Remediation" [ref=e73] [cursor=pointer]:
+              - /url: /remediation-tasks
+              - img [ref=e74]
+              - generic [ref=e77]: Remediation
+          - listitem [ref=e78]:
+            - link "Reports" [ref=e79] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e80]
+              - generic [ref=e82]: Reports
+        - generic [ref=e83]:
+          - paragraph [ref=e84]: Review
+          - list [ref=e85]:
+            - listitem [ref=e86]:
+              - link "Approvals 1" [ref=e87] [cursor=pointer]:
+                - /url: /controls/approvals
+                - img [ref=e88]
+                - generic [ref=e91]: Approvals
+                - generic [ref=e92]: "1"
+            - listitem [ref=e93]:
+              - link "Audit Logs" [ref=e94] [cursor=pointer]:
+                - /url: /audit-logs
+                - img [ref=e95]
+                - generic [ref=e98]: Audit Logs
+            - listitem [ref=e99]:
+              - link "Notifications 5" [ref=e100] [cursor=pointer]:
+                - /url: /notifications
+                - img [ref=e101]
+                - generic [ref=e104]: Notifications
+                - generic [ref=e105]: "5"
+        - generic [ref=e106]:
+          - paragraph [ref=e107]: Administration
+          - list [ref=e108]:
+            - listitem [ref=e109]:
+              - link "Users" [ref=e110] [cursor=pointer]:
+                - /url: /admin/users
+                - img [ref=e111]
+                - generic [ref=e116]: Users
+            - listitem [ref=e117]:
+              - link "Risk Appetite" [ref=e118] [cursor=pointer]:
+                - /url: /risk-appetite
+                - img [ref=e119]
+                - generic [ref=e120]: Risk Appetite
+        - generic [ref=e121]:
+          - paragraph [ref=e122]: Platform
+          - list [ref=e123]:
+            - listitem [ref=e124]:
+              - link "Corporations" [ref=e125] [cursor=pointer]:
+                - /url: /admin/corporations
+                - img [ref=e126]
+                - generic [ref=e130]: Corporations
+            - listitem [ref=e131]:
+              - link "Frameworks" [ref=e132] [cursor=pointer]:
+                - /url: /admin/frameworks
+                - img [ref=e133]
+                - generic [ref=e135]: Frameworks
+            - listitem [ref=e136]:
+              - link "Controls Library" [ref=e137] [cursor=pointer]:
+                - /url: /admin/controls
+                - img [ref=e138]
+                - generic [ref=e141]: Controls Library
+      - generic [ref=e143]:
+        - generic [ref=e145]: SA
+        - generic [ref=e146]:
+          - paragraph [ref=e147]: System Admin
+          - paragraph [ref=e148]: admin@grc.com
+        - button "Log out" [ref=e149] [cursor=pointer]:
+          - img [ref=e150]
+  - generic [ref=e153]:
+    - banner [ref=e154]:
+      - generic [ref=e156]:
+        - img [ref=e157]
+        - searchbox "Search..." [ref=e160]
+        - generic: ⌘K
+      - button "Switch to dark mode" [ref=e161] [cursor=pointer]:
+        - img [ref=e164]
+      - button "Notifications" [ref=e171] [cursor=pointer]:
+        - img [ref=e172]
+        - generic [ref=e175]: "5"
+    - main [ref=e176]:
+      - generic [ref=e177]:
+        - generic [ref=e179]:
+          - generic [ref=e180]:
+            - heading "Risk Register" [level=1] [ref=e181]
+            - paragraph [ref=e182]: ISO/IEC 27005 — Likelihood × Impact management
+          - link "New Risk" [ref=e184] [cursor=pointer]:
+            - /url: /risks/create
+            - button "New Risk" [ref=e185]:
+              - img
+              - text: New Risk
+        - generic [ref=e187]:
+          - generic [ref=e188]:
+            - paragraph [ref=e192]: Total
+            - paragraph [ref=e193]: "169"
+          - generic [ref=e194]:
+            - paragraph [ref=e197]: Open
+            - paragraph [ref=e198]: "169"
+          - generic [ref=e199]:
+            - paragraph [ref=e202]: Critical
+            - paragraph [ref=e203]: "61"
+          - generic [ref=e204]:
+            - paragraph [ref=e207]: Overdue
+            - paragraph [ref=e208]: "0"
+          - generic [ref=e209]:
+            - paragraph [ref=e212]: Exposure
+            - paragraph [ref=e213]: 31.7%
+            - paragraph [ref=e214]: avg 13.5/25
+        - generic [ref=e215]:
+          - generic [ref=e216]:
+            - img [ref=e217]
+            - textbox "Search risks..." [ref=e220]
+          - combobox [ref=e221] [cursor=pointer]:
+            - generic: All Statuses
+            - img
+          - combobox [ref=e222] [cursor=pointer]:
+            - generic: All Levels
+            - img
+          - combobox [ref=e223] [cursor=pointer]:
+            - generic: All Categories
+            - img
+          - combobox [ref=e224] [cursor=pointer]:
+            - generic: All Frameworks
+            - img
+          - button "Has Plan" [ref=e225] [cursor=pointer]
+          - button "Search" [ref=e226] [cursor=pointer]
+        - generic [ref=e227]:
+          - generic [ref=e229]: 169 risks
+          - generic [ref=e230]:
+            - table [ref=e232]:
+              - rowgroup [ref=e233]:
+                - row "Risk Category Owner Score Level Status Treatment Due" [ref=e234]:
+                  - columnheader "Risk" [ref=e235]
+                  - columnheader "Category" [ref=e236]
+                  - columnheader "Owner" [ref=e237]
+                  - columnheader "Score" [ref=e238]
+                  - columnheader "Level" [ref=e239]
+                  - columnheader "Status" [ref=e240]
+                  - columnheader "Treatment" [ref=e241]
+                  - columnheader "Due" [ref=e242]
+                  - columnheader [ref=e243]
+              - rowgroup [ref=e244]:
+                - row "Absence of User Identification and Authentication Controls AI System Admin NIST800-53 Identification and Authentication AI Generated 25/25 5×5 open mitigate —" [ref=e245]:
+                  - cell "Absence of User Identification and Authentication Controls AI System Admin NIST800-53" [ref=e246]:
+                    - generic [ref=e247]:
+                      - paragraph [ref=e248]: Absence of User Identification and Authentication Controls
+                      - generic [ref=e249]:
+                        - img [ref=e250]
+                        - text: AI
+                    - generic [ref=e252]:
+                      - generic [ref=e253]: System Admin
+                      - generic [ref=e254]: NIST800-53
+                  - cell "Identification and Authentication" [ref=e255]
+                  - cell "AI Generated" [ref=e256]
+                  - cell "25/25 5×5" [ref=e257]:
+                    - text: 25/25
+                    - paragraph [ref=e258]: 5×5
+                  - cell [ref=e259]
+                  - cell "open" [ref=e262]
+                  - cell "mitigate" [ref=e263]
+                  - cell "—" [ref=e264]
+                  - cell [ref=e265]:
+                    - generic [ref=e266]:
+                      - link [ref=e267] [cursor=pointer]:
+                        - /url: /risks/29
+                        - button [ref=e268]:
+                          - img [ref=e269]
+                      - link [ref=e272] [cursor=pointer]:
+                        - /url: /risks/29/edit
+                        - button [ref=e273]:
+                          - img [ref=e274]
+                      - button [ref=e277] [cursor=pointer]:
+                        - img [ref=e278]
+                - row "No Malware Protection Exposes Organization to Cyber Threats AI System Admin ISO27001 Technological Controls AI Generated 20/25 5×4 open mitigate —" [ref=e281]:
+                  - cell "No Malware Protection Exposes Organization to Cyber Threats AI System Admin ISO27001" [ref=e282]:
+                    - generic [ref=e283]:
+                      - paragraph [ref=e284]: No Malware Protection Exposes Organization to Cyber Threats
+                      - generic [ref=e285]:
+                        - img [ref=e286]
+                        - text: AI
+                    - generic [ref=e288]:
+                      - generic [ref=e289]: System Admin
+                      - generic [ref=e290]: ISO27001
+                  - cell "Technological Controls" [ref=e291]
+                  - cell "AI Generated" [ref=e292]
+                  - cell "20/25 5×4" [ref=e293]:
+                    - text: 20/25
+                    - paragraph [ref=e294]: 5×4
+                  - cell [ref=e295]
+                  - cell "open" [ref=e298]
+                  - cell "mitigate" [ref=e299]
+                  - cell "—" [ref=e300]
+                  - cell [ref=e301]:
+                    - generic [ref=e302]:
+                      - link [ref=e303] [cursor=pointer]:
+                        - /url: /risks/155
+                        - button [ref=e304]:
+                          - img [ref=e305]
+                      - link [ref=e308] [cursor=pointer]:
+                        - /url: /risks/155/edit
+                        - button [ref=e309]:
+                          - img [ref=e310]
+                      - button [ref=e313] [cursor=pointer]:
+                        - img [ref=e314]
+                - row "[Security Audit] Hardcoded Database Password in Configuration AI System Admin Technical System Admin 20/25 4×5 open mitigate —" [ref=e317]:
+                  - cell "[Security Audit] Hardcoded Database Password in Configuration AI System Admin" [ref=e318]:
+                    - generic [ref=e319]:
+                      - paragraph [ref=e320]: "[Security Audit] Hardcoded Database Password in Configuration"
+                      - generic [ref=e321]:
+                        - img [ref=e322]
+                        - text: AI
+                    - generic [ref=e325]: System Admin
+                  - cell "Technical" [ref=e326]
+                  - cell "System Admin" [ref=e327]
+                  - cell "20/25 4×5" [ref=e328]:
+                    - text: 20/25
+                    - paragraph [ref=e329]: 4×5
+                  - cell [ref=e330]
+                  - cell "open" [ref=e333]
+                  - cell "mitigate" [ref=e334]
+                  - cell "—" [ref=e335]
+                  - cell [ref=e336]:
+                    - generic [ref=e337]:
+                      - link [ref=e338] [cursor=pointer]:
+                        - /url: /risks/166
+                        - button [ref=e339]:
+                          - img [ref=e340]
+                      - link [ref=e343] [cursor=pointer]:
+                        - /url: /risks/166/edit
+                        - button [ref=e344]:
+                          - img [ref=e345]
+                      - button [ref=e348] [cursor=pointer]:
+                        - img [ref=e349]
+                - row "[Security Audit] Hardcoded API Keys and Secret Keys AI System Admin Technical System Admin 20/25 4×5 open mitigate —" [ref=e352]:
+                  - cell "[Security Audit] Hardcoded API Keys and Secret Keys AI System Admin" [ref=e353]:
+                    - generic [ref=e354]:
+                      - paragraph [ref=e355]: "[Security Audit] Hardcoded API Keys and Secret Keys"
+                      - generic [ref=e356]:
+                        - img [ref=e357]
+                        - text: AI
+                    - generic [ref=e360]: System Admin
+                  - cell "Technical" [ref=e361]
+                  - cell "System Admin" [ref=e362]
+                  - cell "20/25 4×5" [ref=e363]:
+                    - text: 20/25
+                    - paragraph [ref=e364]: 4×5
+                  - cell [ref=e365]
+                  - cell "open" [ref=e368]
+                  - cell "mitigate" [ref=e369]
+                  - cell "—" [ref=e370]
+                  - cell [ref=e371]:
+                    - generic [ref=e372]:
+                      - link [ref=e373] [cursor=pointer]:
+                        - /url: /risks/167
+                        - button [ref=e374]:
+                          - img [ref=e375]
+                      - link [ref=e378] [cursor=pointer]:
+                        - /url: /risks/167/edit
+                        - button [ref=e379]:
+                          - img [ref=e380]
+                      - button [ref=e383] [cursor=pointer]:
+                        - img [ref=e384]
+                - row "Unmanaged Cloud Services Expose Organisation to Security Breaches AI System Admin ISO27001 Organisational Controls AI Generated 16/25 4×4 open mitigate —" [ref=e387]:
+                  - cell "Unmanaged Cloud Services Expose Organisation to Security Breaches AI System Admin ISO27001" [ref=e388]:
+                    - generic [ref=e389]:
+                      - paragraph [ref=e390]: Unmanaged Cloud Services Expose Organisation to Security Breaches
+                      - generic [ref=e391]:
+                        - img [ref=e392]
+                        - text: AI
+                    - generic [ref=e394]:
+                      - generic [ref=e395]: System Admin
+                      - generic [ref=e396]: ISO27001
+                  - cell "Organisational Controls" [ref=e397]
+                  - cell "AI Generated" [ref=e398]
+                  - cell "16/25 4×4" [ref=e399]:
+                    - text: 16/25
+                    - paragraph [ref=e400]: 4×4
+                  - cell [ref=e401]
+                  - cell "open" [ref=e404]
+                  - cell "mitigate" [ref=e405]
+                  - cell "—" [ref=e406]
+                  - cell [ref=e407]:
+                    - generic [ref=e408]:
+                      - link [ref=e409] [cursor=pointer]:
+                        - /url: /risks/77
+                        - button [ref=e410]:
+                          - img [ref=e411]
+                      - link [ref=e414] [cursor=pointer]:
+                        - /url: /risks/77/edit
+                        - button [ref=e415]:
+                          - img [ref=e416]
+                      - button [ref=e419] [cursor=pointer]:
+                        - img [ref=e420]
+                - row "Absence of Security Awareness Training Program for Users AI System Admin NIST800-53 Awareness and Training AI Generated 16/25 4×4 open mitigate —" [ref=e423]:
+                  - cell "Absence of Security Awareness Training Program for Users AI System Admin NIST800-53" [ref=e424]:
+                    - generic [ref=e425]:
+                      - paragraph [ref=e426]: Absence of Security Awareness Training Program for Users
+                      - generic [ref=e427]:
+                        - img [ref=e428]
+                        - text: AI
+                    - generic [ref=e430]:
+                      - generic [ref=e431]: System Admin
+                      - generic [ref=e432]: NIST800-53
+                  - cell "Awareness and Training" [ref=e433]
+                  - cell "AI Generated" [ref=e434]
+                  - cell "16/25 4×4" [ref=e435]:
+                    - text: 16/25
+                    - paragraph [ref=e436]: 4×4
+                  - cell [ref=e437]
+                  - cell "open" [ref=e440]
+                  - cell "mitigate" [ref=e441]
+                  - cell "—" [ref=e442]
+                  - cell [ref=e443]:
+                    - generic [ref=e444]:
+                      - link [ref=e445] [cursor=pointer]:
+                        - /url: /risks/10
+                        - button [ref=e446]:
+                          - img [ref=e447]
+                      - link [ref=e450] [cursor=pointer]:
+                        - /url: /risks/10/edit
+                        - button [ref=e451]:
+                          - img [ref=e452]
+                      - button [ref=e455] [cursor=pointer]:
+                        - img [ref=e456]
+                - row "Unprotected Data at Rest Exposes Sensitive Information AI System Admin NIST800-53 System and Communications Protection AI Generated 16/25 4×4 open mitigate —" [ref=e459]:
+                  - cell "Unprotected Data at Rest Exposes Sensitive Information AI System Admin NIST800-53" [ref=e460]:
+                    - generic [ref=e461]:
+                      - paragraph [ref=e462]: Unprotected Data at Rest Exposes Sensitive Information
+                      - generic [ref=e463]:
+                        - img [ref=e464]
+                        - text: AI
+                    - generic [ref=e466]:
+                      - generic [ref=e467]: System Admin
+                      - generic [ref=e468]: NIST800-53
+                  - cell "System and Communications Protection" [ref=e469]
+                  - cell "AI Generated" [ref=e470]
+                  - cell "16/25 4×4" [ref=e471]:
+                    - text: 16/25
+                    - paragraph [ref=e472]: 4×4
+                  - cell [ref=e473]
+                  - cell "open" [ref=e476]
+                  - cell "mitigate" [ref=e477]
+                  - cell "—" [ref=e478]
+                  - cell [ref=e479]:
+                    - generic [ref=e480]:
+                      - link [ref=e481] [cursor=pointer]:
+                        - /url: /risks/63
+                        - button [ref=e482]:
+                          - img [ref=e483]
+                      - link [ref=e486] [cursor=pointer]:
+                        - /url: /risks/63/edit
+                        - button [ref=e487]:
+                          - img [ref=e488]
+                      - button [ref=e491] [cursor=pointer]:
+                        - img [ref=e492]
+                - row "Unprotected Media Transport Exposes Sensitive Data to Compromise AI System Admin NIST800-53 Media Protection AI Generated 16/25 4×4 open mitigate —" [ref=e495]:
+                  - cell "Unprotected Media Transport Exposes Sensitive Data to Compromise AI System Admin NIST800-53" [ref=e496]:
+                    - generic [ref=e497]:
+                      - paragraph [ref=e498]: Unprotected Media Transport Exposes Sensitive Data to Compromise
+                      - generic [ref=e499]:
+                        - img [ref=e500]
+                        - text: AI
+                    - generic [ref=e502]:
+                      - generic [ref=e503]: System Admin
+                      - generic [ref=e504]: NIST800-53
+                  - cell "Media Protection" [ref=e505]
+                  - cell "AI Generated" [ref=e506]
+                  - cell "16/25 4×4" [ref=e507]:
+                    - text: 16/25
+                    - paragraph [ref=e508]: 4×4
+                  - cell [ref=e509]
+                  - cell "open" [ref=e512]
+                  - cell "mitigate" [ref=e513]
+                  - cell "—" [ref=e514]
+                  - cell [ref=e515]:
+                    - generic [ref=e516]:
+                      - link [ref=e517] [cursor=pointer]:
+                        - /url: /risks/41
+                        - button [ref=e518]:
+                          - img [ref=e519]
+                      - link [ref=e522] [cursor=pointer]:
+                        - /url: /risks/41/edit
+                        - button [ref=e523]:
+                          - img [ref=e524]
+                      - button [ref=e527] [cursor=pointer]:
+                        - img [ref=e528]
+                - row "Absence of Security Incident Management Processes and Procedures AI System Admin ISO27001 Organisational Controls AI Generated 16/25 4×4 open mitigate —" [ref=e531]:
+                  - cell "Absence of Security Incident Management Processes and Procedures AI System Admin ISO27001" [ref=e532]:
+                    - generic [ref=e533]:
+                      - paragraph [ref=e534]: Absence of Security Incident Management Processes and Procedures
+                      - generic [ref=e535]:
+                        - img [ref=e536]
+                        - text: AI
+                    - generic [ref=e538]:
+                      - generic [ref=e539]: System Admin
+                      - generic [ref=e540]: ISO27001
+                  - cell "Organisational Controls" [ref=e541]
+                  - cell "AI Generated" [ref=e542]
+                  - cell "16/25 4×4" [ref=e543]:
+                    - text: 16/25
+                    - paragraph [ref=e544]: 4×4
+                  - cell [ref=e545]
+                  - cell "open" [ref=e548]
+                  - cell "mitigate" [ref=e549]
+                  - cell "—" [ref=e550]
+                  - cell [ref=e551]:
+                    - generic [ref=e552]:
+                      - link [ref=e553] [cursor=pointer]:
+                        - /url: /risks/78
+                        - button [ref=e554]:
+                          - img [ref=e555]
+                      - link [ref=e558] [cursor=pointer]:
+                        - /url: /risks/78/edit
+                        - button [ref=e559]:
+                          - img [ref=e560]
+                      - button [ref=e563] [cursor=pointer]:
+                        - img [ref=e564]
+                - row "Insufficient Audit Record Content Prevents Security Event Investigation AI System Admin NIST800-53 Audit and Accountability AI Generated 16/25 4×4 open mitigate —" [ref=e567]:
+                  - cell "Insufficient Audit Record Content Prevents Security Event Investigation AI System Admin NIST800-53" [ref=e568]:
+                    - generic [ref=e569]:
+                      - paragraph [ref=e570]: Insufficient Audit Record Content Prevents Security Event Investigation
+                      - generic [ref=e571]:
+                        - img [ref=e572]
+                        - text: AI
+                    - generic [ref=e574]:
+                      - generic [ref=e575]: System Admin
+                      - generic [ref=e576]: NIST800-53
+                  - cell "Audit and Accountability" [ref=e577]
+                  - cell "AI Generated" [ref=e578]
+                  - cell "16/25 4×4" [ref=e579]:
+                    - text: 16/25
+                    - paragraph [ref=e580]: 4×4
+                  - cell [ref=e581]
+                  - cell "open" [ref=e584]
+                  - cell "mitigate" [ref=e585]
+                  - cell "—" [ref=e586]
+                  - cell [ref=e587]:
+                    - generic [ref=e588]:
+                      - link [ref=e589] [cursor=pointer]:
+                        - /url: /risks/14
+                        - button [ref=e590]:
+                          - img [ref=e591]
+                      - link [ref=e594] [cursor=pointer]:
+                        - /url: /risks/14/edit
+                        - button [ref=e595]:
+                          - img [ref=e596]
+                      - button [ref=e599] [cursor=pointer]:
+                        - img [ref=e600]
+                - row "Unauthorized Physical Access Due to Missing Access Authorization Controls AI System Admin NIST800-53 Physical and Environmental Protection AI Generated 16/25 4×4 open mitigate —" [ref=e603]:
+                  - cell "Unauthorized Physical Access Due to Missing Access Authorization Controls AI System Admin NIST800-53" [ref=e604]:
+                    - generic [ref=e605]:
+                      - paragraph [ref=e606]: Unauthorized Physical Access Due to Missing Access Authorization Controls
+                      - generic [ref=e607]:
+                        - img [ref=e608]
+                        - text: AI
+                    - generic [ref=e610]:
+                      - generic [ref=e611]: System Admin
+                      - generic [ref=e612]: NIST800-53
+                  - cell "Physical and Environmental Protection" [ref=e613]
+                  - cell "AI Generated" [ref=e614]
+                  - cell "16/25 4×4" [ref=e615]:
+                    - text: 16/25
+                    - paragraph [ref=e616]: 4×4
+                  - cell [ref=e617]
+                  - cell "open" [ref=e620]
+                  - cell "mitigate" [ref=e621]
+                  - cell "—" [ref=e622]
+                  - cell [ref=e623]:
+                    - generic [ref=e624]:
+                      - link [ref=e625] [cursor=pointer]:
+                        - /url: /risks/43
+                        - button [ref=e626]:
+                          - img [ref=e627]
+                      - link [ref=e630] [cursor=pointer]:
+                        - /url: /risks/43/edit
+                        - button [ref=e631]:
+                          - img [ref=e632]
+                      - button [ref=e635] [cursor=pointer]:
+                        - img [ref=e636]
+                - row "Absence of Integrity Verification Enables Undetected System Tampering AI System Admin NIST800-53 System and Information Integrity AI Generated 16/25 4×4 open mitigate —" [ref=e639]:
+                  - cell "Absence of Integrity Verification Enables Undetected System Tampering AI System Admin NIST800-53" [ref=e640]:
+                    - generic [ref=e641]:
+                      - paragraph [ref=e642]: Absence of Integrity Verification Enables Undetected System Tampering
+                      - generic [ref=e643]:
+                        - img [ref=e644]
+                        - text: AI
+                    - generic [ref=e646]:
+                      - generic [ref=e647]: System Admin
+                      - generic [ref=e648]: NIST800-53
+                  - cell "System and Information Integrity" [ref=e649]
+                  - cell "AI Generated" [ref=e650]
+                  - cell "16/25 4×4" [ref=e651]:
+                    - text: 16/25
+                    - paragraph [ref=e652]: 4×4
+                  - cell [ref=e653]
+                  - cell "open" [ref=e656]
+                  - cell "mitigate" [ref=e657]
+                  - cell "—" [ref=e658]
+                  - cell [ref=e659]:
+                    - generic [ref=e660]:
+                      - link [ref=e661] [cursor=pointer]:
+                        - /url: /risks/65
+                        - button [ref=e662]:
+                          - img [ref=e663]
+                      - link [ref=e666] [cursor=pointer]:
+                        - /url: /risks/65/edit
+                        - button [ref=e667]:
+                          - img [ref=e668]
+                      - button [ref=e671] [cursor=pointer]:
+                        - img [ref=e672]
+                - row "Absence of Emergency Lighting Creates Safety Hazards AI System Admin NIST800-53 Physical and Environmental Protection AI Generated 16/25 4×4 open mitigate —" [ref=e675]:
+                  - cell "Absence of Emergency Lighting Creates Safety Hazards AI System Admin NIST800-53" [ref=e676]:
+                    - generic [ref=e677]:
+                      - paragraph [ref=e678]: Absence of Emergency Lighting Creates Safety Hazards
+                      - generic [ref=e679]:
+                        - img [ref=e680]
+                        - text: AI
+                    - generic [ref=e682]:
+                      - generic [ref=e683]: System Admin
+                      - generic [ref=e684]: NIST800-53
+                  - cell "Physical and Environmental Protection" [ref=e685]
+                  - cell "AI Generated" [ref=e686]
+                  - cell "16/25 4×4" [ref=e687]:
+                    - text: 16/25
+                    - paragraph [ref=e688]: 4×4
+                  - cell [ref=e689]
+                  - cell "open" [ref=e692]
+                  - cell "mitigate" [ref=e693]
+                  - cell "—" [ref=e694]
+                  - cell [ref=e695]:
+                    - generic [ref=e696]:
+                      - link [ref=e697] [cursor=pointer]:
+                        - /url: /risks/45
+                        - button [ref=e698]:
+                          - img [ref=e699]
+                      - link [ref=e702] [cursor=pointer]:
+                        - /url: /risks/45/edit
+                        - button [ref=e703]:
+                          - img [ref=e704]
+                      - button [ref=e707] [cursor=pointer]:
+                        - img [ref=e708]
+                - row "No Audit Record Retention Impairs Incident Investigation Capability AI System Admin NIST800-53 Audit and Accountability AI Generated 16/25 4×4 open mitigate —" [ref=e711]:
+                  - cell "No Audit Record Retention Impairs Incident Investigation Capability AI System Admin NIST800-53" [ref=e712]:
+                    - generic [ref=e713]:
+                      - paragraph [ref=e714]: No Audit Record Retention Impairs Incident Investigation Capability
+                      - generic [ref=e715]:
+                        - img [ref=e716]
+                        - text: AI
+                    - generic [ref=e718]:
+                      - generic [ref=e719]: System Admin
+                      - generic [ref=e720]: NIST800-53
+                  - cell "Audit and Accountability" [ref=e721]
+                  - cell "AI Generated" [ref=e722]
+                  - cell "16/25 4×4" [ref=e723]:
+                    - text: 16/25
+                    - paragraph [ref=e724]: 4×4
+                  - cell [ref=e725]
+                  - cell "open" [ref=e728]
+                  - cell "mitigate" [ref=e729]
+                  - cell "—" [ref=e730]
+                  - cell [ref=e731]:
+                    - generic [ref=e732]:
+                      - link [ref=e733] [cursor=pointer]:
+                        - /url: /risks/18
+                        - button [ref=e734]:
+                          - img [ref=e735]
+                      - link [ref=e738] [cursor=pointer]:
+                        - /url: /risks/18/edit
+                        - button [ref=e739]:
+                          - img [ref=e740]
+                      - button [ref=e743] [cursor=pointer]:
+                        - img [ref=e744]
+                - row "Undefined Post-Employment Security Obligations Enable Data Breach Risk AI System Admin ISO27001 People Controls AI Generated 16/25 4×4 open mitigate —" [ref=e747]:
+                  - cell "Undefined Post-Employment Security Obligations Enable Data Breach Risk AI System Admin ISO27001" [ref=e748]:
+                    - generic [ref=e749]:
+                      - paragraph [ref=e750]: Undefined Post-Employment Security Obligations Enable Data Breach Risk
+                      - generic [ref=e751]:
+                        - img [ref=e752]
+                        - text: AI
+                    - generic [ref=e754]:
+                      - generic [ref=e755]: System Admin
+                      - generic [ref=e756]: ISO27001
+                  - cell "People Controls" [ref=e757]
+                  - cell "AI Generated" [ref=e758]
+                  - cell "16/25 4×4" [ref=e759]:
+                    - text: 16/25
+                    - paragraph [ref=e760]: 4×4
+                  - cell [ref=e761]
+                  - cell "open" [ref=e764]
+                  - cell "mitigate" [ref=e765]
+                  - cell "—" [ref=e766]
+                  - cell [ref=e767]:
+                    - generic [ref=e768]:
+                      - link [ref=e769] [cursor=pointer]:
+                        - /url: /risks/84
+                        - button [ref=e770]:
+                          - img [ref=e771]
+                      - link [ref=e774] [cursor=pointer]:
+                        - /url: /risks/84/edit
+                        - button [ref=e775]:
+                          - img [ref=e776]
+                      - button [ref=e779] [cursor=pointer]:
+                        - img [ref=e780]
+            - generic [ref=e783]:
+              - button "« Previous" [disabled]
+              - button "1" [ref=e784] [cursor=pointer]
+              - button "2" [ref=e785] [cursor=pointer]
+              - button "3" [ref=e786] [cursor=pointer]
+              - button "4" [ref=e787] [cursor=pointer]
+              - button "5" [ref=e788] [cursor=pointer]
+              - button "6" [ref=e789] [cursor=pointer]
+              - button "7" [ref=e790] [cursor=pointer]
+              - button "8" [ref=e791] [cursor=pointer]
+              - button "9" [ref=e792] [cursor=pointer]
+              - button "10" [ref=e793] [cursor=pointer]
+              - button "11" [ref=e794] [cursor=pointer]
+              - button "12" [ref=e795] [cursor=pointer]
+              - button "Next »" [ref=e796] [cursor=pointer]

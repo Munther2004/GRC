@@ -1,10 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Search, Pencil, Trash2, Settings } from 'lucide-react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { PageHeader } from '@/components/ui/page-header';
 import {
     Select,
     SelectContent,
@@ -12,10 +13,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatStrip } from '@/components/ui/stat-strip';
-import { Search, Pencil, Trash2, Settings } from 'lucide-react';
-import { useState } from 'react';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
 
 interface Control {
     id: number;
@@ -81,7 +81,7 @@ export default function ControlsIndex({
 
             <div className="space-y-6">
                 <div>
-                    <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                    <h1 className="font-heading text-4xl font-normal" style={{ color: 'var(--foreground)' }}>
                         Controls Library
                     </h1>
                     <p className="text-sm text-muted-foreground">

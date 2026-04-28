@@ -1,27 +1,7 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-    DialogDescription,
-} from '@/components/ui/dialog';
+import axios from 'axios';
+import type {
+    File} from 'lucide-react';
 import {
     CheckCircle2,
     XCircle,
@@ -33,7 +13,6 @@ import {
     FileWarning,
     FileX,
     FileCheck2,
-    File,
     Loader2,
     History,
     ChevronRight,
@@ -43,7 +22,29 @@ import {
     Paperclip,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    DialogDescription,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -237,7 +238,7 @@ export default function ControlsHub({
         auth: { user: { role: string; name: string } };
     }>().props;
     const canReview =
-        auth.user.role === 'admin' || auth.user.role === 'auditor';
+        auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'auditor';
 
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState(filters.status ?? 'all');
@@ -446,7 +447,7 @@ export default function ControlsHub({
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                        <h1 className="font-heading text-4xl font-normal text-foreground">
                             Controls Hub
                         </h1>
                         <p className="text-sm text-muted-foreground">

@@ -1,10 +1,11 @@
 import { Head, router } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Search, ScrollText, Activity, Calendar, Clock } from 'lucide-react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { PageHeader } from '@/components/ui/page-header';
 import {
     Select,
     SelectTrigger,
@@ -12,10 +13,9 @@ import {
     SelectContent,
     SelectItem,
 } from '@/components/ui/select';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatStrip } from '@/components/ui/stat-strip';
-import { Search, ScrollText, Activity, Calendar, Clock } from 'lucide-react';
-import { useState } from 'react';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
 
 interface Log {
     id: number;

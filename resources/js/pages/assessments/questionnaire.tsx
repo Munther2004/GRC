@@ -1,9 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import axios from 'axios';
 import {
     ArrowLeft,
     ArrowRight,
@@ -17,7 +13,11 @@ import {
     Loader2,
 } from 'lucide-react';
 import { useState, useRef } from 'react';
-import axios from 'axios';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
 
 interface Control {
     id: number;

@@ -1,0 +1,744 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e8]
+        - generic [ref=e10]: GRC
+        - generic [ref=e11]: Super Admin
+      - generic [ref=e12]: ✶
+      - navigation [ref=e13]:
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Dashboard" [ref=e16] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e17]
+              - generic [ref=e22]: Dashboard
+          - listitem [ref=e23]:
+            - link "AI Assistant" [ref=e24] [cursor=pointer]:
+              - /url: /chatbot
+              - img [ref=e25]
+              - generic [ref=e27]: AI Assistant
+          - listitem [ref=e28]:
+            - link "Risk Register" [ref=e29] [cursor=pointer]:
+              - /url: /risks
+              - img [ref=e30]
+              - generic [ref=e32]: Risk Register
+          - listitem [ref=e33]:
+            - link "Assessments" [ref=e34] [cursor=pointer]:
+              - /url: /assessments
+              - img [ref=e35]
+              - generic [ref=e38]: Assessments
+          - listitem [ref=e39]:
+            - link "Evidence" [ref=e40] [cursor=pointer]:
+              - /url: /evidence
+              - img [ref=e41]
+              - generic [ref=e43]: Evidence
+          - listitem [ref=e44]:
+            - link "Gap Analysis" [ref=e45] [cursor=pointer]:
+              - /url: /gap-analysis
+              - img [ref=e46]
+              - generic [ref=e50]: Gap Analysis
+          - listitem [ref=e51]:
+            - link "Security Audit" [ref=e52] [cursor=pointer]:
+              - /url: /security-audits
+              - img [ref=e53]
+              - generic [ref=e55]: Security Audit
+          - listitem [ref=e56]:
+            - link "Crosswalk" [ref=e57] [cursor=pointer]:
+              - /url: /crosswalk
+              - img [ref=e58]
+              - generic [ref=e63]: Crosswalk
+          - listitem [ref=e64]:
+            - link "Controls Hub" [ref=e65] [cursor=pointer]:
+              - /url: /controls/hub
+              - img [ref=e66]
+              - generic [ref=e71]: Controls Hub
+          - listitem [ref=e72]:
+            - link "Remediation" [ref=e73] [cursor=pointer]:
+              - /url: /remediation-tasks
+              - img [ref=e74]
+              - generic [ref=e77]: Remediation
+          - listitem [ref=e78]:
+            - link "Reports" [ref=e79] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e80]
+              - generic [ref=e82]: Reports
+        - generic [ref=e83]:
+          - paragraph [ref=e84]: Review
+          - list [ref=e85]:
+            - listitem [ref=e86]:
+              - link "Approvals 1" [ref=e87] [cursor=pointer]:
+                - /url: /controls/approvals
+                - img [ref=e88]
+                - generic [ref=e91]: Approvals
+                - generic [ref=e92]: "1"
+            - listitem [ref=e93]:
+              - link "Audit Logs" [ref=e94] [cursor=pointer]:
+                - /url: /audit-logs
+                - img [ref=e95]
+                - generic [ref=e98]: Audit Logs
+            - listitem [ref=e99]:
+              - link "Notifications 5" [ref=e100] [cursor=pointer]:
+                - /url: /notifications
+                - img [ref=e101]
+                - generic [ref=e104]: Notifications
+                - generic [ref=e105]: "5"
+        - generic [ref=e106]:
+          - paragraph [ref=e107]: Administration
+          - list [ref=e108]:
+            - listitem [ref=e109]:
+              - link "Users" [ref=e110] [cursor=pointer]:
+                - /url: /admin/users
+                - img [ref=e111]
+                - generic [ref=e116]: Users
+            - listitem [ref=e117]:
+              - link "Risk Appetite" [ref=e118] [cursor=pointer]:
+                - /url: /risk-appetite
+                - img [ref=e119]
+                - generic [ref=e120]: Risk Appetite
+        - generic [ref=e121]:
+          - paragraph [ref=e122]: Platform
+          - list [ref=e123]:
+            - listitem [ref=e124]:
+              - link "Corporations" [ref=e125] [cursor=pointer]:
+                - /url: /admin/corporations
+                - img [ref=e126]
+                - generic [ref=e130]: Corporations
+            - listitem [ref=e131]:
+              - link "Frameworks" [ref=e132] [cursor=pointer]:
+                - /url: /admin/frameworks
+                - img [ref=e133]
+                - generic [ref=e135]: Frameworks
+            - listitem [ref=e136]:
+              - link "Controls Library" [ref=e137] [cursor=pointer]:
+                - /url: /admin/controls
+                - img [ref=e138]
+                - generic [ref=e141]: Controls Library
+      - generic [ref=e143]:
+        - generic [ref=e145]: SA
+        - generic [ref=e146]:
+          - paragraph [ref=e147]: System Admin
+          - paragraph [ref=e148]: admin@grc.com
+        - button "Log out" [ref=e149] [cursor=pointer]:
+          - img [ref=e150]
+  - generic [ref=e153]:
+    - banner [ref=e154]:
+      - generic [ref=e156]:
+        - img [ref=e157]
+        - searchbox "Search..." [ref=e160]
+        - generic: ⌘K
+      - button "Switch to dark mode" [ref=e161] [cursor=pointer]:
+        - img [ref=e164]
+      - button "Notifications" [ref=e171] [cursor=pointer]:
+        - img [ref=e172]
+        - generic [ref=e175]: "5"
+    - main [ref=e176]:
+      - generic [ref=e177]:
+        - generic [ref=e180]:
+          - heading "Gap Analysis" [level=1] [ref=e181]
+          - paragraph [ref=e182]: Non-compliant and partially compliant controls across all completed assessments
+        - generic [ref=e184]:
+          - generic [ref=e185]:
+            - paragraph [ref=e189]: Non-Compliant
+            - paragraph [ref=e190]: "52"
+          - generic [ref=e191]:
+            - paragraph [ref=e194]: Partially Compliant
+            - paragraph [ref=e195]: "108"
+          - generic [ref=e196]:
+            - paragraph [ref=e199]: Total Gaps
+            - paragraph [ref=e200]: "160"
+          - generic [ref=e201]:
+            - paragraph [ref=e204]: Frameworks Affected
+            - paragraph [ref=e205]: "4"
+        - generic [ref=e206]:
+          - generic [ref=e208]: Gaps by Framework
+          - generic [ref=e210]:
+            - generic [ref=e211]:
+              - paragraph [ref=e212]: ISO27001
+              - generic [ref=e213]:
+                - generic [ref=e214]:
+                  - generic [ref=e215]: Non-Compliant
+                  - generic [ref=e216]: "33"
+                - generic [ref=e217]:
+                  - generic [ref=e218]: Partial
+                  - generic [ref=e219]: "64"
+            - generic [ref=e223]:
+              - paragraph [ref=e224]: NIST800-53
+              - generic [ref=e225]:
+                - generic [ref=e226]:
+                  - generic [ref=e227]: Non-Compliant
+                  - generic [ref=e228]: "19"
+                - generic [ref=e229]:
+                  - generic [ref=e230]: Partial
+                  - generic [ref=e231]: "44"
+            - generic [ref=e235]:
+              - paragraph [ref=e236]: OWASP-ASVS
+              - generic [ref=e237]:
+                - generic [ref=e238]:
+                  - generic [ref=e239]: Non-Compliant
+                  - generic [ref=e240]: "0"
+                - generic [ref=e241]:
+                  - generic [ref=e242]: Partial
+                  - generic [ref=e243]: "0"
+            - generic [ref=e245]:
+              - paragraph [ref=e246]: CIS
+              - generic [ref=e247]:
+                - generic [ref=e248]:
+                  - generic [ref=e249]: Non-Compliant
+                  - generic [ref=e250]: "0"
+                - generic [ref=e251]:
+                  - generic [ref=e252]: Partial
+                  - generic [ref=e253]: "0"
+        - generic [ref=e255]:
+          - generic [ref=e256]:
+            - img [ref=e257]
+            - textbox "Search controls..." [ref=e260]
+          - combobox [ref=e261] [cursor=pointer]:
+            - generic: All Frameworks
+            - img
+          - combobox [ref=e262] [cursor=pointer]:
+            - generic: All Gaps
+            - img
+          - combobox [ref=e263] [cursor=pointer]:
+            - generic: All Categories
+            - img
+          - button "Search" [ref=e264] [cursor=pointer]
+        - generic [ref=e265]:
+          - generic [ref=e267]: 160 gaps identified
+          - generic [ref=e268]:
+            - generic [ref=e269]:
+              - generic [ref=e271]:
+                - generic [ref=e272]:
+                  - generic [ref=e273]:
+                    - generic [ref=e274]: AC-7
+                    - generic [ref=e275]: NIST800-53
+                    - generic [ref=e276]: Access Control
+                  - paragraph [ref=e277]: Unsuccessful Logon Attempts
+                  - paragraph [ref=e278]: Enforce a limit on consecutive invalid access attempts and automatically lock the account after the limit is exceeded.
+                  - generic [ref=e279]:
+                    - generic [ref=e280]: "Notes:"
+                    - text: Partially implemented, gaps identified.
+                  - paragraph [ref=e281]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e282]:
+                  - generic [ref=e283]: Partial
+                  - generic [ref=e284]:
+                    - button "✨ AI Fix" [ref=e285] [cursor=pointer]
+                    - link "View" [ref=e286] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e287]:
+                        - img
+                        - text: View
+              - generic [ref=e289]:
+                - generic [ref=e290]:
+                  - generic [ref=e291]:
+                    - generic [ref=e292]: AC-11
+                    - generic [ref=e293]: NIST800-53
+                    - generic [ref=e294]: Access Control
+                  - paragraph [ref=e295]: Device Lock
+                  - paragraph [ref=e296]: Prevent further access after a period of inactivity by initiating a session lock.
+                  - generic [ref=e297]:
+                    - generic [ref=e298]: "Notes:"
+                    - text: Partially implemented, gaps identified.
+                  - paragraph [ref=e299]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e300]:
+                  - generic [ref=e301]: Partial
+                  - generic [ref=e302]:
+                    - button "✨ AI Fix" [ref=e303] [cursor=pointer]
+                    - link "View" [ref=e304] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e305]:
+                        - img
+                        - text: View
+              - generic [ref=e307]:
+                - generic [ref=e308]:
+                  - generic [ref=e309]:
+                    - generic [ref=e310]: AC-19
+                    - generic [ref=e311]: NIST800-53
+                    - generic [ref=e312]: Access Control
+                  - paragraph [ref=e313]: Access Control for Mobile Devices
+                  - paragraph [ref=e314]: Establish configuration requirements, connection requirements, and implementation guidance for mobile devices.
+                  - generic [ref=e315]:
+                    - generic [ref=e316]: "Notes:"
+                    - text: In progress — remediation planned Q3.
+                  - paragraph [ref=e317]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e318]:
+                  - generic [ref=e319]: Partial
+                  - generic [ref=e320]:
+                    - button "✨ AI Fix" [ref=e321] [cursor=pointer]
+                    - link "View" [ref=e322] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e323]:
+                        - img
+                        - text: View
+              - generic [ref=e325]:
+                - generic [ref=e326]:
+                  - generic [ref=e327]:
+                    - generic [ref=e328]: AT-3
+                    - generic [ref=e329]: NIST800-53
+                    - generic [ref=e330]: Awareness and Training
+                  - paragraph [ref=e331]: Role-Based Training
+                  - paragraph [ref=e332]: Provide role-based security training to personnel with assigned security roles and responsibilities.
+                  - generic [ref=e333]:
+                    - generic [ref=e334]: "Notes:"
+                    - text: Partially implemented, gaps identified.
+                  - paragraph [ref=e335]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e336]:
+                  - generic [ref=e337]: Partial
+                  - generic [ref=e338]:
+                    - button "✨ AI Fix" [ref=e339] [cursor=pointer]
+                    - link "View" [ref=e340] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e341]:
+                        - img
+                        - text: View
+              - generic [ref=e343]:
+                - generic [ref=e344]:
+                  - generic [ref=e345]:
+                    - generic [ref=e346]: AU-1
+                    - generic [ref=e347]: NIST800-53
+                    - generic [ref=e348]: Audit and Accountability
+                  - paragraph [ref=e349]: Audit and Accountability Policy and Procedures
+                  - paragraph [ref=e350]: Develop, document, and disseminate an audit and accountability policy and associated procedures.
+                  - generic [ref=e351]:
+                    - generic [ref=e352]: "Notes:"
+                    - text: Some evidence available, documentation incomplete.
+                  - paragraph [ref=e353]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e354]:
+                  - generic [ref=e355]: Partial
+                  - generic [ref=e356]:
+                    - button "✨ AI Fix" [ref=e357] [cursor=pointer]
+                    - link "View" [ref=e358] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e359]:
+                        - img
+                        - text: View
+              - generic [ref=e361]:
+                - generic [ref=e362]:
+                  - generic [ref=e363]:
+                    - generic [ref=e364]: AU-2
+                    - generic [ref=e365]: NIST800-53
+                    - generic [ref=e366]: Audit and Accountability
+                  - paragraph [ref=e367]: Event Logging
+                  - paragraph [ref=e368]: Identify the types of events that the system is capable of logging in support of the audit function.
+                  - generic [ref=e369]:
+                    - generic [ref=e370]: "Notes:"
+                    - text: In progress — remediation planned Q3.
+                  - paragraph [ref=e371]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e372]:
+                  - generic [ref=e373]: Partial
+                  - generic [ref=e374]:
+                    - button "✨ AI Fix" [ref=e375] [cursor=pointer]
+                    - link "View" [ref=e376] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e377]:
+                        - img
+                        - text: View
+              - generic [ref=e379]:
+                - generic [ref=e380]:
+                  - generic [ref=e381]:
+                    - generic [ref=e382]: AU-4
+                    - generic [ref=e383]: NIST800-53
+                    - generic [ref=e384]: Audit and Accountability
+                  - paragraph [ref=e385]: Audit Log Storage Capacity
+                  - paragraph [ref=e386]: Allocate audit log storage capacity to accommodate audit log retention requirements.
+                  - generic [ref=e387]:
+                    - generic [ref=e388]: "Notes:"
+                    - text: Partially implemented, gaps identified.
+                  - paragraph [ref=e389]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e390]:
+                  - generic [ref=e391]: Partial
+                  - generic [ref=e392]:
+                    - button "✨ AI Fix" [ref=e393] [cursor=pointer]
+                    - link "View" [ref=e394] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e395]:
+                        - img
+                        - text: View
+              - generic [ref=e397]:
+                - generic [ref=e398]:
+                  - generic [ref=e399]:
+                    - generic [ref=e400]: AU-5
+                    - generic [ref=e401]: NIST800-53
+                    - generic [ref=e402]: Audit and Accountability
+                  - paragraph [ref=e403]: Response to Audit Logging Process Failures
+                  - paragraph [ref=e404]: Alert personnel and take actions in the event of audit logging process failures.
+                  - generic [ref=e405]:
+                    - generic [ref=e406]: "Notes:"
+                    - text: Partially implemented, gaps identified.
+                  - paragraph [ref=e407]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e408]:
+                  - generic [ref=e409]: Partial
+                  - generic [ref=e410]:
+                    - button "✨ AI Fix" [ref=e411] [cursor=pointer]
+                    - link "View" [ref=e412] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e413]:
+                        - img
+                        - text: View
+              - generic [ref=e415]:
+                - generic [ref=e416]:
+                  - generic [ref=e417]:
+                    - generic [ref=e418]: AU-7
+                    - generic [ref=e419]: NIST800-53
+                    - generic [ref=e420]: Audit and Accountability
+                  - paragraph [ref=e421]: Audit Record Reduction and Report Generation
+                  - paragraph [ref=e422]: Provide an audit record reduction and report generation capability that does not alter the original content or time ordering of audit records.
+                  - generic [ref=e423]:
+                    - generic [ref=e424]: "Notes:"
+                    - text: In progress — remediation planned Q3.
+                  - paragraph [ref=e425]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e426]:
+                  - generic [ref=e427]: Partial
+                  - generic [ref=e428]:
+                    - button "✨ AI Fix" [ref=e429] [cursor=pointer]
+                    - link "View" [ref=e430] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e431]:
+                        - img
+                        - text: View
+              - generic [ref=e433]:
+                - generic [ref=e434]:
+                  - generic [ref=e435]:
+                    - generic [ref=e436]: AU-12
+                    - generic [ref=e437]: NIST800-53
+                    - generic [ref=e438]: Audit and Accountability
+                  - paragraph [ref=e439]: Audit Record Generation
+                  - paragraph [ref=e440]: Provide audit record generation capability for the list of events and generate audit records for those events.
+                  - generic [ref=e441]:
+                    - generic [ref=e442]: "Notes:"
+                    - text: In progress — remediation planned Q3.
+                  - paragraph [ref=e443]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e444]:
+                  - generic [ref=e445]: Partial
+                  - generic [ref=e446]:
+                    - button "✨ AI Fix" [ref=e447] [cursor=pointer]
+                    - link "View" [ref=e448] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e449]:
+                        - img
+                        - text: View
+              - generic [ref=e451]:
+                - generic [ref=e452]:
+                  - generic [ref=e453]:
+                    - generic [ref=e454]: CA-1
+                    - generic [ref=e455]: NIST800-53
+                    - generic [ref=e456]: Assessment, Authorisation, and Monitoring
+                  - paragraph [ref=e457]: Policy and Procedures
+                  - paragraph [ref=e458]: Develop, document, and disseminate an assessment, authorisation, and monitoring policy and procedures.
+                  - generic [ref=e459]:
+                    - generic [ref=e460]: "Notes:"
+                    - text: Some evidence available, documentation incomplete.
+                  - paragraph [ref=e461]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e462]:
+                  - generic [ref=e463]: Partial
+                  - generic [ref=e464]:
+                    - button "✨ AI Fix" [ref=e465] [cursor=pointer]
+                    - link "View" [ref=e466] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e467]:
+                        - img
+                        - text: View
+              - generic [ref=e469]:
+                - generic [ref=e470]:
+                  - generic [ref=e471]:
+                    - generic [ref=e472]: CA-7
+                    - generic [ref=e473]: NIST800-53
+                    - generic [ref=e474]: Assessment, Authorisation, and Monitoring
+                  - paragraph [ref=e475]: Continuous Monitoring
+                  - paragraph [ref=e476]: Develop a continuous monitoring strategy and implement continuous monitoring programme.
+                  - generic [ref=e477]:
+                    - generic [ref=e478]: "Notes:"
+                    - text: Some evidence available, documentation incomplete.
+                  - paragraph [ref=e479]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e480]:
+                  - generic [ref=e481]: Partial
+                  - generic [ref=e482]:
+                    - button "✨ AI Fix" [ref=e483] [cursor=pointer]
+                    - link "View" [ref=e484] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e485]:
+                        - img
+                        - text: View
+              - generic [ref=e487]:
+                - generic [ref=e488]:
+                  - generic [ref=e489]:
+                    - generic [ref=e490]: CM-4
+                    - generic [ref=e491]: NIST800-53
+                    - generic [ref=e492]: Configuration Management
+                  - paragraph [ref=e493]: Impact Analyses
+                  - paragraph [ref=e494]: Analyse changes to the system to determine potential security and privacy impacts prior to change implementation.
+                  - generic [ref=e495]:
+                    - generic [ref=e496]: "Notes:"
+                    - text: Partially implemented, gaps identified.
+                  - paragraph [ref=e497]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e498]:
+                  - generic [ref=e499]: Partial
+                  - generic [ref=e500]:
+                    - button "✨ AI Fix" [ref=e501] [cursor=pointer]
+                    - link "View" [ref=e502] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e503]:
+                        - img
+                        - text: View
+              - generic [ref=e505]:
+                - generic [ref=e506]:
+                  - generic [ref=e507]:
+                    - generic [ref=e508]: CM-6
+                    - generic [ref=e509]: NIST800-53
+                    - generic [ref=e510]: Configuration Management
+                  - paragraph [ref=e511]: Configuration Settings
+                  - paragraph [ref=e512]: Establish and document configuration settings for technology products employed within the system that reflect the most restrictive mode.
+                  - generic [ref=e513]:
+                    - generic [ref=e514]: "Notes:"
+                    - text: Partially implemented, gaps identified.
+                  - paragraph [ref=e515]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e516]:
+                  - generic [ref=e517]: Partial
+                  - generic [ref=e518]:
+                    - button "✨ AI Fix" [ref=e519] [cursor=pointer]
+                    - link "View" [ref=e520] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e521]:
+                        - img
+                        - text: View
+              - generic [ref=e523]:
+                - generic [ref=e524]:
+                  - generic [ref=e525]:
+                    - generic [ref=e526]: CM-7
+                    - generic [ref=e527]: NIST800-53
+                    - generic [ref=e528]: Configuration Management
+                  - paragraph [ref=e529]: Least Functionality
+                  - paragraph [ref=e530]: Configure the system to provide only essential capabilities, prohibiting or restricting the use of functions, ports, protocols, and services.
+                  - generic [ref=e531]:
+                    - generic [ref=e532]: "Notes:"
+                    - text: Some evidence available, documentation incomplete.
+                  - paragraph [ref=e533]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e534]:
+                  - generic [ref=e535]: Partial
+                  - generic [ref=e536]:
+                    - button "✨ AI Fix" [ref=e537] [cursor=pointer]
+                    - link "View" [ref=e538] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e539]:
+                        - img
+                        - text: View
+              - generic [ref=e541]:
+                - generic [ref=e542]:
+                  - generic [ref=e543]:
+                    - generic [ref=e544]: CP-2
+                    - generic [ref=e545]: NIST800-53
+                    - generic [ref=e546]: Contingency Planning
+                  - paragraph [ref=e547]: Contingency Plan
+                  - paragraph [ref=e548]: Develop a contingency plan for the system; distribute copies to key personnel; coordinate plan development with entities conducting related activities.
+                  - generic [ref=e549]:
+                    - generic [ref=e550]: "Notes:"
+                    - text: In progress — remediation planned Q3.
+                  - paragraph [ref=e551]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e552]:
+                  - generic [ref=e553]: Partial
+                  - generic [ref=e554]:
+                    - button "✨ AI Fix" [ref=e555] [cursor=pointer]
+                    - link "View" [ref=e556] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e557]:
+                        - img
+                        - text: View
+              - generic [ref=e559]:
+                - generic [ref=e560]:
+                  - generic [ref=e561]:
+                    - generic [ref=e562]: CP-9
+                    - generic [ref=e563]: NIST800-53
+                    - generic [ref=e564]: Contingency Planning
+                  - paragraph [ref=e565]: System Backup
+                  - paragraph [ref=e566]: Conduct backups of user-level and system-level information and store backup information in a separate facility.
+                  - generic [ref=e567]:
+                    - generic [ref=e568]: "Notes:"
+                    - text: Partially implemented, gaps identified.
+                  - paragraph [ref=e569]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e570]:
+                  - generic [ref=e571]: Partial
+                  - generic [ref=e572]:
+                    - button "✨ AI Fix" [ref=e573] [cursor=pointer]
+                    - link "View" [ref=e574] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e575]:
+                        - img
+                        - text: View
+              - generic [ref=e577]:
+                - generic [ref=e578]:
+                  - generic [ref=e579]:
+                    - generic [ref=e580]: IA-4
+                    - generic [ref=e581]: NIST800-53
+                    - generic [ref=e582]: Identification and Authentication
+                  - paragraph [ref=e583]: Identifier Management
+                  - paragraph [ref=e584]: Manage system identifiers by receiving authorisation from appropriate personnel, selecting identifiers, assigning them to users and devices.
+                  - generic [ref=e585]:
+                    - generic [ref=e586]: "Notes:"
+                    - text: Some evidence available, documentation incomplete.
+                  - paragraph [ref=e587]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e588]:
+                  - generic [ref=e589]: Partial
+                  - generic [ref=e590]:
+                    - button "✨ AI Fix" [ref=e591] [cursor=pointer]
+                    - link "View" [ref=e592] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e593]:
+                        - img
+                        - text: View
+              - generic [ref=e595]:
+                - generic [ref=e596]:
+                  - generic [ref=e597]:
+                    - generic [ref=e598]: IA-7
+                    - generic [ref=e599]: NIST800-53
+                    - generic [ref=e600]: Identification and Authentication
+                  - paragraph [ref=e601]: Cryptographic Module Authentication
+                  - paragraph [ref=e602]: Implement mechanisms for authentication to a cryptographic module that meet the requirements of applicable laws, directives, and standards.
+                  - generic [ref=e603]:
+                    - generic [ref=e604]: "Notes:"
+                    - text: Some evidence available, documentation incomplete.
+                  - paragraph [ref=e605]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e606]:
+                  - generic [ref=e607]: Partial
+                  - generic [ref=e608]:
+                    - button "✨ AI Fix" [ref=e609] [cursor=pointer]
+                    - link "View" [ref=e610] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e611]:
+                        - img
+                        - text: View
+              - generic [ref=e613]:
+                - generic [ref=e614]:
+                  - generic [ref=e615]:
+                    - generic [ref=e616]: IA-8
+                    - generic [ref=e617]: NIST800-53
+                    - generic [ref=e618]: Identification and Authentication
+                  - paragraph [ref=e619]: Identification and Authentication (Non-Organisational Users)
+                  - paragraph [ref=e620]: Uniquely identify and authenticate non-organisational users or processes acting on behalf of non-organisational users.
+                  - generic [ref=e621]:
+                    - generic [ref=e622]: "Notes:"
+                    - text: Some evidence available, documentation incomplete.
+                  - paragraph [ref=e623]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e624]:
+                  - generic [ref=e625]: Partial
+                  - generic [ref=e626]:
+                    - button "✨ AI Fix" [ref=e627] [cursor=pointer]
+                    - link "View" [ref=e628] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e629]:
+                        - img
+                        - text: View
+              - generic [ref=e631]:
+                - generic [ref=e632]:
+                  - generic [ref=e633]:
+                    - generic [ref=e634]: IR-1
+                    - generic [ref=e635]: NIST800-53
+                    - generic [ref=e636]: Incident Response
+                  - paragraph [ref=e637]: Incident Response Policy and Procedures
+                  - paragraph [ref=e638]: Develop, document, and disseminate an incident response policy and procedures.
+                  - generic [ref=e639]:
+                    - generic [ref=e640]: "Notes:"
+                    - text: Partially implemented, gaps identified.
+                  - paragraph [ref=e641]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e642]:
+                  - generic [ref=e643]: Partial
+                  - generic [ref=e644]:
+                    - button "✨ AI Fix" [ref=e645] [cursor=pointer]
+                    - link "View" [ref=e646] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e647]:
+                        - img
+                        - text: View
+              - generic [ref=e649]:
+                - generic [ref=e650]:
+                  - generic [ref=e651]:
+                    - generic [ref=e652]: IR-3
+                    - generic [ref=e653]: NIST800-53
+                    - generic [ref=e654]: Incident Response
+                  - paragraph [ref=e655]: Incident Response Testing
+                  - paragraph [ref=e656]: Test the incident response capability using defined tests to determine effectiveness.
+                  - generic [ref=e657]:
+                    - generic [ref=e658]: "Notes:"
+                    - text: In progress — remediation planned Q3.
+                  - paragraph [ref=e659]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e660]:
+                  - generic [ref=e661]: Partial
+                  - generic [ref=e662]:
+                    - button "✨ AI Fix" [ref=e663] [cursor=pointer]
+                    - link "View" [ref=e664] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e665]:
+                        - img
+                        - text: View
+              - generic [ref=e667]:
+                - generic [ref=e668]:
+                  - generic [ref=e669]:
+                    - generic [ref=e670]: IR-7
+                    - generic [ref=e671]: NIST800-53
+                    - generic [ref=e672]: Incident Response
+                  - paragraph [ref=e673]: Incident Response Assistance
+                  - paragraph [ref=e674]: Provide an incident response support resource that offers advice and assistance to users.
+                  - generic [ref=e675]:
+                    - generic [ref=e676]: "Notes:"
+                    - text: Some evidence available, documentation incomplete.
+                  - paragraph [ref=e677]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e678]:
+                  - generic [ref=e679]: Partial
+                  - generic [ref=e680]:
+                    - button "✨ AI Fix" [ref=e681] [cursor=pointer]
+                    - link "View" [ref=e682] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e683]:
+                        - img
+                        - text: View
+              - generic [ref=e685]:
+                - generic [ref=e686]:
+                  - generic [ref=e687]:
+                    - generic [ref=e688]: MA-2
+                    - generic [ref=e689]: NIST800-53
+                    - generic [ref=e690]: Maintenance
+                  - paragraph [ref=e691]: Controlled Maintenance
+                  - paragraph [ref=e692]: Schedule, document, and review records of maintenance and repairs on system components.
+                  - generic [ref=e693]:
+                    - generic [ref=e694]: "Notes:"
+                    - text: Some evidence available, documentation incomplete.
+                  - paragraph [ref=e695]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e696]:
+                  - generic [ref=e697]: Partial
+                  - generic [ref=e698]:
+                    - button "✨ AI Fix" [ref=e699] [cursor=pointer]
+                    - link "View" [ref=e700] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e701]:
+                        - img
+                        - text: View
+              - generic [ref=e703]:
+                - generic [ref=e704]:
+                  - generic [ref=e705]:
+                    - generic [ref=e706]: MA-3
+                    - generic [ref=e707]: NIST800-53
+                    - generic [ref=e708]: Maintenance
+                  - paragraph [ref=e709]: Maintenance Tools
+                  - paragraph [ref=e710]: Approve, control, and monitor maintenance tools used on the system.
+                  - generic [ref=e711]:
+                    - generic [ref=e712]: "Notes:"
+                    - text: Some evidence available, documentation incomplete.
+                  - paragraph [ref=e713]: "Assessment: NIST Q2 · System Admin"
+                - generic [ref=e714]:
+                  - generic [ref=e715]: Partial
+                  - generic [ref=e716]:
+                    - button "✨ AI Fix" [ref=e717] [cursor=pointer]
+                    - link "View" [ref=e718] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button "View" [ref=e719]:
+                        - img
+                        - text: View
+            - generic [ref=e720]:
+              - button "« Previous" [disabled]
+              - button "1" [ref=e721] [cursor=pointer]
+              - button "2" [ref=e722] [cursor=pointer]
+              - button "3" [ref=e723] [cursor=pointer]
+              - button "4" [ref=e724] [cursor=pointer]
+              - button "5" [ref=e725] [cursor=pointer]
+              - button "6" [ref=e726] [cursor=pointer]
+              - button "7" [ref=e727] [cursor=pointer]
+              - button "Next »" [ref=e728] [cursor=pointer]

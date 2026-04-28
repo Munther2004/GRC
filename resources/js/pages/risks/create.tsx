@@ -1,25 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import axios from 'axios';
 import {
     ArrowLeft,
     Save,
@@ -30,12 +10,33 @@ import {
     XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
-import axios from 'axios';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import AdminLayout from '@/layouts/admin-layout';
+import type {
+    ValidationResult} from '@/lib/risk-utils';
 import {
     levelColors,
-    levelFromScore,
-    ValidationResult,
+    levelFromScore
 } from '@/lib/risk-utils';
+import { route } from '@/lib/routes';
 
 interface Props {
     categories: string[];
@@ -166,7 +167,7 @@ export default function RiskCreate({
                     </Link>
                     <div className="flex-1">
                         <div className="flex items-center gap-3">
-                            <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                            <h1 className="font-heading text-4xl font-normal" style={{ color: 'var(--foreground)' }}>
                                 Add New Risk
                             </h1>
                             <Badge className="text-xs">

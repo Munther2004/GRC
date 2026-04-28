@@ -1,9 +1,4 @@
 import { Head, Link } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AppLayout from '@/layouts/app-layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
     Building2,
     Users,
@@ -14,6 +9,11 @@ import {
     Share2,
 } from 'lucide-react';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AppLayout from '@/layouts/app-layout';
+import { route } from '@/lib/routes';
 
 interface Corporation {
     id: number;

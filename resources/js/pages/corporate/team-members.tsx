@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AppLayout from '@/layouts/app-layout';
+import { ArrowLeft, Users, Mail, Calendar } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -9,8 +9,8 @@ import {
     CardTitle,
     CardDescription,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Users, Mail, Calendar } from 'lucide-react';
+import AppLayout from '@/layouts/app-layout';
+import { route } from '@/lib/routes';
 
 interface User {
     id: number;
@@ -30,24 +30,27 @@ interface Props {
     users: User[];
     stats: {
         total_users: number;
-        managers: number;
-        employees: number;
+        admins: number;
+        auditors: number;
+        users: number;
     };
 }
 
 const roleColors: Record<string, string> = {
-    corporate_manager: 'bg-amber-900/30 text-amber-400 border-amber-200',
-    employee: 'bg-blue-900/30 text-blue-400 border-blue-200',
-    admin: 'bg-red-900/30 text-red-400 border-red-200',
+    super_admin: 'bg-red-900/30 text-red-400 border-red-200',
+    admin: 'bg-amber-900/30 text-amber-400 border-amber-200',
+    auditor: 'bg-blue-900/30 text-blue-400 border-blue-200',
+    user: 'bg-slate-900/30 text-slate-400 border-slate-700',
 };
 
 const roleLabels: Record<string, string> = {
-    corporate_manager: 'Manager',
-    employee: 'Employee',
+    super_admin: 'Super Admin',
     admin: 'Admin',
+    auditor: 'Auditor',
+    user: 'User',
 };
 
-export default function TeamMembers({ corporation, users, stats }: Props) {
+export default function TeamMembers({ users, stats }: Props) {
     return (
         <AppLayout>
             <Head title="Team Members" />
@@ -98,10 +101,10 @@ export default function TeamMembers({ corporation, users, stats }: Props) {
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold">
-                                        {stats.managers}
+                                        {stats.admins}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
-                                        Managers
+                                        Admins
                                     </p>
                                 </div>
                             </div>
@@ -116,10 +119,10 @@ export default function TeamMembers({ corporation, users, stats }: Props) {
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold">
-                                        {stats.employees}
+                                        {stats.users}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
-                                        Employees
+                                        Users
                                     </p>
                                 </div>
                             </div>

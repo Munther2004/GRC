@@ -1,9 +1,26 @@
 import { Head } from '@inertiajs/react';
 import {
-    ShieldCheck, BarChart3, FileSearch, FolderOpen, ClipboardList,
-    Users, Shield, Compass, BookOpen, Scale, Sparkles, ArrowRight,
+    ActivitySquare,
+    ArrowRight,
+    BarChart3,
+    BookOpen,
+    Building2,
+    CheckCircle2,
+    ClipboardList,
+    Compass,
+    FileSearch,
+    FolderOpen,
+    LayoutDashboard,
+    Moon,
+    Scale,
+    Shield,
+    ShieldCheck,
+    Sparkles,
+    Sun,
+    Users,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useAppearance } from '@/hooks/use-appearance';
 
 /* ────────────────────────────────────────────────────────────────────────────
    Hooks & helpers
@@ -54,8 +71,149 @@ function useMousePosition() {
     return pos;
 }
 
+function usePointer(ref: React.RefObject<HTMLElement | null>) {
+    const [p, setP] = useState({ x: 0, y: 0, active: false });
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const onMove = (e: PointerEvent) => {
+            const r = el.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width - 0.5;
+            const y = (e.clientY - r.top) / r.height - 0.5;
+            setP({ x, y, active: true });
+        };
+        const onLeave = () => setP({ x: 0, y: 0, active: false });
+        el.addEventListener('pointermove', onMove);
+        el.addEventListener('pointerleave', onLeave);
+        return () => {
+            el.removeEventListener('pointermove', onMove);
+            el.removeEventListener('pointerleave', onLeave);
+        };
+    }, [ref]);
+    return p;
+}
+
 /* ────────────────────────────────────────────────────────────────────────────
-   Opening Seal — a heraldic SVG that draws itself, then dissolves
+   Theme palette — scoped to the landing page wrapper.
+   Light tokens follow design.md (canvas / ink / deep-green / soft-stone).
+   Dark tokens follow the project's existing forest palette.
+   ────────────────────────────────────────────────────────────────────────── */
+
+const LIGHT_VARS: Record<string, string> = {
+    '--c-bg':           '#ffffff',
+    '--c-bg-soft':      '#fbfbfa',
+    '--c-fg':           '#17171c',
+    '--c-ink':          '#212121',
+    '--c-muted':        '#616161',
+    '--c-slate':        '#75758a',
+    '--c-hair':         '#d9d9dd',
+    '--c-border':       '#e5e7eb',
+    '--c-card':         '#ffffff',
+    '--c-stone':        '#eeece7',
+    '--c-pale-green':   '#edfce9',
+    '--c-pale-blue':    '#f1f5ff',
+    '--c-deep-green':   '#003c33',
+    '--c-deep-green-2': '#072a25',
+    '--c-accent':       '#003c33',
+    '--c-on-dark':      '#ffffff',
+    '--c-primary':      '#17171c',
+    '--c-on-primary':   '#ffffff',
+    '--c-blue':         '#1863dc',
+    '--c-coral':        '#ff7759',
+    '--c-mint':         '#b0e4cc',
+    '--c-shadow':       '0 24px 60px -28px rgba(15, 23, 42, 0.28), 0 8px 22px -10px rgba(15, 23, 42, 0.12)',
+    '--c-shadow-soft':  '0 10px 30px -16px rgba(15, 23, 42, 0.18)',
+    '--c-mesh-1':       'radial-gradient(60% 60% at 18% 18%, rgba(0,60,51,0.10), transparent 70%)',
+    '--c-mesh-2':       'radial-gradient(50% 50% at 82% 6%, rgba(24,99,220,0.08), transparent 75%)',
+    '--c-mesh-3':       'radial-gradient(45% 45% at 88% 78%, rgba(255,119,89,0.10), transparent 78%)',
+    '--c-grid':         'rgba(20, 24, 32, 0.06)',
+    '--c-glass':        'rgba(255, 255, 255, 0.72)',
+    '--c-glass-border': 'rgba(20, 24, 32, 0.08)',
+};
+
+const DARK_VARS: Record<string, string> = {
+    '--c-bg':           '#06100e',
+    '--c-bg-soft':      '#091413',
+    '--c-fg':           '#e6f3ec',
+    '--c-ink':          '#e6f3ec',
+    '--c-muted':        '#8fb6a4',
+    '--c-slate':        '#7c9c8d',
+    '--c-hair':         '#1d3a31',
+    '--c-border':       '#1e3a31',
+    '--c-card':         '#0c1c19',
+    '--c-stone':        '#0e2520',
+    '--c-pale-green':   '#0c1f1b',
+    '--c-pale-blue':    '#0c1620',
+    '--c-deep-green':   '#063a31',
+    '--c-deep-green-2': '#072a25',
+    '--c-accent':       '#7fd1ad',
+    '--c-on-dark':      '#e6f3ec',
+    '--c-primary':      '#b0e4cc',
+    '--c-on-primary':   '#06100e',
+    '--c-blue':         '#7aa9e6',
+    '--c-coral':        '#ff957c',
+    '--c-mint':         '#b0e4cc',
+    '--c-shadow':       '0 28px 64px -28px rgba(0,0,0,0.85), 0 12px 28px -14px rgba(0,0,0,0.55)',
+    '--c-shadow-soft':  '0 12px 36px -18px rgba(0,0,0,0.55)',
+    '--c-mesh-1':       'radial-gradient(60% 60% at 18% 18%, rgba(64,138,113,0.22), transparent 70%)',
+    '--c-mesh-2':       'radial-gradient(50% 50% at 82% 6%, rgba(122,169,230,0.10), transparent 75%)',
+    '--c-mesh-3':       'radial-gradient(45% 45% at 88% 78%, rgba(176,228,204,0.10), transparent 78%)',
+    '--c-grid':         'rgba(176, 228, 204, 0.06)',
+    '--c-glass':        'rgba(8, 18, 16, 0.72)',
+    '--c-glass-border': 'rgba(176, 228, 204, 0.10)',
+};
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Theme toggle (uses existing useAppearance — localStorage + system preference)
+   ────────────────────────────────────────────────────────────────────────── */
+
+function ThemeToggle({ compact = false }: { compact?: boolean }) {
+    const { resolvedAppearance, updateAppearance } = useAppearance();
+    const isDark = resolvedAppearance === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    return (
+        <button
+            type="button"
+            onClick={() => updateAppearance(next)}
+            aria-label={`Switch to ${next} mode`}
+            title={`Switch to ${next} mode`}
+            className="relative inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] font-medium transition-all"
+            style={{
+                color: 'var(--c-fg)',
+                background: 'var(--c-glass)',
+                border: '1px solid var(--c-glass-border)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                boxShadow: 'var(--c-shadow-soft)',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-1px)')}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+        >
+            <span
+                className="relative inline-flex h-5 w-9 items-center rounded-full"
+                style={{
+                    background: isDark ? 'rgba(176,228,204,0.25)' : 'rgba(20,24,32,0.10)',
+                    border: '1px solid var(--c-border)',
+                }}
+            >
+                <span
+                    className="absolute top-1/2 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded-full transition-all"
+                    style={{
+                        left: isDark ? '18px' : '2px',
+                        background: 'var(--c-primary)',
+                        color: 'var(--c-on-primary)',
+                    }}
+                >
+                    {isDark ? <Moon className="h-2.5 w-2.5" /> : <Sun className="h-2.5 w-2.5" />}
+                </span>
+            </span>
+            {!compact && <span style={{ color: 'var(--c-muted)' }}>{isDark ? 'Dark' : 'Light'}</span>}
+        </button>
+    );
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Opening Seal — heraldic SVG that draws itself, then dissolves (preserved)
    ────────────────────────────────────────────────────────────────────────── */
 
 function OpeningSeal({ onDone }: { onDone: () => void }) {
@@ -63,8 +221,14 @@ function OpeningSeal({ onDone }: { onDone: () => void }) {
 
     useEffect(() => {
         const t1 = setTimeout(() => setPhase('breaking'), 1900);
-        const t2 = setTimeout(() => { setPhase('gone'); onDone(); }, 2800);
-        return () => { clearTimeout(t1); clearTimeout(t2); };
+        const t2 = setTimeout(() => {
+            setPhase('gone');
+            onDone();
+        }, 2800);
+        return () => {
+            clearTimeout(t1);
+            clearTimeout(t2);
+        };
     }, [onDone]);
 
     if (phase === 'gone') return null;
@@ -81,12 +245,17 @@ function OpeningSeal({ onDone }: { onDone: () => void }) {
             }}
             aria-hidden
         >
-            {/* Skip button */}
             {!breaking && (
                 <button
-                    onClick={() => { setPhase('breaking'); setTimeout(() => { setPhase('gone'); onDone(); }, 700); }}
-                    className="font-display absolute top-6 right-6 text-[9px] uppercase tracking-[0.3em] opacity-50 transition-opacity hover:opacity-100"
-                    style={{ color: 'var(--muted-foreground)' }}
+                    onClick={() => {
+                        setPhase('breaking');
+                        setTimeout(() => {
+                            setPhase('gone');
+                            onDone();
+                        }, 700);
+                    }}
+                    className="absolute top-6 right-6 text-[9px] uppercase tracking-[0.3em] opacity-50 transition-opacity hover:opacity-100"
+                    style={{ color: '#7ABFA8' }}
                 >
                     Skip ▸
                 </button>
@@ -97,78 +266,87 @@ function OpeningSeal({ onDone }: { onDone: () => void }) {
                 style={{
                     transform: breaking ? 'scale(2.4) rotate(-8deg)' : 'scale(1)',
                     opacity: breaking ? 0 : 1,
-                    transition: 'transform 900ms cubic-bezier(.6,0,.3,1), opacity 900ms ease-out',
+                    transition:
+                        'transform 900ms cubic-bezier(.6,0,.3,1), opacity 900ms ease-out',
                     filter: breaking ? 'blur(2px)' : 'none',
                 }}
             >
                 <svg width="320" height="320" viewBox="-160 -160 320 320" style={{ overflow: 'visible' }}>
                     <defs>
                         <radialGradient id="seal-glow" cx="0" cy="0" r="0.6">
-                            <stop offset="0%"   stopColor="#408A71" stopOpacity="0.7" />
-                            <stop offset="60%"  stopColor="#408A71" stopOpacity="0.05" />
+                            <stop offset="0%" stopColor="#408A71" stopOpacity="0.7" />
+                            <stop offset="60%" stopColor="#408A71" stopOpacity="0.05" />
                             <stop offset="100%" stopColor="#408A71" stopOpacity="0" />
                         </radialGradient>
                     </defs>
 
-                    {/* center glow */}
                     <circle r="120" fill="url(#seal-glow)" style={{ animation: 'seal-pulse 1.6s ease-in-out infinite' }} />
-
-                    {/* outer ornate ring */}
                     <circle
-                        r="135" fill="none" stroke="#408A71" strokeWidth="0.5" strokeDasharray="1 4"
+                        r="135"
+                        fill="none"
+                        stroke="#408A71"
+                        strokeWidth="0.5"
+                        strokeDasharray="1 4"
                         style={{ animation: 'seal-spin 18s linear infinite' }}
                     />
-
-                    {/* primary ring */}
                     <circle
-                        r="110" fill="none" stroke="#408A71" strokeWidth="1.2"
-                        strokeDasharray="691" strokeDashoffset="691"
+                        r="110"
+                        fill="none"
+                        stroke="#408A71"
+                        strokeWidth="1.2"
+                        strokeDasharray="691"
+                        strokeDashoffset="691"
                         style={{ animation: 'seal-draw 1.0s 0.05s cubic-bezier(.7,0,.3,1) forwards' }}
                     />
-
-                    {/* inner ring */}
                     <circle
-                        r="92" fill="none" stroke="#7ABFA8" strokeWidth="0.5"
-                        strokeDasharray="578" strokeDashoffset="578"
+                        r="92"
+                        fill="none"
+                        stroke="#7ABFA8"
+                        strokeWidth="0.5"
+                        strokeDasharray="578"
+                        strokeDashoffset="578"
                         style={{ animation: 'seal-draw 0.9s 0.25s cubic-bezier(.7,0,.3,1) forwards' }}
                     />
-
-                    {/* eight cardinal radial strokes */}
                     {Array.from({ length: 8 }).map((_, i) => {
                         const a = (i / 8) * Math.PI * 2;
                         const x1 = Math.cos(a) * 92, y1 = Math.sin(a) * 92;
                         const x2 = Math.cos(a) * 110, y2 = Math.sin(a) * 110;
                         return (
                             <line
-                                key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                                stroke="#408A71" strokeWidth="1"
-                                strokeDasharray="20" strokeDashoffset="20"
+                                key={i}
+                                x1={x1}
+                                y1={y1}
+                                x2={x2}
+                                y2={y2}
+                                stroke="#408A71"
+                                strokeWidth="1"
+                                strokeDasharray="20"
+                                strokeDashoffset="20"
                                 style={{ animation: `seal-draw 0.4s ${0.5 + i * 0.04}s ease-out forwards` }}
                             />
                         );
                     })}
-
-                    {/* shield */}
                     <path
                         d="M 0 -76 L 56 -50 L 56 18 Q 56 56 0 76 Q -56 56 -56 18 L -56 -50 Z"
-                        fill="none" stroke="#408A71" strokeWidth="1.2"
-                        strokeDasharray="380" strokeDashoffset="380"
+                        fill="none"
+                        stroke="#408A71"
+                        strokeWidth="1.2"
+                        strokeDasharray="380"
+                        strokeDashoffset="380"
                         style={{ animation: 'seal-draw 0.9s 0.55s cubic-bezier(.7,0,.3,1) forwards' }}
                     />
-
-                    {/* shield diagonals */}
                     <line
-                        x1="-56" y1="-50" x2="56" y2="76" stroke="#408A71" strokeWidth="0.4" opacity="0.5"
+                        x1="-56" y1="-50" x2="56" y2="76"
+                        stroke="#408A71" strokeWidth="0.4" opacity="0.5"
                         strokeDasharray="200" strokeDashoffset="200"
                         style={{ animation: 'seal-draw 0.5s 1.05s ease-out forwards' }}
                     />
                     <line
-                        x1="56" y1="-50" x2="-56" y2="76" stroke="#408A71" strokeWidth="0.4" opacity="0.5"
+                        x1="56" y1="-50" x2="-56" y2="76"
+                        stroke="#408A71" strokeWidth="0.4" opacity="0.5"
                         strokeDasharray="200" strokeDashoffset="200"
                         style={{ animation: 'seal-draw 0.5s 1.05s ease-out forwards' }}
                     />
-
-                    {/* central monogram star */}
                     <g style={{ opacity: 0, animation: 'seal-fade 0.5s 1.25s ease-out forwards' }}>
                         <text
                             x="0" y="14" textAnchor="middle"
@@ -179,8 +357,6 @@ function OpeningSeal({ onDone }: { onDone: () => void }) {
                             ✶
                         </text>
                     </g>
-
-                    {/* circumscribed motto */}
                     <g style={{ opacity: 0, animation: 'seal-fade 0.6s 1.35s ease-out forwards' }}>
                         <defs>
                             <path id="motto-arc" d="M -125,0 a 125,125 0 1,1 250,0 a 125,125 0 1,1 -250,0" fill="none" />
@@ -193,9 +369,8 @@ function OpeningSeal({ onDone }: { onDone: () => void }) {
                     </g>
                 </svg>
 
-                {/* tagline beneath */}
                 <div
-                    className="font-display absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-[10px] uppercase"
+                    className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-[10px] uppercase"
                     style={{
                         top: 'calc(100% + 32px)',
                         letterSpacing: '0.6em',
@@ -219,18 +394,18 @@ function OpeningSeal({ onDone }: { onDone: () => void }) {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Compliance Orrery — animated rotating rings of frameworks
+   Compliance Orrery — animated rotating rings of frameworks (preserved)
    ────────────────────────────────────────────────────────────────────────── */
 
 const ORRERY_FRAMEWORKS = [
-    { code: 'ISO 27001', orbit: 0,  speed: 36,  size: 7  },
-    { code: 'NIST',      orbit: 1,  speed: -42, size: 6  },
-    { code: 'OWASP',     orbit: 2,  speed: 30,  size: 6  },
-    { code: 'CIS',       orbit: 3,  speed: -54, size: 5  },
-    { code: 'SOC 2',     orbit: 0,  speed: 36,  size: 5, phase: 180 },
-    { code: 'PCI DSS',   orbit: 2,  speed: 30,  size: 5, phase: 200 },
-    { code: 'GDPR',      orbit: 1,  speed: -42, size: 5, phase: 90  },
-    { code: 'HIPAA',     orbit: 3,  speed: -54, size: 4, phase: 240 },
+    { code: 'ISO 27001', orbit: 0, speed: 36, size: 7 },
+    { code: 'NIST',      orbit: 1, speed: -42, size: 6 },
+    { code: 'OWASP',     orbit: 2, speed: 30, size: 6 },
+    { code: 'CIS',       orbit: 3, speed: -54, size: 5 },
+    { code: 'SOC 2',     orbit: 0, speed: 36, size: 5, phase: 180 },
+    { code: 'PCI DSS',   orbit: 2, speed: 30, size: 5, phase: 200 },
+    { code: 'GDPR',      orbit: 1, speed: -42, size: 5, phase: 90 },
+    { code: 'HIPAA',     orbit: 3, speed: -54, size: 4, phase: 240 },
 ];
 
 function ComplianceOrrery() {
@@ -252,7 +427,7 @@ function ComplianceOrrery() {
     const tiltY = (mouse.y - 0.5) * 12;
 
     return (
-        <div className="relative mx-auto h-[480px] w-full max-w-[480px]">
+        <div className="relative mx-auto h-[420px] w-full max-w-[460px]">
             <div
                 className="absolute inset-0"
                 style={{
@@ -263,13 +438,13 @@ function ComplianceOrrery() {
                 <svg width="100%" height="100%" viewBox="-240 -240 480 480" style={{ overflow: 'visible' }}>
                     <defs>
                         <radialGradient id="orrery-core" cx="0" cy="0" r="0.5">
-                            <stop offset="0%"   stopColor="#B0E4CC" stopOpacity="1"   />
-                            <stop offset="40%"  stopColor="#408A71" stopOpacity="0.7" />
-                            <stop offset="100%" stopColor="#408A71" stopOpacity="0"   />
+                            <stop offset="0%" stopColor="#B0E4CC" stopOpacity="1" />
+                            <stop offset="40%" stopColor="#408A71" stopOpacity="0.7" />
+                            <stop offset="100%" stopColor="#408A71" stopOpacity="0" />
                         </radialGradient>
                         <radialGradient id="orrery-aura" cx="0" cy="0" r="0.7">
-                            <stop offset="0%"   stopColor="#408A71" stopOpacity="0.2" />
-                            <stop offset="100%" stopColor="#408A71" stopOpacity="0"   />
+                            <stop offset="0%" stopColor="#408A71" stopOpacity="0.2" />
+                            <stop offset="100%" stopColor="#408A71" stopOpacity="0" />
                         </radialGradient>
                     </defs>
 
@@ -279,7 +454,7 @@ function ComplianceOrrery() {
                         <g key={i}>
                             <circle
                                 r={r} fill="none"
-                                stroke="#285A48" strokeWidth="0.6"
+                                stroke="var(--c-orrery-ring)" strokeWidth="0.6"
                                 strokeDasharray={i % 2 ? '2 6' : '1 3'}
                                 opacity="0.7"
                             />
@@ -295,60 +470,57 @@ function ComplianceOrrery() {
                         </g>
                     ))}
 
-                    {/* rotating cardinal markers */}
-                    <g
-                        style={{
-                            transformOrigin: '0 0',
-                            transform: `rotate(${(t * 4) % 360}deg)`,
-                        }}
-                    >
-                        {[0, 90, 180, 270].map(a => {
-                            const x = Math.cos(a * Math.PI / 180) * 232;
-                            const y = Math.sin(a * Math.PI / 180) * 232;
+                    <g style={{ transformOrigin: '0 0', transform: `rotate(${(t * 4) % 360}deg)` }}>
+                        {[0, 90, 180, 270].map((a) => {
+                            const x = Math.cos((a * Math.PI) / 180) * 232;
+                            const y = Math.sin((a * Math.PI) / 180) * 232;
                             return (
                                 <text
                                     key={a} x={x} y={y + 3} textAnchor="middle"
                                     fontSize="10" fill="#7ABFA8"
                                     fontFamily="Cinzel, serif" letterSpacing="3"
-                                >✶</text>
+                                >
+                                    ✶
+                                </text>
                             );
                         })}
                     </g>
 
-                    {/* central core */}
                     <circle r="50" fill="url(#orrery-core)" />
                     <circle r="22" fill="none" stroke="#B0E4CC" strokeWidth="0.5" opacity="0.6" />
                     <text
                         x="0" y="6" textAnchor="middle"
                         fontSize="14" fontFamily="Cinzel, serif" fill="#091413"
                         letterSpacing="4" style={{ fontWeight: 600 }}
-                    >GRC</text>
+                    >
+                        GRC
+                    </text>
 
-                    {/* orbital framework nodes */}
                     {ORRERY_FRAMEWORKS.map((f, i) => {
                         const r = radii[f.orbit];
                         const speed = f.speed;
-                        const phase = (f.phase ?? 0) * Math.PI / 180;
-                        const a = (t * speed * Math.PI / 180) + phase;
+                        const phase = ((f.phase ?? 0) * Math.PI) / 180;
+                        const a = (t * speed * Math.PI) / 180 + phase;
                         const x = Math.cos(a) * r;
                         const y = Math.sin(a) * r;
                         return (
                             <g key={i} style={{ transform: `translate(${x}px, ${y}px)` }}>
                                 <circle r={f.size + 4} fill="#408A71" opacity="0.18" />
-                                <circle r={f.size}     fill="#0D1F1C" stroke="#408A71" strokeWidth="1" />
+                                <circle r={f.size} fill="#0D1F1C" stroke="#408A71" strokeWidth="1" />
                                 <circle r={f.size - 2.5} fill="#B0E4CC" opacity="0.85" />
                                 <text
                                     x={f.size + 8} y="3"
                                     fontSize="9" fontFamily="Cinzel, serif"
                                     fill="#7ABFA8" letterSpacing="2"
-                                >{f.code}</text>
+                                >
+                                    {f.code}
+                                </text>
                             </g>
                         );
                     })}
                 </svg>
             </div>
 
-            {/* corner brackets */}
             {[
                 { top: 0, left: 0, r: 0 },
                 { top: 0, right: 0, r: 90 },
@@ -360,9 +532,9 @@ function ComplianceOrrery() {
                     className="pointer-events-none absolute h-6 w-6"
                     style={{
                         ...c,
-                        borderLeft: '1px solid var(--primary)',
-                        borderTop:  '1px solid var(--primary)',
-                        opacity: 0.4,
+                        borderLeft: '1px solid var(--c-accent)',
+                        borderTop: '1px solid var(--c-accent)',
+                        opacity: 0.45,
                         transform: `rotate(${c.r}deg)`,
                     } as React.CSSProperties}
                 />
@@ -372,228 +544,79 @@ function ComplianceOrrery() {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Marquee — endless serif motto strip
+   Motto marquee — preserved endless serif strip
    ────────────────────────────────────────────────────────────────────────── */
 
 function MottoMarquee() {
     const phrases = [
-        'GOVERN WITH INTENT', 'MEASURE EVERY RISK', 'AUDIT WITH CLARITY',
-        'COMPLY WITH PURPOSE', 'EVIDENCE THE TRUTH', 'TRUST · BUT VERIFY',
+        'GOVERN WITH INTENT',
+        'MEASURE EVERY RISK',
+        'AUDIT WITH CLARITY',
+        'COMPLY WITH PURPOSE',
+        'EVIDENCE THE TRUTH',
+        'TRUST · BUT VERIFY',
     ];
     const items = [...phrases, ...phrases];
     return (
         <div
             className="relative overflow-hidden py-5"
             style={{
-                borderTop: '1px solid var(--border)',
-                borderBottom: '1px solid var(--border)',
-                background: 'color-mix(in srgb, var(--card) 30%, transparent)',
+                borderTop: '1px solid var(--c-border)',
+                borderBottom: '1px solid var(--c-border)',
+                background: 'color-mix(in srgb, var(--c-card) 60%, transparent)',
             }}
         >
             <div
                 className="flex w-max gap-12 whitespace-nowrap"
-                style={{ animation: 'marquee 38s linear infinite' }}
+                style={{ animation: 'welcome-marquee 38s linear infinite' }}
             >
                 {items.map((p, i) => (
                     <span
                         key={i}
-                        className="font-display flex items-center gap-12 text-[11px] uppercase"
-                        style={{ color: 'var(--muted-foreground)', letterSpacing: '0.5em' }}
+                        className="flex items-center gap-12 text-[11px] uppercase"
+                        style={{ color: 'var(--c-muted)', letterSpacing: '0.5em' }}
                     >
                         {p}
-                        <span style={{ color: 'var(--primary)' }}>✶</span>
+                        <span style={{ color: 'var(--c-accent)' }}>✶</span>
                     </span>
                 ))}
             </div>
-            <style>{`@keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }`}</style>
         </div>
     );
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Living Metric — count-up
-   ────────────────────────────────────────────────────────────────────────── */
-
-function LivingMetric({
-    value, suffix, label, kicker, delay = 0,
-}: { value: number; suffix?: string; label: string; kicker: string; delay?: number }) {
-    const { ref, shown } = useReveal<HTMLDivElement>(0.4);
-    const v = useCountUp(value, 1600, shown);
-    const display = value >= 100 ? Math.round(v).toLocaleString() : v.toFixed(1);
-    return (
-        <div
-            ref={ref}
-            className="relative px-6 py-10"
-            style={{
-                opacity: shown ? 1 : 0,
-                transform: shown ? 'translateY(0)' : 'translateY(20px)',
-                transition: `opacity .8s ${delay}ms ease, transform .8s ${delay}ms cubic-bezier(.2,.7,.2,1)`,
-            }}
-        >
-            <p className="font-display mb-3 text-[9px] uppercase tracking-[0.4em]" style={{ color: 'var(--muted-foreground)' }}>
-                {kicker}
-            </p>
-            <p
-                className="font-heading mb-2 text-6xl leading-none lg:text-7xl"
-                style={{ color: 'var(--primary)', fontVariantNumeric: 'tabular-nums' }}
-            >
-                {display}{suffix && <span style={{ color: 'var(--muted-foreground)' }}>{suffix}</span>}
-            </p>
-            <p className="font-body text-sm italic" style={{ color: 'var(--muted-foreground)' }}>{label}</p>
-        </div>
-    );
-}
-
-/* ────────────────────────────────────────────────────────────────────────────
-   Chapter — features as illuminated manuscript chapters
-   ────────────────────────────────────────────────────────────────────────── */
-
-const CHAPTERS = [
-    {
-        roman: 'I',   icon: BarChart3,
-        title: 'Risk Assessment',
-        latin: 'De Periculo',
-        body: 'An ISO 27005 likelihood-by-impact matrix that scores every threat against every asset, then traces each treatment from acceptance to closure.',
-    },
-    {
-        roman: 'II',  icon: ClipboardList,
-        title: 'Compliance Assessments',
-        latin: 'De Mensura',
-        body: 'Self-assessment questionnaires across ISO 27001, NIST, OWASP and CIS — generated from the same control library, scored against the same yardstick.',
-    },
-    {
-        roman: 'III', icon: FileSearch,
-        title: 'Gap Analysis',
-        latin: 'De Discrepantiis',
-        body: 'Surface every non-compliant and partially compliant control in a single ledger, ranked by exposure, framework, and the time they have been open.',
-    },
-    {
-        roman: 'IV',  icon: FolderOpen,
-        title: 'Evidence Management',
-        latin: 'De Testimonio',
-        body: 'Upload, version, and approve evidence files bound to specific controls. Auditors see the chain; reviewers see the queue; owners see what is missing.',
-    },
-    {
-        roman: 'V',   icon: ShieldCheck,
-        title: 'Audit Trail',
-        latin: 'De Memoria',
-        body: 'A tamper-evident log of every action the platform records — who, what, when, from where — exportable to any internal or external auditor on demand.',
-    },
-    {
-        roman: 'VI',  icon: Users,
-        title: 'Role-Based Access',
-        latin: 'De Officio',
-        body: 'Granular Admin, Auditor, and User roles. Each role sees only what the discipline of separation requires, never more, never less.',
-    },
-];
-
-function Chapter({ ch, i }: { ch: (typeof CHAPTERS)[number]; i: number }) {
-    const { ref, shown } = useReveal<HTMLDivElement>(0.25);
-    const Icon = ch.icon;
-    const flipped = i % 2 === 1;
-    return (
-        <div
-            ref={ref}
-            className="grid gap-10 py-12 lg:grid-cols-12 lg:gap-16"
-            style={{
-                opacity: shown ? 1 : 0,
-                transform: shown ? 'translateY(0)' : 'translateY(40px)',
-                transition: 'opacity 1s ease, transform 1s cubic-bezier(.2,.7,.2,1)',
-            }}
-        >
-            <div className={`lg:col-span-4 ${flipped ? 'lg:order-last' : ''}`}>
-                <div
-                    className="relative flex aspect-square items-center justify-center"
-                    style={{
-                        border: '1px solid color-mix(in srgb, var(--primary) 25%, transparent)',
-                        background: 'linear-gradient(140deg, color-mix(in srgb, var(--card) 85%, transparent), color-mix(in srgb, var(--background) 95%, transparent))',
-                    }}
-                >
-                    {/* corner marks */}
-                    <span className="absolute top-0 left-0 h-4 w-4 border-t border-l" style={{ borderColor: 'var(--primary)' }} />
-                    <span className="absolute top-0 right-0 h-4 w-4 border-t border-r" style={{ borderColor: 'var(--primary)' }} />
-                    <span className="absolute bottom-0 left-0 h-4 w-4 border-b border-l" style={{ borderColor: 'var(--primary)' }} />
-                    <span className="absolute bottom-0 right-0 h-4 w-4 border-b border-r" style={{ borderColor: 'var(--primary)' }} />
-
-                    {/* roman numeral as drop-cap */}
-                    <span
-                        className="font-heading absolute select-none text-[180px] leading-none"
-                        style={{
-                            color: 'color-mix(in srgb, var(--primary) 9%, transparent)',
-                            top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                        }}
-                    >{ch.roman}</span>
-
-                    <Icon className="relative h-14 w-14" style={{ color: 'var(--primary)' }} strokeWidth={1.2} />
-
-                    <span
-                        className="font-display absolute bottom-3 right-3 text-[8px] uppercase tracking-[0.3em]"
-                        style={{ color: 'var(--muted-foreground)', opacity: 0.6 }}
-                    >
-                        Cap. {ch.roman}
-                    </span>
-                </div>
-            </div>
-
-            <div className="lg:col-span-8">
-                <div className="flex items-baseline gap-4">
-                    <span
-                        className="font-display text-[10px] uppercase tracking-[0.4em]"
-                        style={{ color: 'var(--primary)' }}
-                    >
-                        Chapter {ch.roman}
-                    </span>
-                    <span className="h-px flex-1" style={{ background: 'color-mix(in srgb, var(--border) 80%, transparent)' }} />
-                    <span
-                        className="font-body text-xs italic"
-                        style={{ color: 'var(--muted-foreground)' }}
-                    >
-                        {ch.latin}
-                    </span>
-                </div>
-                <h3 className="font-heading mt-4 text-4xl lg:text-5xl" style={{ color: 'var(--foreground)' }}>
-                    {ch.title}
-                </h3>
-                <p
-                    className="font-body mt-5 max-w-xl text-lg leading-relaxed"
-                    style={{ color: 'var(--muted-foreground)' }}
-                >
-                    {ch.body}
-                </p>
-            </div>
-        </div>
-    );
-}
-
-/* ────────────────────────────────────────────────────────────────────────────
-   Hero typography with word-by-word reveal
+   Hero word-reveal (preserved)
    ────────────────────────────────────────────────────────────────────────── */
 
 function HeroTitle({ start }: { start: boolean }) {
-    const lines = useMemo(() => ([
-        ['Risk', 'is', 'not'],
-        ['eliminated.'],
-        ['It', 'is', 'governed.'],
-    ]), []);
+    const lines = useMemo(
+        () => [
+            ['Risk', 'is', 'not'],
+            ['eliminated.'],
+            ['It', 'is', 'governed.'],
+        ],
+        [],
+    );
     let idx = 0;
     return (
         <h1
-            className="font-heading text-6xl leading-[0.95] tracking-tight md:text-7xl lg:text-8xl"
-            style={{ color: 'var(--foreground)' }}
+            className="text-[44px] leading-[1.02] tracking-[-0.02em] sm:text-6xl md:text-7xl lg:text-[88px] lg:leading-[0.96] lg:tracking-[-0.03em]"
+            style={{ color: 'var(--c-fg)', fontWeight: 500 }}
         >
             {lines.map((line, li) => (
                 <span key={li} className="block">
                     {line.map((w, wi) => {
                         const i = idx++;
-                        const isAccent = w === 'governed.';
+                        const accent = w === 'governed.';
                         return (
                             <span
                                 key={wi}
                                 className="inline-block"
                                 style={{
-                                    marginRight: '0.25em',
-                                    color: isAccent ? 'var(--primary)' : 'inherit',
-                                    fontStyle: isAccent ? 'italic' : 'normal',
+                                    marginRight: '0.22em',
+                                    color: accent ? 'var(--c-accent)' : 'inherit',
+                                    fontStyle: accent ? 'italic' : 'normal',
                                     opacity: start ? 1 : 0,
                                     transform: start ? 'translateY(0)' : 'translateY(40px)',
                                     transition: `opacity .9s ${i * 90}ms cubic-bezier(.2,.7,.2,1), transform .9s ${i * 90}ms cubic-bezier(.2,.7,.2,1)`,
@@ -610,13 +633,252 @@ function HeroTitle({ start }: { start: boolean }) {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Tenets — three pillars
+   3D dashboard mock — perspective tilt on pointer
+   ────────────────────────────────────────────────────────────────────────── */
+
+function HeroDashboardMock({ start }: { start: boolean }) {
+    const ref = useRef<HTMLDivElement | null>(null);
+    const p = usePointer(ref);
+    const tiltX = (-p.y * 7).toFixed(2);
+    const tiltY = (p.x * 9).toFixed(2);
+
+    return (
+        <div
+            ref={ref}
+            className="relative h-[440px] w-full sm:h-[500px]"
+            style={{
+                perspective: '1400px',
+                opacity: start ? 1 : 0,
+                transform: start ? 'scale(1)' : 'scale(0.94)',
+                transition: 'opacity 1.1s 0.5s cubic-bezier(.2,.7,.2,1), transform 1.1s 0.5s cubic-bezier(.2,.7,.2,1)',
+            }}
+        >
+            <div
+                aria-hidden
+                className="pointer-events-none absolute -inset-12"
+                style={{
+                    background:
+                        'radial-gradient(40% 40% at 30% 30%, color-mix(in srgb, var(--c-accent) 20%, transparent), transparent 70%),' +
+                        'radial-gradient(40% 40% at 80% 70%, color-mix(in srgb, var(--c-blue) 14%, transparent), transparent 70%)',
+                    filter: 'blur(40px)',
+                }}
+            />
+            <div
+                className="relative h-full w-full"
+                style={{
+                    transformStyle: 'preserve-3d',
+                    transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotateZ(-2deg)`,
+                    transition: 'transform 240ms cubic-bezier(.2,.7,.2,1)',
+                }}
+            >
+                {/* primary panel — risk register */}
+                <div
+                    className="absolute right-0 top-2 w-[90%] overflow-hidden rounded-2xl"
+                    style={{
+                        background: 'var(--c-card)',
+                        border: '1px solid var(--c-border)',
+                        boxShadow: 'var(--c-shadow)',
+                        transform: 'translateZ(40px)',
+                    }}
+                >
+                    <div
+                        className="flex items-center justify-between px-5 py-3"
+                        style={{ borderBottom: '1px solid var(--c-border)', background: 'var(--c-bg-soft)' }}
+                    >
+                        <div className="flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full" style={{ background: '#ff5f56' }} />
+                            <span className="h-2 w-2 rounded-full" style={{ background: '#ffbd2e' }} />
+                            <span className="h-2 w-2 rounded-full" style={{ background: '#27c93f' }} />
+                        </div>
+                        <span className="text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--c-muted)' }}>
+                            Risk Register
+                        </span>
+                        <span className="text-[10px]" style={{ color: 'var(--c-muted)' }}>
+                            grc.app/risks
+                        </span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3 p-5">
+                        {[
+                            { label: 'Open',     value: '128', tone: 'var(--c-accent)' },
+                            { label: 'Critical', value: '12',  tone: 'var(--c-coral)' },
+                            { label: 'Closed',   value: '341', tone: 'var(--c-blue)' },
+                        ].map((s) => (
+                            <div
+                                key={s.label}
+                                className="rounded-lg p-3"
+                                style={{ background: 'var(--c-bg-soft)', border: '1px solid var(--c-border)' }}
+                            >
+                                <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--c-muted)' }}>
+                                    {s.label}
+                                </p>
+                                <p className="mt-1 text-2xl" style={{ color: s.tone, fontWeight: 500 }}>
+                                    {s.value}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="px-5 pb-5">
+                        {[
+                            { id: 'R-128', name: 'Unencrypted backup snapshots',  band: 'Critical', score: 20, hue: 'var(--c-coral)' },
+                            { id: 'R-114', name: 'Privileged access drift',       band: 'High',     score: 15, hue: '#d97706' },
+                            { id: 'R-102', name: 'Vendor TLS expiry',             band: 'Medium',   score: 9,  hue: 'var(--c-blue)' },
+                            { id: 'R-091', name: 'Stale evidence on AC controls', band: 'Low',      score: 4,  hue: 'var(--c-accent)' },
+                        ].map((r) => (
+                            <div
+                                key={r.id}
+                                className="flex items-center justify-between gap-4 py-2"
+                                style={{ borderTop: '1px solid var(--c-border)' }}
+                            >
+                                <div className="flex min-w-0 items-center gap-3">
+                                    <span
+                                        className="rounded-full px-2 py-0.5 text-[9px] uppercase tracking-[0.18em]"
+                                        style={{ background: `color-mix(in srgb, ${r.hue} 14%, transparent)`, color: r.hue }}
+                                    >
+                                        {r.band}
+                                    </span>
+                                    <span className="truncate text-sm" style={{ color: 'var(--c-fg)' }}>
+                                        {r.name}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div
+                                        className="h-1 w-20 overflow-hidden rounded-full"
+                                        style={{ background: 'var(--c-border)' }}
+                                    >
+                                        <div
+                                            className="h-full rounded-full"
+                                            style={{
+                                                width: `${(r.score / 25) * 100}%`,
+                                                background: r.hue,
+                                            }}
+                                        />
+                                    </div>
+                                    <span className="text-[10px] tabular-nums" style={{ color: 'var(--c-muted)' }}>
+                                        {r.id}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* secondary card — compliance posture */}
+                <div
+                    className="absolute -bottom-2 -left-2 w-[58%] overflow-hidden rounded-2xl"
+                    style={{
+                        background: 'var(--c-deep-green)',
+                        color: 'var(--c-on-dark)',
+                        boxShadow: 'var(--c-shadow)',
+                        transform: 'translateZ(80px) rotate(-3deg)',
+                    }}
+                >
+                    <div className="px-5 py-4">
+                        <p className="text-[10px] uppercase tracking-[0.3em]" style={{ opacity: 0.7 }}>
+                            Compliance Posture
+                        </p>
+                        <p className="mt-1 text-4xl" style={{ fontWeight: 500 }}>
+                            94.2<span style={{ opacity: 0.6 }}>%</span>
+                        </p>
+                        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full" style={{ background: 'rgba(255,255,255,0.18)' }}>
+                            <div
+                                className="h-full rounded-full"
+                                style={{
+                                    width: '94%',
+                                    background: 'var(--c-mint)',
+                                    animation: 'welcome-fill 1.4s cubic-bezier(.2,.7,.2,1) 0.4s backwards',
+                                }}
+                            />
+                        </div>
+                        <div className="mt-3 grid grid-cols-4 gap-2 text-[10px]" style={{ opacity: 0.85 }}>
+                            <span>ISO 27001</span>
+                            <span>NIST</span>
+                            <span>OWASP</span>
+                            <span>CIS</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* floating chip — AI verdict */}
+                <div
+                    className="absolute -right-3 bottom-6 flex items-center gap-2 rounded-full px-3 py-2 text-[11px]"
+                    style={{
+                        background: 'var(--c-card)',
+                        border: '1px solid var(--c-border)',
+                        boxShadow: 'var(--c-shadow-soft)',
+                        transform: 'translateZ(120px) rotate(2deg)',
+                        color: 'var(--c-fg)',
+                    }}
+                >
+                    <span
+                        className="flex h-5 w-5 items-center justify-center rounded-full"
+                        style={{ background: 'var(--c-pale-blue)', color: 'var(--c-blue)' }}
+                    >
+                        <Sparkles className="h-3 w-3" />
+                    </span>
+                    AI evidence verdict · <strong style={{ color: 'var(--c-accent)' }}>Adequate</strong>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Living metric — count-up (preserved)
+   ────────────────────────────────────────────────────────────────────────── */
+
+function LivingMetric({
+    value,
+    suffix,
+    label,
+    kicker,
+    delay = 0,
+}: {
+    value: number;
+    suffix?: string;
+    label: string;
+    kicker: string;
+    delay?: number;
+}) {
+    const { ref, shown } = useReveal<HTMLDivElement>(0.4);
+    const v = useCountUp(value, 1600, shown);
+    const display = value >= 100 ? Math.round(v).toLocaleString() : v.toFixed(1);
+    return (
+        <div
+            ref={ref}
+            className="px-6 py-10"
+            style={{
+                opacity: shown ? 1 : 0,
+                transform: shown ? 'translateY(0)' : 'translateY(16px)',
+                transition: `opacity .8s ${delay}ms ease, transform .8s ${delay}ms cubic-bezier(.2,.7,.2,1)`,
+            }}
+        >
+            <p className="mb-3 text-[10px] uppercase tracking-[0.4em]" style={{ color: 'var(--c-muted)' }}>
+                {kicker}
+            </p>
+            <p
+                className="mb-2 text-5xl leading-none lg:text-6xl"
+                style={{ color: 'var(--c-fg)', fontVariantNumeric: 'tabular-nums', fontWeight: 500, letterSpacing: '-0.02em' }}
+            >
+                {display}
+                {suffix && <span style={{ color: 'var(--c-muted)' }}>{suffix}</span>}
+            </p>
+            <p className="text-sm italic" style={{ color: 'var(--c-muted)' }}>
+                {label}
+            </p>
+        </div>
+    );
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Tenets — preserved with hover sweep
    ────────────────────────────────────────────────────────────────────────── */
 
 const TENETS = [
-    { icon: Compass, glyph: 'I',   title: 'Governance', body: 'A single source of authority for every policy, every framework, every owner.' },
-    { icon: Scale,   glyph: 'II',  title: 'Risk',       body: 'Likelihood and impact, scored on a common scale, treated on a common timeline.' },
-    { icon: BookOpen,glyph: 'III', title: 'Compliance', body: 'Continuous evidence, mapped to controls, mapped to obligations, mapped to outcomes.' },
+    { icon: Compass,  title: 'Governance', body: 'A single source of authority for every policy, every framework, every owner.' },
+    { icon: Scale,    title: 'Risk',       body: 'Likelihood and impact, scored on a common scale, treated on a common timeline.' },
+    { icon: BookOpen, title: 'Compliance', body: 'Continuous evidence, mapped to controls, mapped to obligations, mapped to outcomes.' },
 ];
 
 function Tenets() {
@@ -624,26 +886,26 @@ function Tenets() {
     return (
         <section ref={ref} className="mx-auto max-w-7xl px-6 py-24">
             <div
-                className="mb-14 text-center"
+                className="mb-14 max-w-2xl"
                 style={{
                     opacity: shown ? 1 : 0,
                     transform: shown ? 'translateY(0)' : 'translateY(20px)',
                     transition: 'all .8s ease',
                 }}
             >
-                <p
-                    className="font-display mb-3 text-[10px] uppercase tracking-[0.5em]"
-                    style={{ color: 'var(--primary)' }}
-                >
+                <p className="mb-4 text-[11px] uppercase tracking-[0.4em]" style={{ color: 'var(--c-accent)' }}>
                     The Three Tenets
                 </p>
-                <h2 className="font-heading text-4xl lg:text-5xl" style={{ color: 'var(--foreground)' }}>
-                    One discipline,<br />
-                    <span style={{ color: 'var(--primary)' }} className="italic">three orders.</span>
+                <h2
+                    className="text-4xl tracking-[-0.02em] lg:text-5xl"
+                    style={{ color: 'var(--c-fg)', fontWeight: 500, lineHeight: 1.05 }}
+                >
+                    One discipline,{' '}
+                    <span style={{ color: 'var(--c-accent)', fontStyle: 'italic' }}>three orders.</span>
                 </h2>
             </div>
 
-            <div className="grid gap-px" style={{ background: 'var(--border)', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+            <div className="grid gap-px overflow-hidden rounded-2xl" style={{ background: 'var(--c-border)', gridTemplateColumns: 'repeat(3, 1fr)', boxShadow: 'var(--c-shadow-soft)' }}>
                 {TENETS.map((t, i) => {
                     const Icon = t.icon;
                     return (
@@ -651,40 +913,34 @@ function Tenets() {
                             key={t.title}
                             className="group relative flex flex-col items-start p-10"
                             style={{
-                                background: 'var(--background)',
+                                background: 'var(--c-card)',
                                 opacity: shown ? 1 : 0,
                                 transform: shown ? 'translateY(0)' : 'translateY(30px)',
                                 transition: `opacity .9s ${200 + i * 150}ms ease, transform .9s ${200 + i * 150}ms cubic-bezier(.2,.7,.2,1)`,
                             }}
                         >
-                            <span
-                                className="font-display absolute top-6 right-6 text-[9px] uppercase tracking-[0.3em]"
-                                style={{ color: 'var(--muted-foreground)', opacity: 0.5 }}
-                            >
-                                {t.glyph}
-                            </span>
-
                             <div
-                                className="mb-8 flex h-12 w-12 items-center justify-center"
+                                className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl"
                                 style={{
-                                    border: '1px solid var(--primary)',
-                                    background: 'color-mix(in srgb, var(--primary) 6%, transparent)',
+                                    background: 'var(--c-pale-green)',
+                                    color: 'var(--c-accent)',
+                                    border: '1px solid color-mix(in srgb, var(--c-accent) 20%, transparent)',
                                 }}
                             >
-                                <Icon className="h-5 w-5" style={{ color: 'var(--primary)' }} strokeWidth={1.4} />
+                                <Icon className="h-5 w-5" strokeWidth={1.5} />
                             </div>
 
-                            <h3 className="font-heading mb-3 text-3xl" style={{ color: 'var(--foreground)' }}>
+                            <h3 className="mb-3 text-2xl" style={{ color: 'var(--c-fg)', fontWeight: 500, letterSpacing: '-0.01em' }}>
                                 {t.title}
                             </h3>
-                            <p className="font-body text-base leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
+                            <p className="text-base leading-relaxed" style={{ color: 'var(--c-muted)' }}>
                                 {t.body}
                             </p>
 
-                            {/* hover sweep */}
+                            {/* hover sweep — preserved */}
                             <span
                                 className="pointer-events-none absolute bottom-0 left-0 h-px w-0 transition-all duration-700 group-hover:w-full"
-                                style={{ background: 'var(--primary)' }}
+                                style={{ background: 'var(--c-accent)' }}
                             />
                         </div>
                     );
@@ -695,10 +951,163 @@ function Tenets() {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
+   Feature card — 3D tilt + reveal
+   ────────────────────────────────────────────────────────────────────────── */
+
+type Feature = {
+    icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+    title: string;
+    body: string;
+    tag: string;
+};
+
+function FeatureCard({ f, i }: { f: Feature; i: number }) {
+    const { ref, shown } = useReveal<HTMLDivElement>(0.18);
+    const tiltRef = useRef<HTMLDivElement | null>(null);
+    const p = usePointer(tiltRef);
+    const Icon = f.icon;
+    const tiltX = p.active ? (-p.y * 7).toFixed(2) : '0';
+    const tiltY = p.active ? (p.x * 9).toFixed(2) : '0';
+    return (
+        <div
+            ref={ref}
+            className="group h-full"
+            style={{
+                opacity: shown ? 1 : 0,
+                transform: shown ? 'translateY(0)' : 'translateY(28px)',
+                transition: `opacity .8s ${i * 60}ms ease, transform .9s ${i * 60}ms cubic-bezier(.2,.7,.2,1)`,
+                perspective: '1100px',
+            }}
+        >
+            <div
+                ref={tiltRef}
+                className="relative flex h-full flex-col overflow-hidden rounded-2xl p-7"
+                style={{
+                    background: 'var(--c-card)',
+                    border: '1px solid var(--c-border)',
+                    boxShadow: p.active ? 'var(--c-shadow)' : 'var(--c-shadow-soft)',
+                    transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`,
+                    transformStyle: 'preserve-3d',
+                    transition: 'transform 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms ease',
+                }}
+            >
+                {/* sheen on hover */}
+                <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                    style={{
+                        background: `radial-gradient(220px circle at ${(p.x + 0.5) * 100}% ${(p.y + 0.5) * 100}%, color-mix(in srgb, var(--c-accent) 9%, transparent), transparent 70%)`,
+                    }}
+                />
+
+                <div className="flex items-start justify-between" style={{ transform: 'translateZ(40px)' }}>
+                    <span
+                        className="flex h-11 w-11 items-center justify-center rounded-xl"
+                        style={{
+                            background: 'var(--c-pale-green)',
+                            color: 'var(--c-accent)',
+                            border: '1px solid color-mix(in srgb, var(--c-accent) 18%, transparent)',
+                        }}
+                    >
+                        <Icon className="h-5 w-5" strokeWidth={1.5} />
+                    </span>
+                    <span
+                        className="rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.22em]"
+                        style={{ color: 'var(--c-muted)', border: '1px solid var(--c-border)' }}
+                    >
+                        {f.tag}
+                    </span>
+                </div>
+
+                <h3
+                    className="mt-6 text-xl"
+                    style={{ color: 'var(--c-fg)', fontWeight: 500, letterSpacing: '-0.01em', transform: 'translateZ(30px)' }}
+                >
+                    {f.title}
+                </h3>
+                <p
+                    className="mt-3 text-sm leading-relaxed"
+                    style={{ color: 'var(--c-muted)', transform: 'translateZ(20px)' }}
+                >
+                    {f.body}
+                </p>
+
+                <span
+                    aria-hidden
+                    className="pointer-events-none absolute -bottom-px left-0 h-px w-0 transition-all duration-500 group-hover:w-full"
+                    style={{ background: 'var(--c-accent)' }}
+                />
+            </div>
+        </div>
+    );
+}
+
+const FEATURES: Feature[] = [
+    {
+        icon: BarChart3,
+        title: 'Risk Register',
+        body: 'ISO 27005 likelihood × impact matrix. Score every threat, link it to controls, and trace each treatment from acceptance to closure.',
+        tag: 'Core',
+    },
+    {
+        icon: ClipboardList,
+        title: 'Compliance Assessments',
+        body: 'Self-assessments across ISO 27001, NIST 800-53, OWASP ASVS, and CIS Benchmarks — generated from one library, scored on one yardstick.',
+        tag: 'Frameworks',
+    },
+    {
+        icon: FolderOpen,
+        title: 'Evidence Repository',
+        body: 'Versioned uploads bound to controls and assessment items. Auditors see the chain, reviewers see the queue, owners see what is missing.',
+        tag: 'Custody',
+    },
+    {
+        icon: ShieldCheck,
+        title: 'Controls Hub',
+        body: '443 controls, four frameworks, one library. Status workflows, change requests, and tamper-evident histories on every clause.',
+        tag: 'Library',
+    },
+    {
+        icon: FileSearch,
+        title: 'Gap Analysis',
+        body: 'Surface every non-compliant and partially compliant control in a single ledger — ranked by exposure, framework, and time open.',
+        tag: 'Insight',
+    },
+    {
+        icon: Sparkles,
+        title: 'AI Assistance',
+        body: 'Claude-powered evidence review, threat suggestion, gap remediation, and security-config analysis — verdicts you can audit, not just trust.',
+        tag: 'Anthropic',
+    },
+    {
+        icon: LayoutDashboard,
+        title: 'Dashboards & Reports',
+        body: 'Live KRIs, executive summaries, exportable reports. Daily snapshots make trend lines reproducible against any past date.',
+        tag: 'Telemetry',
+    },
+    {
+        icon: Users,
+        title: 'Role-Based Access',
+        body: 'Super Admin, Admin, Auditor, and User. Tenant-scoped at the controller, never just the UI — separation of duty by construction.',
+        tag: 'RBAC',
+    },
+    {
+        icon: Building2,
+        title: 'Corporation Onboarding',
+        body: 'Multi-tenant by design. Self-serve registration, super-admin approval, and credentialed manager handoff — every row carries a corporation.',
+        tag: 'Tenant',
+    },
+];
+
+/* ────────────────────────────────────────────────────────────────────────────
    Page
    ────────────────────────────────────────────────────────────────────────── */
 
 export default function Welcome() {
+    const { resolvedAppearance } = useAppearance();
+    const isDark = resolvedAppearance === 'dark';
+    const palette = isDark ? DARK_VARS : LIGHT_VARS;
+
     const [sealDone, setSealDone] = useState(false);
     const [scrollY, setScrollY] = useState(0);
 
@@ -715,137 +1124,159 @@ export default function Welcome() {
             <OpeningSeal onDone={() => setSealDone(true)} />
 
             <div
-                className="relative min-h-screen overflow-x-hidden antialiased"
-                style={{ background: 'var(--background)', color: 'var(--foreground)' }}
+                className="welcome-root relative min-h-screen overflow-x-hidden antialiased"
+                style={{
+                    ...(palette as React.CSSProperties),
+                    ['--c-orrery-ring' as string]: isDark ? '#285A48' : '#cfe6dc',
+                    background: 'var(--c-bg)',
+                    color: 'var(--c-fg)',
+                    fontFamily: "'Inter', 'Unica77 Cohere Web', system-ui, sans-serif",
+                }}
             >
-                {/* Background fixtures: subtle grid + radial light */}
+                {/* Background fixtures: gradient mesh + subtle grid */}
                 <div
+                    aria-hidden
+                    className="pointer-events-none fixed inset-0 z-0"
+                    style={{ background: 'var(--c-mesh-1), var(--c-mesh-2), var(--c-mesh-3)' }}
+                />
+                <div
+                    aria-hidden
                     className="pointer-events-none fixed inset-0 z-0"
                     style={{
                         backgroundImage:
-                            'linear-gradient(color-mix(in srgb, var(--border) 25%, transparent) 1px, transparent 1px),' +
-                            'linear-gradient(90deg, color-mix(in srgb, var(--border) 25%, transparent) 1px, transparent 1px)',
+                            'linear-gradient(var(--c-grid) 1px, transparent 1px),' +
+                            'linear-gradient(90deg, var(--c-grid) 1px, transparent 1px)',
                         backgroundSize: '64px 64px',
-                        maskImage: 'radial-gradient(ellipse at 50% 30%, #000 30%, transparent 75%)',
-                        opacity: 0.35,
-                    }}
-                />
-                <div
-                    className="pointer-events-none fixed inset-0 z-0"
-                    style={{
-                        background: 'radial-gradient(ellipse at 70% 10%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 55%)',
+                        maskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%)',
+                        WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%)',
                     }}
                 />
 
+                {/* Announcement bar */}
+                <div
+                    className="relative z-30 flex h-9 items-center justify-center px-4 text-[11px]"
+                    style={{ background: 'var(--c-fg)', color: 'var(--c-bg)' }}
+                >
+                    <span className="opacity-90">
+                        ISO 27001 · NIST 800-53 · OWASP ASVS · CIS — unified under one charter
+                    </span>
+                </div>
+
                 {/* ─── Nav ─── */}
                 <header
-                    className="sticky top-0 z-40"
+                    className="sticky top-0 z-30"
                     style={{
-                        background: 'color-mix(in srgb, var(--background) 85%, transparent)',
-                        borderBottom: '1px solid color-mix(in srgb, var(--border) 70%, transparent)',
+                        background: 'var(--c-glass)',
                         backdropFilter: 'blur(14px)',
+                        WebkitBackdropFilter: 'blur(14px)',
+                        borderBottom: '1px solid var(--c-glass-border)',
                     }}
                 >
                     <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-                        <div className="flex items-center gap-3">
-                            <div
-                                className="flex h-8 w-8 items-center justify-center rounded-full"
-                                style={{
-                                    background: 'color-mix(in srgb, var(--primary) 12%, transparent)',
-                                    border: '1px solid color-mix(in srgb, var(--primary) 50%, transparent)',
-                                }}
-                            >
-                                <Shield className="h-3.5 w-3.5" style={{ color: 'var(--primary)' }} strokeWidth={1.5} />
-                            </div>
+                        <a href="/" className="flex items-center gap-3">
                             <span
-                                className="font-display text-xs uppercase"
-                                style={{ color: 'var(--foreground)', letterSpacing: '0.35em' }}
+                                className="flex h-8 w-8 items-center justify-center rounded-lg"
+                                style={{ background: 'var(--c-fg)', color: 'var(--c-bg)' }}
                             >
-                                GRC · Charter
+                                <Shield className="h-4 w-4" strokeWidth={1.8} />
                             </span>
-                        </div>
+                            <span
+                                className="text-[12px] uppercase"
+                                style={{ color: 'var(--c-fg)', letterSpacing: '0.28em', fontWeight: 600 }}
+                            >
+                                GRC<span style={{ color: 'var(--c-muted)', fontWeight: 400 }}> · Charter</span>
+                            </span>
+                        </a>
+
                         <nav className="hidden items-center gap-8 md:flex">
                             {[
                                 { l: 'Tenets',     h: '#tenets' },
+                                { l: 'Platform',   h: '#features' },
                                 { l: 'Frameworks', h: '#frameworks' },
-                                { l: 'Chapters',   h: '#chapters' },
                                 { l: 'About',      h: '/about' },
-                            ].map(n => (
+                            ].map((n) => (
                                 <a
-                                    key={n.l} href={n.h}
-                                    className="font-display text-[10px] uppercase tracking-[0.3em] transition-colors"
-                                    style={{ color: 'var(--muted-foreground)' }}
-                                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
-                                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
+                                    key={n.l}
+                                    href={n.h}
+                                    className="text-sm transition-colors"
+                                    style={{ color: 'var(--c-muted)' }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--c-fg)')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--c-muted)')}
                                 >
                                     {n.l}
                                 </a>
                             ))}
                         </nav>
-                        <div className="flex items-center gap-3">
+
+                        <div className="flex items-center gap-2">
+                            <ThemeToggle compact />
                             <a
                                 href="/login"
-                                className="font-display rounded px-4 py-2 text-[10px] uppercase tracking-[0.25em] transition-colors"
-                                style={{ color: 'var(--muted-foreground)', border: '1px solid var(--border)' }}
-                                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.color = 'var(--primary)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)';  e.currentTarget.style.color = 'var(--muted-foreground)'; }}
+                                className="hidden sm:inline-flex items-center rounded-full px-4 py-2 text-[12px] transition-colors"
+                                style={{ color: 'var(--c-fg)', border: '1px solid var(--c-border)' }}
+                                onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--c-fg)')}
+                                onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--c-border)')}
                             >
-                                Log In
+                                Log in
                             </a>
                             <a
                                 href="/corporation/register"
-                                className="font-display rounded px-4 py-2 text-[10px] uppercase tracking-[0.25em] transition-all"
+                                className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] transition-all"
                                 style={{
-                                    background: 'var(--primary)', color: 'var(--primary-foreground)',
-                                    boxShadow: '0 2px 8px color-mix(in srgb, var(--primary) 30%, transparent)',
+                                    background: 'var(--c-primary)',
+                                    color: 'var(--c-on-primary)',
+                                    fontWeight: 500,
                                 }}
-                                onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.12)')}
-                                onMouseLeave={e => (e.currentTarget.style.filter = 'none')}
+                                onMouseEnter={(e) => (e.currentTarget.style.filter = 'brightness(1.08)')}
+                                onMouseLeave={(e) => (e.currentTarget.style.filter = 'none')}
                             >
-                                Register
+                                Get started
+                                <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.8} />
                             </a>
                         </div>
                     </div>
                 </header>
 
                 {/* ─── Hero ─── */}
-                <section className="relative z-10 mx-auto max-w-7xl px-6 pt-20 pb-24 lg:pt-28">
-                    <div className="grid items-center gap-16 lg:grid-cols-12">
-                        <div className="lg:col-span-7">
+                <section className="relative z-10 mx-auto max-w-7xl px-6 pb-20 pt-12 lg:pb-24 lg:pt-20">
+                    <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-12">
+                        <div className="lg:col-span-6">
                             <div
-                                className="mb-8 inline-flex items-center gap-3"
+                                className="mb-7 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px]"
                                 style={{
+                                    background: 'var(--c-pale-green)',
+                                    color: 'var(--c-accent)',
+                                    border: '1px solid color-mix(in srgb, var(--c-accent) 18%, transparent)',
                                     opacity: sealDone ? 1 : 0,
                                     transform: sealDone ? 'translateY(0)' : 'translateY(10px)',
                                     transition: 'all .7s ease',
                                 }}
                             >
-                                <span className="h-px w-10" style={{ background: 'var(--primary)' }} />
                                 <span
-                                    className="font-display text-[10px] uppercase"
-                                    style={{ color: 'var(--primary)', letterSpacing: '0.5em' }}
-                                >
-                                    Anno Securitatis · MMXXVI
-                                </span>
+                                    className="inline-block h-1.5 w-1.5 rounded-full"
+                                    style={{ background: 'var(--c-accent)', animation: 'welcome-pulse 2s ease-in-out infinite' }}
+                                />
+                                Anno Securitatis · Twenty Twenty-Six
                             </div>
 
                             <HeroTitle start={sealDone} />
 
                             <p
-                                className="font-body mt-10 max-w-xl text-xl leading-relaxed italic"
+                                className="mt-8 max-w-xl text-lg leading-relaxed"
                                 style={{
-                                    color: 'var(--muted-foreground)',
+                                    color: 'var(--c-muted)',
                                     opacity: sealDone ? 1 : 0,
                                     transform: sealDone ? 'translateY(0)' : 'translateY(20px)',
                                     transition: 'all .9s 1.0s cubic-bezier(.2,.7,.2,1)',
                                 }}
                             >
                                 A scholarly platform for governance, risk, and compliance — where ISO&nbsp;27001, NIST,
-                                OWASP, and CIS converge into one disciplined ledger.
+                                OWASP, and CIS converge into one disciplined ledger. Bind risks to controls, controls to
+                                evidence, and evidence to outcomes.
                             </p>
 
                             <div
-                                className="mt-10 flex flex-wrap items-center gap-4"
+                                className="mt-9 flex flex-wrap items-center gap-4"
                                 style={{
                                     opacity: sealDone ? 1 : 0,
                                     transform: sealDone ? 'translateY(0)' : 'translateY(20px)',
@@ -854,51 +1285,51 @@ export default function Welcome() {
                             >
                                 <a
                                     href="/corporation/register"
-                                    className="font-display group relative inline-flex items-center gap-3 overflow-hidden px-7 py-4 text-[11px] uppercase tracking-[0.3em] transition-all"
+                                    className="group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm transition-all"
                                     style={{
-                                        background: 'var(--primary)', color: 'var(--primary-foreground)',
-                                        boxShadow: '0 6px 24px color-mix(in srgb, var(--primary) 30%, transparent)',
+                                        background: 'var(--c-primary)',
+                                        color: 'var(--c-on-primary)',
+                                        fontWeight: 500,
+                                        boxShadow: 'var(--c-shadow)',
                                     }}
-                                    onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.12)')}
-                                    onMouseLeave={e => (e.currentTarget.style.filter = 'none')}
+                                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-1px)')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
                                 >
-                                    <Sparkles className="h-3.5 w-3.5" strokeWidth={1.6} />
-                                    Sign the Charter
-                                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" strokeWidth={1.6} />
+                                    Register your corporation
+                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" strokeWidth={1.8} />
                                 </a>
 
                                 <a
                                     href="#tenets"
-                                    className="font-display group inline-flex items-center gap-3 px-2 py-4 text-[11px] uppercase tracking-[0.3em] transition-colors"
-                                    style={{ color: 'var(--muted-foreground)' }}
-                                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
-                                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
+                                    className="group inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm transition-colors"
+                                    style={{ color: 'var(--c-fg)' }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--c-accent)')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--c-fg)')}
                                 >
-                                    Read the Tenets
+                                    Read the tenets
                                     <span className="inline-block transition-transform group-hover:translate-y-0.5">↓</span>
                                 </a>
                             </div>
 
-                            {/* signature line */}
                             <div
-                                className="mt-16 flex items-center gap-6"
+                                className="mt-12 flex items-center gap-6 flex-wrap"
                                 style={{
                                     opacity: sealDone ? 1 : 0,
                                     transition: 'all 1s 1.6s ease',
                                 }}
                             >
                                 <span
-                                    className="font-display text-[9px] uppercase"
-                                    style={{ color: 'var(--muted-foreground)', letterSpacing: '0.4em' }}
+                                    className="text-[10px] uppercase tracking-[0.4em]"
+                                    style={{ color: 'var(--c-muted)' }}
                                 >
                                     Bound by
                                 </span>
                                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                                    {['ISO 27001', 'NIST 800-53', 'OWASP ASVS', 'CIS Benchmarks'].map(b => (
+                                    {['ISO 27001', 'NIST 800-53', 'OWASP ASVS', 'CIS Benchmarks'].map((b) => (
                                         <span
                                             key={b}
-                                            className="font-display text-[10px] uppercase"
-                                            style={{ color: 'var(--foreground)', letterSpacing: '0.25em', opacity: 0.85 }}
+                                            className="text-[11px] uppercase"
+                                            style={{ color: 'var(--c-fg)', letterSpacing: '0.22em', opacity: 0.85 }}
                                         >
                                             {b}
                                         </span>
@@ -907,19 +1338,12 @@ export default function Welcome() {
                             </div>
                         </div>
 
-                        <div
-                            className="lg:col-span-5"
-                            style={{
-                                opacity: sealDone ? 1 : 0,
-                                transform: sealDone ? 'scale(1)' : 'scale(0.92)',
-                                transition: 'all 1.2s 0.4s cubic-bezier(.2,.7,.2,1)',
-                            }}
-                        >
-                            <ComplianceOrrery />
+                        <div className="lg:col-span-6">
+                            <HeroDashboardMock start={sealDone} />
                         </div>
                     </div>
 
-                    {/* scroll indicator */}
+                    {/* scroll indicator (preserved) */}
                     <div
                         className="mt-16 flex flex-col items-center gap-2"
                         style={{
@@ -928,23 +1352,22 @@ export default function Welcome() {
                         }}
                     >
                         <span
-                            className="font-display text-[9px] uppercase"
-                            style={{ color: 'var(--muted-foreground)', letterSpacing: '0.4em' }}
+                            className="text-[9px] uppercase"
+                            style={{ color: 'var(--c-muted)', letterSpacing: '0.4em' }}
                         >
                             Descend
                         </span>
                         <span
                             className="block h-10 w-px"
                             style={{
-                                background: 'linear-gradient(to bottom, var(--primary), transparent)',
-                                animation: 'scroll-line 2s ease-in-out infinite',
+                                background: 'linear-gradient(to bottom, var(--c-accent), transparent)',
+                                animation: 'welcome-scroll-line 2s ease-in-out infinite',
                             }}
                         />
                     </div>
-                    <style>{`@keyframes scroll-line { 0%,100% { transform: scaleY(0.5); transform-origin: top } 50% { transform: scaleY(1); transform-origin: top } }`}</style>
                 </section>
 
-                {/* ─── Marquee ─── */}
+                {/* ─── Motto Marquee (preserved) ─── */}
                 <MottoMarquee />
 
                 {/* ─── Tenets ─── */}
@@ -952,44 +1375,234 @@ export default function Welcome() {
                     <Tenets />
                 </div>
 
-                {/* ─── Frameworks Atlas ─── */}
+                {/* ─── Frameworks Atlas — preserved orrery ─── */}
                 <section
                     id="frameworks"
                     className="relative z-10 mx-auto max-w-7xl px-6 py-24"
-                    style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}
+                    style={{ borderTop: '1px solid var(--c-border)', borderBottom: '1px solid var(--c-border)' }}
+                >
+                    <div className="grid items-center gap-12 lg:grid-cols-12">
+                        <div className="lg:col-span-5">
+                            <p
+                                className="mb-4 text-[11px] uppercase tracking-[0.4em]"
+                                style={{ color: 'var(--c-accent)' }}
+                            >
+                                Frameworks Atlas
+                            </p>
+                            <h2
+                                className="text-4xl tracking-[-0.02em] lg:text-5xl"
+                                style={{ color: 'var(--c-fg)', fontWeight: 500, lineHeight: 1.05 }}
+                            >
+                                Eight standards.{' '}
+                                <span style={{ color: 'var(--c-accent)', fontStyle: 'italic' }}>One orbit.</span>
+                            </h2>
+                            <p className="mt-6 max-w-md text-lg" style={{ color: 'var(--c-muted)' }}>
+                                ISO 27001, NIST 800-53, OWASP ASVS, and CIS Benchmarks share the platform's spine —
+                                with crosswalk paths to SOC 2, PCI DSS, GDPR, and HIPAA layered above.
+                            </p>
+                            <div className="mt-8 flex items-center gap-3 text-xs" style={{ color: 'var(--c-muted)' }}>
+                                <ActivitySquare className="h-4 w-4" style={{ color: 'var(--c-accent)' }} />
+                                Move your cursor — the orbit responds
+                            </div>
+                        </div>
+                        <div className="lg:col-span-7">
+                            <ComplianceOrrery />
+                        </div>
+                    </div>
+                </section>
+
+                {/* ─── Features ─── */}
+                <section id="features" className="relative z-10 mx-auto max-w-7xl px-6 py-24">
+                    <div className="mb-14 max-w-3xl">
+                        <p className="mb-4 text-[11px] uppercase tracking-[0.4em]" style={{ color: 'var(--c-accent)' }}>
+                            The Platform
+                        </p>
+                        <h2
+                            className="text-4xl tracking-[-0.02em] sm:text-5xl lg:text-6xl"
+                            style={{ color: 'var(--c-fg)', fontWeight: 500, lineHeight: 1.05 }}
+                        >
+                            Everything is a chapter,{' '}
+                            <span style={{ color: 'var(--c-accent)', fontStyle: 'italic' }}>nothing is a feature.</span>
+                        </h2>
+                        <p className="mt-6 max-w-xl text-lg" style={{ color: 'var(--c-muted)' }}>
+                            One discipline across nine surfaces. Every screen reads from the same control library, the
+                            same risk ledger, and the same evidence chain.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {FEATURES.map((f, i) => (
+                            <FeatureCard key={f.title} f={f} i={i} />
+                        ))}
+                    </div>
+                </section>
+
+                {/* ─── Dark band — AI Assistance showcase ─── */}
+                <section className="relative z-10 mx-auto max-w-7xl px-6 pb-24">
+                    <div
+                        className="relative overflow-hidden rounded-[22px] p-8 sm:p-12 lg:p-16"
+                        style={{
+                            background: 'var(--c-deep-green)',
+                            color: 'var(--c-on-dark)',
+                            boxShadow: 'var(--c-shadow)',
+                        }}
+                    >
+                        <div
+                            aria-hidden
+                            className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full"
+                            style={{
+                                background: 'radial-gradient(circle at 30% 30%, rgba(176,228,204,0.45), transparent 60%)',
+                                filter: 'blur(20px)',
+                            }}
+                        />
+                        <div
+                            aria-hidden
+                            className="pointer-events-none absolute -bottom-32 -left-12 h-96 w-96 rounded-full"
+                            style={{
+                                background: 'radial-gradient(circle at 50% 50%, rgba(122,169,230,0.18), transparent 60%)',
+                                filter: 'blur(24px)',
+                            }}
+                        />
+
+                        <div className="relative grid gap-12 lg:grid-cols-12">
+                            <div className="lg:col-span-6">
+                                <p className="text-[11px] uppercase tracking-[0.4em]" style={{ opacity: 0.65 }}>
+                                    AI Assistance
+                                </p>
+                                <h3
+                                    className="mt-4 text-3xl tracking-[-0.02em] sm:text-4xl lg:text-5xl"
+                                    style={{ fontWeight: 500, lineHeight: 1.1, color: 'var(--c-on-dark)' }}
+                                >
+                                    Auditable AI.{' '}
+                                    <span style={{ color: 'var(--c-mint)', fontStyle: 'italic' }}>
+                                        Verdicts you can defend.
+                                    </span>
+                                </h3>
+                                <p className="mt-5 max-w-md text-base" style={{ opacity: 0.8 }}>
+                                    Claude-powered evidence review, threat suggestion, gap remediation, and
+                                    security-config analysis. Every verdict carries strengths, gaps, and a confidence
+                                    score — bound to the control it reviewed.
+                                </p>
+
+                                <ul className="mt-8 space-y-3 text-sm" style={{ opacity: 0.92 }}>
+                                    {[
+                                        'Three-tier verdict — Adequate · Partially · Insufficient',
+                                        'Confidence scoring with cited strengths and gaps',
+                                        'Tenant-scoped, queueable, no data leaves your charter',
+                                    ].map((l) => (
+                                        <li key={l} className="flex items-start gap-3">
+                                            <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: 'var(--c-mint)' }} />
+                                            {l}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className="lg:col-span-6">
+                                <div
+                                    className="rounded-2xl p-5"
+                                    style={{
+                                        background: 'rgba(255,255,255,0.06)',
+                                        border: '1px solid rgba(255,255,255,0.12)',
+                                        backdropFilter: 'blur(8px)',
+                                        WebkitBackdropFilter: 'blur(8px)',
+                                        transform: 'perspective(1000px) rotateY(-4deg) rotateX(2deg)',
+                                        boxShadow: '0 30px 60px -25px rgba(0,0,0,0.5)',
+                                    }}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span
+                                                className="flex h-7 w-7 items-center justify-center rounded-md"
+                                                style={{ background: 'rgba(176,228,204,0.18)', color: 'var(--c-mint)' }}
+                                            >
+                                                <Sparkles className="h-3.5 w-3.5" />
+                                            </span>
+                                            <span className="text-[11px] uppercase tracking-[0.3em]" style={{ opacity: 0.7 }}>
+                                                Evidence Review
+                                            </span>
+                                        </div>
+                                        <span className="text-[10px] uppercase tracking-[0.25em]" style={{ opacity: 0.55 }}>
+                                            Claude · Opus 4.5
+                                        </span>
+                                    </div>
+                                    <p className="mt-4 text-sm" style={{ opacity: 0.85 }}>
+                                        <span className="opacity-60">Control:</span> AC-2 — Account Management
+                                    </p>
+                                    <div
+                                        className="mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px]"
+                                        style={{ background: 'rgba(176,228,204,0.18)', color: 'var(--c-mint)' }}
+                                    >
+                                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--c-mint)' }} />
+                                        Verdict · Adequate · Confidence 92%
+                                    </div>
+                                    <div className="mt-5 grid gap-3 text-xs" style={{ opacity: 0.8 }}>
+                                        <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                                            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--c-mint)' }}>
+                                                Strengths
+                                            </p>
+                                            <p className="mt-1.5">Quarterly access reviews documented; SoD enforced via RBAC.</p>
+                                        </div>
+                                        <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                                            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--c-coral)' }}>
+                                                Gaps
+                                            </p>
+                                            <p className="mt-1.5">Privileged break-glass accounts lack independent monitoring.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ─── Metrics ─── */}
+                <section
+                    id="metrics"
+                    className="relative z-10 mx-auto max-w-7xl px-6 py-24"
+                    style={{ borderTop: '1px solid var(--c-border)', borderBottom: '1px solid var(--c-border)' }}
                 >
                     <div className="grid gap-12 lg:grid-cols-12">
                         <div className="lg:col-span-5">
-                            <p
-                                className="font-display mb-4 text-[10px] uppercase tracking-[0.5em]"
-                                style={{ color: 'var(--primary)' }}
-                            >
+                            <p className="mb-4 text-[11px] uppercase tracking-[0.4em]" style={{ color: 'var(--c-accent)' }}>
                                 A Living Ledger
                             </p>
-                            <h2 className="font-heading mb-6 text-4xl lg:text-5xl" style={{ color: 'var(--foreground)' }}>
-                                Numbers that<br /><span className="italic" style={{ color: 'var(--primary)' }}>do not lie.</span>
+                            <h2
+                                className="text-4xl tracking-[-0.02em] lg:text-5xl"
+                                style={{ color: 'var(--c-fg)', fontWeight: 500, lineHeight: 1.05 }}
+                            >
+                                Numbers that{' '}
+                                <span style={{ color: 'var(--c-accent)', fontStyle: 'italic' }}>do not lie.</span>
                             </h2>
-                            <p className="font-body max-w-md text-lg leading-relaxed italic" style={{ color: 'var(--muted-foreground)' }}>
-                                Every metric the Charter records is reproducible, traceable, and bound to a control. No vanity counts.
-                                No false comforts.
+                            <p className="mt-6 max-w-md text-lg" style={{ color: 'var(--c-muted)' }}>
+                                Every metric the platform records is reproducible, traceable, and bound to a control.
+                                No vanity counts, no false comforts.
                             </p>
+                            <div className="mt-8 flex items-center gap-3 text-xs" style={{ color: 'var(--c-muted)' }}>
+                                <ActivitySquare className="h-4 w-4" style={{ color: 'var(--c-accent)' }} />
+                                Snapshots taken nightly · trend lines reproducible by date
+                            </div>
                         </div>
 
                         <div className="lg:col-span-7">
                             <div
-                                className="grid grid-cols-2 gap-px"
-                                style={{ background: 'var(--border)' }}
+                                className="grid grid-cols-2 overflow-hidden rounded-2xl"
+                                style={{
+                                    border: '1px solid var(--c-border)',
+                                    background: 'var(--c-card)',
+                                    boxShadow: 'var(--c-shadow-soft)',
+                                }}
                             >
-                                <div style={{ background: 'var(--background)' }}>
+                                <div style={{ borderRight: '1px solid var(--c-border)', borderBottom: '1px solid var(--c-border)' }}>
                                     <LivingMetric value={443} label="controls across the four frameworks" kicker="Controls" />
                                 </div>
-                                <div style={{ background: 'var(--background)' }}>
+                                <div style={{ borderBottom: '1px solid var(--c-border)' }}>
                                     <LivingMetric value={94.2} suffix="%" label="median compliance posture" kicker="Posture" delay={120} />
                                 </div>
-                                <div style={{ background: 'var(--background)' }}>
+                                <div style={{ borderRight: '1px solid var(--c-border)' }}>
                                     <LivingMetric value={4} label="frameworks unified under one ledger" kicker="Frameworks" delay={240} />
                                 </div>
-                                <div style={{ background: 'var(--background)' }}>
+                                <div>
                                     <LivingMetric value={1247} label="evidence files indexed and verifiable" kicker="Evidence" delay={360} />
                                 </div>
                             </div>
@@ -997,136 +1610,110 @@ export default function Welcome() {
                     </div>
                 </section>
 
-                {/* ─── Chapters ─── */}
-                <section id="chapters" className="relative z-10 mx-auto max-w-6xl px-6 py-28">
-                    <div className="mb-20 text-center">
-                        <p
-                            className="font-display mb-4 text-[10px] uppercase tracking-[0.5em]"
-                            style={{ color: 'var(--primary)' }}
-                        >
-                            The Six Chapters
-                        </p>
-                        <h2 className="font-heading text-4xl lg:text-6xl" style={{ color: 'var(--foreground)' }}>
-                            Everything is a chapter,<br />
-                            <span className="italic" style={{ color: 'var(--primary)' }}>nothing is a feature.</span>
-                        </h2>
-                        <div className="ornate-divider mx-auto mt-10 w-60" />
-                    </div>
-
-                    <div className="divide-y" style={{ borderColor: 'color-mix(in srgb, var(--border) 70%, transparent)' }}>
-                        {CHAPTERS.map((ch, i) => (
-                            <div key={ch.title} style={{ borderTop: i === 0 ? 'none' : '1px solid color-mix(in srgb, var(--border) 70%, transparent)' }}>
-                                <Chapter ch={ch} i={i} />
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* ─── Charter (CTA) ─── */}
-                <section className="relative z-10 mx-auto max-w-7xl px-6 pb-28">
+                {/* ─── CTA ─── */}
+                <section className="relative z-10 mx-auto max-w-7xl px-6 py-24">
                     <div
-                        className="ornate-frame relative overflow-hidden p-14 text-center md:p-20"
+                        className="relative overflow-hidden rounded-[22px] p-10 text-center sm:p-16 lg:p-20"
                         style={{
-                            border: '1px solid color-mix(in srgb, var(--primary) 35%, transparent)',
-                            background:
-                                'radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 60%),' +
-                                'color-mix(in srgb, var(--card) 60%, transparent)',
+                            background: 'var(--c-bg-soft)',
+                            border: '1px solid var(--c-border)',
+                            boxShadow: 'var(--c-shadow-soft)',
                         }}
                     >
-                        {/* ornamental top */}
-                        <div className="ornate-divider mx-auto mb-10 w-72" />
-
-                        <p
-                            className="font-display mb-6 text-[10px] uppercase"
-                            style={{ color: 'var(--primary)', letterSpacing: '0.6em' }}
-                        >
-                            Anno Domini MMXXVI
-                        </p>
-
-                        <h2 className="font-heading mx-auto max-w-3xl text-4xl leading-tight md:text-6xl" style={{ color: 'var(--foreground)' }}>
-                            Your corporation deserves<br />
-                            a <span className="italic" style={{ color: 'var(--primary)' }}>charter</span>, not a checklist.
-                        </h2>
-
-                        <p
-                            className="font-body mx-auto mt-8 max-w-xl text-lg leading-relaxed italic"
-                            style={{ color: 'var(--muted-foreground)' }}
-                        >
-                            Begin the discipline. Bind your frameworks. Govern with intent. The Charter awaits your signature.
-                        </p>
-
-                        <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
-                            <a
-                                href="/corporation/register"
-                                className="font-display group inline-flex items-center gap-3 px-10 py-4 text-[11px] uppercase tracking-[0.3em] transition-all"
-                                style={{
-                                    background: 'var(--primary)', color: 'var(--primary-foreground)',
-                                    boxShadow: '0 8px 32px color-mix(in srgb, var(--primary) 35%, transparent)',
-                                }}
-                                onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.12)')}
-                                onMouseLeave={e => (e.currentTarget.style.filter = 'none')}
+                        <div
+                            aria-hidden
+                            className="pointer-events-none absolute inset-0"
+                            style={{
+                                background:
+                                    'radial-gradient(50% 50% at 50% 0%, color-mix(in srgb, var(--c-accent) 14%, transparent), transparent 60%)',
+                            }}
+                        />
+                        <div className="relative">
+                            <p className="mb-5 text-[11px] uppercase tracking-[0.5em]" style={{ color: 'var(--c-accent)' }}>
+                                Anno Domini · Twenty Twenty-Six
+                            </p>
+                            <h2
+                                className="mx-auto max-w-3xl text-4xl tracking-[-0.02em] sm:text-5xl lg:text-6xl"
+                                style={{ color: 'var(--c-fg)', fontWeight: 500, lineHeight: 1.05 }}
                             >
-                                Sign the Charter
-                                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" strokeWidth={1.6} />
-                            </a>
-                            <a
-                                href="/login"
-                                className="font-display inline-flex items-center gap-2 px-6 py-4 text-[11px] uppercase tracking-[0.3em] transition-colors"
-                                style={{ color: 'var(--muted-foreground)' }}
-                                onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
-                                onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
-                            >
-                                Already a signatory? Log in →
-                            </a>
+                                Your corporation deserves{' '}
+                                <span style={{ color: 'var(--c-accent)', fontStyle: 'italic' }}>a charter</span>,
+                                not a checklist.
+                            </h2>
+                            <p className="mx-auto mt-6 max-w-xl text-lg" style={{ color: 'var(--c-muted)' }}>
+                                Begin the discipline. Bind your frameworks. Govern with intent.
+                            </p>
+                            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+                                <a
+                                    href="/corporation/register"
+                                    className="inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm transition-all"
+                                    style={{
+                                        background: 'var(--c-primary)',
+                                        color: 'var(--c-on-primary)',
+                                        fontWeight: 500,
+                                        boxShadow: 'var(--c-shadow)',
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-1px)')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+                                >
+                                    Register your corporation
+                                    <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
+                                </a>
+                                <a
+                                    href="/login"
+                                    className="text-sm transition-colors"
+                                    style={{ color: 'var(--c-muted)' }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--c-fg)')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--c-muted)')}
+                                >
+                                    Already a signatory? Log in →
+                                </a>
+                            </div>
                         </div>
-
-                        <div className="ornate-divider mx-auto mt-12 w-72" />
                     </div>
                 </section>
 
                 {/* ─── Footer ─── */}
-                <footer className="relative z-10" style={{ borderTop: '1px solid var(--border)' }}>
-                    <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-3">
-                        <div>
+                <footer className="relative z-10" style={{ borderTop: '1px solid var(--c-border)' }}>
+                    <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-4">
+                        <div className="md:col-span-2">
                             <div className="mb-3 flex items-center gap-3">
-                                <div
-                                    className="flex h-7 w-7 items-center justify-center rounded-full"
-                                    style={{
-                                        background: 'color-mix(in srgb, var(--primary) 10%, transparent)',
-                                        border: '1px solid color-mix(in srgb, var(--primary) 40%, transparent)',
-                                    }}
-                                >
-                                    <Shield className="h-3 w-3" style={{ color: 'var(--primary)' }} strokeWidth={1.5} />
-                                </div>
                                 <span
-                                    className="font-display text-xs uppercase"
-                                    style={{ color: 'var(--foreground)', letterSpacing: '0.35em' }}
+                                    className="flex h-7 w-7 items-center justify-center rounded-lg"
+                                    style={{ background: 'var(--c-fg)', color: 'var(--c-bg)' }}
                                 >
-                                    GRC · Charter
+                                    <Shield className="h-3.5 w-3.5" strokeWidth={1.8} />
+                                </span>
+                                <span
+                                    className="text-xs uppercase"
+                                    style={{ color: 'var(--c-fg)', letterSpacing: '0.28em', fontWeight: 600 }}
+                                >
+                                    GRC<span style={{ color: 'var(--c-muted)', fontWeight: 400 }}> · Charter</span>
                                 </span>
                             </div>
-                            <p className="font-body text-sm italic" style={{ color: 'var(--muted-foreground)' }}>
-                                Risk is not eliminated. It is governed.
+                            <p className="max-w-sm text-sm" style={{ color: 'var(--c-muted)' }}>
+                                Risk is not eliminated. It is governed. A scholarly platform for governance, risk, and
+                                compliance — bound to ISO 27001, NIST, OWASP, and CIS.
                             </p>
                         </div>
                         <div>
-                            <p className="font-display mb-4 text-[9px] uppercase tracking-[0.4em]" style={{ color: 'var(--primary)' }}>
+                            <p className="mb-4 text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--c-accent)' }}>
                                 Navigate
                             </p>
-                            <ul className="space-y-2">
+                            <ul className="space-y-2.5 text-sm">
                                 {[
                                     { l: 'Tenets',     h: '#tenets' },
+                                    { l: 'Platform',   h: '#features' },
                                     { l: 'Frameworks', h: '#frameworks' },
-                                    { l: 'Chapters',   h: '#chapters' },
                                     { l: 'About',      h: '/about' },
-                                ].map(n => (
+                                ].map((n) => (
                                     <li key={n.l}>
                                         <a
                                             href={n.h}
-                                            className="font-body text-sm italic transition-colors"
-                                            style={{ color: 'var(--muted-foreground)' }}
-                                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
-                                            onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
+                                            className="transition-colors"
+                                            style={{ color: 'var(--c-muted)' }}
+                                            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--c-fg)')}
+                                            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--c-muted)')}
                                         >
                                             {n.l}
                                         </a>
@@ -1135,12 +1722,13 @@ export default function Welcome() {
                             </ul>
                         </div>
                         <div>
-                            <p className="font-display mb-4 text-[9px] uppercase tracking-[0.4em]" style={{ color: 'var(--primary)' }}>
+                            <p className="mb-4 text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--c-accent)' }}>
                                 Bound to
                             </p>
-                            <ul className="space-y-2">
-                                {['ISO 27001', 'NIST 800-53', 'OWASP ASVS', 'CIS Benchmarks'].map(b => (
-                                    <li key={b} className="font-body text-sm italic" style={{ color: 'var(--muted-foreground)' }}>
+                            <ul className="space-y-2.5 text-sm" style={{ color: 'var(--c-muted)' }}>
+                                {['ISO 27001', 'NIST 800-53', 'OWASP ASVS', 'CIS Benchmarks'].map((b) => (
+                                    <li key={b} className="flex items-center gap-2">
+                                        <Compass className="h-3.5 w-3.5" style={{ color: 'var(--c-accent)' }} strokeWidth={1.8} />
                                         {b}
                                     </li>
                                 ))}
@@ -1148,23 +1736,34 @@ export default function Welcome() {
                         </div>
                     </div>
                     <div
-                        className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6"
-                        style={{ borderTop: '1px solid color-mix(in srgb, var(--border) 60%, transparent)' }}
+                        className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-6"
+                        style={{ borderTop: '1px solid var(--c-border)' }}
                     >
-                        <p
-                            className="font-display text-[9px] uppercase"
-                            style={{ color: 'var(--muted-foreground)', letterSpacing: '0.3em', opacity: 0.5 }}
-                        >
-                            © MMXXVI · GRC Charter · All rights reserved
+                        <p className="text-[11px]" style={{ color: 'var(--c-muted)' }}>
+                            © Twenty Twenty-Six · GRC Charter · All rights reserved
                         </p>
-                        <p
-                            className="font-display text-[9px] uppercase"
-                            style={{ color: 'var(--muted-foreground)', letterSpacing: '0.3em', opacity: 0.5 }}
-                        >
-                            ✶ Fides · Ratio · Ordo ✶
-                        </p>
+                        <div className="flex items-center gap-4 text-[11px]" style={{ color: 'var(--c-muted)' }}>
+                            <span>Fides · Ratio · Ordo</span>
+                            <ThemeToggle compact />
+                        </div>
                     </div>
                 </footer>
+
+                <style>{`
+                    @keyframes welcome-marquee     { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+                    @keyframes welcome-pulse       { 0%,100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.6); opacity: 1; } }
+                    @keyframes welcome-fill        { from { width: 0%; } }
+                    @keyframes welcome-scroll-line { 0%,100% { transform: scaleY(0.5); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } }
+
+                    @media (prefers-reduced-motion: reduce) {
+                        .welcome-root *,
+                        .welcome-root *::before,
+                        .welcome-root *::after {
+                            animation-duration: 0.001ms !important;
+                            transition-duration: 0.001ms !important;
+                        }
+                    }
+                `}</style>
             </div>
         </>
     );

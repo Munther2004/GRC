@@ -25,7 +25,7 @@ export default function Error403() {
                     <h1 className="font-heading mb-2 text-7xl font-normal" style={{ color: '#8B2635' }}>
                         403
                     </h1>
-                    <h2 className="font-heading mb-3 text-xl font-normal" style={{ color: '#E0F5EC' }}>
+                    <h2 className="font-heading mb-3 text-xl font-normal" style={{ color: 'var(--foreground)' }}>
                         Access Denied
                     </h2>
                     <p className="font-body mb-8 italic" style={{ color: '#7ABFA8' }}>

@@ -1,11 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import AdminLayout from '@/layouts/admin-layout';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { PageHeader } from '@/components/ui/page-header';
-import { StatStrip } from '@/components/ui/stat-strip';
-import { FilterBar } from '@/components/ui/filter-bar';
+import { Link } from '@inertiajs/react';
 import {
     ArrowRight,
     GitCompare,
@@ -16,8 +10,14 @@ import {
     ChevronUp,
 } from 'lucide-react';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FilterBar } from '@/components/ui/filter-bar';
+import { Input } from '@/components/ui/input';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatStrip } from '@/components/ui/stat-strip';
+import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
-import { Link } from '@inertiajs/react';
 
 interface ControlMapping {
     id: number;

@@ -1,6 +1,7 @@
-import { AlertTriangle, Bell, Clock, FileCheck, Menu, Search, Shield, X } from "lucide-react"
 import { Link, router, usePage } from "@inertiajs/react"
+import { AlertTriangle, Bell, Clock, FileCheck, Menu, Search, Shield, X } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 type NotificationItem = {
     id: number
@@ -117,6 +118,9 @@ export function AdminHeader() {
                     </kbd>
                 </div>
             </div>
+
+            {/* Theme toggle */}
+            <ThemeToggle compact />
 
             {/* Bell */}
             <div className="relative" ref={dropdownRef}>

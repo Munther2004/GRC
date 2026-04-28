@@ -1,16 +1,4 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Shield,
     Clock,
@@ -25,6 +13,18 @@ import {
     FileText,
     ChevronRight,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { route } from '@/lib/routes';
 
 interface Props {
     industries: Record<string, string>;
@@ -74,7 +74,7 @@ export default function CorporationRegister({ industries }: Props) {
         <>
             <Head title="Register Your Corporation" />
 
-            <div className="min-h-screen antialiased" style={{ background: '#091413', color: '#E0F5EC' }}>
+            <div className="min-h-screen antialiased" style={{ background: '#091413', color: 'var(--foreground)' }}>
 
                 {/* ── Nav ── */}
                 <header
@@ -89,7 +89,7 @@ export default function CorporationRegister({ industries }: Props) {
                             >
                                 <Shield className="h-4 w-4" style={{ color: '#408A71' }} strokeWidth={1.5} />
                             </div>
-                            <span className="font-display text-xs uppercase tracking-[0.25em]" style={{ color: '#E0F5EC' }}>
+                            <span className="font-display text-xs uppercase tracking-[0.25em]" style={{ color: 'var(--foreground)' }}>
                                 GRC System
                             </span>
                         </Link>
@@ -120,7 +120,7 @@ export default function CorporationRegister({ industries }: Props) {
                             </span>
                         </div>
 
-                        <h1 className="font-heading mb-3 text-4xl font-normal lg:text-5xl" style={{ color: '#E0F5EC' }}>
+                        <h1 className="font-heading mb-3 text-4xl font-normal lg:text-5xl" style={{ color: 'var(--foreground)' }}>
                             Register Your Organisation
                         </h1>
                         <p className="font-body mx-auto max-w-xl text-base italic" style={{ color: '#7ABFA8' }}>
@@ -161,7 +161,7 @@ export default function CorporationRegister({ industries }: Props) {
                                 <span className="font-display mb-0.5 text-[9px] uppercase tracking-[0.2em]" style={{ color: 'rgba(64,138,113,0.5)' }}>
                                     {n}
                                 </span>
-                                <p className="font-heading text-sm font-normal" style={{ color: '#E0F5EC' }}>{label}</p>
+                                <p className="font-heading text-sm font-normal" style={{ color: 'var(--foreground)' }}>{label}</p>
                                 <p className="font-body mt-0.5 text-xs italic" style={{ color: '#7ABFA8' }}>{desc}</p>
                             </div>
                         ))}
@@ -186,7 +186,7 @@ export default function CorporationRegister({ industries }: Props) {
                                         <Building2 className="h-4 w-4" style={{ color: '#408A71' }} strokeWidth={1.5} />
                                     </div>
                                     <div>
-                                        <p className="font-heading text-base font-normal" style={{ color: '#E0F5EC' }}>Organisation Details</p>
+                                        <p className="font-heading text-base font-normal" style={{ color: 'var(--foreground)' }}>Organisation Details</p>
                                         <p className="font-body text-xs italic" style={{ color: '#7ABFA8' }}>Tell us about your company</p>
                                     </div>
                                 </div>
@@ -203,7 +203,7 @@ export default function CorporationRegister({ industries }: Props) {
                                         value={data.company_name}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('company_name', e.target.value)}
                                         placeholder="Acme Corporation"
-                                        style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.company_name ? '#8B2635' : '#285A48', color: '#E0F5EC' }}
+                                        style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.company_name ? '#8B2635' : '#285A48', color: 'var(--foreground)' }}
                                         className="placeholder:text-[#285A48]"
                                     />
                                     {errors.company_name && <p className="font-body text-xs" style={{ color: '#8B2635' }}>{errors.company_name}</p>}
@@ -220,7 +220,7 @@ export default function CorporationRegister({ industries }: Props) {
                                         value={data.email}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('email', e.target.value)}
                                         placeholder="corporate@company.com"
-                                        style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.email ? '#8B2635' : '#285A48', color: '#E0F5EC' }}
+                                        style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.email ? '#8B2635' : '#285A48', color: 'var(--foreground)' }}
                                         className="placeholder:text-[#285A48]"
                                     />
                                     {errors.email && <p className="font-body text-xs" style={{ color: '#8B2635' }}>{errors.email}</p>}
@@ -255,7 +255,7 @@ export default function CorporationRegister({ industries }: Props) {
                                         value={data.website}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('website', e.target.value)}
                                         placeholder="https://www.company.com"
-                                        style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.website ? '#8B2635' : '#285A48', color: '#E0F5EC' }}
+                                        style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.website ? '#8B2635' : '#285A48', color: 'var(--foreground)' }}
                                         className="placeholder:text-[#285A48]"
                                     />
                                     {errors.website && <p className="font-body text-xs" style={{ color: '#8B2635' }}>{errors.website}</p>}
@@ -271,7 +271,7 @@ export default function CorporationRegister({ industries }: Props) {
                                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
                                         placeholder="Brief description of your company and compliance needs…"
                                         className="min-h-28 placeholder:text-[#285A48] resize-none"
-                                        style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.description ? '#8B2635' : '#285A48', color: '#E0F5EC' }}
+                                        style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.description ? '#8B2635' : '#285A48', color: 'var(--foreground)' }}
                                     />
                                     {errors.description && <p className="font-body text-xs" style={{ color: '#8B2635' }}>{errors.description}</p>}
                                 </div>
@@ -291,7 +291,7 @@ export default function CorporationRegister({ industries }: Props) {
                                             <User className="h-4 w-4" style={{ color: '#408A71' }} strokeWidth={1.5} />
                                         </div>
                                         <div>
-                                            <p className="font-heading text-base font-normal" style={{ color: '#E0F5EC' }}>Primary Contact</p>
+                                            <p className="font-heading text-base font-normal" style={{ color: 'var(--foreground)' }}>Primary Contact</p>
                                             <p className="font-body text-xs italic" style={{ color: '#7ABFA8' }}>Who should we reach out to?</p>
                                         </div>
                                     </div>
@@ -307,7 +307,7 @@ export default function CorporationRegister({ industries }: Props) {
                                             value={data.contact_name}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('contact_name', e.target.value)}
                                             placeholder="Full name"
-                                            style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.contact_name ? '#8B2635' : '#285A48', color: '#E0F5EC' }}
+                                            style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.contact_name ? '#8B2635' : '#285A48', color: 'var(--foreground)' }}
                                             className="placeholder:text-[#285A48]"
                                         />
                                         {errors.contact_name && <p className="font-body text-xs" style={{ color: '#8B2635' }}>{errors.contact_name}</p>}
@@ -324,7 +324,7 @@ export default function CorporationRegister({ industries }: Props) {
                                             value={data.contact_email}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('contact_email', e.target.value)}
                                             placeholder="contact@company.com"
-                                            style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.contact_email ? '#8B2635' : '#285A48', color: '#E0F5EC' }}
+                                            style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.contact_email ? '#8B2635' : '#285A48', color: 'var(--foreground)' }}
                                             className="placeholder:text-[#285A48]"
                                         />
                                         {errors.contact_email && <p className="font-body text-xs" style={{ color: '#8B2635' }}>{errors.contact_email}</p>}
@@ -340,7 +340,7 @@ export default function CorporationRegister({ industries }: Props) {
                                             value={data.contact_phone}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('contact_phone', e.target.value)}
                                             placeholder="+1 (555) 000-0000"
-                                            style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.contact_phone ? '#8B2635' : '#285A48', color: '#E0F5EC' }}
+                                            style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.contact_phone ? '#8B2635' : '#285A48', color: 'var(--foreground)' }}
                                             className="placeholder:text-[#285A48]"
                                         />
                                         {errors.contact_phone && <p className="font-body text-xs" style={{ color: '#8B2635' }}>{errors.contact_phone}</p>}
@@ -356,7 +356,7 @@ export default function CorporationRegister({ industries }: Props) {
                                             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('message', e.target.value)}
                                             placeholder="Any additional context or questions for the review team…"
                                             className="min-h-28 placeholder:text-[#285A48] resize-none"
-                                            style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.message ? '#8B2635' : '#285A48', color: '#E0F5EC' }}
+                                            style={{ background: 'rgba(9,20,19,0.6)', borderColor: errors.message ? '#8B2635' : '#285A48', color: 'var(--foreground)' }}
                                         />
                                         {errors.message && <p className="font-body text-xs" style={{ color: '#8B2635' }}>{errors.message}</p>}
                                     </div>
@@ -414,7 +414,7 @@ export default function CorporationRegister({ industries }: Props) {
                     <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-8 md:flex-row">
                         <div className="flex items-center gap-2">
                             <Shield className="h-4 w-4" style={{ color: '#408A71' }} strokeWidth={1.5} />
-                            <span className="font-display text-xs uppercase tracking-[0.2em]" style={{ color: '#E0F5EC' }}>GRC System</span>
+                            <span className="font-display text-xs uppercase tracking-[0.2em]" style={{ color: 'var(--foreground)' }}>GRC System</span>
                         </div>
                         <p className="font-body text-xs italic" style={{ color: '#7ABFA8' }}>
                             Already registered?{' '}

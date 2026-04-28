@@ -1,10 +1,4 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import type { SharedProps } from '@/types';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     ArrowLeft,
     Pencil,
@@ -25,6 +19,12 @@ import {
     Save,
 } from 'lucide-react';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import type { SharedProps } from '@/types';
 
 interface TreatmentPlan {
     id: number;
@@ -152,8 +152,8 @@ export default function RiskShow({
     treatmentPlans,
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
-    const isAdmin = auth.user.role === 'admin';
-    const canEdit = auth.user.role === 'admin' || auth.user.role === 'manager' || auth.user.role === 'employee' || auth.user.role === 'user';
+    const isAdmin = auth.user.role === 'super_admin' || auth.user.role === 'admin';
+    const canEdit = auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'user';
 
     const [selectedControlId, setSelectedControlId] = useState<number | ''>('');
     const [controlSearch, setControlSearch] = useState('');
@@ -286,7 +286,7 @@ export default function RiskShow({
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                            <h1 className="font-heading text-4xl font-normal" style={{ color: 'var(--foreground)' }}>
                                 {risk.title}
                             </h1>
                             <p className="mt-0.5 text-sm text-muted-foreground">
@@ -325,7 +325,7 @@ export default function RiskShow({
                             </p>
                             <p className="font-body mt-0.5 text-xs italic" style={{ color: '#7ABFA8' }}>
                                 From non-compliant control:{' '}
-                                <span className="font-heading not-italic" style={{ color: '#E0F5EC' }}>
+                                <span className="font-heading not-italic" style={{ color: 'var(--foreground)' }}>
                                     {risk.source_control.control_id}
                                 </span>{' '}
                                 — {risk.source_control.title}
@@ -497,7 +497,7 @@ export default function RiskShow({
                                             <p className="font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: 'rgba(156,139,122,0.7)' }}>
                                                 {label}
                                             </p>
-                                            <p className="font-body text-sm capitalize" style={{ color: '#E0F5EC' }}>
+                                            <p className="font-body text-sm capitalize" style={{ color: 'var(--foreground)' }}>
                                                 {value}
                                             </p>
                                         </div>
@@ -565,7 +565,7 @@ export default function RiskShow({
                                                         .value as any,
                                                 }))
                                             }
-                                            className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "#E0F5EC" }}
+                                            className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
                                         >
                                             <option value="mitigate">
                                                 Mitigate
@@ -592,7 +592,7 @@ export default function RiskShow({
                                                         .value as any,
                                                 }))
                                             }
-                                            className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "#E0F5EC" }}
+                                            className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
                                         >
                                             <option value="not_started">
                                                 Not Started
@@ -621,7 +621,7 @@ export default function RiskShow({
                                             }))
                                         }
                                         placeholder="Responsible person or team"
-                                        className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "#E0F5EC" }}
+                                        className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
                                     />
                                 </div>
 
@@ -639,7 +639,7 @@ export default function RiskShow({
                                         }
                                         rows={3}
                                         placeholder="Describe the treatment actions..."
-                                        className="w-full resize-none rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "#E0F5EC" }}
+                                        className="w-full resize-none rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
                                     />
                                 </div>
 
@@ -657,7 +657,7 @@ export default function RiskShow({
                                                     due_date: e.target.value,
                                                 }))
                                             }
-                                            className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "#E0F5EC" }}
+                                            className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
                                         />
                                     </div>
                                     <div>
@@ -713,7 +713,7 @@ export default function RiskShow({
                                                     }))
                                                 }
                                                 placeholder="—"
-                                                className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "#E0F5EC" }}
+                                                className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
                                             />
                                         </div>
                                         <div>
@@ -739,7 +739,7 @@ export default function RiskShow({
                                                     }))
                                                 }
                                                 placeholder="—"
-                                                className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "#E0F5EC" }}
+                                                className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
                                             />
                                         </div>
                                     </div>
@@ -1035,7 +1035,7 @@ export default function RiskShow({
                                                 .map((c) => (
                                                     <button
                                                         key={c.id}
-                                                        className="flex w-full items-center gap-2 px-3 py-2 text-left" style={{ color: "#E0F5EC" }}
+                                                        className="flex w-full items-center gap-2 px-3 py-2 text-left" style={{ color: "var(--foreground)" }}
                                                         onClick={() => {
                                                             setSelectedControlId(
                                                                 c.id,

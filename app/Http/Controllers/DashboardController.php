@@ -83,8 +83,9 @@ class DashboardController extends Controller
             'status' => $r->status,
         ])->toArray();
 
-        // Appetite band counts
-        $appetite = RiskAppetite::getActive();
+        // Appetite band counts — scoped per corporation. super_admin (no
+        // single corp) sees no appetite-band breakdown.
+        $appetite = RiskAppetite::getActiveForUser($user);
         $appetiteCounts = null;
         if ($appetite) {
             $escalated = 0;

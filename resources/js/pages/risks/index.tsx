@@ -1,19 +1,19 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import type { SharedProps } from '@/types';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
+import { Eye, Pencil, Plus, Search, Sliders, Sparkles, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import type { RouteName, RouteParams } from 'ziggy-js';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FilterBar } from '@/components/ui/filter-bar';
 import { Input } from '@/components/ui/input';
+import { PageHeader } from '@/components/ui/page-header';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatStrip } from '@/components/ui/stat-strip';
-import { FilterBar } from '@/components/ui/filter-bar';
-import { Eye, Pencil, Plus, Search, Sliders, Sparkles, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { RouteName, RouteParams } from 'ziggy-js';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import type { SharedProps } from '@/types';
 
 declare global {
     function route(name: RouteName, params?: RouteParams<RouteName>, absolute?: boolean): string;
@@ -105,7 +105,7 @@ function AppetiteDot({ band }: { band: AppetiteBand }) {
 
 export default function RisksIndex({ risks, stats, riskExposure, filters, frameworks, appetite }: Props) {
     const { auth } = usePage<SharedProps>().props;
-    const canEdit = auth.user.role === 'admin' || auth.user.role === 'manager' || auth.user.role === 'employee' || auth.user.role === 'user';
+    const canEdit = auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'user';
 
     const [search, setSearch]             = useState(filters.search ?? '');
     const [status, setStatus]             = useState(filters.status ?? 'all');
@@ -238,7 +238,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                 <Card>
                     <CardHeader className="flex-row items-center justify-between pb-0">
                         <CardTitle className="font-body text-sm italic" style={{ color: '#7ABFA8' }}>
-                            <span className="font-heading not-italic text-base" style={{ color: '#E0F5EC' }}>
+                            <span className="font-heading not-italic text-base" style={{ color: 'var(--foreground)' }}>
                                 {risks.total}
                             </span>{' '}
                             risk{risks.total !== 1 ? 's' : ''}
@@ -282,7 +282,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                 >
                                                     <td className="max-w-60 px-4 py-3">
                                                         <div className="flex items-center gap-1.5">
-                                                            <p className="font-body truncate text-sm" style={{ color: '#E0F5EC' }}>{risk.title}</p>
+                                                            <p className="font-body truncate text-sm" style={{ color: 'var(--foreground)' }}>{risk.title}</p>
                                                             {risk.auto_generated === 1 && (
                                                                 <span className="font-display inline-flex shrink-0 items-center gap-0.5 text-[9px] uppercase tracking-wider" style={{ color: '#408A71' }}>
                                                                     <Sparkles className="h-2.5 w-2.5" /> AI

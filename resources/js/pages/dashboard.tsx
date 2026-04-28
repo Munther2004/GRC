@@ -1,11 +1,4 @@
-import { ComplianceChart } from '@/components/admin/compliance-chart';
-import { RecentAlerts } from '@/components/admin/recent-alerts';
-import { RiskHeatmap } from '@/components/admin/risk-heatmap';
-import { RiskTrendChart } from '@/components/admin/risk-trend-chart';
-import { TopRisks } from '@/components/admin/top-risks';
-import AdminLayout from '@/layouts/admin-layout';
 import { Link, usePage } from '@inertiajs/react';
-import type { SharedProps } from '@/types';
 import {
     AlertTriangle,
     ArrowRight,
@@ -19,9 +12,6 @@ import {
     Zap,
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
-import { downloadPdf } from '@/lib/download-pdf';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     LineChart,
     Line,
@@ -34,6 +24,16 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts';
+import { ComplianceChart } from '@/components/admin/compliance-chart';
+import { RecentAlerts } from '@/components/admin/recent-alerts';
+import { RiskHeatmap } from '@/components/admin/risk-heatmap';
+import { RiskTrendChart } from '@/components/admin/risk-trend-chart';
+import { TopRisks } from '@/components/admin/top-risks';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AdminLayout from '@/layouts/admin-layout';
+import { downloadPdf } from '@/lib/download-pdf';
+import type { SharedProps } from '@/types';
 
 type Stats = {
     total_risks: number;
@@ -206,7 +206,7 @@ function DashboardHero({ healthScore }: { healthScore: HealthScore }) {
     const gradeC = gradeColor[healthScore.grade] ?? gradeColor.F;
     return (
         <div
-            className="relative overflow-hidden rounded ornate-frame bg-card border"
+            className="relative overflow-hidden rounded-lg ornate-frame bg-card border elev-1"
             style={{}}
         >
             {/* Subtle warm grid */}
@@ -214,7 +214,7 @@ function DashboardHero({ healthScore }: { healthScore: HealthScore }) {
                 backgroundImage: 'linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)',
                 backgroundSize: '48px 48px',
             }} />
-            <div className="absolute inset-0" aria-hidden style={{ background: 'linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.3) 100%)' }} />
+            <div className="absolute inset-0" aria-hidden style={{ background: 'linear-gradient(135deg, transparent 0%, color-mix(in srgb, var(--foreground) 8%, transparent) 100%)' }} />
 
             <div className="relative flex flex-col gap-6 p-6 md:flex-row md:items-end md:justify-between md:p-8">
                 <div className="space-y-2">

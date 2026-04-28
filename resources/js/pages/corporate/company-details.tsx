@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AppLayout from '@/layouts/app-layout';
+import { ArrowLeft, Globe, Mail, Briefcase } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -9,8 +9,8 @@ import {
     CardTitle,
     CardDescription,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Globe, Mail, Briefcase } from 'lucide-react';
+import AppLayout from '@/layouts/app-layout';
+import { route } from '@/lib/routes';
 
 interface Corporation {
     id: number;

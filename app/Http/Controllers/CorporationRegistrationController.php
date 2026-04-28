@@ -124,16 +124,17 @@ class CorporationRegistrationController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Create the manager user
+        // Create the corporation owner/admin user.
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
+            'role' => User::ROLE_ADMIN,
             'corporation_id' => $corporation->id,
+            'is_corporation_manager' => true,
         ]);
 
-        // Assign user role to the manager
-        $user->assignRole('user');
+        $user->syncRoles([User::ROLE_ADMIN]);
 
         // Update corporation with manager
         $corporation->update(['manager_user_id' => $user->id]);

@@ -1,11 +1,11 @@
 import { Head, useForm } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AuthLayout from '@/layouts/auth-layout';
+import { AlertCircle, Clock, CheckCircle2, Mail, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Clock, CheckCircle2, Mail, Shield } from 'lucide-react';
+import AuthLayout from '@/layouts/auth-layout';
+import { route } from '@/lib/routes';
 
 interface Corporation {
     id: number;

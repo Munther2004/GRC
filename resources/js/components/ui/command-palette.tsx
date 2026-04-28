@@ -4,7 +4,7 @@ import { route } from '@/lib/routes'
 import { 
     AlertTriangle, BarChart3, Bell, ClipboardList, FileCheck, GitCompare, 
     LayoutDashboard, LayoutGrid, ScrollText, Shield, Sliders, Sparkles, Users,
-    Search, CommandIcon, ChevronRight, Zap, Settings, User, LogOut
+    Search, CommandIcon, ChevronRight, Settings, User, LogOut
 } from 'lucide-react'
 
 interface CommandItem {
@@ -42,13 +42,15 @@ export function CommandPalette() {
         // Settings & User
         { id: 'set-profile', label: 'Profile Settings', icon: User, category: 'Settings', action: () => window.location.href = '/settings/profile' },
         { id: 'set-pass', label: 'Change Password', icon: Shield, category: 'Settings', action: () => window.location.href = '/settings/password' },
-        { id: 'set-appear', label: 'Appearance', icon: Zap, category: 'Settings', action: () => window.location.href = '/settings/appearance' },
-        
-        // Admin
-        ...(auth?.user?.role === 'admin' ? [
+
+        // Admin (corp admin or super admin)
+        ...((auth?.user?.role === 'admin' || auth?.user?.role === 'super_admin') ? [
             { id: 'adm-users', label: 'Manage Users', icon: Users, category: 'Admin', action: () => window.location.href = route('admin.users.index') },
-            { id: 'adm-frameworks', label: 'Frameworks', icon: Shield, category: 'Admin', action: () => window.location.href = route('admin.frameworks.index') },
-            { id: 'adm-controls', label: 'Controls Library', icon: Settings, category: 'Admin', action: () => window.location.href = route('admin.controls.index') },
+        ] : []),
+        // Platform — super admin only
+        ...(auth?.user?.role === 'super_admin' ? [
+            { id: 'adm-frameworks', label: 'Frameworks', icon: Shield, category: 'Platform', action: () => window.location.href = route('admin.frameworks.index') },
+            { id: 'adm-controls', label: 'Controls Library', icon: Settings, category: 'Platform', action: () => window.location.href = route('admin.controls.index') },
         ] : []),
     ]
     

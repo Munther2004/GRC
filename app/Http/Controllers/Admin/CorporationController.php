@@ -83,10 +83,11 @@ class CorporationController extends Controller
             'name'                   => $managerName,
             'email'                  => $managerEmail,
             'password'               => bcrypt($tempPassword),
+            'role'                   => User::ROLE_ADMIN,
             'corporation_id'         => $corporation->id,
             'is_corporation_manager' => true,
         ]);
-        $manager->assignRole('user');
+        $manager->syncRoles([User::ROLE_ADMIN]);
 
         // 5. Link manager to corporation
         $corporation->update(['manager_user_id' => $manager->id]);

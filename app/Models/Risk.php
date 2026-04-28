@@ -81,7 +81,9 @@ class Risk extends Model
 
     public function getAppetiteBandAttribute(): ?array
     {
-        $appetite = RiskAppetite::getActive();
+        // Resolve appetite by the risk's corporation, not a global lookup,
+        // so a risk owned by tenant A is never classified by tenant B's bands.
+        $appetite = RiskAppetite::getActiveForCorporation($this->corporation_id);
 
         return $appetite?->classifyRisk($this);
     }

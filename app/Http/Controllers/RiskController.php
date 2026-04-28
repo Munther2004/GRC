@@ -51,7 +51,7 @@ class RiskController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $appetite = RiskAppetite::getActive();
+        $appetite = RiskAppetite::getActiveForUser($user);
 
         // Client filter: escalated_only — collect escalated IDs if appetite active
         if ($request->escalated_only && $appetite) {

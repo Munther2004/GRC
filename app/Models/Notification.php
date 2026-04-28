@@ -19,13 +19,16 @@ class Notification extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Notify every super_admin about a new corporation registration request.
+     */
     public static function notifyAdminCorporationSignup(Corporation $corporation): void
     {
-        $adminUser = User::where('email', 'admin@grc.com')->first();
-        
-        if ($adminUser) {
+        $superAdmins = User::role(User::ROLE_SUPER_ADMIN)->get();
+
+        foreach ($superAdmins as $admin) {
             self::create([
-                'user_id' => $adminUser->id,
+                'user_id' => $admin->id,
                 'type' => 'corporation_signup',
                 'title' => 'New Corporation Registration',
                 'message' => "{$corporation->name} has submitted a registration request for approval",
@@ -35,13 +38,16 @@ class Notification extends Model
         }
     }
 
+    /**
+     * Notify every super_admin that a corporation has been approved.
+     */
     public static function notifyAdminCorporationApproved(Corporation $corporation): void
     {
-        $adminUser = User::where('email', 'admin@grc.com')->first();
-        
-        if ($adminUser) {
+        $superAdmins = User::role(User::ROLE_SUPER_ADMIN)->get();
+
+        foreach ($superAdmins as $admin) {
             self::create([
-                'user_id' => $adminUser->id,
+                'user_id' => $admin->id,
                 'type' => 'corporation_approved',
                 'title' => 'Corporation Approved',
                 'message' => "{$corporation->name} has been approved with registration code generated",
@@ -51,4 +57,3 @@ class Notification extends Model
         }
     }
 }
-

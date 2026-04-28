@@ -1,10 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import type { SharedProps } from '@/types';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import axios from 'axios';
 import {
     ArrowLeft,
     PlayCircle,
@@ -20,7 +15,12 @@ import {
     CheckCheck,
 } from 'lucide-react';
 import { useState } from 'react';
-import axios from 'axios';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import type { SharedProps } from '@/types';
 
 interface Assessment {
     id: number;
@@ -140,7 +140,7 @@ export default function AssessmentShow({
     evidenceScore,
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
-    const canEdit = auth.user.role === 'admin' || auth.user.role === 'manager' || auth.user.role === 'employee' || auth.user.role === 'user';
+    const canEdit = auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'user';
 
     const [aiSummary, setAiSummary] = useState<AISummary | null>(null);
     const [loadingSummary, setLoading] = useState(false);

@@ -18,7 +18,6 @@ import {
     ShieldAlert,
     Sliders,
     Sparkles,
-    Palette,
     Users,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -35,33 +34,41 @@ type SharedProps = {
     }
 }
 
+const ALL_ROLES = ['super_admin','admin','auditor','user'] as const
+const REVIEW_ROLES = ['super_admin','admin','auditor'] as const
+const WRITE_ROLES = ['super_admin','admin','user'] as const
+
 const mainNavigation = [
-    { name: "Dashboard",    href: "/dashboard",        icon: LayoutDashboard, roles: ['admin','auditor','user'] },
-    { name: "AI Assistant", href: "/chatbot",           icon: Sparkles,        roles: ['admin','auditor','user'] },
-    { name: "Risk Register",href: "/risks",             icon: AlertTriangle,   roles: ['admin','auditor','user'] },
-    { name: "Assessments",  href: "/assessments",       icon: ClipboardList,   roles: ['admin','auditor','user'] },
-    { name: "Evidence",     href: "/evidence",          icon: FolderOpen,      roles: ['admin','auditor','user'] },
-    { name: "Gap Analysis", href: "/gap-analysis",      icon: FileCheck,       roles: ['admin','auditor','user'] },
-    { name: "Security Audit", href: "/security-audits", icon: ShieldAlert,     roles: ['admin','auditor','user'], badgeKey: 'security_audits' },
-    { name: "Crosswalk",    href: "/crosswalk",         icon: GitCompare,      roles: ['admin','auditor','user'] },
-    { name: "Controls Hub", href: "/controls/hub",      icon: LayoutGrid,      roles: ['admin','auditor','user'] },
-    { name: "Remediation",  href: "/remediation-tasks", icon: ClipboardList,   roles: ['admin','user'],           badgeKey: 'remediation' },
-    { name: "Reports",      href: "/reports",           icon: BarChart3,       roles: ['admin','auditor','user'] },
+    { name: "Dashboard",    href: "/dashboard",        icon: LayoutDashboard, roles: ALL_ROLES },
+    { name: "AI Assistant", href: "/chatbot",           icon: Sparkles,        roles: ALL_ROLES },
+    { name: "Risk Register",href: "/risks",             icon: AlertTriangle,   roles: ALL_ROLES },
+    { name: "Assessments",  href: "/assessments",       icon: ClipboardList,   roles: ALL_ROLES },
+    { name: "Evidence",     href: "/evidence",          icon: FolderOpen,      roles: ALL_ROLES },
+    { name: "Gap Analysis", href: "/gap-analysis",      icon: FileCheck,       roles: ALL_ROLES },
+    { name: "Security Audit", href: "/security-audits", icon: ShieldAlert,     roles: ALL_ROLES, badgeKey: 'security_audits' },
+    { name: "Crosswalk",    href: "/crosswalk",         icon: GitCompare,      roles: ALL_ROLES },
+    { name: "Controls Hub", href: "/controls/hub",      icon: LayoutGrid,      roles: ALL_ROLES },
+    { name: "Remediation",  href: "/remediation-tasks", icon: ClipboardList,   roles: WRITE_ROLES,                 badgeKey: 'remediation' },
+    { name: "Reports",      href: "/reports",           icon: BarChart3,       roles: ALL_ROLES },
 ]
 
 const reviewNavigation = [
-    { name: "Approvals",     href: "/controls/approvals", icon: Clock,      roles: ['admin','auditor'], badgeKey: 'approvals' },
-    { name: "Audit Logs",    href: "/audit-logs",         icon: ScrollText, roles: ['admin','auditor'] },
-    { name: "Notifications", href: "/notifications",      icon: Bell,       roles: ['admin','auditor','user'], badgeKey: 'notifications' },
+    { name: "Approvals",     href: "/controls/approvals", icon: Clock,      roles: REVIEW_ROLES, badgeKey: 'approvals' },
+    { name: "Audit Logs",    href: "/audit-logs",         icon: ScrollText, roles: REVIEW_ROLES },
+    { name: "Notifications", href: "/notifications",      icon: Bell,       roles: ALL_ROLES, badgeKey: 'notifications' },
 ]
 
+// Items shown to corporation admins and super_admins.
 const adminNavigation = [
-    { name: "Users",            href: "/admin/users",           icon: Users    },
-    { name: "Corporations",     href: "/admin/corporations",    icon: Building2 },
-    { name: "Frameworks",       href: "/admin/frameworks",      icon: Shield   },
-    { name: "Controls Library", href: "/admin/controls",        icon: Settings },
-    { name: "Risk Appetite",    href: "/risk-appetite",         icon: Sliders  },
-    { name: "Appearance",       href: "/settings/appearance",   icon: Palette  },
+    { name: "Users",            href: "/admin/users",           icon: Users,    roles: ['super_admin','admin'] as const },
+    { name: "Risk Appetite",    href: "/risk-appetite",         icon: Sliders,  roles: ['super_admin','admin'] as const },
+]
+
+// Platform-only — super_admin sees corporations, frameworks, controls library.
+const platformNavigation = [
+    { name: "Corporations",     href: "/admin/corporations",    icon: Building2, roles: ['super_admin'] as const },
+    { name: "Frameworks",       href: "/admin/frameworks",      icon: Shield,    roles: ['super_admin'] as const },
+    { name: "Controls Library", href: "/admin/controls",        icon: Settings,  roles: ['super_admin'] as const },
 ]
 
 export function AdminSidebar() {
@@ -71,10 +78,14 @@ export function AdminSidebar() {
     const openRemediationTasks = notifications?.open_remediation_tasks ?? 0
     const securityAuditsInProgress = notifications?.security_audits_in_progress ?? 0
     const url       = usePage().url as string
-    const isAdmin   = auth.user.role === 'admin'
-    const isAuditor = auth.user.role === 'auditor'
+    const role      = auth.user.role
+    const isSuper   = role === 'super_admin'
+    const isAdmin   = role === 'admin'
+    const isAuditor = role === 'auditor'
+    const showAdminSection = isSuper || isAdmin
+    const showPlatformSection = isSuper
     const initials  = auth.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
-    const roleName  = isAdmin ? 'Admin' : isAuditor ? 'Auditor' : 'Member'
+    const roleName  = isSuper ? 'Super Admin' : isAdmin ? 'Admin' : isAuditor ? 'Auditor' : 'Member'
 
     const getBadge = (key?: string): number | undefined => {
         if (!key) return undefined
@@ -122,7 +133,7 @@ export function AdminSidebar() {
                     {/* Main */}
                     <ul className="flex flex-col gap-0.5">
                         {mainNavigation
-                            .filter(item => item.roles.includes(auth.user.role))
+                            .filter(item => (item.roles as readonly string[]).includes(role))
                             .map(item => (
                                 <NavItem key={item.name} item={item} currentUrl={url} badge={getBadge((item as any).badgeKey)} />
                             ))
@@ -134,7 +145,7 @@ export function AdminSidebar() {
                         <SectionLabel>Review</SectionLabel>
                         <ul className="flex flex-col gap-0.5">
                             {reviewNavigation
-                                .filter(item => item.roles.includes(auth.user.role))
+                                .filter(item => (item.roles as readonly string[]).includes(role))
                                 .map(item => (
                                     <NavItem key={item.name} item={item} currentUrl={url} badge={getBadge((item as any).badgeKey)} />
                                 ))
@@ -142,14 +153,30 @@ export function AdminSidebar() {
                         </ul>
                     </div>
 
-                    {/* Admin */}
-                    {isAdmin && (
+                    {/* Administration (corp admins + super admins) */}
+                    {showAdminSection && (
                         <div>
                             <SectionLabel>Administration</SectionLabel>
                             <ul className="flex flex-col gap-0.5">
-                                {adminNavigation.map(item => (
-                                    <NavItem key={item.name} item={item} currentUrl={url} />
-                                ))}
+                                {adminNavigation
+                                    .filter(item => (item.roles as readonly string[]).includes(role))
+                                    .map(item => (
+                                        <NavItem key={item.name} item={item} currentUrl={url} />
+                                    ))}
+                            </ul>
+                        </div>
+                    )}
+
+                    {/* Platform (super admin only) */}
+                    {showPlatformSection && (
+                        <div>
+                            <SectionLabel>Platform</SectionLabel>
+                            <ul className="flex flex-col gap-0.5">
+                                {platformNavigation
+                                    .filter(item => (item.roles as readonly string[]).includes(role))
+                                    .map(item => (
+                                        <NavItem key={item.name} item={item} currentUrl={url} />
+                                    ))}
                             </ul>
                         </div>
                     )}

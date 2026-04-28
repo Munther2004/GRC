@@ -1,20 +1,4 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import type { SharedProps } from '@/types';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from '@/components/ui/dialog';
 import {
     Sliders,
     Plus,
@@ -27,6 +11,22 @@ import {
     BellOff,
 } from 'lucide-react';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import AdminLayout from '@/layouts/admin-layout';
+import type { SharedProps } from '@/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -48,9 +48,23 @@ interface RiskAppetite {
     notes: string | null;
 }
 
+interface Corporation {
+    id: number;
+    name: string;
+}
+
+interface Context {
+    is_super_admin: boolean;
+    corporation_id: number | null;
+    corporation_name: string | null;
+    corporations: Corporation[];
+    needs_corporation_selection: boolean;
+}
+
 interface Props {
     appetites: RiskAppetite[];
     active_appetite: RiskAppetite | null;
+    context?: Context;
 }
 
 interface FormState {
@@ -75,7 +89,7 @@ const defaultForm: FormState = {
     review_label: 'Requires Review',
     escalated_label: 'Escalated',
     notify_on_escalation: true,
-    escalation_notification_roles: ['admin', 'auditor'],
+    escalation_notification_roles: ['super_admin', 'admin', 'auditor'],
     notes: '',
 };
 
@@ -483,7 +497,7 @@ function AppetiteModal({
                                 Notify Roles
                             </Label>
                             <div className="flex gap-3">
-                                {(['admin', 'auditor', 'user'] as const).map(
+                                {(['super_admin', 'admin', 'auditor', 'user'] as const).map(
                                     (role) => (
                                         <label
                                             key={role}
@@ -544,8 +558,11 @@ function AppetiteModal({
 export default function RiskAppetiteIndex({
     appetites,
     active_appetite,
+    context,
 }: Props) {
     const { errors: pageErrors } = usePage<SharedProps>().props;
+    const isSuper = context?.is_super_admin ?? false;
+    const corpQuery = context?.corporation_id ? `?corporation_id=${context.corporation_id}` : '';
     const [addOpen, setAddOpen] = useState(false);
     const [editTarget, setEditTarget] = useState<RiskAppetite | null>(null);
     const [saving, setSaving] = useState(false);
@@ -555,7 +572,7 @@ export default function RiskAppetiteIndex({
         setSaving(true);
         if (editTarget) {
             router.put(
-                `/risk-appetite/${editTarget.id}`,
+                `/risk-appetite/${editTarget.id}${corpQuery}`,
                 {
                     ...form,
                     acceptable_max_score: parseInt(form.acceptable_max_score),
@@ -575,7 +592,7 @@ export default function RiskAppetiteIndex({
             );
         } else {
             router.post(
-                '/risk-appetite',
+                `/risk-appetite${corpQuery}`,
                 {
                     ...form,
                     acceptable_max_score: parseInt(form.acceptable_max_score),
@@ -603,11 +620,11 @@ export default function RiskAppetiteIndex({
             )
         )
             return;
-        router.post(`/risk-appetite/${appetite.id}/activate`);
+        router.post(`/risk-appetite/${appetite.id}/activate${corpQuery}`);
     };
 
     const handleDelete = (appetite: RiskAppetite) => {
-        router.delete(`/risk-appetite/${appetite.id}`, {
+        router.delete(`/risk-appetite/${appetite.id}${corpQuery}`, {
             onFinish: () => setDeleteTarget(null),
         });
     };
@@ -624,14 +641,53 @@ export default function RiskAppetiteIndex({
                             Risk Appetite Configuration
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Define acceptable risk thresholds for your
-                            organization
+                            {isSuper
+                                ? `Editing ${context?.corporation_name ?? 'a corporation'} risk appetite`
+                                : 'Define acceptable risk thresholds for your organization'}
                         </p>
                     </div>
-                    <Button onClick={() => setAddOpen(true)} className="gap-2">
+                    <Button
+                        onClick={() => setAddOpen(true)}
+                        className="gap-2"
+                        disabled={isSuper && !context?.corporation_id}
+                    >
                         <Plus className="h-4 w-4" /> Add Configuration
                     </Button>
                 </div>
+
+                {isSuper && context?.corporations && (
+                    <div className="flex items-center gap-2">
+                        <Label htmlFor="corp-picker" className="text-xs text-muted-foreground">
+                            Corporation
+                        </Label>
+                        <select
+                            id="corp-picker"
+                            className="rounded border border-border bg-background px-2 py-1 text-sm"
+                            value={context?.corporation_id ?? ''}
+                            onChange={(e) => {
+                                const v = e.target.value;
+                                router.get('/risk-appetite', v ? { corporation_id: v } : {}, {
+                                    preserveState: false,
+                                });
+                            }}
+                        >
+                            <option value="">Select corporation…</option>
+                            {context.corporations.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                    {c.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+
+                {context?.needs_corporation_selection && (
+                    <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
+                        <CardContent className="p-4 text-sm text-amber-700 dark:text-amber-300">
+                            Select a corporation above to view or edit its risk appetite.
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Error from backend */}
                 {pageErrors?.appetite && (

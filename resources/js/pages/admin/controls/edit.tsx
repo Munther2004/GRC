@@ -1,12 +1,12 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
+import { ArrowLeft, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Save } from 'lucide-react';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
 
 interface Control {
     id: number;
@@ -49,7 +49,7 @@ export default function ControlEdit({ control }: Props) {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                        <h1 className="font-heading text-4xl font-normal" style={{ color: 'var(--foreground)' }}>
                             Edit Control
                         </h1>
                         <p className="text-sm text-muted-foreground">

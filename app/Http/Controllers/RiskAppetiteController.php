@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
+use App\Models\Corporation;
 use App\Models\Notification;
 use App\Models\Risk;
 use App\Models\RiskAppetite;
@@ -14,19 +15,55 @@ use Inertia\Inertia;
 
 class RiskAppetiteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $user = $request->user();
+
+        // For super_admin, allow ?corporation_id= to scope; otherwise use the
+        // corp the admin belongs to.
+        $corporationId = $this->resolveCorporationId($request);
+
+        $appetites = $corporationId
+            ? RiskAppetite::where('corporation_id', $corporationId)
+                ->orderByDesc('is_active')
+                ->orderBy('name')
+                ->get()
+            : collect();
+
+        $active = $corporationId
+            ? RiskAppetite::getActiveForCorporation($corporationId)
+            : null;
+
         return Inertia::render('risk-appetite/index', [
-            'appetites' => RiskAppetite::orderByDesc('is_active')->orderBy('name')->get(),
-            'active_appetite' => RiskAppetite::getActive(),
+            'appetites' => $appetites,
+            'active_appetite' => $active,
+            'context' => [
+                'is_super_admin' => $user->isSuperAdmin(),
+                'corporation_id' => $corporationId,
+                'corporation_name' => $corporationId
+                    ? Corporation::where('id', $corporationId)->value('name')
+                    : null,
+                'corporations' => $user->isSuperAdmin()
+                    ? Corporation::orderBy('name')->get(['id', 'name'])
+                    : [],
+                'needs_corporation_selection' => $user->isSuperAdmin() && ! $corporationId,
+            ],
         ]);
     }
 
     public function store(Request $request)
     {
+        $user = $request->user();
+        $corporationId = $this->resolveCorporationId($request);
+
+        if (! $corporationId) {
+            return back()->withErrors(['appetite' => 'Select a corporation before creating a risk appetite.']);
+        }
+
         $validated = $this->validateAppetite($request);
 
         $appetite = RiskAppetite::create(array_merge($validated, [
+            'corporation_id' => $corporationId,
             'created_by' => Auth::id(),
         ]));
 
@@ -42,6 +79,8 @@ class RiskAppetiteController extends Controller
 
     public function update(Request $request, RiskAppetite $appetite)
     {
+        $this->ensureCanManage($request->user(), $appetite);
+
         $validated = $this->validateAppetite($request);
         $appetite->update($validated);
 
@@ -55,38 +94,44 @@ class RiskAppetiteController extends Controller
         return back()->with('success', "Risk appetite '{$appetite->name}' updated.");
     }
 
-    public function activate(RiskAppetite $appetite)
+    public function activate(Request $request, RiskAppetite $appetite)
     {
-        // Capture which risks were escalated before switching
-        $previousActive = RiskAppetite::getActive();
+        $this->ensureCanManage($request->user(), $appetite);
+
+        // Capture risks already escalated under the *previous* corp-scoped appetite.
+        $previousActive = RiskAppetite::getActiveForCorporation($appetite->corporation_id);
         $previouslyEscalated = [];
 
+        $corpRisks = Risk::where('corporation_id', $appetite->corporation_id)->get();
+
         if ($previousActive) {
-            $previouslyEscalated = Risk::all()
+            $previouslyEscalated = $corpRisks
                 ->filter(fn ($r) => $previousActive->classifyRisk($r)['band'] === 'escalated')
                 ->pluck('id')
                 ->toArray();
         }
 
-        // Deactivate all, activate chosen
+        // Deactivate all in-corp, activate chosen
         DB::transaction(function () use ($appetite) {
-            RiskAppetite::where('id', '!=', $appetite->id)->update(['is_active' => false]);
+            RiskAppetite::where('corporation_id', $appetite->corporation_id)
+                ->where('id', '!=', $appetite->id)
+                ->update(['is_active' => false]);
             $appetite->update(['is_active' => true]);
         });
 
-        // Notify for newly escalated risks
         if ($appetite->notify_on_escalation && ! empty($appetite->escalation_notification_roles)) {
-            $allRisks = Risk::all();
-            $nowEscalated = $allRisks->filter(fn ($r) => $appetite->classifyRisk($r)['band'] === 'escalated');
+            $nowEscalated = $corpRisks->filter(fn ($r) => $appetite->classifyRisk($r)['band'] === 'escalated');
             $newlyEscalated = $nowEscalated->filter(fn ($r) => ! in_array($r->id, $previouslyEscalated));
 
             if ($newlyEscalated->isNotEmpty()) {
-                $notifyUsers = User::whereIn('role', $appetite->escalation_notification_roles)->get();
+                $notifyUsers = User::whereIn('role', $appetite->escalation_notification_roles)
+                    ->where('corporation_id', $appetite->corporation_id)
+                    ->get();
 
                 foreach ($newlyEscalated as $risk) {
-                    foreach ($notifyUsers as $user) {
+                    foreach ($notifyUsers as $u) {
                         Notification::create([
-                            'user_id' => $user->id,
+                            'user_id' => $u->id,
                             'type' => 'risk_escalated',
                             'title' => 'Risk Escalated',
                             'message' => "Risk '{$risk->title}' (score {$risk->risk_score}) is now in the "
@@ -109,8 +154,10 @@ class RiskAppetiteController extends Controller
         return back()->with('success', "Risk appetite '{$appetite->name}' activated.");
     }
 
-    public function destroy(RiskAppetite $appetite)
+    public function destroy(Request $request, RiskAppetite $appetite)
     {
+        $this->ensureCanManage($request->user(), $appetite);
+
         if ($appetite->is_active) {
             return back()->withErrors(['appetite' => 'Cannot delete the active risk appetite configuration.']);
         }
@@ -131,6 +178,30 @@ class RiskAppetiteController extends Controller
 
     // ─── Private ──────────────────────────────────────────────────────────────
 
+    private function resolveCorporationId(Request $request): ?int
+    {
+        $user = $request->user();
+
+        if ($user->isSuperAdmin()) {
+            $cid = (int) ($request->query('corporation_id') ?? $request->input('corporation_id') ?? 0);
+
+            return $cid > 0 ? $cid : null;
+        }
+
+        return $user->corporation_id;
+    }
+
+    private function ensureCanManage(User $user, RiskAppetite $appetite): void
+    {
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+
+        if (! $user->isAdmin() || $appetite->corporation_id !== $user->corporation_id) {
+            abort(403);
+        }
+    }
+
     private function validateAppetite(Request $request): array
     {
         return $request->validate([
@@ -146,7 +217,7 @@ class RiskAppetiteController extends Controller
             'escalated_color' => 'required|string|max:50',
             'notify_on_escalation' => 'boolean',
             'escalation_notification_roles' => 'nullable|array',
-            'escalation_notification_roles.*' => 'in:admin,auditor,user',
+            'escalation_notification_roles.*' => 'in:super_admin,admin,auditor,user',
             'notes' => 'nullable|string',
         ]);
     }

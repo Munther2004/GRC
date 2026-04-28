@@ -19,8 +19,23 @@ class ControlStatusRequestController extends Controller
 
     public function index()
     {
-        $requests = ControlStatusRequest::with(['control.framework', 'requester', 'evidence'])
-            ->where('status', 'pending')
+        $user = Auth::user();
+
+        $base = ControlStatusRequest::with(['control.framework', 'requester', 'evidence'])
+            ->where('status', 'pending');
+
+        // Tenant scope: super_admin sees all; otherwise restrict to requests
+        // raised by users in the reviewer's own corporation.
+        if (! $user->isSuperAdmin()) {
+            if (! $user->corporation_id) {
+                $base->whereRaw('1 = 0');
+            } else {
+                $corpId = $user->corporation_id;
+                $base->whereHas('requester', fn ($q) => $q->where('corporation_id', $corpId));
+            }
+        }
+
+        $requests = $base
             ->latest()
             ->get()
             ->map(fn ($r) => [
@@ -117,8 +132,23 @@ class ControlStatusRequestController extends Controller
             );
         }
 
-        // Notify all admins and auditors
-        $reviewers = User::whereIn('role', ['admin', 'auditor'])->get();
+        // Notify reviewers — super_admin (platform-wide) plus admin/auditor
+        // who share the requester's corporation.
+        $requester = Auth::user();
+        $reviewers = User::query()
+            ->where(function ($q) use ($requester) {
+                $q->where('role', User::ROLE_SUPER_ADMIN)
+                    ->orWhere(function ($qq) use ($requester) {
+                        $qq->whereIn('role', [User::ROLE_ADMIN, User::ROLE_AUDITOR]);
+                        if ($requester->corporation_id) {
+                            $qq->where('corporation_id', $requester->corporation_id);
+                        } else {
+                            // Requester has no corporation: only super_admins should hear about it.
+                            $qq->whereRaw('1 = 0');
+                        }
+                    });
+            })
+            ->get();
         foreach ($reviewers as $reviewer) {
             Notification::create([
                 'user_id' => $reviewer->id,

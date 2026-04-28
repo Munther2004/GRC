@@ -1,10 +1,11 @@
-import AdminLayout from '@/layouts/admin-layout';
+import axios from 'axios';
+import { Sparkles, Send, RotateCcw, User, AlertCircle } from 'lucide-react';
+import type { KeyboardEvent } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Sparkles, Send, RotateCcw, User, AlertCircle } from 'lucide-react';
-import { useRef, useState, useEffect, useCallback, KeyboardEvent } from 'react';
-import axios from 'axios';
+import AdminLayout from '@/layouts/admin-layout';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

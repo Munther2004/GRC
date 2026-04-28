@@ -1,21 +1,5 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import type { SharedProps } from '@/types';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
-import { StatStrip } from '@/components/ui/stat-strip';
-import { FilterBar } from '@/components/ui/filter-bar';
+import axios from 'axios';
 import {
     Search,
     FolderOpen,
@@ -28,14 +12,31 @@ import {
     AlertTriangle,
 } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
-import axios from 'axios';
-import {
+import type {
     AiReview,
     EvidenceItem,
-    EvidenceRowProps,
+    EvidenceRowProps} from '@/components/evidence-row';
+import {
     EvidenceRow,
     getReviewFromItem,
 } from '@/components/evidence-row';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { PageHeader } from '@/components/ui/page-header';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { StatStrip } from '@/components/ui/stat-strip';
+import { FilterBar } from '@/components/ui/filter-bar';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import type { SharedProps } from '@/types';
 
 interface Props {
     evidence: {
@@ -108,7 +109,7 @@ export default function EvidenceIndex({
     filters,
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
-    const isAdmin = auth.user.role === 'admin';
+    const isAdmin = auth.user.role === 'super_admin' || auth.user.role === 'admin';
     const isAuditor = auth.user.role === 'auditor';
     const canReview = isAdmin || isAuditor;
 

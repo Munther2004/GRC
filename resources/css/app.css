@@ -8,65 +8,59 @@
 /* 2. Custom dark mode variant */
 @custom-variant dark (&:is(.dark *));
 
-/* ─── GRC Green Design Tokens ─────────────────────────────────────────────── */
+/* ─── GRC Design Tokens ───────────────────────────────────────────────────── */
+/* :root holds the light palette (Cohere-derived per design.md).             */
+/* .dark holds the deep forest dark palette. The active theme preset is      */
+/* applied at runtime by useAppearance via applyThemeByName().               */
 
 :root {
-    /* Deep Forest — page foundation */
-    --background:           #091413;
-    --foreground:           #E0F5EC;
+    --background:           #ffffff;
+    --foreground:           #212121;
 
-    /* Canopy — elevated surfaces (cards, panels) */
-    --card:                 #0D1F1C;
-    --card-foreground:      #E0F5EC;
+    --card:                 #ffffff;
+    --card-foreground:      #212121;
 
-    /* Popover — same as card */
-    --popover:              #0D1F1C;
-    --popover-foreground:   #E0F5EC;
+    --popover:              #ffffff;
+    --popover-foreground:   #212121;
 
-    /* Sage — primary interactive color */
-    --primary:              #408A71;
-    --primary-foreground:   #091413;
+    /* Deep enterprise green — primary brand color (design.md) */
+    --primary:              #003c33;
+    --primary-foreground:   #ffffff;
 
-    /* Undergrowth — secondary surfaces */
-    --secondary:            #122B22;
-    --secondary-foreground: #E0F5EC;
+    /* Soft stone secondary surface */
+    --secondary:            #fbfbfa;
+    --secondary-foreground: #212121;
 
-    /* Undergrowth — muted backgrounds */
-    --muted:                #122B22;
-    --muted-foreground:     #7ABFA8;
+    --muted:                #f4f4f2;
+    --muted-foreground:     #616161;
 
-    /* Undergrowth — hover/accent states */
-    --accent:               #122B22;
-    --accent-foreground:    #E0F5EC;
+    /* Pale green wash for accents */
+    --accent:               #edfce9;
+    --accent-foreground:    #003c33;
 
-    /* Crimson — destructive/emphasis */
-    --destructive:          #8B2635;
-    --destructive-foreground: #E0F5EC;
+    --destructive:          #b30000;
+    --destructive-foreground: #ffffff;
 
-    /* Mint — success/positive states */
-    --success:              #B0E4CC;
+    --success:              #003c33;
 
-    /* Fern — borders and dividers */
-    --border:               #285A48;
-    --input:                #285A48;
-    --ring:                 #408A71;
+    --border:               #e5e7eb;
+    --input:                #d9d9dd;
+    --ring:                 #4c6ee6;
 
-    /* Charts — forest palette */
-    --chart-1:              #408A71;
-    --chart-2:              #B0E4CC;
-    --chart-3:              #6BA8C8;
-    --chart-4:              #8B2635;
-    --chart-5:              #285A48;
+    --chart-1:              #003c33;
+    --chart-2:              #1863dc;
+    --chart-3:              #ff7759;
+    --chart-4:              #b30000;
+    --chart-5:              #75758a;
 
-    /* Sidebar */
-    --sidebar:              #091413;
-    --sidebar-foreground:   #E0F5EC;
-    --sidebar-primary:      #408A71;
-    --sidebar-primary-foreground: #091413;
-    --sidebar-accent:       #122B22;
-    --sidebar-accent-foreground: #E0F5EC;
-    --sidebar-border:       #285A48;
-    --sidebar-ring:         #408A71;
+    --sidebar:              #fbfbfa;
+    --sidebar-foreground:   #212121;
+    --sidebar-primary:      #003c33;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent:       #edfce9;
+    --sidebar-accent-foreground: #003c33;
+    --sidebar-border:       #e5e7eb;
+    --sidebar-ring:         #003c33;
 
     --radius: 0.25rem;
 }
@@ -295,6 +289,59 @@
         background: var(--background);
         padding: 0 10px;
         line-height: 1;
+    }
+
+    /* ─── 3D / depth utilities — usable on any surface, theme-aware ─── */
+
+    /* Soft elevation that adapts to light vs dark mode. */
+    .elev-1 {
+        box-shadow:
+            0 1px 2px color-mix(in srgb, var(--foreground) 6%, transparent),
+            0 8px 22px -10px color-mix(in srgb, var(--foreground) 18%, transparent);
+    }
+    .elev-2 {
+        box-shadow:
+            0 2px 4px color-mix(in srgb, var(--foreground) 8%, transparent),
+            0 18px 40px -18px color-mix(in srgb, var(--foreground) 26%, transparent);
+    }
+    .elev-3 {
+        box-shadow:
+            0 4px 6px color-mix(in srgb, var(--foreground) 10%, transparent),
+            0 28px 60px -22px color-mix(in srgb, var(--foreground) 32%, transparent);
+    }
+
+    /* Lift on hover — subtle parallax cue. Combine with `transition` */
+    .lift-on-hover { transition: transform 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms ease; }
+    .lift-on-hover:hover { transform: translateY(-2px); }
+
+    /* Glassmorphism panel — frosted, theme-aware. */
+    .glass {
+        background: color-mix(in srgb, var(--card) 70%, transparent);
+        border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+        backdrop-filter: blur(14px) saturate(140%);
+        -webkit-backdrop-filter: blur(14px) saturate(140%);
+    }
+
+    /* Soft gradient mesh background — sits behind hero or feature sections. */
+    .mesh-bg {
+        background:
+            radial-gradient(60% 60% at 18% 18%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 70%),
+            radial-gradient(50% 50% at 82% 6%,  color-mix(in srgb, var(--chart-2) 10%, transparent), transparent 75%),
+            radial-gradient(45% 45% at 88% 78%, color-mix(in srgb, var(--chart-3) 8%, transparent), transparent 78%);
+    }
+
+    /* Tasteful tilt for cards on hover — gentle perspective. */
+    .tilt-card {
+        transform-style: preserve-3d;
+        transition: transform 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms ease;
+    }
+    .tilt-card:hover {
+        transform: perspective(1100px) rotateX(2deg) rotateY(-2deg) translateY(-2px);
+    }
+
+    /* Subtle inner ring that emphasizes a tilted/elevated card edge. */
+    .ring-soft {
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
     }
 
     .vignette::after {

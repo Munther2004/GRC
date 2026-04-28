@@ -1,0 +1,360 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - button [ref=e4] [cursor=pointer]: Skip ▸
+    - generic [ref=e5]:
+      - img [ref=e6]:
+        - generic [ref=e19]: ✶
+        - generic [ref=e21]: · FIDES · RATIO · ORDO · LEX · DISCIPLINA · CUSTODIA ·
+      - generic [ref=e22]: The Charter Opens
+  - generic [ref=e23]:
+    - generic [ref=e25]: ISO 27001 · NIST 800-53 · OWASP ASVS · CIS — unified under one charter
+    - banner [ref=e26]:
+      - generic [ref=e27]:
+        - link "GRC · Charter" [ref=e28] [cursor=pointer]:
+          - /url: /
+          - img [ref=e30]
+          - generic [ref=e32]: GRC · Charter
+        - navigation [ref=e33]:
+          - link "Tenets" [ref=e34] [cursor=pointer]:
+            - /url: "#tenets"
+          - link "Platform" [ref=e35] [cursor=pointer]:
+            - /url: "#features"
+          - link "Frameworks" [ref=e36] [cursor=pointer]:
+            - /url: "#frameworks"
+          - link "About" [ref=e37] [cursor=pointer]:
+            - /url: /about
+        - generic [ref=e38]:
+          - button "Switch to dark mode" [ref=e39] [cursor=pointer]:
+            - img [ref=e42]
+          - link "Log in" [ref=e48] [cursor=pointer]:
+            - /url: /login
+          - link "Get started" [ref=e49] [cursor=pointer]:
+            - /url: /corporation/register
+            - text: Get started
+            - img [ref=e50]
+    - generic [ref=e52]:
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e55]: Anno Securitatis · Twenty Twenty-Six
+          - heading "Risk is not eliminated. It is governed." [level=1] [ref=e57]:
+            - generic [ref=e58]:
+              - generic [ref=e59]: Risk
+              - generic [ref=e60]: is
+              - generic [ref=e61]: not
+            - generic [ref=e63]: eliminated.
+            - generic [ref=e64]:
+              - generic [ref=e65]: It
+              - generic [ref=e66]: is
+              - generic [ref=e67]: governed.
+          - paragraph [ref=e68]: A scholarly platform for governance, risk, and compliance — where ISO 27001, NIST, OWASP, and CIS converge into one disciplined ledger. Bind risks to controls, controls to evidence, and evidence to outcomes.
+          - generic [ref=e69]:
+            - link "Register your corporation" [ref=e70] [cursor=pointer]:
+              - /url: /corporation/register
+              - text: Register your corporation
+              - img [ref=e71]
+            - link "Read the tenets ↓" [ref=e73] [cursor=pointer]:
+              - /url: "#tenets"
+              - text: Read the tenets
+              - generic [ref=e74]: ↓
+          - generic [ref=e75]:
+            - generic [ref=e76]: Bound by
+            - generic [ref=e77]:
+              - generic [ref=e78]: ISO 27001
+              - generic [ref=e79]: NIST 800-53
+              - generic [ref=e80]: OWASP ASVS
+              - generic [ref=e81]: CIS Benchmarks
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - generic [ref=e86]:
+              - generic [ref=e91]: Risk Register
+              - generic [ref=e92]: grc.app/risks
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - paragraph [ref=e95]: Open
+                - paragraph [ref=e96]: "128"
+              - generic [ref=e97]:
+                - paragraph [ref=e98]: Critical
+                - paragraph [ref=e99]: "12"
+              - generic [ref=e100]:
+                - paragraph [ref=e101]: Closed
+                - paragraph [ref=e102]: "341"
+            - generic [ref=e103]:
+              - generic [ref=e104]:
+                - generic [ref=e105]:
+                  - generic [ref=e106]: Critical
+                  - generic [ref=e107]: Unencrypted backup snapshots
+                - generic [ref=e111]: R-128
+              - generic [ref=e112]:
+                - generic [ref=e113]:
+                  - generic [ref=e114]: High
+                  - generic [ref=e115]: Privileged access drift
+                - generic [ref=e119]: R-114
+              - generic [ref=e120]:
+                - generic [ref=e121]:
+                  - generic [ref=e122]: Medium
+                  - generic [ref=e123]: Vendor TLS expiry
+                - generic [ref=e127]: R-102
+              - generic [ref=e128]:
+                - generic [ref=e129]:
+                  - generic [ref=e130]: Low
+                  - generic [ref=e131]: Stale evidence on AC controls
+                - generic [ref=e135]: R-091
+          - generic [ref=e137]:
+            - paragraph [ref=e138]: Compliance Posture
+            - paragraph [ref=e139]: 94.2%
+            - generic [ref=e142]:
+              - generic [ref=e143]: ISO 27001
+              - generic [ref=e144]: NIST
+              - generic [ref=e145]: OWASP
+              - generic [ref=e146]: CIS
+          - generic [ref=e147]:
+            - img [ref=e149]
+            - text: AI evidence verdict ·
+            - strong [ref=e151]: Adequate
+      - generic [ref=e153]: Descend
+    - generic [ref=e156]:
+      - generic [ref=e157]:
+        - text: GOVERN WITH INTENT
+        - generic [ref=e158]: ✶
+      - generic [ref=e159]:
+        - text: MEASURE EVERY RISK
+        - generic [ref=e160]: ✶
+      - generic [ref=e161]:
+        - text: AUDIT WITH CLARITY
+        - generic [ref=e162]: ✶
+      - generic [ref=e163]:
+        - text: COMPLY WITH PURPOSE
+        - generic [ref=e164]: ✶
+      - generic [ref=e165]:
+        - text: EVIDENCE THE TRUTH
+        - generic [ref=e166]: ✶
+      - generic [ref=e167]:
+        - text: TRUST · BUT VERIFY
+        - generic [ref=e168]: ✶
+      - generic [ref=e169]:
+        - text: GOVERN WITH INTENT
+        - generic [ref=e170]: ✶
+      - generic [ref=e171]:
+        - text: MEASURE EVERY RISK
+        - generic [ref=e172]: ✶
+      - generic [ref=e173]:
+        - text: AUDIT WITH CLARITY
+        - generic [ref=e174]: ✶
+      - generic [ref=e175]:
+        - text: COMPLY WITH PURPOSE
+        - generic [ref=e176]: ✶
+      - generic [ref=e177]:
+        - text: EVIDENCE THE TRUTH
+        - generic [ref=e178]: ✶
+      - generic [ref=e179]:
+        - text: TRUST · BUT VERIFY
+        - generic [ref=e180]: ✶
+    - generic [ref=e182]:
+      - generic [ref=e183]:
+        - paragraph [ref=e184]: The Three Tenets
+        - heading "One discipline, three orders." [level=2] [ref=e185]
+      - generic [ref=e186]:
+        - generic [ref=e187]:
+          - img [ref=e189]
+          - heading "Governance" [level=3] [ref=e192]
+          - paragraph [ref=e193]: A single source of authority for every policy, every framework, every owner.
+        - generic [ref=e194]:
+          - img [ref=e196]
+          - heading "Risk" [level=3] [ref=e200]
+          - paragraph [ref=e201]: Likelihood and impact, scored on a common scale, treated on a common timeline.
+        - generic [ref=e202]:
+          - img [ref=e204]
+          - heading "Compliance" [level=3] [ref=e206]
+          - paragraph [ref=e207]: Continuous evidence, mapped to controls, mapped to obligations, mapped to outcomes.
+    - generic [ref=e209]:
+      - generic [ref=e210]:
+        - paragraph [ref=e211]: Frameworks Atlas
+        - heading "Eight standards. One orbit." [level=2] [ref=e212]
+        - paragraph [ref=e213]: ISO 27001, NIST 800-53, OWASP ASVS, and CIS Benchmarks share the platform's spine — with crosswalk paths to SOC 2, PCI DSS, GDPR, and HIPAA layered above.
+        - generic [ref=e214]:
+          - img [ref=e215]
+          - text: Move your cursor — the orbit responds
+      - img [ref=e221]:
+        - generic [ref=e235]:
+          - generic [ref=e236]: ✶
+          - generic [ref=e237]: ✶
+          - generic [ref=e238]: ✶
+          - generic [ref=e239]: ✶
+        - generic [ref=e242]: GRC
+        - generic [ref=e247]: ISO 27001
+        - generic [ref=e252]: NIST
+        - generic [ref=e257]: OWASP
+        - generic [ref=e262]: CIS
+        - generic [ref=e267]: SOC 2
+        - generic [ref=e272]: PCI DSS
+        - generic [ref=e277]: GDPR
+        - generic [ref=e282]: HIPAA
+    - generic [ref=e283]:
+      - generic [ref=e284]:
+        - paragraph [ref=e285]: The Platform
+        - heading "Everything is a chapter, nothing is a feature." [level=2] [ref=e286]
+        - paragraph [ref=e287]: One discipline across nine surfaces. Every screen reads from the same control library, the same risk ledger, and the same evidence chain.
+      - generic [ref=e288]:
+        - generic [ref=e290]:
+          - generic [ref=e291]:
+            - img [ref=e293]
+            - generic [ref=e295]: Core
+          - heading "Risk Register" [level=3] [ref=e296]
+          - paragraph [ref=e297]: ISO 27005 likelihood × impact matrix. Score every threat, link it to controls, and trace each treatment from acceptance to closure.
+        - generic [ref=e299]:
+          - generic [ref=e300]:
+            - img [ref=e302]
+            - generic [ref=e305]: Frameworks
+          - heading "Compliance Assessments" [level=3] [ref=e306]
+          - paragraph [ref=e307]: Self-assessments across ISO 27001, NIST 800-53, OWASP ASVS, and CIS Benchmarks — generated from one library, scored on one yardstick.
+        - generic [ref=e309]:
+          - generic [ref=e310]:
+            - img [ref=e312]
+            - generic [ref=e314]: Custody
+          - heading "Evidence Repository" [level=3] [ref=e315]
+          - paragraph [ref=e316]: Versioned uploads bound to controls and assessment items. Auditors see the chain, reviewers see the queue, owners see what is missing.
+        - generic [ref=e318]:
+          - generic [ref=e319]:
+            - img [ref=e321]
+            - generic [ref=e324]: Library
+          - heading "Controls Hub" [level=3] [ref=e325]
+          - paragraph [ref=e326]: 443 controls, four frameworks, one library. Status workflows, change requests, and tamper-evident histories on every clause.
+        - generic [ref=e328]:
+          - generic [ref=e329]:
+            - img [ref=e331]
+            - generic [ref=e336]: Insight
+          - heading "Gap Analysis" [level=3] [ref=e337]
+          - paragraph [ref=e338]: Surface every non-compliant and partially compliant control in a single ledger — ranked by exposure, framework, and time open.
+        - generic [ref=e340]:
+          - generic [ref=e341]:
+            - img [ref=e343]
+            - generic [ref=e345]: Anthropic
+          - heading "AI Assistance" [level=3] [ref=e346]
+          - paragraph [ref=e347]: Claude-powered evidence review, threat suggestion, gap remediation, and security-config analysis — verdicts you can audit, not just trust.
+        - generic [ref=e349]:
+          - generic [ref=e350]:
+            - img [ref=e352]
+            - generic [ref=e357]: Telemetry
+          - heading "Dashboards & Reports" [level=3] [ref=e358]
+          - paragraph [ref=e359]: Live KRIs, executive summaries, exportable reports. Daily snapshots make trend lines reproducible against any past date.
+        - generic [ref=e361]:
+          - generic [ref=e362]:
+            - img [ref=e364]
+            - generic [ref=e369]: RBAC
+          - heading "Role-Based Access" [level=3] [ref=e370]
+          - paragraph [ref=e371]: Super Admin, Admin, Auditor, and User. Tenant-scoped at the controller, never just the UI — separation of duty by construction.
+        - generic [ref=e373]:
+          - generic [ref=e374]:
+            - img [ref=e376]
+            - generic [ref=e380]: Tenant
+          - heading "Corporation Onboarding" [level=3] [ref=e381]
+          - paragraph [ref=e382]: Multi-tenant by design. Self-serve registration, super-admin approval, and credentialed manager handoff — every row carries a corporation.
+    - generic [ref=e385]:
+      - generic [ref=e386]:
+        - paragraph [ref=e387]: AI Assistance
+        - heading "Auditable AI. Verdicts you can defend." [level=3] [ref=e388]
+        - paragraph [ref=e389]: Claude-powered evidence review, threat suggestion, gap remediation, and security-config analysis. Every verdict carries strengths, gaps, and a confidence score — bound to the control it reviewed.
+        - list [ref=e390]:
+          - listitem [ref=e391]:
+            - img [ref=e392]
+            - text: Three-tier verdict — Adequate · Partially · Insufficient
+          - listitem [ref=e395]:
+            - img [ref=e396]
+            - text: Confidence scoring with cited strengths and gaps
+          - listitem [ref=e399]:
+            - img [ref=e400]
+            - text: Tenant-scoped, queueable, no data leaves your charter
+      - generic [ref=e404]:
+        - generic [ref=e405]:
+          - generic [ref=e406]:
+            - img [ref=e408]
+            - generic [ref=e414]: Evidence Review
+          - generic [ref=e415]: Claude · Opus 4.5
+        - paragraph [ref=e416]: "Control: AC-2 — Account Management"
+        - generic [ref=e417]: Verdict · Adequate · Confidence 92%
+        - generic [ref=e419]:
+          - generic [ref=e420]:
+            - paragraph [ref=e421]: Strengths
+            - paragraph [ref=e422]: Quarterly access reviews documented; SoD enforced via RBAC.
+          - generic [ref=e423]:
+            - paragraph [ref=e424]: Gaps
+            - paragraph [ref=e425]: Privileged break-glass accounts lack independent monitoring.
+    - generic [ref=e427]:
+      - generic [ref=e428]:
+        - paragraph [ref=e429]: A Living Ledger
+        - heading "Numbers that do not lie." [level=2] [ref=e430]
+        - paragraph [ref=e431]: Every metric the platform records is reproducible, traceable, and bound to a control. No vanity counts, no false comforts.
+        - generic [ref=e432]:
+          - img [ref=e433]
+          - text: Snapshots taken nightly · trend lines reproducible by date
+      - generic [ref=e437]:
+        - generic [ref=e439]:
+          - paragraph [ref=e440]: Controls
+          - paragraph [ref=e441]: "0"
+          - paragraph [ref=e442]: controls across the four frameworks
+        - generic [ref=e444]:
+          - paragraph [ref=e445]: Posture
+          - paragraph [ref=e446]: 0.0%
+          - paragraph [ref=e447]: median compliance posture
+        - generic [ref=e449]:
+          - paragraph [ref=e450]: Frameworks
+          - paragraph [ref=e451]: "0.0"
+          - paragraph [ref=e452]: frameworks unified under one ledger
+        - generic [ref=e454]:
+          - paragraph [ref=e455]: Evidence
+          - paragraph [ref=e456]: "0"
+          - paragraph [ref=e457]: evidence files indexed and verifiable
+    - generic [ref=e460]:
+      - paragraph [ref=e461]: Anno Domini · Twenty Twenty-Six
+      - heading "Your corporation deserves a charter, not a checklist." [level=2] [ref=e462]
+      - paragraph [ref=e463]: Begin the discipline. Bind your frameworks. Govern with intent.
+      - generic [ref=e464]:
+        - link "Register your corporation" [ref=e465] [cursor=pointer]:
+          - /url: /corporation/register
+          - text: Register your corporation
+          - img [ref=e466]
+        - link "Already a signatory? Log in →" [ref=e468] [cursor=pointer]:
+          - /url: /login
+    - contentinfo [ref=e469]:
+      - generic [ref=e470]:
+        - generic [ref=e471]:
+          - generic [ref=e472]:
+            - img [ref=e474]
+            - generic [ref=e476]: GRC · Charter
+          - paragraph [ref=e477]: Risk is not eliminated. It is governed. A scholarly platform for governance, risk, and compliance — bound to ISO 27001, NIST, OWASP, and CIS.
+        - generic [ref=e478]:
+          - paragraph [ref=e479]: Navigate
+          - list [ref=e480]:
+            - listitem [ref=e481]:
+              - link "Tenets" [ref=e482] [cursor=pointer]:
+                - /url: "#tenets"
+            - listitem [ref=e483]:
+              - link "Platform" [ref=e484] [cursor=pointer]:
+                - /url: "#features"
+            - listitem [ref=e485]:
+              - link "Frameworks" [ref=e486] [cursor=pointer]:
+                - /url: "#frameworks"
+            - listitem [ref=e487]:
+              - link "About" [ref=e488] [cursor=pointer]:
+                - /url: /about
+        - generic [ref=e489]:
+          - paragraph [ref=e490]: Bound to
+          - list [ref=e491]:
+            - listitem [ref=e492]:
+              - img [ref=e493]
+              - text: ISO 27001
+            - listitem [ref=e496]:
+              - img [ref=e497]
+              - text: NIST 800-53
+            - listitem [ref=e500]:
+              - img [ref=e501]
+              - text: OWASP ASVS
+            - listitem [ref=e504]:
+              - img [ref=e505]
+              - text: CIS Benchmarks
+      - generic [ref=e508]:
+        - paragraph [ref=e509]: © Twenty Twenty-Six · GRC Charter · All rights reserved
+        - generic [ref=e510]:
+          - generic [ref=e511]: Fides · Ratio · Ordo
+          - button "Switch to dark mode" [ref=e512] [cursor=pointer]:
+            - img [ref=e515]

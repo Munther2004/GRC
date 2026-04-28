@@ -1,0 +1,473 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - img [ref=e8]
+          - generic [ref=e10]: GRC
+          - generic [ref=e11]: Super Admin
+        - generic [ref=e12]: ✶
+        - navigation [ref=e13]:
+          - list [ref=e14]:
+            - listitem [ref=e15]:
+              - link "Dashboard" [ref=e16] [cursor=pointer]:
+                - /url: /dashboard
+                - img [ref=e17]
+                - generic [ref=e22]: Dashboard
+            - listitem [ref=e23]:
+              - link "AI Assistant" [ref=e24] [cursor=pointer]:
+                - /url: /chatbot
+                - img [ref=e25]
+                - generic [ref=e27]: AI Assistant
+            - listitem [ref=e28]:
+              - link "Risk Register" [ref=e29] [cursor=pointer]:
+                - /url: /risks
+                - img [ref=e30]
+                - generic [ref=e32]: Risk Register
+            - listitem [ref=e33]:
+              - link "Assessments" [ref=e34] [cursor=pointer]:
+                - /url: /assessments
+                - img [ref=e35]
+                - generic [ref=e38]: Assessments
+            - listitem [ref=e39]:
+              - link "Evidence" [ref=e40] [cursor=pointer]:
+                - /url: /evidence
+                - img [ref=e41]
+                - generic [ref=e43]: Evidence
+            - listitem [ref=e44]:
+              - link "Gap Analysis" [ref=e45] [cursor=pointer]:
+                - /url: /gap-analysis
+                - img [ref=e46]
+                - generic [ref=e50]: Gap Analysis
+            - listitem [ref=e51]:
+              - link "Security Audit" [ref=e52] [cursor=pointer]:
+                - /url: /security-audits
+                - img [ref=e53]
+                - generic [ref=e55]: Security Audit
+            - listitem [ref=e56]:
+              - link "Crosswalk" [ref=e57] [cursor=pointer]:
+                - /url: /crosswalk
+                - img [ref=e58]
+                - generic [ref=e63]: Crosswalk
+            - listitem [ref=e64]:
+              - link "Controls Hub" [ref=e65] [cursor=pointer]:
+                - /url: /controls/hub
+                - img [ref=e66]
+                - generic [ref=e71]: Controls Hub
+            - listitem [ref=e72]:
+              - link "Remediation" [ref=e73] [cursor=pointer]:
+                - /url: /remediation-tasks
+                - img [ref=e74]
+                - generic [ref=e77]: Remediation
+            - listitem [ref=e78]:
+              - link "Reports" [ref=e79] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=e80]
+                - generic [ref=e82]: Reports
+          - generic [ref=e83]:
+            - paragraph [ref=e84]: Review
+            - list [ref=e85]:
+              - listitem [ref=e86]:
+                - link "Approvals 1" [ref=e87] [cursor=pointer]:
+                  - /url: /controls/approvals
+                  - img [ref=e88]
+                  - generic [ref=e91]: Approvals
+                  - generic [ref=e92]: "1"
+              - listitem [ref=e93]:
+                - link "Audit Logs" [ref=e94] [cursor=pointer]:
+                  - /url: /audit-logs
+                  - img [ref=e95]
+                  - generic [ref=e98]: Audit Logs
+              - listitem [ref=e99]:
+                - link "Notifications 5" [ref=e100] [cursor=pointer]:
+                  - /url: /notifications
+                  - img [ref=e101]
+                  - generic [ref=e104]: Notifications
+                  - generic [ref=e105]: "5"
+          - generic [ref=e106]:
+            - paragraph [ref=e107]: Administration
+            - list [ref=e108]:
+              - listitem [ref=e109]:
+                - link "Users" [ref=e110] [cursor=pointer]:
+                  - /url: /admin/users
+                  - img [ref=e111]
+                  - generic [ref=e116]: Users
+              - listitem [ref=e117]:
+                - link "Risk Appetite" [ref=e118] [cursor=pointer]:
+                  - /url: /risk-appetite
+                  - img [ref=e119]
+                  - generic [ref=e120]: Risk Appetite
+          - generic [ref=e121]:
+            - paragraph [ref=e122]: Platform
+            - list [ref=e123]:
+              - listitem [ref=e124]:
+                - link "Corporations" [ref=e125] [cursor=pointer]:
+                  - /url: /admin/corporations
+                  - img [ref=e126]
+                  - generic [ref=e130]: Corporations
+              - listitem [ref=e131]:
+                - link "Frameworks" [ref=e132] [cursor=pointer]:
+                  - /url: /admin/frameworks
+                  - img [ref=e133]
+                  - generic [ref=e135]: Frameworks
+              - listitem [ref=e136]:
+                - link "Controls Library" [ref=e137] [cursor=pointer]:
+                  - /url: /admin/controls
+                  - img [ref=e138]
+                  - generic [ref=e141]: Controls Library
+        - generic [ref=e143]:
+          - generic [ref=e145]: SA
+          - generic [ref=e146]:
+            - paragraph [ref=e147]: System Admin
+            - paragraph [ref=e148]: admin@grc.com
+          - button "Log out" [ref=e149] [cursor=pointer]:
+            - img [ref=e150]
+    - generic [ref=e153]:
+      - banner [ref=e154]:
+        - generic [ref=e156]:
+          - img [ref=e157]
+          - searchbox "Search..." [ref=e160]
+          - generic: ⌘K
+        - button "Switch to dark mode" [ref=e161] [cursor=pointer]:
+          - img [ref=e164]
+        - button "Notifications" [ref=e171] [cursor=pointer]:
+          - img [ref=e172]
+          - generic [ref=e175]: "5"
+      - main [ref=e176]:
+        - generic [ref=e177]:
+          - generic [ref=e181]:
+            - generic [ref=e182]:
+              - paragraph [ref=e183]: Overview · GRC Command Centre
+              - heading "Good to see you back." [level=1] [ref=e184]
+              - paragraph [ref=e185]: Live view of your risks, controls, and compliance posture.
+            - generic [ref=e187]:
+              - paragraph [ref=e188]: Health
+              - paragraph [ref=e189]: F
+              - paragraph [ref=e190]: 24.5/100
+          - link "5 items require your attention" [ref=e191] [cursor=pointer]:
+            - /url: /notifications
+            - img [ref=e193]
+            - paragraph [ref=e195]:
+              - generic [ref=e196]: 5 items
+              - text: require your attention
+            - img [ref=e197]
+          - generic [ref=e200]:
+            - link "New Risk" [ref=e201] [cursor=pointer]:
+              - /url: /risks/create
+              - img [ref=e202]
+              - text: New Risk
+            - link "Start Assessment" [ref=e203] [cursor=pointer]:
+              - /url: /assessments/create
+              - img [ref=e204]
+              - text: Start Assessment
+            - link "Upload Evidence" [ref=e206] [cursor=pointer]:
+              - /url: /evidence/upload
+              - img [ref=e207]
+              - text: Upload Evidence
+            - link "Reports" [ref=e210] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e211]
+              - text: Reports
+          - generic [ref=e214]:
+            - generic [ref=e215]:
+              - paragraph [ref=e219]: Risk Exposure
+              - generic [ref=e220]:
+                - paragraph [ref=e221]: 31.7%
+                - paragraph [ref=e224]: avg 13.5/25
+            - generic [ref=e225]:
+              - paragraph [ref=e228]: Compliance
+              - generic [ref=e229]:
+                - paragraph [ref=e230]: 36.3%
+                - paragraph [ref=e233]: evidence-backed
+            - generic [ref=e234]:
+              - paragraph [ref=e237]: Evidence Approved
+              - generic [ref=e238]:
+                - paragraph [ref=e239]: 0%
+                - paragraph [ref=e241]: 2 pending
+            - generic [ref=e242]:
+              - paragraph [ref=e245]: Critical Risks
+              - generic [ref=e246]:
+                - paragraph [ref=e247]: "61"
+                - paragraph [ref=e248]: 169 open total
+            - generic [ref=e249]:
+              - paragraph [ref=e252]: Due in 7d
+              - generic [ref=e253]:
+                - paragraph [ref=e254]: "0"
+                - paragraph [ref=e255]: assessments
+          - generic [ref=e256]:
+            - button "AI Executive Summary Board-ready PDF with AI narrative" [ref=e257] [cursor=pointer]:
+              - generic [ref=e258]:
+                - img [ref=e260]
+                - generic [ref=e262]:
+                  - paragraph [ref=e263]: AI Executive Summary
+                  - paragraph [ref=e264]: Board-ready PDF with AI narrative
+                - img [ref=e265]
+            - link "Executive Dashboard Printable one-page compliance view" [ref=e267] [cursor=pointer]:
+              - /url: /executive-dashboard
+              - generic [ref=e268]:
+                - img [ref=e270]
+                - generic [ref=e273]:
+                  - paragraph [ref=e274]: Executive Dashboard
+                  - paragraph [ref=e275]: Printable one-page compliance view
+                - img [ref=e276]
+          - generic [ref=e278]:
+            - generic [ref=e280]:
+              - generic [ref=e281]:
+                - generic [ref=e282]:
+                  - generic [ref=e283]: Risk Heat Map
+                  - paragraph [ref=e284]: 169 plotted·61 critical
+                - generic [ref=e285]: L × I
+              - generic [ref=e287]:
+                - generic [ref=e289]: Likelihood
+                - generic [ref=e290]:
+                  - generic [ref=e291]:
+                    - generic [ref=e292]:
+                      - generic [ref=e293]: "5"
+                      - generic [ref=e294]:
+                        - button "No risks" [disabled] [ref=e295]
+                        - button "No risks" [disabled] [ref=e296]
+                        - button "No risks" [disabled] [ref=e297]
+                        - button "1" [ref=e298] [cursor=pointer]:
+                          - generic [ref=e299]: "1"
+                        - button "1" [ref=e300] [cursor=pointer]:
+                          - generic [ref=e301]: "1"
+                    - generic [ref=e302]:
+                      - generic [ref=e303]: "4"
+                      - generic [ref=e304]:
+                        - button "No risks" [disabled] [ref=e305]
+                        - button "No risks" [disabled] [ref=e306]
+                        - button "No risks" [disabled] [ref=e307]
+                        - button "57" [ref=e308] [cursor=pointer]:
+                          - generic [ref=e309]: "57"
+                        - button "2" [ref=e310] [cursor=pointer]:
+                          - generic [ref=e311]: "2"
+                    - generic [ref=e312]:
+                      - generic [ref=e313]: "3"
+                      - generic [ref=e314]:
+                        - button "No risks" [disabled] [ref=e315]
+                        - button "No risks" [disabled] [ref=e316]
+                        - button "3" [ref=e317] [cursor=pointer]:
+                          - generic [ref=e318]: "3"
+                        - button "105" [ref=e319] [cursor=pointer]:
+                          - generic [ref=e320]: "105"
+                        - button "No risks" [disabled] [ref=e321]
+                    - generic [ref=e322]:
+                      - generic [ref=e323]: "2"
+                      - generic [ref=e324]:
+                        - button "No risks" [disabled] [ref=e325]
+                        - button "No risks" [disabled] [ref=e326]
+                        - button "No risks" [disabled] [ref=e327]
+                        - button "No risks" [disabled] [ref=e328]
+                        - button "No risks" [disabled] [ref=e329]
+                    - generic [ref=e330]:
+                      - generic [ref=e331]: "1"
+                      - generic [ref=e332]:
+                        - button "No risks" [disabled] [ref=e333]
+                        - button "No risks" [disabled] [ref=e334]
+                        - button "No risks" [disabled] [ref=e335]
+                        - button "No risks" [disabled] [ref=e336]
+                        - button "No risks" [disabled] [ref=e337]
+                    - generic [ref=e339]:
+                      - generic [ref=e340]: "1"
+                      - generic [ref=e341]: "2"
+                      - generic [ref=e342]: "3"
+                      - generic [ref=e343]: "4"
+                      - generic [ref=e344]: "5"
+                    - paragraph [ref=e345]: Impact
+                  - generic [ref=e347]:
+                    - generic [ref=e348]: Low
+                    - generic [ref=e350]: Critical
+            - generic [ref=e352]:
+              - generic [ref=e353]:
+                - generic [ref=e354]: Health Breakdown
+                - paragraph [ref=e355]: Evidence-weighted · 100 pts total
+              - generic [ref=e356]:
+                - generic [ref=e358]:
+                  - generic [ref=e359]: Compliance
+                  - generic [ref=e360]:
+                    - text: "14.5"
+                    - generic [ref=e361]: /40
+                - generic [ref=e365]:
+                  - generic [ref=e366]: Critical Risks
+                  - generic [ref=e367]:
+                    - text: "0"
+                    - generic [ref=e368]: /20
+                - generic [ref=e371]:
+                  - generic [ref=e372]: Evidence Quality
+                  - generic [ref=e373]:
+                    - text: "0"
+                    - generic [ref=e374]: /20
+                - generic [ref=e377]:
+                  - generic [ref=e378]: Overdue Items
+                  - generic [ref=e379]:
+                    - text: "10"
+                    - generic [ref=e380]: /10
+                - generic [ref=e384]:
+                  - generic [ref=e385]: Open Risks
+                  - generic [ref=e386]:
+                    - text: "0"
+                    - generic [ref=e387]: /10
+          - generic [ref=e390]:
+            - generic [ref=e392]: KRI Trends
+            - generic [ref=e394]:
+              - paragraph [ref=e395]: Not enough data yet
+              - paragraph [ref=e396]: Trends appear after the first few nightly snapshots.
+          - generic [ref=e397]:
+            - generic [ref=e399]:
+              - generic [ref=e400]:
+                - generic [ref=e401]: Risk Trend
+                - paragraph [ref=e402]: Risk levels over time — ISO/IEC 27005 scoring
+              - generic [ref=e406]:
+                - list [ref=e408]:
+                  - listitem [ref=e409]:
+                    - img "critical legend icon" [ref=e410]
+                    - text: critical
+                  - listitem [ref=e412]:
+                    - img "high legend icon" [ref=e413]
+                    - text: high
+                  - listitem [ref=e415]:
+                    - img "low legend icon" [ref=e416]
+                    - text: low
+                  - listitem [ref=e418]:
+                    - img "medium legend icon" [ref=e419]
+                    - text: medium
+                - application [ref=e421]:
+                  - generic [ref=e434]:
+                    - generic [ref=e437]: Apr
+                    - generic [ref=e438]:
+                      - generic [ref=e440]: "0"
+                      - generic [ref=e442]: "45"
+                      - generic [ref=e444]: "90"
+                      - generic [ref=e446]: "135"
+                      - generic [ref=e448]: "180"
+            - generic [ref=e450]:
+              - generic [ref=e451]:
+                - generic [ref=e452]: Recent Activity
+                - link "View all" [ref=e453] [cursor=pointer]:
+                  - /url: /audit-logs
+                  - text: View all
+                  - img [ref=e454]
+              - generic [ref=e458]:
+                - generic [ref=e461]:
+                  - paragraph [ref=e462]: Uploaded test-user-accounts.csv for security analysis
+                  - paragraph [ref=e463]: System Admin·5 hours ago
+                - generic [ref=e466]:
+                  - paragraph [ref=e467]: Uploaded test-password-policy.txt for security analysis
+                  - paragraph [ref=e468]: System Admin·1 week ago
+                - generic [ref=e471]:
+                  - paragraph [ref=e472]: "Saved security audit report as evidence (Evidence #11)"
+                  - paragraph [ref=e473]: System Admin·1 week ago
+                - generic [ref=e476]:
+                  - paragraph [ref=e477]: Exported security audit report PDF for test-user-accounts.csv
+                  - paragraph [ref=e478]: System Admin·1 week ago
+                - generic [ref=e481]:
+                  - paragraph [ref=e482]: Uploaded test-user-accounts.csv for security analysis
+                  - paragraph [ref=e483]: System Admin·1 week ago
+                - generic [ref=e486]:
+                  - paragraph [ref=e487]: Deleted security audit for test-password-policy.txt
+                  - paragraph [ref=e488]: System Admin·1 week ago
+                - generic [ref=e491]:
+                  - paragraph [ref=e492]: "Saved security audit report as evidence (Evidence #10)"
+                  - paragraph [ref=e493]: System Admin·1 week ago
+                - generic [ref=e496]:
+                  - paragraph [ref=e497]: Generated 9 risks from security audit findings
+                  - paragraph [ref=e498]: System Admin·1 week ago
+          - generic [ref=e499]:
+            - generic [ref=e501]:
+              - generic [ref=e503]: Compliance by Framework
+              - generic [ref=e504]:
+                - generic [ref=e505]:
+                  - generic [ref=e507]:
+                    - list [ref=e509]:
+                      - listitem [ref=e510]:
+                        - img "[object Object] legend icon" [ref=e511]
+                        - generic [ref=e514]: CIS Benchmarks (0%)
+                      - listitem [ref=e515]:
+                        - img "[object Object] legend icon" [ref=e516]
+                        - generic [ref=e519]: ISO 27001 (0%)
+                      - listitem [ref=e520]:
+                        - img "[object Object] legend icon" [ref=e521]
+                        - generic [ref=e524]: NIST 800-53 (0%)
+                      - listitem [ref=e525]:
+                        - img "[object Object] legend icon" [ref=e526]
+                        - generic [ref=e529]: OWASP ASVS (0%)
+                    - application [ref=e530]
+                  - generic:
+                    - generic:
+                      - generic: 68%
+                      - generic: Overall
+                - paragraph [ref=e556]: Complete assessments to see compliance scores
+            - generic [ref=e558]:
+              - generic [ref=e560]:
+                - img [ref=e561]
+                - text: Rule Adjustments
+              - generic [ref=e563]:
+                - paragraph [ref=e564]: "0"
+                - paragraph [ref=e565]: risk scores auto-adjusted by compliance rules in the last 30 days
+          - generic [ref=e566]:
+            - generic [ref=e567]:
+              - generic [ref=e568]:
+                - generic [ref=e569]: Top Risks
+                - paragraph [ref=e570]: Ranked by ISO/IEC 27005 likelihood × impact
+              - link "View all" [ref=e571] [cursor=pointer]:
+                - /url: /risks
+                - text: View all
+                - img [ref=e572]
+            - generic [ref=e576]:
+              - link "RSK-173 [Security Audit] PHP Version Information Exposure Technical · System Admin medium · open 9/25" [ref=e577] [cursor=pointer]:
+                - /url: /risks/173
+                - generic [ref=e578]: RSK-173
+                - generic [ref=e579]:
+                  - paragraph [ref=e580]: "[Security Audit] PHP Version Information Exposure"
+                  - paragraph [ref=e581]: Technical · System Admin
+                - generic [ref=e582]:
+                  - generic [ref=e584]: medium
+                  - generic [ref=e585]: · open
+                - generic [ref=e586]: 9/25
+                - img [ref=e587]
+              - link "RSK-172 [Security Audit] PHP Error Display Enabled in Production Technical · System Admin medium · open 9/25" [ref=e590] [cursor=pointer]:
+                - /url: /risks/172
+                - generic [ref=e591]: RSK-172
+                - generic [ref=e592]:
+                  - paragraph [ref=e593]: "[Security Audit] PHP Error Display Enabled in Production"
+                  - paragraph [ref=e594]: Technical · System Admin
+                - generic [ref=e595]:
+                  - generic [ref=e597]: medium
+                  - generic [ref=e598]: · open
+                - generic [ref=e599]: 9/25
+                - img [ref=e600]
+              - link "RSK-171 [Security Audit] Server Binding to All Interfaces Technical · System Admin critical · open 16/25" [ref=e603] [cursor=pointer]:
+                - /url: /risks/171
+                - generic [ref=e604]: RSK-171
+                - generic [ref=e605]:
+                  - paragraph [ref=e606]: "[Security Audit] Server Binding to All Interfaces"
+                  - paragraph [ref=e607]: Technical · System Admin
+                - generic [ref=e608]:
+                  - generic [ref=e610]: critical
+                  - generic [ref=e611]: · open
+                - generic [ref=e612]: 16/25
+                - img [ref=e613]
+              - link "RSK-170 [Security Audit] SSL Certificate Verification Disabled Technical · System Admin critical · open 16/25" [ref=e616] [cursor=pointer]:
+                - /url: /risks/170
+                - generic [ref=e617]: RSK-170
+                - generic [ref=e618]:
+                  - paragraph [ref=e619]: "[Security Audit] SSL Certificate Verification Disabled"
+                  - paragraph [ref=e620]: Technical · System Admin
+                - generic [ref=e621]:
+                  - generic [ref=e623]: critical
+                  - generic [ref=e624]: · open
+                - generic [ref=e625]: 16/25
+                - img [ref=e626]
+              - link "RSK-169 [Security Audit] Insecure CORS Configuration Technical · System Admin critical · open 16/25" [ref=e629] [cursor=pointer]:
+                - /url: /risks/169
+                - generic [ref=e630]: RSK-169
+                - generic [ref=e631]:
+                  - paragraph [ref=e632]: "[Security Audit] Insecure CORS Configuration"
+                  - paragraph [ref=e633]: Technical · System Admin
+                - generic [ref=e634]:
+                  - generic [ref=e636]: critical
+                  - generic [ref=e637]: · open
+                - generic [ref=e638]: 16/25
+                - img [ref=e639]
+          - paragraph [ref=e644]: Nightly checks · 02:00 · last run never
+  - generic [ref=e645]: "0"

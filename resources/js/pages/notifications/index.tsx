@@ -1,9 +1,9 @@
-import AdminLayout from '@/layouts/admin-layout';
 import { Link, router } from '@inertiajs/react';
 import { AlertTriangle, Bell, Clock, ExternalLink, FileCheck, Shield, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/page-header';
-import { useState } from 'react';
+import AdminLayout from '@/layouts/admin-layout';
 
 type NotificationItem = {
     id: number;

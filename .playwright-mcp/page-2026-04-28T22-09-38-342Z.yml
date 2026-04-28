@@ -1,0 +1,344 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - img [ref=e8]
+          - generic [ref=e10]: GRC
+          - generic [ref=e11]: Super Admin
+        - generic [ref=e12]: ✶
+        - navigation [ref=e13]:
+          - list [ref=e14]:
+            - listitem [ref=e15]:
+              - link "Dashboard" [ref=e16] [cursor=pointer]:
+                - /url: /dashboard
+                - img [ref=e17]
+                - generic [ref=e22]: Dashboard
+            - listitem [ref=e23]:
+              - link "AI Assistant" [ref=e24] [cursor=pointer]:
+                - /url: /chatbot
+                - img [ref=e25]
+                - generic [ref=e27]: AI Assistant
+            - listitem [ref=e28]:
+              - link "Risk Register" [ref=e29] [cursor=pointer]:
+                - /url: /risks
+                - img [ref=e30]
+                - generic [ref=e32]: Risk Register
+            - listitem [ref=e33]:
+              - link "Assessments" [ref=e34] [cursor=pointer]:
+                - /url: /assessments
+                - img [ref=e35]
+                - generic [ref=e38]: Assessments
+            - listitem [ref=e39]:
+              - link "Evidence" [ref=e40] [cursor=pointer]:
+                - /url: /evidence
+                - img [ref=e41]
+                - generic [ref=e43]: Evidence
+            - listitem [ref=e44]:
+              - link "Gap Analysis" [ref=e45] [cursor=pointer]:
+                - /url: /gap-analysis
+                - img [ref=e46]
+                - generic [ref=e50]: Gap Analysis
+            - listitem [ref=e51]:
+              - link "Security Audit" [ref=e52] [cursor=pointer]:
+                - /url: /security-audits
+                - img [ref=e53]
+                - generic [ref=e55]: Security Audit
+            - listitem [ref=e56]:
+              - link "Crosswalk" [ref=e57] [cursor=pointer]:
+                - /url: /crosswalk
+                - img [ref=e58]
+                - generic [ref=e63]: Crosswalk
+            - listitem [ref=e64]:
+              - link "Controls Hub" [ref=e65] [cursor=pointer]:
+                - /url: /controls/hub
+                - img [ref=e66]
+                - generic [ref=e71]: Controls Hub
+            - listitem [ref=e72]:
+              - link "Remediation" [ref=e73] [cursor=pointer]:
+                - /url: /remediation-tasks
+                - img [ref=e74]
+                - generic [ref=e77]: Remediation
+            - listitem [ref=e78]:
+              - link "Reports" [ref=e79] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=e80]
+                - generic [ref=e82]: Reports
+          - generic [ref=e83]:
+            - paragraph [ref=e84]: Review
+            - list [ref=e85]:
+              - listitem [ref=e86]:
+                - link "Approvals 1" [ref=e87] [cursor=pointer]:
+                  - /url: /controls/approvals
+                  - img [ref=e88]
+                  - generic [ref=e91]: Approvals
+                  - generic [ref=e92]: "1"
+              - listitem [ref=e93]:
+                - link "Audit Logs" [ref=e94] [cursor=pointer]:
+                  - /url: /audit-logs
+                  - img [ref=e95]
+                  - generic [ref=e98]: Audit Logs
+              - listitem [ref=e99]:
+                - link "Notifications 5" [ref=e100] [cursor=pointer]:
+                  - /url: /notifications
+                  - img [ref=e101]
+                  - generic [ref=e104]: Notifications
+                  - generic [ref=e105]: "5"
+          - generic [ref=e106]:
+            - paragraph [ref=e107]: Administration
+            - list [ref=e108]:
+              - listitem [ref=e109]:
+                - link "Users" [ref=e110] [cursor=pointer]:
+                  - /url: /admin/users
+                  - img [ref=e111]
+                  - generic [ref=e116]: Users
+              - listitem [ref=e117]:
+                - link "Risk Appetite" [ref=e118] [cursor=pointer]:
+                  - /url: /risk-appetite
+                  - img [ref=e119]
+                  - generic [ref=e120]: Risk Appetite
+          - generic [ref=e121]:
+            - paragraph [ref=e122]: Platform
+            - list [ref=e123]:
+              - listitem [ref=e124]:
+                - link "Corporations" [ref=e125] [cursor=pointer]:
+                  - /url: /admin/corporations
+                  - img [ref=e126]
+                  - generic [ref=e130]: Corporations
+              - listitem [ref=e131]:
+                - link "Frameworks" [ref=e132] [cursor=pointer]:
+                  - /url: /admin/frameworks
+                  - img [ref=e133]
+                  - generic [ref=e135]: Frameworks
+              - listitem [ref=e136]:
+                - link "Controls Library" [ref=e137] [cursor=pointer]:
+                  - /url: /admin/controls
+                  - img [ref=e138]
+                  - generic [ref=e141]: Controls Library
+        - generic [ref=e143]:
+          - generic [ref=e145]: SA
+          - generic [ref=e146]:
+            - paragraph [ref=e147]: System Admin
+            - paragraph [ref=e148]: admin@grc.com
+          - button "Log out" [ref=e149] [cursor=pointer]:
+            - img [ref=e150]
+    - generic [ref=e153]:
+      - banner [ref=e154]:
+        - generic [ref=e156]:
+          - img [ref=e157]
+          - searchbox "Search..." [ref=e160]
+          - generic: ⌘K
+        - button "Switch to dark mode" [ref=e161] [cursor=pointer]:
+          - img [ref=e164]
+        - button "Notifications" [ref=e171] [cursor=pointer]:
+          - img [ref=e172]
+          - generic [ref=e175]: "5"
+      - main [ref=e176]:
+        - generic [ref=e177]:
+          - generic [ref=e178]:
+            - generic [ref=e181]:
+              - heading "Reports" [level=1] [ref=e182]
+              - paragraph [ref=e183]: Organisation security and compliance summary
+            - generic [ref=e185]:
+              - generic [ref=e186]: 29/04/2026
+              - link "Export PDF" [ref=e187] [cursor=pointer]:
+                - /url: /reports/export-pdf
+                - button "Export PDF" [ref=e188]:
+                  - img
+                  - text: Export PDF
+              - button "Gap Analysis" [ref=e189] [cursor=pointer]:
+                - img
+                - text: Gap Analysis
+              - button "Executive Summary" [ref=e190] [cursor=pointer]:
+                - img
+                - text: Executive Summary
+          - generic [ref=e191]:
+            - generic [ref=e192]:
+              - paragraph [ref=e196]: Overall Compliance
+              - paragraph [ref=e197]: 69%
+            - generic [ref=e198]:
+              - paragraph [ref=e201]: Total Risks
+              - paragraph [ref=e202]: "169"
+            - generic [ref=e203]:
+              - paragraph [ref=e206]: Open Risks
+              - paragraph [ref=e207]: "169"
+            - generic [ref=e208]:
+              - paragraph [ref=e211]: Assessments
+              - paragraph [ref=e212]: "4"
+          - generic [ref=e213]:
+            - generic [ref=e214]:
+              - generic [ref=e216]: Overall Compliance
+              - generic [ref=e218]:
+                - generic [ref=e219]: 69%
+                - paragraph [ref=e220]: Across all frameworks
+            - generic [ref=e223]:
+              - generic [ref=e225]: Compliance by Framework
+              - generic [ref=e226]:
+                - application [ref=e230]:
+                  - generic [ref=e234]:
+                    - generic [ref=e235]:
+                      - generic [ref=e237]: ISO27001
+                      - generic [ref=e239]: NIST800-53
+                      - generic [ref=e241]: OWASP-ASVS
+                      - generic [ref=e243]: CIS
+                    - generic [ref=e244]:
+                      - generic [ref=e246]: "0"
+                      - generic [ref=e248]: "25"
+                      - generic [ref=e250]: "50"
+                      - generic [ref=e252]: "75"
+                      - generic [ref=e254]: "100"
+                - generic [ref=e255]:
+                  - generic [ref=e256]:
+                    - generic [ref=e257]: ISO27001
+                    - generic [ref=e258]:
+                      - generic [ref=e259]: 3 assessments
+                      - generic [ref=e260]: 72.5%
+                  - generic [ref=e261]:
+                    - generic [ref=e262]: NIST800-53
+                    - generic [ref=e263]:
+                      - generic [ref=e264]: 1 assessment
+                      - generic [ref=e265]: 65.5%
+                  - generic [ref=e266]:
+                    - generic [ref=e267]: OWASP-ASVS
+                    - generic [ref=e268]:
+                      - generic [ref=e269]: 0 assessments
+                      - generic [ref=e270]: No data
+                  - generic [ref=e271]:
+                    - generic [ref=e272]: CIS
+                    - generic [ref=e273]:
+                      - generic [ref=e274]: 0 assessments
+                      - generic [ref=e275]: No data
+          - generic [ref=e276]:
+            - generic [ref=e278]: Compliance Trend — Last 6 Months
+            - application [ref=e283]:
+              - generic [ref=e290]:
+                - generic [ref=e293]: Apr 2026
+                - generic [ref=e294]:
+                  - generic [ref=e296]: "0"
+                  - generic [ref=e298]: "25"
+                  - generic [ref=e300]: "50"
+                  - generic [ref=e302]: "75"
+                  - generic [ref=e304]: "100"
+          - generic [ref=e305]:
+            - generic [ref=e306]:
+              - generic [ref=e308]: Risks by Level
+              - generic [ref=e309]:
+                - generic [ref=e312]:
+                  - list [ref=e314]:
+                    - listitem [ref=e315]:
+                      - img "Critical legend icon" [ref=e316]
+                      - text: Critical
+                    - listitem [ref=e318]:
+                      - img "High legend icon" [ref=e319]
+                      - text: High
+                    - listitem [ref=e321]:
+                      - img "Low legend icon" [ref=e322]
+                      - text: Low
+                    - listitem [ref=e324]:
+                      - img "Medium legend icon" [ref=e325]
+                      - text: Medium
+                  - application [ref=e327]
+                - generic [ref=e328]:
+                  - generic [ref=e331]: "Critical: 61"
+                  - generic [ref=e334]: "High: 105"
+                  - generic [ref=e337]: "Medium: 3"
+                  - generic [ref=e340]: "Low: 0"
+            - generic [ref=e341]:
+              - generic [ref=e343]: Risks by Category
+              - application [ref=e348]:
+                - generic [ref=e352]:
+                  - generic [ref=e353]:
+                    - generic [ref=e355]: "0"
+                    - generic [ref=e357]: "10"
+                    - generic [ref=e359]: "20"
+                    - generic [ref=e361]: "30"
+                    - generic [ref=e363]: "40"
+                  - generic [ref=e364]:
+                    - generic [ref=e366]: People Controls
+                    - generic [ref=e368]: Audit andAccountability
+                    - generic [ref=e370]: Assessment,Authorisation, andMonitoring
+                    - generic [ref=e372]: ConfigurationManagement
+                    - generic [ref=e374]: Physical andEnvironmentalProtection
+                    - generic [ref=e376]: System and ServicesAcquisition
+                    - generic [ref=e378]: Contingency Planning
+                    - generic [ref=e380]: PII ProcessingandTransparency
+            - generic [ref=e381]:
+              - generic [ref=e383]: Risks by Status
+              - generic [ref=e384]:
+                - generic [ref=e385]:
+                  - generic [ref=e386]:
+                    - img [ref=e387]
+                    - generic [ref=e389]: Open
+                  - generic [ref=e390]: "169"
+                - generic [ref=e391]:
+                  - generic [ref=e392]:
+                    - img [ref=e393]
+                    - generic [ref=e396]: In Progress
+                  - generic [ref=e397]: "0"
+                - generic [ref=e398]:
+                  - generic [ref=e399]:
+                    - img [ref=e400]
+                    - generic [ref=e403]: Under Review
+                  - generic [ref=e404]: "0"
+                - generic [ref=e405]:
+                  - generic [ref=e406]:
+                    - img [ref=e407]
+                    - generic [ref=e410]: Closed
+                  - generic [ref=e411]: "0"
+          - generic [ref=e412]:
+            - generic [ref=e414]: Assessment History
+            - table [ref=e416]:
+              - rowgroup [ref=e417]:
+                - row "Assessment Framework Period Score Completed By" [ref=e418]:
+                  - columnheader "Assessment" [ref=e419]
+                  - columnheader "Framework" [ref=e420]
+                  - columnheader "Period" [ref=e421]
+                  - columnheader "Score" [ref=e422]
+                  - columnheader "Completed" [ref=e423]
+                  - columnheader "By" [ref=e424]
+              - rowgroup [ref=e425]:
+                - row "fhx ISO27001 fhc 72.5% 2026-04-11 System Admin" [ref=e426]:
+                  - cell "fhx" [ref=e427]:
+                    - link "fhx" [ref=e428] [cursor=pointer]:
+                      - /url: /assessments/10
+                  - cell "ISO27001" [ref=e429]:
+                    - generic [ref=e430]: ISO27001
+                  - cell "fhc" [ref=e431]
+                  - cell "72.5%" [ref=e432]:
+                    - generic [ref=e436]: 72.5%
+                  - cell "2026-04-11" [ref=e437]
+                  - cell "System Admin" [ref=e438]
+                - row "fghfghs ISO27001 sfhy 76.9% 2026-04-11 System Admin" [ref=e439]:
+                  - cell "fghfghs" [ref=e440]:
+                    - link "fghfghs" [ref=e441] [cursor=pointer]:
+                      - /url: /assessments/9
+                  - cell "ISO27001" [ref=e442]:
+                    - generic [ref=e443]: ISO27001
+                  - cell "sfhy" [ref=e444]
+                  - cell "76.9%" [ref=e445]:
+                    - generic [ref=e449]: 76.9%
+                  - cell "2026-04-11" [ref=e450]
+                  - cell "System Admin" [ref=e451]
+                - row "MN ISO27001 BNM 67.9% 2026-04-11 System Admin" [ref=e452]:
+                  - cell "MN" [ref=e453]:
+                    - link "MN" [ref=e454] [cursor=pointer]:
+                      - /url: /assessments/8
+                  - cell "ISO27001" [ref=e455]:
+                    - generic [ref=e456]: ISO27001
+                  - cell "BNM" [ref=e457]
+                  - cell "67.9%" [ref=e458]:
+                    - generic [ref=e462]: 67.9%
+                  - cell "2026-04-11" [ref=e463]
+                  - cell "System Admin" [ref=e464]
+                - row "NIST Q2 NIST800-53 Q2 2026 65.5% 2026-04-11 System Admin" [ref=e465]:
+                  - cell "NIST Q2" [ref=e466]:
+                    - link "NIST Q2" [ref=e467] [cursor=pointer]:
+                      - /url: /assessments/7
+                  - cell "NIST800-53" [ref=e468]:
+                    - generic [ref=e469]: NIST800-53
+                  - cell "Q2 2026" [ref=e470]
+                  - cell "65.5%" [ref=e471]:
+                    - generic [ref=e475]: 65.5%
+                  - cell "2026-04-11" [ref=e476]
+                  - cell "System Admin" [ref=e477]
+  - generic [ref=e478]: Planning

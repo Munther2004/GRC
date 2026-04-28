@@ -91,8 +91,9 @@ class CorporateDashboardController extends Controller
 
         $stats = [
             'total_users' => $users->count(),
-            'managers' => $users->where('role', 'corporate_manager')->count(),
-            'employees' => $users->where('role', 'employee')->count(),
+            'admins' => $users->where('role', \App\Models\User::ROLE_ADMIN)->count(),
+            'auditors' => $users->where('role', \App\Models\User::ROLE_AUDITOR)->count(),
+            'users' => $users->where('role', \App\Models\User::ROLE_USER)->count(),
         ];
 
         return Inertia::render('corporate/team-members', [

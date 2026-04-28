@@ -1,18 +1,4 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import type { SharedProps } from '@/types';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Eye,
     Trash2,
@@ -22,6 +8,9 @@ import {
     Plus,
 } from 'lucide-react';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -30,9 +19,20 @@ import {
     DialogTitle,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { PageHeader } from '@/components/ui/page-header';
-import { StatStrip } from '@/components/ui/stat-strip';
 import { FilterBar } from '@/components/ui/filter-bar';
+import { Input } from '@/components/ui/input';
+import { PageHeader } from '@/components/ui/page-header';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { StatStrip } from '@/components/ui/stat-strip';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import type { SharedProps } from '@/types';
 
 interface Assessment {
     id: number;
@@ -84,8 +84,8 @@ export default function AssessmentsIndex({
     filters,
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
-    const isAdmin = auth.user.role === 'admin';
-    const canEdit = auth.user.role === 'admin' || auth.user.role === 'manager' || auth.user.role === 'employee' || auth.user.role === 'user';
+    const isAdmin = auth.user.role === 'super_admin' || auth.user.role === 'admin';
+    const canEdit = auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'user';
 
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState(filters.status ?? 'all');

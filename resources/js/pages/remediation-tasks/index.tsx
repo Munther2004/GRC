@@ -1,28 +1,4 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import type { SharedProps } from '@/types';
-import { route } from '@/lib/routes';
-import AdminLayout from '@/layouts/admin-layout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from '@/components/ui/dialog';
 import {
     ClipboardList,
     Plus,
@@ -39,6 +15,30 @@ import {
     X,
 } from 'lucide-react';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
+import type { SharedProps } from '@/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -404,7 +404,7 @@ export default function RemediationTasksIndex({
     filters,
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
-    const canEdit = auth.user.role === 'admin' || auth.user.role === 'manager' || auth.user.role === 'employee' || auth.user.role === 'user';
+    const canEdit = auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'user';
 
     // Filter state
     const [search, setSearch] = useState(filters.search ?? '');
@@ -566,7 +566,7 @@ export default function RemediationTasksIndex({
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                     <Card>
                         <CardContent className="p-4">
-                            <p className="font-heading text-4xl font-normal" style={{ color: '#E0F5EC' }}>
+                            <p className="font-heading text-4xl font-normal" style={{ color: 'var(--foreground)' }}>
                                 {stats.total}
                             </p>
                             <p className="mt-0.5 text-xs text-muted-foreground">

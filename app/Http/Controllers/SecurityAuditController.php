@@ -99,39 +99,43 @@ class SecurityAuditController extends Controller
             ->with('success', 'File uploaded — analysis in progress.');
     }
 
-    public function show(SecurityAudit $securityAudit)
+    public function show(SecurityAudit $audit)
     {
-        $securityAudit->load(['user:id,name']);
+        $audit->load(['user:id,name']);
 
-        $findings = $securityAudit->findings()
+        $findings = $audit->findings()
             ->with(['control:id,control_id,title', 'risk:id,title'])
             ->orderByRaw("FIELD(severity, 'critical','high','medium','low','info')")
             ->get();
 
+        $eligibleForRisks = $audit->isCompleted()
+            && $audit->findings()->whereIn('severity', ['critical', 'high', 'medium'])->whereNull('risk_id')->exists();
+
         return Inertia::render('SecurityAudits/Show', [
             'audit' => [
-                'id' => $securityAudit->id,
-                'file_name' => $securityAudit->file_name,
-                'file_type' => $securityAudit->file_type,
-                'file_size' => $securityAudit->file_size,
-                'status' => $securityAudit->status,
-                'summary' => $securityAudit->summary,
-                'total_findings' => $securityAudit->total_findings,
-                'critical_count' => $securityAudit->critical_count,
-                'high_count' => $securityAudit->high_count,
-                'medium_count' => $securityAudit->medium_count,
-                'low_count' => $securityAudit->low_count,
-                'info_count' => $securityAudit->info_count,
-                'compliance_score' => $securityAudit->compliance_score,
-                'frameworks_checked' => $securityAudit->frameworks_checked ?? [],
-                'controls_referenced' => $securityAudit->controls_referenced ?? [],
-                'risks_generated' => $securityAudit->risks_generated,
-                'evidence_id' => $securityAudit->evidence_id,
-                'error_message' => $securityAudit->error_message,
-                'analyzed_at' => $securityAudit->analyzed_at?->toIso8601String(),
-                'created_at' => $securityAudit->created_at?->toIso8601String(),
-                'user' => $securityAudit->user ? ['id' => $securityAudit->user->id, 'name' => $securityAudit->user->name] : null,
+                'id' => $audit->id,
+                'file_name' => $audit->file_name,
+                'file_type' => $audit->file_type,
+                'file_size' => $audit->file_size,
+                'status' => $audit->status,
+                'summary' => $audit->summary,
+                'total_findings' => $audit->total_findings,
+                'critical_count' => $audit->critical_count,
+                'high_count' => $audit->high_count,
+                'medium_count' => $audit->medium_count,
+                'low_count' => $audit->low_count,
+                'info_count' => $audit->info_count,
+                'compliance_score' => $audit->compliance_score,
+                'frameworks_checked' => $audit->frameworks_checked ?? [],
+                'controls_referenced' => $audit->controls_referenced ?? [],
+                'risks_generated' => $audit->risks_generated,
+                'evidence_id' => $audit->evidence_id,
+                'error_message' => $audit->error_message,
+                'analyzed_at' => $audit->analyzed_at?->toIso8601String(),
+                'created_at' => $audit->created_at?->toIso8601String(),
+                'user' => $audit->user ? ['id' => $audit->user->id, 'name' => $audit->user->name] : null,
             ],
+            'canGenerateRisks' => $eligibleForRisks,
             'findings' => $findings->map(fn ($f) => [
                 'id' => $f->id,
                 'finding_number' => $f->finding_number,
@@ -152,14 +156,14 @@ class SecurityAuditController extends Controller
         ]);
     }
 
-    public function generateRisks(SecurityAudit $securityAudit)
+    public function generateRisks(SecurityAudit $audit)
     {
-        if (! $securityAudit->isCompleted()) {
+        if (! $audit->isCompleted()) {
             return back()->with('error', 'Audit must be completed before generating risks.');
         }
 
         $generated = 0;
-        $eligible = $securityAudit->findings()
+        $eligible = $audit->findings()
             ->whereIn('severity', ['critical', 'high', 'medium'])
             ->whereNull('risk_id')
             ->get();
@@ -174,7 +178,7 @@ class SecurityAuditController extends Controller
             if ($finding->recommendation) {
                 $description .= "\n\nRecommendation: ".$finding->recommendation;
             }
-            $description .= "\n\nIdentified by automated security audit of {$securityAudit->file_name}.";
+            $description .= "\n\nIdentified by automated security audit of {$audit->file_name}.";
 
             $risk = Risk::create([
                 'user_id' => Auth::id(),
@@ -194,30 +198,30 @@ class SecurityAuditController extends Controller
             $generated++;
         }
 
-        $securityAudit->increment('risks_generated', $generated);
+        $audit->increment('risks_generated', $generated);
 
         AuditLog::record(
             'security_audit_risks_generated',
             SecurityAudit::class,
-            $securityAudit->id,
+            $audit->id,
             "Generated {$generated} risks from security audit findings",
         );
 
         Notification::create([
-            'user_id' => $securityAudit->user_id,
+            'user_id' => $audit->user_id,
             'type' => 'security_audit_risks_generated',
             'title' => 'Risks Generated from Security Audit',
-            'message' => "{$generated} risks created from {$securityAudit->file_name} findings",
-            'url' => "/security-audits/{$securityAudit->id}",
+            'message' => "{$generated} risks created from {$audit->file_name} findings",
+            'url' => "/security-audits/{$audit->id}",
             'is_read' => false,
         ]);
 
         return back()->with('success', "Generated {$generated} risk(s) from findings.");
     }
 
-    public function saveAsEvidence(Request $request, SecurityAudit $securityAudit)
+    public function saveAsEvidence(Request $request, SecurityAudit $audit)
     {
-        if (! $securityAudit->isCompleted()) {
+        if (! $audit->isCompleted()) {
             return back()->with('error', 'Audit must be completed before saving as evidence.');
         }
 
@@ -226,62 +230,62 @@ class SecurityAuditController extends Controller
         ]);
 
         // Generate the PDF report and store it as the evidence file
-        $pdf = $this->buildPdf($securityAudit);
-        $fileName = 'security-audit-'.$securityAudit->id.'-'.now()->format('Ymd-His').'.pdf';
+        $pdf = $this->buildPdf($audit);
+        $fileName = 'security-audit-'.$audit->id.'-'.now()->format('Ymd-His').'.pdf';
         $storagePath = "evidence/{$fileName}";
         Storage::disk('public')->put($storagePath, $pdf->output());
 
         $evidence = Evidence::create([
             'user_id' => Auth::id(),
             'control_id' => $request->input('control_id'),
-            'title' => "Security Audit Report: {$securityAudit->file_name}",
-            'description' => $securityAudit->summary,
+            'title' => "Security Audit Report: {$audit->file_name}",
+            'description' => $audit->summary,
             'file_path' => $storagePath,
             'file_name' => $fileName,
             'file_type' => 'application/pdf',
             'status' => 'pending',
         ]);
 
-        $securityAudit->update(['evidence_id' => $evidence->id]);
+        $audit->update(['evidence_id' => $evidence->id]);
 
         AuditLog::record(
             'security_audit_saved_as_evidence',
             SecurityAudit::class,
-            $securityAudit->id,
+            $audit->id,
             "Saved security audit report as evidence (Evidence #{$evidence->id})",
         );
 
         return back()->with('success', 'Audit report saved as evidence (pending review).');
     }
 
-    public function exportPdf(SecurityAudit $securityAudit)
+    public function exportPdf(SecurityAudit $audit)
     {
-        if (! $securityAudit->isCompleted()) {
+        if (! $audit->isCompleted()) {
             return back()->with('error', 'Audit must be completed before export.');
         }
 
-        $pdf = $this->buildPdf($securityAudit);
+        $pdf = $this->buildPdf($audit);
 
         AuditLog::record(
             'security_audit_exported',
             SecurityAudit::class,
-            $securityAudit->id,
-            "Exported security audit report PDF for {$securityAudit->file_name}",
+            $audit->id,
+            "Exported security audit report PDF for {$audit->file_name}",
         );
 
-        return $pdf->download("security-audit-{$securityAudit->id}.pdf");
+        return $pdf->download("security-audit-{$audit->id}.pdf");
     }
 
-    public function destroy(SecurityAudit $securityAudit)
+    public function destroy(SecurityAudit $audit)
     {
-        $name = $securityAudit->file_name;
-        $id = $securityAudit->id;
+        $name = $audit->file_name;
+        $id = $audit->id;
 
-        if ($securityAudit->file_path && Storage::disk('public')->exists($securityAudit->file_path)) {
-            Storage::disk('public')->delete($securityAudit->file_path);
+        if ($audit->file_path && Storage::disk('public')->exists($audit->file_path)) {
+            Storage::disk('public')->delete($audit->file_path);
         }
 
-        $securityAudit->delete();
+        $audit->delete();
 
         AuditLog::record(
             'security_audit_deleted',
@@ -294,13 +298,13 @@ class SecurityAuditController extends Controller
             ->with('success', 'Security audit deleted.');
     }
 
-    private function buildPdf(SecurityAudit $securityAudit)
+    private function buildPdf(SecurityAudit $audit)
     {
-        $securityAudit->load(['user:id,name', 'findings.control:id,control_id,title']);
+        $audit->load(['user:id,name', 'findings.control:id,control_id,title']);
 
         return Pdf::loadView('reports.security-audit-report', [
-            'audit' => $securityAudit,
-            'findings' => $securityAudit->findings()->orderByRaw("FIELD(severity, 'critical','high','medium','low','info')")->get(),
+            'audit' => $audit,
+            'findings' => $audit->findings()->orderByRaw("FIELD(severity, 'critical','high','medium','low','info')")->get(),
             'generatedAt' => now(),
         ])->setPaper('a4');
     }

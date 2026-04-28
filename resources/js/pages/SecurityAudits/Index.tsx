@@ -114,7 +114,7 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
         formData.append('file', file);
 
         setUploading(true);
-        router.post('/security-audits', formData, {
+        router.post('/security-audits/upload', formData, {
             forceFormData: true,
             onFinish: () => setUploading(false),
             onError: (errs) => {

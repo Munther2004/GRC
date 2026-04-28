@@ -171,8 +171,11 @@
     body {
         @apply bg-background text-foreground antialiased;
         font-family: 'Inter', system-ui, sans-serif;
-        font-size: 14px;
-        line-height: 1.6;
+        font-size: 15px;
+        line-height: 1.65;
+        letter-spacing: 0.01em;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     }
 
@@ -183,6 +186,12 @@
         letter-spacing: -0.02em;
         color: var(--foreground);
     }
+    h1 { font-size: 1.5rem; font-weight: 700; }
+    h2 { font-size: 1.25rem; font-weight: 600; }
+    h3 { font-size: 1.125rem; font-weight: 600; }
+    h4 { font-size: 1rem; font-weight: 500; }
+
+    th { font-size: 0.875rem; font-weight: 600; }
 
     /* DM Serif Display — large editorial numbers */
     .font-numeric {
@@ -271,6 +280,13 @@
     .ornate-frame:hover::after {
         opacity: 0.9;
     }
+    /* Prevent ornate-frame's position:relative from overriding fixed/absolute/sticky
+       elements. Both classes have the same specificity (0,1,0) but ornate-frame is
+       declared after @import 'tailwindcss', so without this override it silently
+       breaks fixed modals and toasts by rendering them in document flow. */
+    .fixed.ornate-frame    { position: fixed; }
+    .absolute.ornate-frame { position: absolute; }
+    .sticky.ornate-frame   { position: sticky; }
 
     .ornate-divider {
         position: relative;

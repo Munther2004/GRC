@@ -63,6 +63,7 @@ interface Finding {
 interface Props {
     audit: Audit;
     findings: Finding[];
+    canGenerateRisks: boolean;
 }
 
 const SEVERITY_CONFIG = {
@@ -109,7 +110,7 @@ function formatBytes(b: number): string {
     return `${(b / 1024 / 1024).toFixed(1)} MB`;
 }
 
-export default function SecurityAuditShow({ audit, findings }: Props) {
+export default function SecurityAuditShow({ audit, findings, canGenerateRisks }: Props) {
     const [filter, setFilter] = useState<'all' | Finding['severity']>('all');
     const [expanded, setExpanded] = useState<Record<number, boolean>>({});
 
@@ -132,7 +133,7 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
 
     const saveAsEvidence = () => {
         if (!confirm('Save this audit report as a piece of evidence?')) return;
-        router.post(`/security-audits/${audit.id}/save-as-evidence`);
+        router.post(`/security-audits/${audit.id}/save-evidence`);
     };
 
     const exportPdf = () => {
@@ -143,7 +144,7 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
 
     return (
         <AdminLayout>
-            <Head title={`Security Audit · ${audit.file_name}`} />
+            <Head title={`Security Audit · ${audit.file_name ?? 'Unknown'}`} />
 
             <div className="mb-4">
                 <Link
@@ -155,8 +156,8 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
             </div>
 
             <PageHeader
-                title={audit.file_name}
-                description={`${audit.file_type} · ${formatBytes(audit.file_size)} · uploaded by ${audit.user?.name ?? 'Unknown'}`}
+                title={audit.file_name ?? 'Unknown file'}
+                description={`${audit.file_type ?? 'unknown type'} · ${audit.file_size != null ? formatBytes(audit.file_size) : '—'} · uploaded by ${audit.user?.name ?? 'Unknown'}`}
                 volume="VII"
             >
                 {audit.status === 'completed' && (
@@ -164,7 +165,7 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
                         <Button onClick={exportPdf} variant="outline" size="sm">
                             <Download className="h-4 w-4 mr-1.5" /> Export PDF
                         </Button>
-                        <Button onClick={generateRisks} variant="outline" size="sm">
+                        <Button onClick={generateRisks} variant="outline" size="sm" disabled={!canGenerateRisks}>
                             <Wand2 className="h-4 w-4 mr-1.5" /> Generate Risks
                         </Button>
                         <Button onClick={saveAsEvidence} size="sm" disabled={!!audit.evidence_id}>

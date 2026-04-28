@@ -51,7 +51,7 @@ export default function AppearancePage() {
                         const catLabel = cat === 'high-contrast' ? 'High Contrast' : cat === 'light' ? 'Light' : 'Dark';
                         return (
                             <div key={cat} className="space-y-3">
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{catLabel}</p>
+                                <p className="text-xs text-muted-foreground uppercase tracking-widest">{catLabel}</p>
                                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                                     {group.map((theme) => {
                                         const isActive = themeName === theme.name;
@@ -109,8 +109,8 @@ export default function AppearancePage() {
                                                 {/* Label */}
                                                 <div className="mt-1.5 px-0.5 flex items-start justify-between gap-1">
                                                     <div className="min-w-0">
-                                                        <p className="text-[11px] font-medium leading-tight truncate">{theme.label}</p>
-                                                        <p className="text-[9px] text-muted-foreground leading-tight mt-0.5 line-clamp-1 opacity-70">{theme.description}</p>
+                                                        <p className="text-xs font-medium leading-tight truncate">{theme.label}</p>
+                                                        <p className="text-xs text-muted-foreground leading-tight mt-0.5 line-clamp-1 opacity-80">{theme.description}</p>
                                                     </div>
                                                     {isActive && <CheckCircle2 className="h-3.5 w-3.5 shrink-0 mt-0.5" style={{ color: primary }} />}
                                                 </div>
@@ -124,14 +124,14 @@ export default function AppearancePage() {
 
                     {/* Active theme token strip */}
                     <div className="border border-border rounded p-4">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-3">
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">
                             Active — {themes.find((t) => t.name === themeName)?.label}
                         </p>
                         <div className="flex flex-wrap gap-1.5">
                             {themes.find((t) => t.name === themeName)?.preview.map((hex, i) => {
                                 const labels = ['Background', 'Card', 'Primary', 'Accent'];
                                 return (
-                                    <div key={i} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                                    <div key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                         <div className="h-5 w-5 rounded-sm border border-white/10 shrink-0" style={{ background: hex }} />
                                         <span className="font-mono">{labels[i]}</span>
                                         <span className="font-mono opacity-50">{hex}</span>
@@ -158,7 +158,7 @@ export default function AppearancePage() {
                         if (!group.length) return null;
                         return (
                             <div key={cat} className="space-y-2">
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                                <p className="text-xs text-muted-foreground uppercase tracking-widest">
                                     {cat === 'sans' ? 'Sans-serif' : cat === 'mono' ? 'Monospace' : cat === 'display' ? 'Display' : 'Serif'}
                                 </p>
                                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -181,11 +181,11 @@ export default function AppearancePage() {
                                                 >
                                                     Aa
                                                 </p>
-                                                <p className="text-[11px] font-medium text-foreground flex items-center gap-1 leading-tight">
+                                                <p className="text-xs font-medium text-foreground flex items-center gap-1 leading-tight">
                                                     {fontConfig.label}
                                                     {isActive && <CheckCircle2 className="h-3 w-3 shrink-0" style={{ color: 'var(--primary)' }} />}
                                                 </p>
-                                                <p className="text-[9px] text-muted-foreground mt-0.5 line-clamp-1 opacity-70">
+                                                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1 opacity-80">
                                                     {fontConfig.description}
                                                 </p>
                                             </button>
@@ -208,7 +208,7 @@ export default function AppearancePage() {
 
                     {/* Border Radius */}
                     <div className="space-y-2">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Border Radius</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest">Border Radius</p>
                         <div className="flex flex-wrap gap-2">
                             {radiusPresets.map((preset) => {
                                 const isActive = preferences.radius === preset.name;
@@ -233,8 +233,8 @@ export default function AppearancePage() {
                                             }}
                                         />
                                         <div>
-                                            <p className="text-[11px] font-medium leading-tight">{preset.label}</p>
-                                            <p className="text-[9px] opacity-60 leading-tight mt-0.5">{preset.description}</p>
+                                            <p className="text-xs font-medium leading-tight">{preset.label}</p>
+                                            <p className="text-xs opacity-80 leading-tight mt-0.5">{preset.description}</p>
                                         </div>
                                         {isActive && <CheckCircle2 className="h-3.5 w-3.5 shrink-0 ml-auto" style={{ color: 'var(--primary)' }} />}
                                     </button>
@@ -245,7 +245,7 @@ export default function AppearancePage() {
 
                     {/* Density */}
                     <div className="space-y-2">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Spacing Density</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest">Spacing Density</p>
                         <div className="flex flex-wrap gap-2">
                             {densityPresets.map((preset) => {
                                 const isActive = preferences.density === preset.name;
@@ -276,8 +276,8 @@ export default function AppearancePage() {
                                             ))}
                                         </div>
                                         <div>
-                                            <p className="text-[11px] font-medium leading-tight">{preset.label}</p>
-                                            <p className="text-[9px] opacity-60 leading-tight mt-0.5">{preset.description}</p>
+                                            <p className="text-xs font-medium leading-tight">{preset.label}</p>
+                                            <p className="text-xs opacity-80 leading-tight mt-0.5">{preset.description}</p>
                                         </div>
                                         {isActive && <CheckCircle2 className="h-3.5 w-3.5 shrink-0 ml-auto" style={{ color: 'var(--primary)' }} />}
                                     </button>
@@ -288,7 +288,7 @@ export default function AppearancePage() {
 
                     {/* Motion */}
                     <div className="space-y-2">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Motion</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest">Motion</p>
                         <div className="flex flex-wrap gap-2">
                             {motionPresets.map((preset) => {
                                 const isActive = preferences.motion === preset.name;
@@ -319,8 +319,8 @@ export default function AppearancePage() {
                                             ))}
                                         </div>
                                         <div>
-                                            <p className="text-[11px] font-medium leading-tight">{preset.label}</p>
-                                            <p className="text-[9px] opacity-60 leading-tight mt-0.5">{preset.description}</p>
+                                            <p className="text-xs font-medium leading-tight">{preset.label}</p>
+                                            <p className="text-xs opacity-80 leading-tight mt-0.5">{preset.description}</p>
                                         </div>
                                         {isActive && <CheckCircle2 className="h-3.5 w-3.5 shrink-0 ml-auto" style={{ color: 'var(--primary)' }} />}
                                     </button>
@@ -331,7 +331,7 @@ export default function AppearancePage() {
 
                     {/* Sidebar Width */}
                     <div className="space-y-2">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Sidebar Width</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest">Sidebar Width</p>
                         <div className="flex flex-wrap gap-2">
                             {sidebarWidths.map((preset) => {
                                 const isActive = preferences.sidebarWidth === preset.name;
@@ -361,8 +361,8 @@ export default function AppearancePage() {
                                             <div className="flex-1" style={{ background: isActive ? 'color-mix(in srgb, var(--primary) 8%, transparent)' : 'var(--muted)' }} />
                                         </div>
                                         <div>
-                                            <p className="text-[11px] font-medium leading-tight">{preset.label}</p>
-                                            <p className="text-[9px] opacity-60 leading-tight mt-0.5">{preset.description}</p>
+                                            <p className="text-xs font-medium leading-tight">{preset.label}</p>
+                                            <p className="text-xs opacity-80 leading-tight mt-0.5">{preset.description}</p>
                                         </div>
                                         {isActive && <CheckCircle2 className="h-3.5 w-3.5 shrink-0 ml-auto" style={{ color: 'var(--primary)' }} />}
                                     </button>

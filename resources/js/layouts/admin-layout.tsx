@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AdminHeader }   from '@/components/admin/header';
 import { AdminSidebar }  from '@/components/admin/sidebar';
 import { CommandPalette } from '@/components/ui/command-palette';
+import { SidebarStateProvider, useSidebarCollapsed } from '@/hooks/use-sidebar-state';
 import type { SharedProps } from '@/types';
 
 function FlashToast() {
@@ -54,10 +55,37 @@ function FlashToast() {
     );
 }
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
+    const [collapsed] = useSidebarCollapsed();
     return (
         <div className="min-h-screen bg-background text-foreground">
-            {/* Atmospheric vignette */}
+            {/* Background: gradient mesh halo (matches landing aesthetic) */}
+            <div
+                aria-hidden
+                className="pointer-events-none fixed inset-0 z-0"
+                style={{
+                    background:
+                        'radial-gradient(60% 60% at 18% 18%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 70%),' +
+                        'radial-gradient(50% 50% at 82% 6%, color-mix(in srgb, var(--chart-2) 8%, transparent), transparent 75%),' +
+                        'radial-gradient(45% 45% at 88% 78%, color-mix(in srgb, var(--chart-3) 8%, transparent), transparent 78%)',
+                }}
+            />
+
+            {/* Background: subtle 64×64 grid masked to a soft top-down halo */}
+            <div
+                aria-hidden
+                className="pointer-events-none fixed inset-0 z-0"
+                style={{
+                    backgroundImage:
+                        'linear-gradient(color-mix(in srgb, var(--foreground) 5%, transparent) 1px, transparent 1px),' +
+                        'linear-gradient(90deg, color-mix(in srgb, var(--foreground) 5%, transparent) 1px, transparent 1px)',
+                    backgroundSize: '64px 64px',
+                    maskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%)',
+                    WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%)',
+                }}
+            />
+
+            {/* Atmospheric vignette (preserved) */}
             <div
                 className="pointer-events-none fixed inset-0 z-0"
                 style={{
@@ -68,7 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             <CommandPalette />
             <AdminSidebar />
-            <div className="lg:pl-64 relative z-10">
+            <div className={`relative z-10 transition-[padding] duration-200 ${collapsed ? 'lg:pl-16' : 'lg:pl-64'}`}>
                 <AdminHeader />
                 <main className="mx-auto max-w-[1440px] px-6 py-8">
                     {children}
@@ -76,5 +104,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <FlashToast />
         </div>
+    );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <SidebarStateProvider>
+            <AdminLayoutInner>{children}</AdminLayoutInner>
+        </SidebarStateProvider>
     );
 }

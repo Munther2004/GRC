@@ -90,8 +90,10 @@ function applyPreferences(prefs: Preferences): void {
             --sidebar-width: ${sidebar.value};
             ${Object.entries(density.vars).map(([k, v]) => `${k}: ${v};`).join('\n            ')}
         }
-        aside.lg\\:w-64 { width: ${sidebar.value} !important; }
-        .lg\\:pl-64 { padding-left: ${sidebar.value} !important; }
+        @media (min-width: 64rem) {
+            aside.lg\\:w-64 { width: ${sidebar.value} !important; }
+            .lg\\:pl-64 { padding-left: ${sidebar.value} !important; }
+        }
         ${motionCSS}
     `;
     document.head.appendChild(style);

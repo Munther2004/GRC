@@ -843,7 +843,12 @@ function LivingMetric({
 }) {
     const { ref, shown } = useReveal<HTMLDivElement>(0.4);
     const v = useCountUp(value, 1600, shown);
-    const display = value >= 100 ? Math.round(v).toLocaleString() : v.toFixed(1);
+    const isInteger = Number.isInteger(value);
+    const display = isInteger
+        ? Math.round(v).toLocaleString()
+        : value >= 100
+          ? Math.round(v).toLocaleString()
+          : v.toFixed(1);
     return (
         <div
             ref={ref}
@@ -1262,7 +1267,22 @@ export default function Welcome() {
                             <HeroTitle start={sealDone} />
 
                             <p
-                                className="mt-8 max-w-xl text-lg leading-relaxed"
+                                className="mt-7 max-w-xl text-lg sm:text-xl"
+                                style={{
+                                    color: 'var(--c-fg)',
+                                    fontWeight: 500,
+                                    letterSpacing: '-0.01em',
+                                    lineHeight: 1.3,
+                                    opacity: sealDone ? 1 : 0,
+                                    transform: sealDone ? 'translateY(0)' : 'translateY(20px)',
+                                    transition: 'all .9s 0.85s cubic-bezier(.2,.7,.2,1)',
+                                }}
+                            >
+                                An AI-Powered Governance, Risk &amp; Compliance Management System
+                            </p>
+
+                            <p
+                                className="mt-5 max-w-xl text-base leading-relaxed"
                                 style={{
                                     color: 'var(--c-muted)',
                                     opacity: sealDone ? 1 : 0,
@@ -1597,13 +1617,13 @@ export default function Welcome() {
                                     <LivingMetric value={443} label="controls across the four frameworks" kicker="Controls" />
                                 </div>
                                 <div style={{ borderBottom: '1px solid var(--c-border)' }}>
-                                    <LivingMetric value={94.2} suffix="%" label="median compliance posture" kicker="Posture" delay={120} />
+                                    <LivingMetric value={9} label="AI-powered automation features" kicker="AI Features" delay={120} />
                                 </div>
                                 <div style={{ borderRight: '1px solid var(--c-border)' }}>
                                     <LivingMetric value={4} label="frameworks unified under one ledger" kicker="Frameworks" delay={240} />
                                 </div>
                                 <div>
-                                    <LivingMetric value={1247} label="evidence files indexed and verifiable" kicker="Evidence" delay={360} />
+                                    <LivingMetric value={5} label="international security standards referenced" kicker="Standards" delay={360} />
                                 </div>
                             </div>
                         </div>
@@ -1675,7 +1695,7 @@ export default function Welcome() {
 
                 {/* ─── Footer ─── */}
                 <footer className="relative z-10" style={{ borderTop: '1px solid var(--c-border)' }}>
-                    <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-4">
+                    <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-3">
                         <div className="md:col-span-2">
                             <div className="mb-3 flex items-center gap-3">
                                 <span
@@ -1702,10 +1722,9 @@ export default function Welcome() {
                             </p>
                             <ul className="space-y-2.5 text-sm">
                                 {[
-                                    { l: 'Tenets',     h: '#tenets' },
-                                    { l: 'Platform',   h: '#features' },
-                                    { l: 'Frameworks', h: '#frameworks' },
-                                    { l: 'About',      h: '/about' },
+                                    { l: 'Features', h: '#features' },
+                                    { l: 'About',    h: '/about' },
+                                    { l: 'Team',     h: '/team' },
                                 ].map((n) => (
                                     <li key={n.l}>
                                         <a
@@ -1717,19 +1736,6 @@ export default function Welcome() {
                                         >
                                             {n.l}
                                         </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <p className="mb-4 text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--c-accent)' }}>
-                                Bound to
-                            </p>
-                            <ul className="space-y-2.5 text-sm" style={{ color: 'var(--c-muted)' }}>
-                                {['ISO 27001', 'NIST 800-53', 'OWASP ASVS', 'CIS Benchmarks'].map((b) => (
-                                    <li key={b} className="flex items-center gap-2">
-                                        <Compass className="h-3.5 w-3.5" style={{ color: 'var(--c-accent)' }} strokeWidth={1.8} />
-                                        {b}
                                     </li>
                                 ))}
                             </ul>

@@ -103,9 +103,9 @@
 }
 
 @theme inline {
-    --font-sans:    'Inter', system-ui, sans-serif;
-    --font-heading: 'Inter', system-ui, sans-serif;
-    --font-display: 'Inter', system-ui, sans-serif;
+    --font-sans:    'Inter', 'DM Sans', system-ui, sans-serif;
+    --font-heading: 'Inter', 'DM Sans', system-ui, sans-serif;
+    --font-display: 'Inter', 'DM Sans', system-ui, sans-serif;
     --font-numeric: 'DM Serif Display', serif;
     --font-mono:    'Courier New', 'Courier', monospace;
 
@@ -164,19 +164,22 @@
 
     body {
         @apply bg-background text-foreground antialiased;
-        font-family: 'Inter', system-ui, sans-serif;
+        font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
         font-size: 14px;
         line-height: 1.6;
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     }
 
     h1, h2, h3, h4, h5, h6 {
-        font-family: 'Inter', system-ui, sans-serif;
+        font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
         font-weight: 600;
         line-height: 1.25;
         letter-spacing: -0.02em;
         color: var(--foreground);
     }
+
+    /* Tabular numerics for stat numbers and table data */
+    th[scope="col"], thead th { font-variant-numeric: tabular-nums; }
 
     /* DM Serif Display — large editorial numbers */
     .font-numeric {

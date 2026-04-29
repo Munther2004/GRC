@@ -4,14 +4,11 @@ import {
     ArrowRight,
     ArrowUpRight,
     FileText,
-    Loader2,
     Plus,
     Sparkles,
     Upload,
-    XCircle,
     Zap,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import {
     LineChart,
     Line,
@@ -31,7 +28,6 @@ import { RiskTrendChart } from '@/components/admin/risk-trend-chart';
 import { TopRisks } from '@/components/admin/top-risks';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AdminLayout from '@/layouts/admin-layout';
-import { downloadPdf } from '@/lib/download-pdf';
 import type { SharedProps } from '@/types';
 
 type Stats = {
@@ -212,18 +208,39 @@ function DashboardHero({ healthScore }: { healthScore: HealthScore }) {
         <div
             className="relative overflow-hidden rounded-2xl"
             style={{
-                background: 'var(--card)',
+                // Diagonal brand gradient base — primary → card → chart-2, low alpha so foreground stays readable.
+                background:
+                    'linear-gradient(135deg, ' +
+                    'color-mix(in srgb, var(--primary) 14%, var(--card)) 0%, ' +
+                    'var(--card) 45%, ' +
+                    'color-mix(in srgb, var(--chart-2) 10%, var(--card)) 100%)',
                 border: '1px solid var(--border)',
                 boxShadow: '0 24px 60px -28px color-mix(in srgb, var(--foreground) 22%, transparent), 0 8px 22px -10px color-mix(in srgb, var(--foreground) 10%, transparent)',
             }}
         >
+            {/* Atmospheric radial halos on top of the diagonal gradient */}
             <div
-                className="pointer-events-none absolute inset-0 opacity-90"
+                className="pointer-events-none absolute inset-0"
                 aria-hidden
                 style={{
                     background:
-                        'radial-gradient(60% 60% at 90% 0%, color-mix(in srgb, var(--primary) 14%, transparent), transparent 70%),' +
-                        'radial-gradient(45% 45% at 0% 100%, color-mix(in srgb, var(--chart-2) 8%, transparent), transparent 75%)',
+                        'radial-gradient(70% 70% at 92% -10%, color-mix(in srgb, var(--primary) 22%, transparent), transparent 65%),' +
+                        'radial-gradient(55% 55% at -5% 110%, color-mix(in srgb, var(--chart-2) 14%, transparent), transparent 70%),' +
+                        'radial-gradient(40% 40% at 50% 50%, color-mix(in srgb, var(--chart-3) 6%, transparent), transparent 78%)',
+                }}
+            />
+
+            {/* Subtle grid texture (matches the page grid) clipped to the hero */}
+            <div
+                className="pointer-events-none absolute inset-0 opacity-60"
+                aria-hidden
+                style={{
+                    backgroundImage:
+                        'linear-gradient(color-mix(in srgb, var(--foreground) 4%, transparent) 1px, transparent 1px),' +
+                        'linear-gradient(90deg, color-mix(in srgb, var(--foreground) 4%, transparent) 1px, transparent 1px)',
+                    backgroundSize: '48px 48px',
+                    maskImage: 'radial-gradient(ellipse at 50% 0%, #000 25%, transparent 75%)',
+                    WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, #000 25%, transparent 75%)',
                 }}
             />
 
@@ -254,7 +271,17 @@ function DashboardHero({ healthScore }: { healthScore: HealthScore }) {
                         <p className="text-[10px] uppercase mb-1" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                             Health
                         </p>
-                        <p className="text-6xl leading-none" style={{ color: gradeC, fontWeight: 500, letterSpacing: '-0.02em' }}>
+                        <p
+                            className="text-6xl leading-none"
+                            style={{
+                                color: gradeC,
+                                fontWeight: 500,
+                                letterSpacing: '0',
+                                // Optical right-edge alignment: F has open right side,
+                                // shift it left so visual mass aligns with the other rows.
+                                marginRight: '0.18em',
+                            }}
+                        >
                             {healthScore.grade}
                         </p>
                         <p className="mt-2 text-[10px] uppercase tabular-nums" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.22em' }}>
@@ -311,102 +338,6 @@ function ActionStrip() {
                 </Link>
             ))}
         </div>
-    );
-}
-
-// -----------------------------------------------------------------------
-// Executive summary — restyled for Vercel aesthetic
-// -----------------------------------------------------------------------
-
-function ExecutiveSummaryCard() {
-    const [generating, setGenerating] = useState(false);
-    const [toast, setToast] = useState<{ type: 'error'; text: string } | null>(
-        null,
-    );
-
-    useEffect(() => {
-        if (!toast) return;
-        const t = setTimeout(() => setToast(null), 4000);
-        return () => clearTimeout(t);
-    }, [toast]);
-
-    const generate = async () => {
-        if (generating) return;
-        setGenerating(true);
-        try {
-            await downloadPdf(
-                '/reports/executive-summary',
-                `executive-summary-${new Date().toISOString().split('T')[0]}.pdf`,
-            );
-        } catch {
-            setToast({ type: 'error', text: 'Failed to generate report.' });
-        } finally {
-            setGenerating(false);
-        }
-    };
-
-    const cardBase: React.CSSProperties = {
-        background: 'var(--card)',
-        border: '1px solid var(--border)',
-        borderRadius: '16px',
-        cursor: 'pointer',
-        transition: 'all 0.2s cubic-bezier(.2,.7,.2,1)',
-        boxShadow: '0 10px 30px -16px color-mix(in srgb, var(--foreground) 18%, transparent)',
-    };
-    return (
-        <>
-            <div className="grid gap-3 md:grid-cols-2">
-                <button
-                    onClick={generate}
-                    disabled={generating}
-                    className="group relative text-left disabled:opacity-50"
-                    style={cardBase}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 18px 40px -18px color-mix(in srgb, var(--foreground) 24%, transparent)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 10px 30px -16px color-mix(in srgb, var(--foreground) 18%, transparent)'; }}
-                >
-                    <div className="flex items-center gap-3 p-5">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ border: '1px solid color-mix(in srgb, var(--primary) 22%, transparent)', background: 'color-mix(in srgb, var(--primary) 8%, transparent)', color: 'var(--primary)' }}>
-                            <Sparkles className="h-4 w-4" strokeWidth={1.6} />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                            <p className="text-base" style={{ color: 'var(--foreground)', fontWeight: 500 }}>AI executive summary</p>
-                            <p className="text-xs mt-0.5" style={{ color: 'var(--muted-foreground)' }}>Board-ready PDF with AI narrative</p>
-                        </div>
-                        {generating ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" style={{ color: 'var(--muted-foreground)' }} /> : <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5" style={{ color: 'var(--muted-foreground)' }} />}
-                    </div>
-                </button>
-                <Link href="/executive-dashboard" className="group relative" style={cardBase}
-                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 18px 40px -18px color-mix(in srgb, var(--foreground) 24%, transparent)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 10px 30px -16px color-mix(in srgb, var(--foreground) 18%, transparent)'; }}
-                >
-                    <div className="flex items-center gap-3 p-5">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ border: '1px solid color-mix(in srgb, var(--primary) 22%, transparent)', background: 'color-mix(in srgb, var(--primary) 8%, transparent)', color: 'var(--primary)' }}>
-                            <FileText className="h-4 w-4" strokeWidth={1.6} />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                            <p className="text-base" style={{ color: 'var(--foreground)', fontWeight: 500 }}>Executive dashboard</p>
-                            <p className="text-xs mt-0.5" style={{ color: 'var(--muted-foreground)' }}>Printable one-page compliance view</p>
-                        </div>
-                        <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5" style={{ color: 'var(--muted-foreground)' }} />
-                    </div>
-                </Link>
-            </div>
-            {generating && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'color-mix(in srgb, var(--background) 90%, transparent)', backdropFilter: 'blur(10px)' }}>
-                    <div className="mx-4 flex max-w-xs flex-col items-center gap-3 rounded-2xl p-7" style={{ background: 'var(--card)', border: '1px solid var(--border)', boxShadow: '0 24px 60px -28px color-mix(in srgb, var(--foreground) 28%, transparent)' }}>
-                        <Sparkles className="h-6 w-6 animate-pulse" style={{ color: 'var(--primary)' }} />
-                        <p className="text-lg" style={{ color: 'var(--foreground)', fontWeight: 500 }}>Generating summary…</p>
-                        <p className="text-center text-sm" style={{ color: 'var(--muted-foreground)' }}>The AI is analysing your GRC data</p>
-                    </div>
-                </div>
-            )}
-            {toast && (
-                <div className="fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded-2xl px-4 py-3 text-sm" style={{ background: 'var(--card)', border: '1px solid color-mix(in srgb, var(--destructive) 40%, transparent)', boxShadow: '0 18px 40px -18px color-mix(in srgb, var(--foreground) 28%, transparent)' }}>
-                    <XCircle className="h-4 w-4 shrink-0" style={{ color: 'var(--destructive)' }} />
-                    <span style={{ color: 'var(--foreground)' }}>{toast.text}</span>
-                </div>
-            )}
-        </>
     );
 }
 
@@ -802,8 +733,6 @@ export default function AdminDashboard({
                         </span>
                     </Link>
                 )}
-
-                <ExecutiveSummaryCard />
 
                 <div className="grid gap-4 lg:grid-cols-3">
                     <div className="animate-in slide-in-from-bottom-4 lg:col-span-2">

@@ -157,11 +157,12 @@ const STATUS_BADGE: Record<string, string> = {
         'bg-muted text-muted-foreground border-border',
 };
 
+// Landing-style capsule pills: light tinted bg + colored fg, uppercase + tracked.
 const RISK_LEVEL_BADGE: Record<string, string> = {
-    critical: 'bg-[#e5484d] text-white',
-    high: 'bg-[#f76b15] text-white',
-    medium: 'bg-[#f5b929] text-[#091413]',
-    low: 'bg-[#46bd5f] text-white',
+    critical: 'bg-[color-mix(in_srgb,#e5484d_12%,transparent)] text-[#e5484d]',
+    high:     'bg-[color-mix(in_srgb,#f76b15_12%,transparent)] text-[#f76b15]',
+    medium:   'bg-[color-mix(in_srgb,#f5b929_14%,transparent)] text-[#f5b929]',
+    low:      'bg-[color-mix(in_srgb,#46bd5f_12%,transparent)] text-[#46bd5f]',
 };
 
 const PRIORITY_STYLES: Record<string, string> = {
@@ -465,50 +466,31 @@ export default function ControlsHub({
 
                 {/* Summary bar */}
                 <Card>
-                    <CardContent className="space-y-3 p-4">
-                        <div className="grid grid-cols-2 gap-4 text-center md:grid-cols-6">
-                            <div>
-                                <p className="text-2xl tabular-nums" style={{ fontWeight: 500 }}>
-                                    {stats.total}
-                                </p>
-                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Total</p>
-                            </div>
-                            <div>
-                                <p className="text-2xl tabular-nums" style={{ color: '#46bd5f', fontWeight: 500 }}>
-                                    {stats.compliant}
-                                </p>
-                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
-                                    Compliant
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-2xl tabular-nums" style={{ color: '#f5b929', fontWeight: 500 }}>
-                                    {stats.partiallyCompliant}
-                                </p>
-                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Partial</p>
-                            </div>
-                            <div>
-                                <p className="text-2xl tabular-nums" style={{ color: '#e5484d', fontWeight: 500 }}>
-                                    {stats.nonCompliant}
-                                </p>
-                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
-                                    Non-Compliant
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-2xl tabular-nums" style={{ color: 'var(--muted-foreground)', fontWeight: 500 }}>
-                                    {stats.notApplicable}
-                                </p>
-                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>N/A</p>
-                            </div>
-                            <div>
-                                <p className="text-2xl tabular-nums" style={{ fontWeight: 500 }}>
-                                    {stats.compliancePct}%
-                                </p>
-                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
-                                    Compliant Rate
-                                </p>
-                            </div>
+                    <CardContent className="space-y-3 p-5">
+                        <div className="grid grid-cols-2 gap-5 md:grid-cols-6">
+                            {([
+                                { label: 'Total',           value: stats.total,             tone: 'var(--foreground)' },
+                                { label: 'Compliant',       value: stats.compliant,         tone: '#46bd5f' },
+                                { label: 'Partial',         value: stats.partiallyCompliant, tone: '#f5b929' },
+                                { label: 'Non-Compliant',   value: stats.nonCompliant,      tone: '#e5484d' },
+                                { label: 'N/A',             value: stats.notApplicable,     tone: 'var(--muted-foreground)' },
+                                { label: 'Compliant Rate',  value: `${stats.compliancePct}%`, tone: 'var(--foreground)' },
+                            ] as const).map((s) => (
+                                <div key={s.label}>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: s.tone }} />
+                                        <p className="text-[10px] uppercase tracking-[0.28em]" style={{ color: 'var(--muted-foreground)' }}>
+                                            {s.label}
+                                        </p>
+                                    </div>
+                                    <p
+                                        className="mt-2 text-3xl tabular-nums leading-none"
+                                        style={{ color: s.tone, fontWeight: 500, letterSpacing: '-0.02em' }}
+                                    >
+                                        {s.value}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                         <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-muted">
                             {stats.total > 0 && (
@@ -735,15 +717,10 @@ export default function ControlsHub({
                                                 <td className="px-4 py-3">
                                                     {ctrl.highest_risk_level ? (
                                                         <span
-                                                            className={`rounded-full px-2 py-0.5 text-xs ${RISK_LEVEL_BADGE[ctrl.highest_risk_level]}`}
-                                                            style={{ fontWeight: 500 }}
+                                                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] uppercase ${RISK_LEVEL_BADGE[ctrl.highest_risk_level]}`}
+                                                            style={{ letterSpacing: '0.18em' }}
                                                         >
-                                                            {ctrl.highest_risk_level
-                                                                .charAt(0)
-                                                                .toUpperCase() +
-                                                                ctrl.highest_risk_level.slice(
-                                                                    1,
-                                                                )}
+                                                            {ctrl.highest_risk_level}
                                                         </span>
                                                     ) : (
                                                         <span className="text-muted-foreground">

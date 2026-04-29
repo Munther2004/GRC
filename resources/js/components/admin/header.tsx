@@ -2,6 +2,7 @@ import { Link, router, usePage } from "@inertiajs/react"
 import { AlertTriangle, Bell, Clock, FileCheck, Menu, Search, Shield, X } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useSidebarDrawer } from "@/hooks/use-sidebar-state"
 
 type NotificationItem = {
     id: number
@@ -57,6 +58,7 @@ export function AdminHeader() {
     const roleName    = roleLabel(role)
     const [open, setOpen] = useState(false)
     const dropdownRef     = useRef<HTMLDivElement>(null)
+    const [, setDrawerOpen] = useSidebarDrawer()
 
     useEffect(() => {
         function handleClick(e: MouseEvent) {
@@ -103,7 +105,14 @@ export function AdminHeader() {
                 WebkitBackdropFilter: 'blur(14px) saturate(140%)',
             }}
         >
-            <button className="lg:hidden p-2 -ml-2" aria-label="Open menu">
+            <button
+                type="button"
+                className="lg:hidden p-2 -ml-2 rounded-full transition-colors"
+                aria-label="Open menu"
+                onClick={() => setDrawerOpen(true)}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--foreground)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
+            >
                 <Menu className="h-5 w-5" style={{ color: 'var(--muted-foreground)' }} />
             </button>
 

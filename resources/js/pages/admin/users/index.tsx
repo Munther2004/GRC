@@ -53,11 +53,12 @@ interface Props extends SharedProps {
     permissions: Permissions;
 }
 
+// Landing-style capsule pills: light tinted bg + colored fg for each role.
 const roleColors: Record<string, string> = {
-    super_admin: 'bg-purple-950 text-purple-300 border-purple-300/40',
-    admin: 'bg-red-950 text-red-400 border-red-200',
-    auditor: 'bg-accent text-foreground border-primary/20',
-    user: 'bg-muted text-foreground/75 border-border',
+    super_admin: 'bg-[color-mix(in_srgb,#7c3aed_12%,transparent)] text-[#7c3aed] border-[color-mix(in_srgb,#7c3aed_30%,transparent)]',
+    admin:       'bg-[color-mix(in_srgb,#e5484d_12%,transparent)] text-[#e5484d] border-[color-mix(in_srgb,#e5484d_30%,transparent)]',
+    auditor:     'bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-primary border-[color-mix(in_srgb,var(--primary)_28%,transparent)]',
+    user:        'bg-muted text-muted-foreground border-border',
 };
 
 export default function UsersIndex() {

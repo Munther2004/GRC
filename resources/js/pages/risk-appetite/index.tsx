@@ -471,7 +471,7 @@ function AppetiteModal({
                                     !form.notify_on_escalation,
                                 )
                             }
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${ form.notify_on_escalation ? 'bg-primary' : 'bg-gray-300 ' }`}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${ form.notify_on_escalation ? 'bg-primary' : 'bg-[color-mix(in_srgb,var(--foreground)_18%,transparent)]' }`}
                         >
                             <span
                                 className={`inline-block h-4 w-4 transform rounded-full bg-card transition-transform ${ form.notify_on_escalation ? 'translate-x-6' : 'translate-x-1' }`}
@@ -854,7 +854,7 @@ export default function RiskAppetiteIndex({
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className={`h-8 w-8 ${a.is_active ? 'cursor-not-allowed text-gray-300' : 'text-red-500 hover:bg-red-50 hover:text-red-600'}`}
+                                                            className={`h-8 w-8 ${a.is_active ? 'cursor-not-allowed text-muted-foreground/40' : 'text-destructive hover:bg-[color-mix(in_srgb,var(--destructive)_10%,transparent)] hover:text-destructive'}`}
                                                             onClick={() =>
                                                                 !a.is_active &&
                                                                 setDeleteTarget(

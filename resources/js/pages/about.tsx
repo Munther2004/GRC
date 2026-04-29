@@ -12,24 +12,24 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 const frameworks = [
     {
-        name: 'ISO 27001',
+        name: 'ISO/IEC 27001',
         icon: Lock,
-        desc: 'International standard for information security management systems (ISMS). Defines requirements for establishing, implementing, and continuously improving information security.',
+        desc: 'Information Security Management System requirements standard.',
     },
     {
-        name: 'NIST 800-53',
+        name: 'NIST SP 800-53',
         icon: Server,
-        desc: 'NIST Special Publication providing a catalogue of security and privacy controls for federal information systems, widely adopted by private sector organisations.',
+        desc: 'Security and Privacy Controls for Information Systems.',
     },
     {
         name: 'OWASP ASVS',
         icon: Globe,
-        desc: 'Application Security Verification Standard — a framework for testing web application security controls and a basis for secure development.',
+        desc: 'Application Security Verification Standard for web applications.',
     },
     {
         name: 'CIS Benchmarks',
         icon: Shield,
-        desc: 'Center for Internet Security benchmarks provide prescriptive configuration guidance for hardening operating systems, cloud platforms, and software.',
+        desc: 'Configuration and compliance baselines used as a high-level control reference.',
     },
 ];
 
@@ -116,17 +116,17 @@ export default function About() {
                             style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.05 }}
                         >
                             About this{' '}
-                            <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>charter.</span>
+                            <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>project.</span>
                         </h1>
                         <p
                             className="mx-auto max-w-2xl text-base leading-relaxed sm:text-lg"
                             style={{ color: 'var(--muted-foreground)' }}
                         >
-                            A graduation project developed at{' '}
+                            A senior design project developed at{' '}
                             <span style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                 Princess Sumaya University for Technology (PSUT)
                             </span>
-                            , Faculty of Computer Engineering. Built to demonstrate a fully functional governance, risk, and compliance management system using modern web technologies.
+                            , King Abdullah II School of Engineering, Networks &amp; Information Security Engineering program. This platform demonstrates a fully functional Governance, Risk &amp; Compliance (GRC) management system aligned with international information security standards.
                         </p>
                     </div>
 
@@ -148,30 +148,12 @@ export default function About() {
                         >
                             What is GRC?
                         </h2>
-                        <p className="mb-6 text-base leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
+                        <p className="text-base leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
                             <span style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                 Governance, Risk &amp; Compliance (GRC)
                             </span>{' '}
-                            is an integrated approach that helps organisations align their IT infrastructure with business objectives, manage uncertainty, and act with integrity.
+                            centralizes policy management, risk documentation, and compliance evidence into a unified auditable workflow. It binds organisational policies, identified threats, and verification artifacts to a single ledger so every control has an owner, every risk a treatment, and every claim a piece of evidence behind it.
                         </p>
-                        <ul className="space-y-4">
-                            {[
-                                { term: 'Governance', def: 'Ensures that organisational activities align with business goals through policies, processes, and decision-making frameworks.' },
-                                { term: 'Risk management', def: "Identifies, assesses, and mitigates threats that could affect the organisation's ability to achieve its objectives." },
-                                { term: 'Compliance', def: 'Confirms that the organisation meets all relevant laws, regulations, and industry standards.' },
-                            ].map(({ term, def }) => (
-                                <li key={term} className="flex gap-3">
-                                    <span
-                                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                                        style={{ background: 'var(--primary)' }}
-                                    />
-                                    <p className="text-sm leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
-                                        <span style={{ color: 'var(--foreground)', fontWeight: 500 }}>{term} — </span>
-                                        {def}
-                                    </p>
-                                </li>
-                            ))}
-                        </ul>
                     </div>
 
                     {/* Frameworks */}

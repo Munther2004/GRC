@@ -3,9 +3,9 @@ import { ArrowLeft, Code2, Shield, ShieldCheck } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 const members = [
-    { name: 'Ghaith Abboud',   role: 'Full Stack Developer', initials: 'GA' },
-    { name: 'Moayyad Zeidan',  role: 'Full Stack Developer', initials: 'MZ' },
-    { name: 'Munther Elatrash', role: 'Full Stack Developer', initials: 'ME' },
+    { name: 'Ghaith Abboud',    role: 'NIS Engineer', initials: 'GA' },
+    { name: 'Moayyad Zeidan',   role: 'NIS Engineer', initials: 'MZ' },
+    { name: 'Munther Elatrash', role: 'NIS Engineer', initials: 'ME' },
 ];
 
 export default function Team() {
@@ -90,8 +90,8 @@ export default function Team() {
                             Meet the{' '}
                             <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>team.</span>
                         </h1>
-                        <p className="mx-auto max-w-xl text-base" style={{ color: 'var(--muted-foreground)' }}>
-                            Graduation Project — PSUT, NIS Engineering, 2025/2026
+                        <p className="mx-auto max-w-2xl text-base" style={{ color: 'var(--muted-foreground)' }}>
+                            Senior Design Project — Networks &amp; Information Security Engineering, PSUT, 2025/2026
                         </p>
                     </div>
 
@@ -143,13 +143,10 @@ export default function Team() {
                         }}
                     >
                         <p className="mb-2 text-[11px] uppercase" style={{ color: 'var(--primary)', letterSpacing: '0.32em' }}>
-                            Project Supervisor
+                            Supervised by
                         </p>
                         <p className="text-xl" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                             Prof. Ali Al-Haj
-                        </p>
-                        <p className="mt-1 text-sm" style={{ color: 'var(--muted-foreground)' }}>
-                            Princess Sumaya University for Technology
                         </p>
                     </div>
                 </main>

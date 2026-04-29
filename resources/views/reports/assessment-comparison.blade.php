@@ -11,6 +11,7 @@
             align-items: stretch;
             border-bottom: 1px solid #d9d9dd;
             background: #fafaf8;
+            page-break-inside: avoid;
         }
         .vs-side {
             flex: 1;
@@ -35,7 +36,7 @@
         .fw-badge  { display: inline-block; padding: 1px 6px; border: 1px solid #d9d9dd; border-radius: 999px; font-size: 8px; color: #212121; margin-right: 5px; }
 
         /* Comparison KPI flex (delta-aware) */
-        .kpi-flex { display: flex; gap: 10px; margin-bottom: 20px; }
+        .kpi-flex { display: flex; gap: 10px; margin-bottom: 20px; page-break-inside: avoid; }
         .kpi-flex .kpi-box {
             flex: 1;
             border: 1px solid #d9d9dd;
@@ -281,11 +282,7 @@
         </tbody>
     </table>
 
-    @include('reports._partials._footer', [
-        'left'  => 'GRC Charter — Assessment Comparison Report — Generated ' . $generatedAt,
-        'right' => '"' . $assessmentA['title'] . '" vs "' . $assessmentB['title'] . '"',
-        'fixed' => false,
-    ])
+    @include('reports._partials._page_chrome', ['reportTitle' => 'Assessment Comparison'])
 
 </div>
 </body>

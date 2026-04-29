@@ -28,10 +28,11 @@
             border-radius: 0 6px 6px 0;
             margin-bottom: 18px;
             font-size: 11px;
+            page-break-inside: avoid;
         }
 
         /* KPI summary row (table-cell layout) */
-        .kpi-row-tbl { width: 100%; margin-bottom: 20px; border-collapse: separate; border-spacing: 8px 0; }
+        .kpi-row-tbl { width: 100%; margin-bottom: 20px; border-collapse: separate; border-spacing: 8px 0; page-break-inside: avoid; }
         .kpi-row-tbl td {
             border: 1px solid #d9d9dd;
             border-radius: 6px;
@@ -224,10 +225,6 @@
 
     </div>
 
-    @include('reports._partials._footer', [
-        'left'  => 'GRC Charter · Security Audit Report',
-        'right' => 'Generated ' . $generatedAt->format('Y-m-d H:i:s'),
-        'fixed' => false,
-    ])
+    @include('reports._partials._page_chrome', ['reportTitle' => 'Security Audit Report'])
 </body>
 </html>

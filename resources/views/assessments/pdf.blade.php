@@ -6,7 +6,7 @@
     @include('reports._partials._styles')
     <style>
         /* Page-specific: control-status breakdown grid (4-up table-cell) */
-        .breakdown-grid { display: table; width: 100%; }
+        .breakdown-grid { display: table; width: 100%; page-break-inside: avoid; }
         .breakdown-row  { display: table-row; }
         .breakdown-cell { display: table-cell; padding: 10px 14px; border: 1px solid #d9d9dd; text-align: center; }
         .bd-count { font-size: 26px; font-weight: bold; line-height: 1; }
@@ -25,6 +25,7 @@
             border: 1px solid #c8e8c0;
             border-radius: 8px;
             padding: 16px 24px;
+            page-break-inside: avoid;
         }
         .score-num { font-size: 48px; font-weight: bold; line-height: 1; }
         .score-green  { color: #46bd5f; }
@@ -107,9 +108,9 @@
             <thead>
                 <tr>
                     <th>Category</th>
-                    <th>Compliant</th>
-                    <th>Total</th>
-                    <th>Score</th>
+                    <th class="num">Compliant</th>
+                    <th class="num">Total</th>
+                    <th class="num">Score</th>
                     <th>Progress</th>
                 </tr>
             </thead>
@@ -120,9 +121,9 @@
                     @endphp
                     <tr>
                         <td><strong>{{ $cat ?: 'Uncategorized' }}</strong></td>
-                        <td style="text-align:center;">{{ $data['compliant'] }}</td>
-                        <td style="text-align:center;">{{ $data['total'] }}</td>
-                        <td style="font-weight:bold; color:{{ $cc }};">{{ $data['percentage'] }}%</td>
+                        <td class="num">{{ $data['compliant'] }}</td>
+                        <td class="num">{{ $data['total'] }}</td>
+                        <td class="num" style="font-weight:bold; color:{{ $cc }};">{{ $data['percentage'] }}%</td>
                         <td>
                             <div class="mini-bar-bg">
                                 <div class="mini-bar-fill" style="width:{{ $data['percentage'] }}%; background:{{ $cc }};"></div>
@@ -169,9 +170,8 @@
         </table>
     </div>
 
-    @include('reports._partials._footer', [
-        'left'  => 'Confidential — ' . $assessment->title,
-        'right' => $assessment->framework->short_name . ' — ' . $generatedAt,
+    @include('reports._partials._page_chrome', [
+        'reportTitle' => 'Assessment · ' . $assessment->framework->short_name,
     ])
 
 </body>

@@ -1,20 +1,16 @@
-{{-- Shared report footer.
-     $left  — left text  (escaped; defaults to "Confidential — GRC Charter")
-     $right — right text (escaped; defaults to current $generatedAt if available)
-     $fixed — true to render as fixed bottom bar; false for inline footer
-     Use unicode punctuation in caller strings (—, •, non-breaking space).
+{{-- Inline footer strip (optional). The universal "Confidential · GRC Charter / Page X of Y"
+     line on every page is written by _page_chrome via page_script() in the @page bottom margin —
+     templates do not need to call _footer for that.
+
+     Use _footer only when a section-end inline footer is desired. Pass:
+       $left   — left text
+       $right  — right text
 --}}
 @php
-    $left  = $left  ?? 'Confidential — GRC Charter';
-    $right = $right ?? ($generatedAt ?? '');
-    $fixed = $fixed ?? true;
+    $left  = $left  ?? null;
+    $right = $right ?? null;
 @endphp
-@if($fixed)
-    <div class="footer">
-        <span>{{ $left }}</span>
-        <span>{{ $right }}</span>
-    </div>
-@else
+@if($left || $right)
     <div class="footer-static">
         {{ $left }} @if($right) — {{ $right }} @endif
     </div>

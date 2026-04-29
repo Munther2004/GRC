@@ -15,17 +15,23 @@
             overflow: hidden;
         }
         .health-grade {
-            width: 90px;
+            width: 72px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 14px;
-            background: #edfce9;
+            padding: 10px 8px;
+            /* background tint set inline per severity grade */
             border-right: 1px solid #d9d9dd;
         }
-        .grade-letter { font-size: 40px; font-weight: bold; line-height: 1; }
-        .grade-label  { font-size: 8px; color: #75758a; margin-top: 4px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+        .grade-letter {
+            font-family: 'DejaVu Serif', Georgia, serif;
+            font-size: 38px;
+            font-weight: bold;
+            line-height: 1;
+            letter-spacing: -0.6px;
+        }
+        .grade-label  { font-size: 7.5px; color: #75758a; margin-top: 6px; text-align: center; text-transform: uppercase; letter-spacing: 0.6px; }
         .health-body  { flex: 1; padding: 12px 16px; }
         .health-score-big { font-size: 20px; font-weight: bold; color: #003c33; }
         .health-score-sub { font-size: 8.5px; color: #75758a; }
@@ -40,7 +46,7 @@
         .comp-max   { width: 22px; font-size: 7.5px; text-align: right; color: #93939f; }
 
         /* KPI flex row (page-specific) */
-        .kpi-flex { display: flex; gap: 10px; margin-bottom: 18px; }
+        .kpi-flex { display: flex; gap: 10px; margin-bottom: 18px; page-break-inside: avoid; }
         .kpi-flex .kpi-box { padding: 10px 12px; }
         .kpi-flex .kpi-label { font-size: 7.5px; color: #75758a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
 
@@ -121,14 +127,16 @@
     <!-- ── Health Score Banner ── -->
     @php
         $gradeColors = ['A' => '#46bd5f', 'B' => '#003c33', 'C' => '#f5b929', 'D' => '#f76b15', 'F' => '#e5484d'];
+        $gradeBgs    = ['A' => '#ecf9ef', 'B' => '#edfce9', 'C' => '#fef8e3', 'D' => '#fef0e6', 'F' => '#fdeeee'];
         $gradeColor  = $gradeColors[$healthScore['grade']] ?? '#e5484d';
+        $gradeBg     = $gradeBgs[$healthScore['grade']]    ?? '#fdeeee';
 
         $compliancePct = $complianceSummary['overall_pct'];
         $compColor = $compliancePct >= 80 ? '#46bd5f' : ($compliancePct >= 60 ? '#f76b15' : '#e5484d');
     @endphp
 
     <div class="health-banner">
-        <div class="health-grade">
+        <div class="health-grade" style="background: {{ $gradeBg }}">
             <div class="grade-letter" style="color: {{ $gradeColor }}">{{ $healthScore['grade'] }}</div>
             <div class="grade-label">Health Grade</div>
         </div>
@@ -209,9 +217,9 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width:5%">#</th>
+                            <th class="num" style="width:5%">#</th>
                             <th style="width:38%">Risk Title</th>
-                            <th style="width:12%">Score</th>
+                            <th class="num" style="width:12%">Score</th>
                             <th style="width:15%">Level</th>
                             <th style="width:15%">Status</th>
                             <th style="width:15%">Treatment</th>
@@ -229,9 +237,9 @@
                             };
                         @endphp
                         <tr>
-                            <td>{{ $i + 1 }}</td>
+                            <td class="num">{{ $i + 1 }}</td>
                             <td>{{ Str::limit($risk['title'], 40) }}</td>
-                            <td><strong>{{ $risk['score'] }}</strong>/25</td>
+                            <td class="num"><strong>{{ $risk['score'] }}</strong>/25</td>
                             <td><span class="badge {{ $lvlClass }}">{{ ucfirst($lvl) }}</span></td>
                             <td>{{ str_replace('_', ' ', ucfirst($risk['status'])) }}</td>
                             <td>{{ $risk['has_treatment'] ? 'Planned' : 'None' }}</td>
@@ -354,16 +362,35 @@
             @if(count($trend) < 2)
             <p style="color:#93939f;font-size:8.5px;text-align:center;">Not enough snapshot data yet.</p>
             @else
-            <div class="trend-row">
+            @php
+                $trendCount = count($trend);
+                $sparkW = 700; $sparkH = 50;
+                $padX = 8; $padY = 6;
+                $usableW = $sparkW - 2 * $padX;
+                $usableH = $sparkH - 2 * $padY;
+                $polyPoints = '';
+                $dotPoints  = [];
+                foreach ($trend as $i => $point) {
+                    $x = $padX + ($i * $usableW / max($trendCount - 1, 1));
+                    $y = $padY + $usableH - (($point['compliance_score'] / 100) * $usableH);
+                    $polyPoints .= round($x, 1) . ',' . round($y, 1) . ' ';
+                    $dotPoints[] = ['x' => round($x, 1), 'y' => round($y, 1)];
+                }
+            @endphp
+            <div style="display: table; width: 100%; margin-bottom: 4px;">
                 @foreach($trend as $point)
-                @php $barH = max(4, (int)round($point['compliance_score'] * 0.4)); @endphp
-                <div class="trend-bar-wrap">
-                    <div class="trend-val">{{ $point['compliance_score'] }}%</div>
-                    <div class="trend-bar-outer">
-                        <div class="trend-bar-inner" style="height: {{ $barH }}px; background: #003c33;"></div>
-                    </div>
-                    <div class="trend-date">{{ $point['date'] }}</div>
-                </div>
+                    <div style="display: table-cell; text-align: center; font-size: 8px; font-weight: bold; color: #003c33;">{{ $point['compliance_score'] }}%</div>
+                @endforeach
+            </div>
+            <svg viewBox="0 0 {{ $sparkW }} {{ $sparkH }}" preserveAspectRatio="none" style="width: 100%; height: 42px;">
+                <polyline points="{{ trim($polyPoints) }}" fill="none" stroke="#003c33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                @foreach($dotPoints as $dot)
+                    <circle cx="{{ $dot['x'] }}" cy="{{ $dot['y'] }}" r="3" fill="#003c33" />
+                @endforeach
+            </svg>
+            <div style="display: table; width: 100%; margin-top: 6px;">
+                @foreach($trend as $point)
+                    <div style="display: table-cell; text-align: center; font-size: 7px; color: #93939f;">{{ $point['date'] }}</div>
                 @endforeach
             </div>
             @endif
@@ -371,10 +398,7 @@
     </div>
     @endif
 
-    <div class="dashboard-footer">
-        GRC Charter &mdash; Executive Dashboard Report &mdash; Generated {{ $generatedAt }}<br>
-        Confidential &mdash; Internal Use Only &mdash; Do not distribute outside the organisation
-    </div>
+    @include('reports._partials._page_chrome', ['reportTitle' => 'Executive Dashboard'])
 
 </div>
 </body>

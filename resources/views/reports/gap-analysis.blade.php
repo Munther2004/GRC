@@ -6,7 +6,7 @@
     @include('reports._partials._styles')
     <style>
         /* Page-specific: KPI flex (gap-analysis uses flex layout, not table) */
-        .kpi-flex { display: flex; gap: 12px; margin-bottom: 20px; }
+        .kpi-flex { display: flex; gap: 12px; margin-bottom: 20px; page-break-inside: avoid; }
         .kpi-flex .kpi-box {
             flex: 1;
             border: 1px solid #d9d9dd;
@@ -33,6 +33,7 @@
             border-left: 3px solid #d9d9dd;
             margin-bottom: 8px;
             background: #fafaf8;
+            page-break-inside: avoid;
         }
         .action-item.high   { border-left-color: #e5484d; }
         .action-item.medium { border-left-color: #f5b929; }
@@ -47,6 +48,7 @@
             margin-bottom: 6px;
             background: #ecf9ef;
             font-size: 10px;
+            page-break-inside: avoid;
         }
     </style>
 </head>
@@ -176,7 +178,7 @@
                     <th style="width:22%">Title</th>
                     <th style="width:15%">Category</th>
                     <th style="width:13%">Status</th>
-                    <th style="width:5%">Evidence</th>
+                    <th class="num" style="width:5%">Evidence</th>
                     <th style="width:25%">Notes</th>
                 </tr>
             </thead>
@@ -194,7 +196,7 @@
                             <span class="badge badge-pc">Partial</span>
                         @endif
                     </td>
-                    <td style="text-align:center">{{ $row['evidence_count'] }}</td>
+                    <td class="num">{{ $row['evidence_count'] }}</td>
                     <td>{{ $row['notes'] ?? '—' }}</td>
                 </tr>
                 @empty
@@ -236,11 +238,7 @@
     </div>
     @endif
 
-    @include('reports._partials._footer', [
-        'left'  => 'GRC Charter — Gap Analysis Report — Generated ' . $generatedAt,
-        'right' => 'AI-assisted analysis — For internal use only — Validate before formal submission',
-        'fixed' => false,
-    ])
+    @include('reports._partials._page_chrome', ['reportTitle' => 'Gap Analysis'])
 </div>
 
 </body>

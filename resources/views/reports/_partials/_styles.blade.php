@@ -4,6 +4,14 @@
      Type split: DejaVu Serif for display, DejaVu Sans for body — DomPDF ships both.
 --}}
 <style>
+    /* Page setup — fixed margin reserves space for the footer chrome and (on cover-equipped
+       reports) the running header. Footer text + page numbering are written by the
+       _page_chrome partial via <script type="text/php"> page_script(). */
+    @page {
+        size: A4 portrait;
+        margin: 80px 48px 56px 48px;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
@@ -91,6 +99,7 @@
         margin-bottom: 14px;
         text-transform: uppercase;
         letter-spacing: 0.6px;
+        page-break-after: avoid;
     }
 
     /* ── Content wrapper ────────────────────────────────────────────────── */
@@ -98,33 +107,53 @@
         padding: 18px 24px;
     }
 
-    /* ── Tables ─────────────────────────────────────────────────────────── */
+    /* ── Tables (hairline editorial — Cohere research-table pattern) ────── */
     table {
         width: 100%;
         border-collapse: collapse;
         font-size: 10px;
     }
+    thead {
+        display: table-header-group; /* repeat headers across page breaks */
+    }
     thead tr {
-        background: #003c33;
-        color: #ffffff;
+        background: transparent;
     }
     thead th {
-        padding: 7px 10px;
+        padding: 10px 12px 8px;
         text-align: left;
         font-weight: bold;
         text-transform: uppercase;
-        letter-spacing: 0.4px;
-        font-size: 9px;
+        letter-spacing: 0.6px;
+        font-size: 8.5px;
+        color: #003c33;
+        background: transparent;
+        border-bottom: 1.5px solid #003c33;
+        vertical-align: bottom;
     }
     tbody tr {
         border-bottom: 1px solid #d9d9dd;
+        page-break-inside: avoid;
     }
-    tbody tr:nth-child(even) {
-        background: #fafaf8;
+    tbody tr:last-child {
+        border-bottom: 0;
     }
     tbody td {
-        padding: 6px 10px;
+        padding: 10px 12px;
         color: #212121;
+        vertical-align: middle;
+    }
+    /* Numeric / right-aligned cells with tabular numerics where the renderer supports it. */
+    .num,
+    th.num,
+    td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: 'tnum' 1;
+    }
+    .tabular {
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: 'tnum' 1;
     }
 
     /* ── Severity colours (canonical, web-matched) ──────────────────────── */
@@ -233,6 +262,7 @@
         border-collapse: separate;
         border-spacing: 8px 0;
         margin-bottom: 4px;
+        page-break-inside: avoid;
     }
     .kpi-cell {
         display: table-cell;
@@ -269,7 +299,7 @@
     .mini-bar-fill { height: 100%; border-radius: 3px; }
 
     /* ── Risk grid ──────────────────────────────────────────────────────── */
-    .risk-grid { display: table; width: 100%; }
+    .risk-grid { display: table; width: 100%; page-break-inside: avoid; }
     .risk-grid-row { display: table-row; }
     .risk-cell {
         display: table-cell;
@@ -293,6 +323,7 @@
         border: 1px solid #d9d9dd;
         background: #fafaf8;
         font-size: 10.5px;
+        page-break-inside: avoid;
     }
     .rec-num {
         background: #003c33;
@@ -310,21 +341,28 @@
         line-height: 20px;
     }
 
-    /* ── Narrative block (AI text) ──────────────────────────────────────── */
+    /* ── AI narrative block (operational hairline-bookended treatment) ──── */
     .narrative {
-        background: #edfce9;
-        border-left: 3px solid #003c33;
-        padding: 14px 18px;
-        border-radius: 0 6px 6px 0;
-        line-height: 1.75;
+        border-top: 1px solid #d9d9dd;
+        border-bottom: 1px solid #d9d9dd;
+        padding: 14px 0;
+        line-height: 1.7;
         font-size: 10.5px;
         color: #212121;
+        page-break-inside: avoid;
+    }
+    .narrative-eyebrow {
+        font-size: 8px;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: #75758a;
+        margin-bottom: 10px;
     }
     .narrative p { margin-bottom: 10px; }
     .narrative p:last-child { margin-bottom: 0; }
 
     /* ── Evidence cells ─────────────────────────────────────────────────── */
-    .ev-row { display: table; width: 100%; }
+    .ev-row { display: table; width: 100%; page-break-inside: avoid; }
     .ev-cell {
         display: table-cell;
         text-align: center;
@@ -340,6 +378,7 @@
         border: 1px solid #d9d9dd;
         border-radius: 6px;
         overflow: hidden;
+        page-break-inside: avoid;
     }
     .box-header {
         background: #fafaf8;
@@ -366,6 +405,7 @@
         border: 1px solid #c8e8c0;
         border-radius: 8px;
         padding: 16px 24px;
+        page-break-inside: avoid;
     }
     .compliance-score { font-size: 48px; font-weight: bold; line-height: 1; }
     .compliance-score.green  { color: #46bd5f; }
@@ -382,20 +422,9 @@
     }
     .compliance-bar-fill { height: 100%; border-radius: 4px; }
 
-    /* ── Footer (fixed bottom band) ─────────────────────────────────────── */
-    .footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: #003c33;
-        color: #cfeae0;
-        font-size: 9px;
-        padding: 7px 32px;
-        display: flex;
-        justify-content: space-between;
-    }
-    /* Inline footer used by templates that don't fix the bar */
+    /* Inline footer kept for templates that want a static text strip after content;
+       the universal "Confidential · GRC Charter / Page X of Y" line is rendered by
+       _page_chrome via page_script() in the bottom margin reserved by @page. */
     .footer-static {
         margin-top: 24px;
         padding-top: 10px;
@@ -404,6 +433,99 @@
         color: #75758a;
         text-align: center;
     }
+
+    /* ── Operational cover page (Tier 2 — revised) ──────────────────────── */
+    .cover-page {
+        width: 100%;
+        padding: 24px 32px 20px;
+    }
+    .cover-hero {
+        background: #003c33;
+        color: #ffffff;
+        border-radius: 10px;
+        padding: 28px 36px 36px;
+        margin-bottom: 14px;
+    }
+    .cover-meta {
+        /* table-layout for left/right alignment without flex */
+        display: table;
+        width: 100%;
+        margin-bottom: 0;
+    }
+    .cover-brand {
+        display: table-cell;
+        font-size: 9px;
+        letter-spacing: 2.4px;
+        text-transform: uppercase;
+        color: #cfeae0;
+        text-align: left;
+    }
+    .cover-date {
+        display: table-cell;
+        font-size: 9px;
+        letter-spacing: 0.4px;
+        color: #9bc5b4;
+        text-align: right;
+    }
+    .cover-rule {
+        height: 1px;
+        background: #2a5e54;
+        margin: 14px 0 22px;
+    }
+    .cover-eyebrow {
+        font-size: 9px;
+        letter-spacing: 1.8px;
+        text-transform: uppercase;
+        color: #9bc5b4;
+        margin-bottom: 10px;
+    }
+    .cover-title {
+        font-family: 'DejaVu Serif', Georgia, serif;
+        font-size: 30px;
+        font-weight: bold;
+        line-height: 1.1;
+        letter-spacing: -0.3px;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+    .cover-subtitle {
+        font-size: 13px;
+        color: #cfeae0;
+        line-height: 1.4;
+        margin-bottom: 14px;
+    }
+    .cover-description {
+        font-size: 10.5px;
+        color: #b8d4c8;
+        line-height: 1.6;
+        max-width: 78%;
+    }
+    .cover-classification {
+        text-align: center;
+        font-size: 8px;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: #75758a;
+        padding-top: 6px;
+    }
+
+    /* ── Running header for cover-equipped reports (pages 2+) ───────────── */
+    .running-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 28px;
+        padding: 8px 32px 0;
+        border-bottom: 1px solid #d9d9dd;
+        background: #ffffff;
+        font-size: 8px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        color: #75758a;
+    }
+    .running-header-brand { float: left;  color: #003c33; font-weight: bold; }
+    .running-header-title { float: right; color: #75758a; }
 
     /* ── Misc ───────────────────────────────────────────────────────────── */
     .page-break { page-break-after: always; }

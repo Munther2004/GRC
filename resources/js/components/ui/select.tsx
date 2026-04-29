@@ -27,15 +27,13 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        // Aged oak trigger
-        "flex w-fit items-center justify-between gap-2 rounded border border-border bg-card",
-        "px-3 py-2 font-body text-sm text-foreground whitespace-nowrap",
-        "transition-all duration-300 outline-none",
-        // Focus — brass ring
-        "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-1 focus-visible:ring-offset-background",
-        "hover:border-primary/60",
+        "flex w-fit items-center justify-between gap-2 rounded-full border border-border bg-card",
+        "px-4 py-2 font-body text-sm text-foreground whitespace-nowrap",
+        "transition-all duration-200 outline-none",
+        "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0",
+        "hover:border-foreground/60",
         "disabled:cursor-not-allowed disabled:opacity-40",
-        "data-placeholder:text-muted-foreground data-placeholder:italic",
+        "data-placeholder:text-muted-foreground/80",
         "data-[size=default]:h-10 data-[size=sm]:h-8",
         "*:data-[slot=select-value]:line-clamp-1",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:text-muted-foreground",
@@ -65,8 +63,7 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          // Aged oak dropdown
-          "relative z-50 bg-card border border-border rounded shadow-[0_8px_24px_rgba(0,0,0,0.5)]",
+          "relative z-50 bg-card border border-border rounded-2xl shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--foreground)_28%,transparent)]",
           "text-foreground font-body",
           "max-h-(--radix-select-content-available-height) min-w-32 overflow-x-hidden overflow-y-auto",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
@@ -114,9 +111,9 @@ function SelectItem({ className, children, ...props }: React.ComponentProps<type
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none",
+        "relative flex w-full cursor-default items-center gap-2 rounded-lg py-1.5 pr-8 pl-2.5 text-sm outline-hidden select-none",
         "text-foreground transition-colors duration-150",
-        "focus:bg-secondary focus:text-primary",
+        "focus:bg-[color-mix(in_srgb,var(--primary)_8%,transparent)] focus:text-primary",
         "data-disabled:pointer-events-none data-disabled:opacity-40",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className

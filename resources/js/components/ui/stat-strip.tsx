@@ -24,27 +24,29 @@ export function StatStrip({ stats, className }: { stats: Stat[]; className?: str
 
     return (
         <div
-            className={cn('grid overflow-hidden rounded-lg elev-1', cols, className)}
-            style={{ border: '1px solid var(--border)', gap: '1px', background: 'var(--border)' }}
+            className={cn('grid overflow-hidden rounded-2xl', cols, className)}
+            style={{
+                border: '1px solid var(--border)',
+                gap: '1px',
+                background: 'var(--border)',
+                boxShadow: '0 10px 30px -16px color-mix(in srgb, var(--foreground) 18%, transparent)',
+            }}
         >
-            {stats.map((s, i) => {
+            {stats.map((s) => {
                 const dot = toneColor[s.tone ?? 'neutral']
                 return (
-                    <div key={s.label} className="relative px-5 py-4" style={{ background: 'var(--card)' }}>
-                        {i === 0 && (
-                            <div className="absolute left-0 top-3 bottom-3 w-px" style={{ background: 'var(--primary)', opacity: 0.6 }} />
-                        )}
-                        <div className="flex items-center gap-1.5 mb-2">
+                    <div key={s.label} className="relative px-5 py-5" style={{ background: 'var(--card)' }}>
+                        <div className="flex items-center gap-2 mb-3">
                             <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: dot }} />
-                            <p className="font-display text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                            <p className="text-[10px] uppercase tracking-[0.28em]" style={{ color: 'var(--muted-foreground)' }}>
                                 {s.label}
                             </p>
                         </div>
-                        <p className="font-numeric text-3xl tabular-nums leading-none text-foreground">
+                        <p className="text-3xl tabular-nums leading-none" style={{ color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em' }}>
                             {s.value}
                         </p>
                         {s.hint && (
-                            <p className="mt-1.5 font-body text-xs text-muted-foreground">{s.hint}</p>
+                            <p className="mt-2 text-xs" style={{ color: 'var(--muted-foreground)' }}>{s.hint}</p>
                         )}
                     </div>
                 )

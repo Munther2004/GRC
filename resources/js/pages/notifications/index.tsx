@@ -27,15 +27,6 @@ type PaginatedData = {
 type Props = { notifications: PaginatedData };
 type FilterTab = 'all' | 'unread' | 'overdue_assessment' | 'pending_evidence' | 'critical_risk' | 'overdue_risk';
 
-const themeColors = {
-    destructive: '#8B2635',
-    primary: '#408A71',
-    border: '#285A48',
-    muted: '#7ABFA8',
-    card: '#0D1F1C',
-    foreground: '#E0F5EC',
-};
-
 function timeAgo(dateStr: string): string {
     const date = new Date(dateStr);
     const now  = new Date();
@@ -46,21 +37,21 @@ function timeAgo(dateStr: string): string {
     return `${Math.floor(diff / 86400)}d ago`;
 }
 
-const typeStyle: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
-    overdue_assessment: { icon: Clock,          color: themeColors.destructive, bg: `rgba(139,38,53,0.1)`  },
-    pending_evidence:   { icon: FileCheck,      color: themeColors.primary, bg: `rgba(64,138,113,0.1)` },
-    critical_risk:      { icon: AlertTriangle,  color: themeColors.destructive, bg: `rgba(139,38,53,0.1)`  },
-    overdue_risk:       { icon: Shield,         color: themeColors.border, bg: `rgba(40,90,72,0.1)` },
-    default:            { icon: Bell,           color: themeColors.muted, bg: `rgba(156,139,122,0.1)` },
+const typeStyle: Record<string, { icon: React.ElementType; color: string }> = {
+    overdue_assessment: { icon: Clock,         color: '#e5484d' },
+    pending_evidence:   { icon: FileCheck,     color: 'var(--primary)' },
+    critical_risk:      { icon: AlertTriangle, color: '#e5484d' },
+    overdue_risk:       { icon: Shield,        color: '#f76b15' },
+    default:            { icon: Bell,          color: 'var(--muted-foreground)' },
 };
 
 const tabs: { key: FilterTab; label: string }[] = [
     { key: 'all',                 label: 'All' },
     { key: 'unread',              label: 'Unread' },
-    { key: 'critical_risk',       label: 'Critical Risk' },
-    { key: 'overdue_risk',        label: 'Overdue Risk' },
-    { key: 'overdue_assessment',  label: 'Overdue Assessment' },
-    { key: 'pending_evidence',    label: 'Pending Evidence' },
+    { key: 'critical_risk',       label: 'Critical risk' },
+    { key: 'overdue_risk',        label: 'Overdue risk' },
+    { key: 'overdue_assessment',  label: 'Overdue assessment' },
+    { key: 'pending_evidence',    label: 'Pending evidence' },
 ];
 
 export default function NotificationsPage({ notifications }: Props) {
@@ -112,18 +103,18 @@ export default function NotificationsPage({ notifications }: Props) {
                 </PageHeader>
 
                 {/* Filter tabs */}
-                <div className="flex flex-wrap gap-1 pb-0" style={{ borderBottomColor: 'var(--border)', borderBottomWidth: '1px' }}>
+                <div className="flex flex-wrap gap-2">
                     {tabs.map((tab) => (
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
-                            className="-mb-px px-3 py-2 font-display text-[10px] uppercase tracking-[0.15em] transition-colors"
+                            className="rounded-full px-4 py-1.5 text-[12px] transition-all duration-200"
                             style={activeTab === tab.key
-                                ? { borderBottom: `2px solid ${themeColors.primary}`, color: themeColors.primary }
-                                : { borderBottom: '2px solid transparent', color: themeColors.muted }
+                                ? { background: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 500 }
+                                : { background: 'transparent', color: 'var(--muted-foreground)', border: '1px solid var(--border)' }
                             }
-                            onMouseEnter={e => { if (activeTab !== tab.key) e.currentTarget.style.color = themeColors.foreground; }}
-                            onMouseLeave={e => { if (activeTab !== tab.key) e.currentTarget.style.color = themeColors.muted; }}
+                            onMouseEnter={e => { if (activeTab !== tab.key) { e.currentTarget.style.color = 'var(--foreground)'; e.currentTarget.style.borderColor = 'var(--foreground)'; } }}
+                            onMouseLeave={e => { if (activeTab !== tab.key) { e.currentTarget.style.color = 'var(--muted-foreground)'; e.currentTarget.style.borderColor = 'var(--border)'; } }}
                         >
                             {tab.label}
                         </button>
@@ -131,11 +122,11 @@ export default function NotificationsPage({ notifications }: Props) {
                 </div>
 
                 {/* Notification list */}
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                     {filtered.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center">
-                            <Bell className="mb-4 h-10 w-10" style={{ color: 'rgba(156,139,122,0.3)' }} />
-                            <p className="font-body italic text-muted-foreground">No notifications found</p>
+                            <Bell className="mb-4 h-10 w-10" style={{ color: 'var(--muted-foreground)', opacity: 0.4 }} />
+                            <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>No notifications found</p>
                         </div>
                     ) : (
                         filtered.map((n) => {
@@ -144,41 +135,41 @@ export default function NotificationsPage({ notifications }: Props) {
                             return (
                                 <div
                                     key={n.id}
-                                    className="flex items-start gap-4 rounded p-4 transition-colors"
+                                    className="flex items-start gap-4 rounded-2xl p-4 transition-all duration-200"
                                     style={n.is_read
-                                        ? { background: '#0D1F1C', border: '1px solid #285A48' }
-                                        : { background: 'rgba(64,138,113,0.04)', border: '1px solid rgba(64,138,113,0.25)', borderLeft: '3px solid #408A71' }
+                                        ? { background: 'var(--card)', border: '1px solid var(--border)' }
+                                        : { background: 'color-mix(in srgb, var(--primary) 4%, var(--card))', border: '1px solid color-mix(in srgb, var(--primary) 22%, transparent)' }
                                     }
                                 >
                                     {/* Icon */}
-                                    <div className="shrink-0 rounded p-2" style={{ background: ts.bg }}>
-                                        <Icon className="h-5 w-5" style={{ color: ts.color }} strokeWidth={1.5} />
+                                    <div
+                                        className="shrink-0 flex h-10 w-10 items-center justify-center rounded-xl"
+                                        style={{ background: `color-mix(in srgb, ${ts.color} 12%, transparent)`, color: ts.color }}
+                                    >
+                                        <Icon className="h-4 w-4" strokeWidth={1.6} />
                                     </div>
 
                                     {/* Content */}
                                     <div className="min-w-0 flex-1">
-                                        <p
-                                            className="font-body text-sm"
-                                            style={{ color: n.is_read ? 'var(--muted-foreground)' : 'var(--foreground)', fontStyle: n.is_read ? 'italic' : 'normal' }}
-                                        >
+                                        <p className="text-sm" style={{ color: 'var(--foreground)', fontWeight: n.is_read ? 400 : 500 }}>
                                             {n.title}
                                         </p>
-                                        <p className="font-body mt-0.5 text-sm italic text-muted-foreground">
+                                        <p className="mt-1 text-sm" style={{ color: 'var(--muted-foreground)' }}>
                                             {n.message}
                                         </p>
-                                        <p className="font-display mt-1 text-[9px] uppercase tracking-widest" style={{ color: 'rgba(156,139,122,0.5)' }}>
+                                        <p className="mt-2 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', opacity: 0.6, letterSpacing: '0.22em' }}>
                                             {timeAgo(n.created_at)}
                                         </p>
                                     </div>
 
                                     {/* Actions */}
-                                    <div className="flex shrink-0 items-center gap-2">
+                                    <div className="flex shrink-0 items-center gap-1">
                                         {n.url && (
-                                            <Button size="sm" variant="ghost" onClick={() => markRead(n)} title="Go to resource">
+                                            <Button size="icon" variant="ghost" onClick={() => markRead(n)} title="Go to resource">
                                                 <ExternalLink className="h-4 w-4" />
                                             </Button>
                                         )}
-                                        <Button size="sm" variant="ghost" onClick={() => deleteNotification(n.id)} title="Delete notification">
+                                        <Button size="icon" variant="ghost" onClick={() => deleteNotification(n.id)} title="Delete notification">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
@@ -195,10 +186,10 @@ export default function NotificationsPage({ notifications }: Props) {
                             <Link
                                 key={page}
                                 href={`/notifications?page=${page}`}
-                                className="flex h-8 w-8 items-center justify-center rounded font-display text-[10px] transition-colors"
+                                className="flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors"
                                 style={page === notifications.current_page
-                                    ? { background: themeColors.primary, color: themeColors.card }
-                                    : { color: themeColors.muted, border: `1px solid ${themeColors.border}` }
+                                    ? { background: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 500 }
+                                    : { color: 'var(--muted-foreground)', border: '1px solid var(--border)' }
                                 }
                             >
                                 {page}

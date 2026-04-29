@@ -13,8 +13,6 @@ import {
     Plus,
     Sparkles,
     ShieldCheck,
-    ChevronDown,
-    ChevronUp,
     X,
     Save,
 } from 'lucide-react';
@@ -100,23 +98,23 @@ interface PlanFormState {
 }
 
 const levelColors: Record<string, string> = {
-    critical: 'border-[#8B2635]/40',
-    high:     'border-[#285A48]/40',
-    medium:   'border-[#408A71]/40',
-    low:      'border-[#B0E4CC]/40',
+    critical: 'border-[#e5484d]/40',
+    high:     'border-[#f76b15]/40',
+    medium:   'border-[#f5b929]/40',
+    low:      'border-[#46bd5f]/40',
 };
 const levelStyle = (level: string): React.CSSProperties => ({
-    critical: { color: '#8B2635', background: 'rgba(139,38,53,0.15)', borderColor: 'rgba(139,38,53,0.4)' },
-    high:     { color: '#285A48', background: 'rgba(40,90,72,0.15)', borderColor: 'rgba(40,90,72,0.4)' },
-    medium:   { color: '#408A71', background: 'rgba(64,138,113,0.15)', borderColor: 'rgba(64,138,113,0.4)' },
-    low:      { color: '#B0E4CC', background: 'rgba(176,228,204,0.15)', borderColor: 'rgba(176,228,204,0.4)' },
-}[level] ?? { color: '#7ABFA8', background: 'rgba(156,139,122,0.1)' });
+    critical: { color: '#e5484d', background: 'rgba(229,72,77,0.12)', borderColor: 'rgba(229,72,77,0.4)' },
+    high:     { color: '#f76b15', background: 'rgba(247,107,21,0.12)', borderColor: 'rgba(247,107,21,0.4)' },
+    medium:   { color: '#f5b929', background: 'rgba(245,185,41,0.12)', borderColor: 'rgba(245,185,41,0.4)' },
+    low:      { color: '#46bd5f', background: 'rgba(70,189,95,0.12)', borderColor: 'rgba(70,189,95,0.4)' },
+}[level] ?? { color: 'var(--muted-foreground)', background: 'color-mix(in srgb, var(--muted) 50%, transparent)' });
 
 const strategyColors: Record<string, string> = {
-    mitigate: 'bg-[rgba(64,138,113,0.12)] text-[#408A71] border-[rgba(64,138,113,0.3)]',
-    accept:   'bg-[rgba(156,139,122,0.1)] text-[#7ABFA8] border-[#285A48]',
-    transfer: 'bg-[rgba(40,90,72,0.12)] text-[#285A48] border-[rgba(40,90,72,0.3)]',
-    avoid:    'bg-[rgba(139,38,53,0.12)] text-[#8B2635] border-[rgba(139,38,53,0.3)]',
+    mitigate: 'bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] text-primary border-[color-mix(in_srgb,var(--primary)_30%,transparent)]',
+    accept:   'bg-muted text-muted-foreground border-border',
+    transfer: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.3)]',
+    avoid:    'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.3)]',
 };
 
 const statusLabels: Record<string, string> = {
@@ -127,8 +125,8 @@ const statusLabels: Record<string, string> = {
 
 const ScoreCell = ({ value, active, color }: { value: number; active: boolean; color: string }) => (
     <div
-        className={`flex h-10 w-10 items-center justify-center rounded border font-heading text-sm ${active ? color : ''}`}
-        style={!active ? { border: '1px solid #285A48', background: 'rgba(13,31,28,0.5)', color: '#7ABFA8' } : {}}
+        className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm ${active ? color : ''}`}
+        style={!active ? { border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--muted-foreground)', fontWeight: 500 } : { fontWeight: 500 }}
     >
         {value}
     </div>
@@ -270,7 +268,6 @@ export default function RiskShow({
     };
 
     const score = risk.likelihood * risk.impact;
-    const levelColor = levelColors[risk.risk_level];
 
     return (
         <AdminLayout>
@@ -286,10 +283,10 @@ export default function RiskShow({
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="font-heading text-4xl font-normal" style={{ color: 'var(--foreground)' }}>
+                            <h1 className="text-4xl tracking-[-0.02em]" style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}>
                                 {risk.title}
                             </h1>
-                            <p className="mt-0.5 text-sm text-muted-foreground">
+                            <p className="mt-0.5 text-sm" style={{ color: 'var(--muted-foreground)' }}>
                                 Created by {risk.user?.name} ·{' '}
                                 {new Date(risk.created_at).toLocaleDateString()}
                             </p>
@@ -305,8 +302,8 @@ export default function RiskShow({
                         )}
                         {isAdmin && (
                             <Button
-                                variant="outline"
-                                className="gap-2" style={{ border: "1px solid rgba(139,38,53,0.4)", color: "#8B2635" }}
+                                variant="destructive"
+                                className="gap-2"
                                 onClick={deleteRisk}
                             >
                                 <Trash2 className="h-4 w-4" /> Delete
@@ -317,15 +314,15 @@ export default function RiskShow({
 
                 {/* AI-generated banner */}
                 {risk.auto_generated === 1 && risk.source_control && (
-                    <div className="flex items-start gap-3 rounded p-4" style={{ background: 'rgba(64,138,113,0.06)', border: '1px solid rgba(64,138,113,0.25)' }}>
-                        <Sparkles className="mt-0.5 h-5 w-5 shrink-0" style={{ color: '#408A71' }} />
+                    <div className="flex items-start gap-3 rounded-2xl p-4" style={{ background: 'color-mix(in srgb, var(--primary) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--primary) 25%, transparent)' }}>
+                        <Sparkles className="mt-0.5 h-5 w-5 shrink-0" style={{ color: 'var(--primary)' }} />
                         <div>
-                            <p className="font-display text-[10px] uppercase tracking-[0.15em]" style={{ color: '#408A71' }}>
+                            <p className="text-[10px] uppercase" style={{ color: 'var(--primary)', letterSpacing: '0.28em' }}>
                                 This risk was automatically generated by AI
                             </p>
-                            <p className="font-body mt-0.5 text-xs italic" style={{ color: '#7ABFA8' }}>
+                            <p className="mt-0.5 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                 From non-compliant control:{' '}
-                                <span className="font-heading not-italic" style={{ color: 'var(--foreground)' }}>
+                                <span style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                     {risk.source_control.control_id}
                                 </span>{' '}
                                 — {risk.source_control.title}
@@ -336,12 +333,12 @@ export default function RiskShow({
 
                 {/* AI Validated banner */}
                 {risk.ai_validated && (
-                    <div className="flex items-center gap-3 rounded p-3" style={{ background: 'rgba(64,138,113,0.05)', border: '1px solid rgba(64,138,113,0.2)' }}>
-                        <Sparkles className="h-4 w-4 shrink-0" style={{ color: '#408A71' }} />
-                        <p className="font-display text-[10px] uppercase tracking-[0.15em]" style={{ color: '#408A71' }}>
+                    <div className="flex items-center gap-3 rounded-2xl p-3" style={{ background: 'color-mix(in srgb, var(--primary) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--primary) 20%, transparent)' }}>
+                        <Sparkles className="h-4 w-4 shrink-0" style={{ color: 'var(--primary)' }} />
+                        <p className="text-[10px] uppercase" style={{ color: 'var(--primary)', letterSpacing: '0.28em' }}>
                             Risk scores have been validated by AI
                         </p>
-                        <Badge className="ml-auto shrink-0 text-xs">
+                        <Badge className="ml-auto shrink-0">
                             <Sparkles className="mr-1 h-3 w-3" />
                             AI Validated
                         </Badge>
@@ -389,13 +386,13 @@ export default function RiskShow({
                             <CardContent>
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-1">
-                                        <span className="w-20 pr-2 text-right font-display text-[9px] uppercase tracking-widest" style={{ color: 'rgba(156,139,122,0.6)' }}>
+                                        <span className="w-20 pr-2 text-right text-[9px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                             Impact →
                                         </span>
                                         {[1, 2, 3, 4, 5].map((i) => (
                                             <div
                                                 key={i}
-                                                className="w-10 text-center font-display text-[10px]" style={{ color: 'rgba(156,139,122,0.6)' }}
+                                                className="w-10 text-center text-[10px]" style={{ color: 'var(--muted-foreground)' }}
                                             >
                                                 {i}
                                             </div>
@@ -406,7 +403,7 @@ export default function RiskShow({
                                             key={l}
                                             className="flex items-center gap-1"
                                         >
-                                            <span className="w-20 pr-2 text-right text-xs text-muted-foreground/70">
+                                            <span className="w-20 pr-2 text-right text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                 L={l}
                                             </span>
                                             {[1, 2, 3, 4, 5].map((i) => {
@@ -415,10 +412,10 @@ export default function RiskShow({
                                                     l === risk.likelihood &&
                                                     i === risk.impact;
                                                 const c =
-                                                    s >= 20 ? 'bg-[rgba(139,38,53,0.8)] text-[#E0F5EC] border-[rgba(139,38,53,0.6)]'
-                                                    : s >= 13 ? 'bg-[rgba(40,90,72,0.7)] text-[#E0F5EC] border-[rgba(40,90,72,0.5)]'
-                                                    : s >= 7  ? 'bg-[rgba(64,138,113,0.5)] text-[#E0F5EC] border-[rgba(64,138,113,0.4)]'
-                                                    : 'bg-[rgba(176,228,204,0.4)] text-[#E0F5EC] border-[rgba(176,228,204,0.3)]';
+                                                    s >= 20 ? 'bg-[#e5484d] text-white border-[#e5484d]'
+                                                    : s >= 13 ? 'bg-[#f76b15] text-white border-[#f76b15]'
+                                                    : s >= 7  ? 'bg-[#f5b929] text-[#091413] border-[#f5b929]'
+                                                    : 'bg-[#46bd5f] text-white border-[#46bd5f]';
                                                 return (
                                                     <ScoreCell
                                                         key={i}
@@ -439,22 +436,22 @@ export default function RiskShow({
                     <div className="space-y-4">
                         <Card>
                             <CardContent
-                                className="mt-4 rounded p-4"
+                                className="mt-4 rounded-2xl p-4"
                                 style={levelStyle(risk.risk_level)}
                             >
                                 <div className="mb-2 flex items-center gap-2">
                                     <AlertTriangle className="h-5 w-5" />
-                                    <span className="font-display text-[10px] uppercase tracking-[0.15em]">
+                                    <span className="text-[10px] uppercase" style={{ letterSpacing: '0.28em' }}>
                                         {risk.risk_level} Risk
                                     </span>
                                 </div>
-                                <div className="font-heading text-4xl font-normal">
+                                <div className="text-4xl tabular-nums" style={{ fontWeight: 500 }}>
                                     {score}
-                                    <span className="font-display text-lg font-normal" style={{ color: 'rgba(232,223,212,0.6)' }}>
+                                    <span className="text-lg" style={{ opacity: 0.6 }}>
                                         {' '} / 25
                                     </span>
                                 </div>
-                                <p className="font-body mt-1 text-xs italic">
+                                <p className="mt-1 text-xs">
                                     {risk.likelihood} (likelihood) × {risk.impact} (impact)
                                 </p>
                             </CardContent>
@@ -492,19 +489,19 @@ export default function RiskShow({
                                         key={label}
                                         className="flex items-start gap-3"
                                     >
-                                        <Icon className="mt-0.5 h-4 w-4 shrink-0" style={{ color: '#7ABFA8' }} />
+                                        <Icon className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--muted-foreground)' }} />
                                         <div>
-                                            <p className="font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: 'rgba(156,139,122,0.7)' }}>
+                                            <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                                 {label}
                                             </p>
-                                            <p className="font-body text-sm capitalize" style={{ color: 'var(--foreground)' }}>
+                                            <p className="text-sm capitalize" style={{ color: 'var(--foreground)' }}>
                                                 {value}
                                             </p>
                                         </div>
                                     </div>
                                 ))}
-                                <div className="pt-2" style={{ borderTop: '1px solid #285A48' }}>
-                                    <p className="font-display mb-1 text-[9px] uppercase tracking-[0.15em]" style={{ color: 'rgba(156,139,122,0.7)' }}>
+                                <div className="pt-2" style={{ borderTop: '1px solid var(--border)' }}>
+                                    <p className="mb-1 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                         Status
                                     </p>
                                     <Badge variant="outline" className="capitalize">
@@ -544,8 +541,8 @@ export default function RiskShow({
                     <CardContent className="space-y-4">
                         {/* Inline form */}
                         {showPlanForm && canEdit && (
-                            <div className="space-y-3 rounded p-4" style={{ background: "rgba(13,31,28,0.6)", border: "1px solid #285A48" }}>
-                                <p className="text-sm font-semibold">
+                            <div className="space-y-3 rounded-2xl p-4" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+                                <p className="text-sm" style={{ fontWeight: 500 }}>
                                     {editingPlanId
                                         ? 'Edit Treatment Plan'
                                         : 'New Treatment Plan'}
@@ -553,7 +550,7 @@ export default function RiskShow({
 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="mb-1 block font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: "#7ABFA8" }}>
+                                        <label className="mb-1 block text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                             Strategy
                                         </label>
                                         <select
@@ -565,7 +562,7 @@ export default function RiskShow({
                                                         .value as any,
                                                 }))
                                             }
-                                            className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
+                                            className="w-full rounded-full px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                         >
                                             <option value="mitigate">
                                                 Mitigate
@@ -580,7 +577,7 @@ export default function RiskShow({
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="mb-1 block font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: "#7ABFA8" }}>
+                                        <label className="mb-1 block text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                             Status
                                         </label>
                                         <select
@@ -592,7 +589,7 @@ export default function RiskShow({
                                                         .value as any,
                                                 }))
                                             }
-                                            className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
+                                            className="w-full rounded-full px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                         >
                                             <option value="not_started">
                                                 Not Started
@@ -608,7 +605,7 @@ export default function RiskShow({
                                 </div>
 
                                 <div>
-                                    <label className="mb-1 block font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: "#7ABFA8" }}>
+                                    <label className="mb-1 block text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                         Owner
                                     </label>
                                     <input
@@ -621,12 +618,12 @@ export default function RiskShow({
                                             }))
                                         }
                                         placeholder="Responsible person or team"
-                                        className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
+                                        className="w-full rounded-full px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="mb-1 block font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: "#7ABFA8" }}>
+                                    <label className="mb-1 block text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                         Description
                                     </label>
                                     <textarea
@@ -639,13 +636,13 @@ export default function RiskShow({
                                         }
                                         rows={3}
                                         placeholder="Describe the treatment actions..."
-                                        className="w-full resize-none rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
+                                        className="w-full resize-none rounded-2xl px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="mb-1 block font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: "#7ABFA8" }}>
+                                        <label className="mb-1 block text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                             Due Date
                                         </label>
                                         <input
@@ -657,11 +654,11 @@ export default function RiskShow({
                                                     due_date: e.target.value,
                                                 }))
                                             }
-                                            className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
+                                            className="w-full rounded-full px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                         />
                                     </div>
                                     <div>
-                                        <label className="mb-1 block font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: "#7ABFA8" }}>
+                                        <label className="mb-1 block text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                             Progress ({planForm.progress}%)
                                         </label>
                                         <input
@@ -678,18 +675,18 @@ export default function RiskShow({
                                                     ),
                                                 }))
                                             }
-                                            className="mt-2 w-full"
+                                            className="mt-2 w-full" style={{ accentColor: 'var(--primary)' }}
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <p className="mb-2 text-xs font-medium text-muted-foreground">
+                                    <p className="mb-2 text-xs font-medium" style={{ color: 'var(--muted-foreground)' }}>
                                         Residual Risk (after treatment)
                                     </p>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="mb-1 block font-display text-[9px] uppercase tracking-[0.1em]" style={{ color: "rgba(156,139,122,0.7)" }}>
+                                            <label className="mb-1 block text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                                 Likelihood (1–5)
                                             </label>
                                             <input
@@ -713,11 +710,11 @@ export default function RiskShow({
                                                     }))
                                                 }
                                                 placeholder="—"
-                                                className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
+                                                className="w-full rounded-full px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                             />
                                         </div>
                                         <div>
-                                            <label className="mb-1 block font-display text-[9px] uppercase tracking-[0.1em]" style={{ color: "rgba(156,139,122,0.7)" }}>
+                                            <label className="mb-1 block text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                                 Impact (1–5)
                                             </label>
                                             <input
@@ -739,7 +736,7 @@ export default function RiskShow({
                                                     }))
                                                 }
                                                 placeholder="—"
-                                                className="w-full rounded px-3 py-1.5 font-body text-sm focus:outline-none" style={{ background: "#0D1F1C", border: "1px solid #285A48", color: "var(--foreground)" }}
+                                                className="w-full rounded-full px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                             />
                                         </div>
                                     </div>
@@ -783,7 +780,7 @@ export default function RiskShow({
                             return (
                                 <div
                                     key={plan.id}
-                                    className="space-y-3 rounded-lg border p-4"
+                                    className="space-y-3 rounded-2xl border p-4"
                                 >
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="flex flex-wrap items-center gap-2">
@@ -794,8 +791,7 @@ export default function RiskShow({
                                             </Badge>
                                             <Badge
                                                 variant="outline"
-                                                className="text-xs"
-                                                style={plan.status === 'completed' ? { color: '#B0E4CC', borderColor: 'rgba(176,228,204,0.4)', background: 'rgba(176,228,204,0.1)' } : plan.status === 'in_progress' ? { color: '#408A71', borderColor: 'rgba(64,138,113,0.4)', background: 'rgba(64,138,113,0.1)' } : { color: '#7ABFA8' }}
+                                                style={plan.status === 'completed' ? { color: '#46bd5f', borderColor: 'rgba(70,189,95,0.4)', background: 'rgba(70,189,95,0.1)' } : plan.status === 'in_progress' ? { color: 'var(--primary)', borderColor: 'color-mix(in srgb, var(--primary) 40%, transparent)', background: 'color-mix(in srgb, var(--primary) 10%, transparent)' } : { color: 'var(--muted-foreground)' }}
                                             >
                                                 {statusLabels[plan.status]}
                                             </Badge>
@@ -815,7 +811,7 @@ export default function RiskShow({
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    className="h-7 px-2" style={{ color: "#8B2635" }}
+                                                    className="h-7 px-2" style={{ color: 'var(--destructive)' }}
                                                     onClick={() =>
                                                         deletePlan(plan.id)
                                                     }
@@ -826,11 +822,11 @@ export default function RiskShow({
                                         )}
                                     </div>
 
-                                    <p className="text-sm text-foreground/85">
+                                    <p className="text-sm" style={{ color: 'var(--foreground)' }}>
                                         {plan.description}
                                     </p>
 
-                                    <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground">
+                                    <div className="grid grid-cols-2 gap-3 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                         <div className="flex items-center gap-1">
                                             <User className="h-3.5 w-3.5" />
                                             <span>{plan.owner}</span>
@@ -849,16 +845,16 @@ export default function RiskShow({
 
                                     {/* Progress bar */}
                                     <div>
-                                        <div className="mb-1 flex justify-between text-xs text-muted-foreground">
+                                        <div className="mb-1 flex justify-between text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                             <span>Progress</span>
                                             <span>{plan.progress}%</span>
                                         </div>
-                                        <div className="h-1 overflow-hidden rounded-full" style={{ background: 'rgba(40,90,72,0.5)' }}>
+                                        <div className="h-1 overflow-hidden rounded-full" style={{ background: 'var(--muted)' }}>
                                             <div
                                                 className="h-full rounded-full transition-all"
                                                 style={{
                                                     width: `${plan.progress}%`,
-                                                    background: plan.progress === 100 ? '#B0E4CC' : plan.progress >= 50 ? '#408A71' : '#285A48',
+                                                    background: plan.progress === 100 ? '#46bd5f' : plan.progress >= 50 ? 'var(--primary)' : '#f5b929',
                                                 }}
                                             />
                                         </div>
@@ -868,11 +864,11 @@ export default function RiskShow({
                                     {residualScore !== null && (
                                         <div className="grid grid-cols-2 gap-3 border-t pt-1">
                                             <div>
-                                                <p className="mb-1 text-xs text-muted-foreground/70">
+                                                <p className="mb-1 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                     Current Risk
                                                 </p>
                                                 <div
-                                                    className={`inline-flex items-center gap-1 rounded border px-2 py-1 text-xs font-semibold ${levelColors[risk.risk_level]}`}
+                                                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold ${levelColors[risk.risk_level]}`}
                                                 >
                                                     <AlertTriangle className="h-3 w-3" />
                                                     {score}/25{' '}
@@ -880,17 +876,17 @@ export default function RiskShow({
                                                         ({risk.risk_level})
                                                     </span>
                                                 </div>
-                                                <p className="mt-0.5 text-xs text-muted-foreground/70">
+                                                <p className="mt-0.5 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                     {risk.likelihood}L ×{' '}
                                                     {risk.impact}I
                                                 </p>
                                             </div>
                                             <div>
-                                                <p className="mb-1 text-xs text-muted-foreground/70">
+                                                <p className="mb-1 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                     After Treatment
                                                 </p>
                                                 <div
-                                                    className={`inline-flex items-center gap-1 rounded border px-2 py-1 text-xs font-semibold ${residualColor}`}
+                                                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold ${residualColor}`}
                                                 >
                                                     <ShieldCheck className="h-3 w-3" />
                                                     {residualScore}/25{' '}
@@ -898,7 +894,7 @@ export default function RiskShow({
                                                         ({residualLevel})
                                                     </span>
                                                 </div>
-                                                <p className="mt-0.5 text-xs text-muted-foreground/70">
+                                                <p className="mt-0.5 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                     {plan.residual_likelihood}L
                                                     × {plan.residual_impact}I
                                                 </p>
@@ -956,7 +952,7 @@ export default function RiskShow({
                                                         {ctrl.framework}
                                                     </Badge>
                                                     {ctrl.link_type === 'ai' ? (
-                                                        <Badge className="shrink-0 text-xs">
+                                                        <Badge className="shrink-0">
                                                             <Sparkles className="mr-0.5 h-2.5 w-2.5" />
                                                             AI
                                                         </Badge>
@@ -964,14 +960,15 @@ export default function RiskShow({
                                                       'manual' ? (
                                                         <Badge
                                                             variant="outline"
-                                                            className="shrink-0 text-xs" style={{ color: "#408A71", borderColor: "rgba(64,138,113,0.3)" }}
+                                                            className="shrink-0"
+                                                            style={{ color: 'var(--primary)', borderColor: 'color-mix(in srgb, var(--primary) 30%, transparent)' }}
                                                         >
                                                             Manual
                                                         </Badge>
                                                     ) : (
                                                         <Badge
                                                             variant="outline"
-                                                            className="shrink-0 text-xs"
+                                                            className="shrink-0"
                                                         >
                                                             Auto
                                                         </Badge>
@@ -981,7 +978,7 @@ export default function RiskShow({
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        className="h-7 shrink-0 px-2" style={{ color: "#8B2635" }}
+                                                        className="h-7 shrink-0 px-2" style={{ color: 'var(--destructive)' }}
                                                         onClick={() =>
                                                             unlinkControl(
                                                                 ctrl.id,
@@ -1013,7 +1010,7 @@ export default function RiskShow({
 
                         {isAdmin && (
                             <div className="space-y-2 border-t pt-2">
-                                <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                                <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                     Add Control
                                 </p>
                                 <div className="flex gap-2">
@@ -1024,18 +1021,18 @@ export default function RiskShow({
                                         onChange={(e) =>
                                             setControlSearch(e.target.value)
                                         }
-                                        className="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                                        className="flex-1 rounded-full border bg-card px-3 py-1.5 text-sm focus:ring-2 focus:ring-ring focus:outline-none"
                                     />
                                 </div>
                                 {controlSearch &&
                                     filteredControls.length > 0 && (
-                                        <div className="max-h-48 divide-y overflow-y-auto rounded-md border">
+                                        <div className="max-h-48 divide-y overflow-y-auto rounded-2xl border">
                                             {filteredControls
                                                 .slice(0, 10)
                                                 .map((c) => (
                                                     <button
                                                         key={c.id}
-                                                        className="flex w-full items-center gap-2 px-3 py-2 text-left" style={{ color: "var(--foreground)" }}
+                                                        className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-muted" style={{ color: 'var(--foreground)' }}
                                                         onClick={() => {
                                                             setSelectedControlId(
                                                                 c.id,
@@ -1047,7 +1044,7 @@ export default function RiskShow({
                                                     >
                                                         <Badge
                                                             variant="outline"
-                                                            className="shrink-0 font-mono text-xs"
+                                                            className="shrink-0 font-mono"
                                                         >
                                                             {c.control_id}
                                                         </Badge>
@@ -1056,7 +1053,7 @@ export default function RiskShow({
                                                         </span>
                                                         <Badge
                                                             variant="secondary"
-                                                            className="ml-auto shrink-0 text-xs"
+                                                            className="ml-auto shrink-0"
                                                         >
                                                             {c.framework}
                                                         </Badge>
@@ -1066,7 +1063,7 @@ export default function RiskShow({
                                     )}
                                 {controlSearch &&
                                     filteredControls.length === 0 && (
-                                        <p className="px-1 text-xs text-muted-foreground">
+                                        <p className="px-1 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                             No matching controls found.
                                         </p>
                                     )}

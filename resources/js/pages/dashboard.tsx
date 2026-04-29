@@ -11,7 +11,7 @@ import {
     XCircle,
     Zap,
 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
     LineChart,
     Line,
@@ -29,7 +29,6 @@ import { RecentAlerts } from '@/components/admin/recent-alerts';
 import { RiskHeatmap } from '@/components/admin/risk-heatmap';
 import { RiskTrendChart } from '@/components/admin/risk-trend-chart';
 import { TopRisks } from '@/components/admin/top-risks';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AdminLayout from '@/layouts/admin-layout';
 import { downloadPdf } from '@/lib/download-pdf';
@@ -165,27 +164,32 @@ const toneCol: Record<string, string> = {
 function StatTiles({ tiles }: { tiles: StatTile[] }) {
     return (
         <div
-            className="grid grid-cols-2 overflow-hidden rounded md:grid-cols-3 lg:grid-cols-5"
-            style={{ borderColor: 'var(--border)', borderWidth: '1px', gap: '1px', background: 'var(--border)' }}
+            className="grid grid-cols-2 overflow-hidden rounded-2xl md:grid-cols-3 lg:grid-cols-5"
+            style={{
+                borderColor: 'var(--border)',
+                borderWidth: '1px',
+                gap: '1px',
+                background: 'var(--border)',
+                boxShadow: '0 10px 30px -16px color-mix(in srgb, var(--foreground) 18%, transparent)',
+            }}
         >
-            {tiles.map((t, i) => {
+            {tiles.map((t) => {
                 const dot = toneCol[t.tone ?? 'neutral'];
                 const p   = t.progress ?? null;
                 return (
-                    <div key={t.label} className="relative flex flex-col justify-between px-5 py-4 bg-card" style={{ minHeight: '100px' }}>
-                        {i === 0 && <div className="absolute left-0 top-3 bottom-3 w-px" style={{ background: 'var(--primary)', opacity: 0.6 }} />}
-                        <div className="flex items-center gap-1.5">
+                    <div key={t.label} className="relative flex flex-col justify-between px-5 py-5 bg-card" style={{ minHeight: '110px' }}>
+                        <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: dot }} />
-                            <p className="font-display text-[9px] uppercase tracking-[0.2em] text-muted-foreground">{t.label}</p>
+                            <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>{t.label}</p>
                         </div>
-                        <div className="mt-2">
-                            <p className="font-heading text-3xl font-normal tabular-nums leading-none text-foreground">{t.value}</p>
+                        <div className="mt-3">
+                            <p className="text-3xl tabular-nums leading-none" style={{ color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em' }}>{t.value}</p>
                             {p !== null && (
-                                <div className="mt-2 h-px w-full overflow-hidden" style={{ background: 'var(--border)' }}>
-                                    <div className="h-full" style={{ width: `${Math.min(p, 100)}%`, background: dot, transition: 'width 0.5s ease' }} />
+                                <div className="mt-3 h-1 w-full overflow-hidden rounded-full" style={{ background: 'color-mix(in srgb, var(--border) 60%, transparent)' }}>
+                                    <div className="h-full rounded-full" style={{ width: `${Math.min(p, 100)}%`, background: dot, transition: 'width 0.5s ease' }} />
                                 </div>
                             )}
-                            {t.hint && <p className="mt-1.5 font-body text-[11px] italic text-muted-foreground">{t.hint}</p>}
+                            {t.hint && <p className="mt-2 text-[11px]" style={{ color: 'var(--muted-foreground)' }}>{t.hint}</p>}
                         </div>
                     </div>
                 );
@@ -206,33 +210,54 @@ function DashboardHero({ healthScore }: { healthScore: HealthScore }) {
     const gradeC = gradeColor[healthScore.grade] ?? gradeColor.F;
     return (
         <div
-            className="relative overflow-hidden rounded-lg ornate-frame bg-card border elev-1"
-            style={{}}
+            className="relative overflow-hidden rounded-2xl"
+            style={{
+                background: 'var(--card)',
+                border: '1px solid var(--border)',
+                boxShadow: '0 24px 60px -28px color-mix(in srgb, var(--foreground) 22%, transparent), 0 8px 22px -10px color-mix(in srgb, var(--foreground) 10%, transparent)',
+            }}
         >
-            {/* Subtle warm grid */}
-            <div className="absolute inset-0 opacity-20" aria-hidden style={{
-                backgroundImage: 'linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)',
-                backgroundSize: '48px 48px',
-            }} />
-            <div className="absolute inset-0" aria-hidden style={{ background: 'linear-gradient(135deg, transparent 0%, color-mix(in srgb, var(--foreground) 8%, transparent) 100%)' }} />
+            <div
+                className="pointer-events-none absolute inset-0 opacity-90"
+                aria-hidden
+                style={{
+                    background:
+                        'radial-gradient(60% 60% at 90% 0%, color-mix(in srgb, var(--primary) 14%, transparent), transparent 70%),' +
+                        'radial-gradient(45% 45% at 0% 100%, color-mix(in srgb, var(--chart-2) 8%, transparent), transparent 75%)',
+                }}
+            />
 
-            <div className="relative flex flex-col gap-6 p-6 md:flex-row md:items-end md:justify-between md:p-8">
-                <div className="space-y-2">
-                    <p className="font-display text-[9px] uppercase tracking-[0.3em] text-primary">
+            <div className="relative flex flex-col gap-6 p-7 md:flex-row md:items-end md:justify-between md:p-9">
+                <div className="space-y-3">
+                    <p
+                        className="text-[11px] uppercase"
+                        style={{ color: 'var(--primary)', letterSpacing: '0.4em' }}
+                    >
                         Overview · GRC Command Centre
                     </p>
-                    <h1 className="font-heading text-4xl font-normal leading-tight md:text-5xl text-foreground">
-                        Good to see you back.
+                    <h1
+                        className="text-4xl tracking-[-0.02em] md:text-5xl"
+                        style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.05 }}
+                    >
+                        Good to see you{' '}
+                        <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>back.</span>
                     </h1>
-                    <p className="max-w-md font-body italic text-base text-muted-foreground">
+                    <p
+                        className="max-w-md text-base leading-relaxed"
+                        style={{ color: 'var(--muted-foreground)' }}
+                    >
                         Live view of your risks, controls, and compliance posture.
                     </p>
                 </div>
                 <div className="flex items-center gap-6">
                     <div className="text-right">
-                        <p className="font-display text-[9px] uppercase tracking-[0.25em] mb-1 text-muted-foreground">Health</p>
-                        <p className="font-heading text-6xl leading-none" style={{ color: gradeC }}>{healthScore.grade}</p>
-                        <p className="mt-1 font-display text-[10px] uppercase tracking-wider tabular-nums text-muted-foreground">
+                        <p className="text-[10px] uppercase mb-1" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
+                            Health
+                        </p>
+                        <p className="text-6xl leading-none" style={{ color: gradeC, fontWeight: 500, letterSpacing: '-0.02em' }}>
+                            {healthScore.grade}
+                        </p>
+                        <p className="mt-2 text-[10px] uppercase tabular-nums" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.22em' }}>
                             {healthScore.health_score}/100
                         </p>
                     </div>
@@ -248,42 +273,40 @@ function DashboardHero({ healthScore }: { healthScore: HealthScore }) {
 
 function ActionStrip() {
     const actions = [
-        { href: '/risks/create',        label: 'New Risk',         icon: Plus,     primary: true  },
-        { href: '/assessments/create',  label: 'Start Assessment', icon: Sparkles, primary: false },
-        { href: '/evidence/upload',     label: 'Upload Evidence',  icon: Upload,   primary: false },
+        { href: '/risks/create',        label: 'New risk',         icon: Plus,     primary: true  },
+        { href: '/assessments/create',  label: 'Start assessment', icon: Sparkles, primary: false },
+        { href: '/evidence/upload',     label: 'Upload evidence',  icon: Upload,   primary: false },
         { href: '/reports',             label: 'Reports',          icon: FileText, primary: false },
     ];
     return (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
             {actions.map(a => (
                 <Link
                     key={a.label}
                     href={a.href}
-                    className="group inline-flex items-center gap-2 rounded-full px-4 py-2 font-display text-[11px] uppercase tracking-[0.12em] transition-all duration-200"
+                    className="group inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-all duration-200"
                     style={a.primary
-                        ? { background: 'var(--primary)', color: 'var(--primary-foreground)', border: '1px solid transparent' }
-                        : { background: 'var(--card)', color: 'var(--muted-foreground)', border: '1px solid var(--border)' }
+                        ? { background: 'var(--primary)', color: 'var(--primary-foreground)', border: '1px solid transparent', fontWeight: 500, boxShadow: '0 10px 30px -16px color-mix(in srgb, var(--foreground) 28%, transparent)' }
+                        : { background: 'var(--card)', color: 'var(--foreground)', border: '1px solid var(--border)', fontWeight: 400 }
                     }
                     onMouseEnter={e => {
                         if (a.primary) {
-                            e.currentTarget.style.filter = 'brightness(1.1)';
+                            e.currentTarget.style.transform = 'translateY(-1px)';
+                            e.currentTarget.style.filter = 'brightness(1.08)';
                         } else {
-                            e.currentTarget.style.borderColor = 'var(--primary)';
-                            e.currentTarget.style.color = 'var(--primary)';
-                            e.currentTarget.style.background = 'color-mix(in srgb, var(--primary) 6%, transparent)';
+                            e.currentTarget.style.borderColor = 'var(--foreground)';
                         }
                     }}
                     onMouseLeave={e => {
                         if (a.primary) {
+                            e.currentTarget.style.transform = '';
                             e.currentTarget.style.filter = '';
                         } else {
                             e.currentTarget.style.borderColor = 'var(--border)';
-                            e.currentTarget.style.color = 'var(--muted-foreground)';
-                            e.currentTarget.style.background = 'var(--card)';
                         }
                     }}
                 >
-                    <a.icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+                    <a.icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.6} />
                     {a.label}
                 </Link>
             ))}
@@ -322,58 +345,65 @@ function ExecutiveSummaryCard() {
         }
     };
 
-    const cardBase: React.CSSProperties = { background: 'var(--card)', borderColor: 'var(--border)', borderWidth: '1px', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.3s ease' };
+    const cardBase: React.CSSProperties = {
+        background: 'var(--card)',
+        border: '1px solid var(--border)',
+        borderRadius: '16px',
+        cursor: 'pointer',
+        transition: 'all 0.2s cubic-bezier(.2,.7,.2,1)',
+        boxShadow: '0 10px 30px -16px color-mix(in srgb, var(--foreground) 18%, transparent)',
+    };
     return (
         <>
             <div className="grid gap-3 md:grid-cols-2">
                 <button
                     onClick={generate}
                     disabled={generating}
-                    className="group relative text-left disabled:opacity-50 ornate-frame"
+                    className="group relative text-left disabled:opacity-50"
                     style={cardBase}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 50%, transparent)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--border) 40%, transparent)')}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 18px 40px -18px color-mix(in srgb, var(--foreground) 24%, transparent)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 10px 30px -16px color-mix(in srgb, var(--foreground) 18%, transparent)'; }}
                 >
-                    <div className="flex items-center gap-3 p-4">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded" style={{ borderColor: 'rgba(var(--color-primary) / 0.4)', borderWidth: '1px', background: 'rgba(var(--color-primary) / 0.08)' }}>
-                            <Sparkles className="h-4 w-4 text-primary" />
+                    <div className="flex items-center gap-3 p-5">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ border: '1px solid color-mix(in srgb, var(--primary) 22%, transparent)', background: 'color-mix(in srgb, var(--primary) 8%, transparent)', color: 'var(--primary)' }}>
+                            <Sparkles className="h-4 w-4" strokeWidth={1.6} />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="font-heading text-base font-normal text-foreground">AI Executive Summary</p>
-                            <p className="font-body italic text-xs text-muted-foreground">Board-ready PDF with AI narrative</p>
+                            <p className="text-base" style={{ color: 'var(--foreground)', fontWeight: 500 }}>AI executive summary</p>
+                            <p className="text-xs mt-0.5" style={{ color: 'var(--muted-foreground)' }}>Board-ready PDF with AI narrative</p>
                         </div>
-                        {generating ? <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" /> : <ArrowRight className="h-4 w-4 shrink-0 transition-all group-hover:translate-x-0.5 text-muted-foreground" />}
+                        {generating ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" style={{ color: 'var(--muted-foreground)' }} /> : <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5" style={{ color: 'var(--muted-foreground)' }} />}
                     </div>
                 </button>
-                <Link href="/executive-dashboard" className="group relative ornate-frame" style={cardBase}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 50%, transparent)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--border) 40%, transparent)')}
+                <Link href="/executive-dashboard" className="group relative" style={cardBase}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 18px 40px -18px color-mix(in srgb, var(--foreground) 24%, transparent)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 10px 30px -16px color-mix(in srgb, var(--foreground) 18%, transparent)'; }}
                 >
-                    <div className="flex items-center gap-3 p-4">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded" style={{ borderColor: 'color-mix(in srgb, var(--primary) 40%, transparent)', borderWidth: '1px', background: 'color-mix(in srgb, var(--primary) 8%, transparent)' }}>
-                            <FileText className="h-4 w-4 text-primary" />
+                    <div className="flex items-center gap-3 p-5">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ border: '1px solid color-mix(in srgb, var(--primary) 22%, transparent)', background: 'color-mix(in srgb, var(--primary) 8%, transparent)', color: 'var(--primary)' }}>
+                            <FileText className="h-4 w-4" strokeWidth={1.6} />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="font-heading text-base font-normal text-foreground">Executive Dashboard</p>
-                            <p className="font-body italic text-xs text-muted-foreground">Printable one-page compliance view</p>
+                            <p className="text-base" style={{ color: 'var(--foreground)', fontWeight: 500 }}>Executive dashboard</p>
+                            <p className="text-xs mt-0.5" style={{ color: 'var(--muted-foreground)' }}>Printable one-page compliance view</p>
                         </div>
-                        <ArrowRight className="h-4 w-4 shrink-0 transition-all group-hover:translate-x-0.5 text-muted-foreground" />
+                        <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5" style={{ color: 'var(--muted-foreground)' }} />
                     </div>
                 </Link>
             </div>
             {generating && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>
-                    <div className="mx-4 flex max-w-xs flex-col items-center gap-3 rounded p-6 ornate-frame bg-card border">
-                        <Sparkles className="h-6 w-6 animate-pulse text-primary" />
-                        <p className="font-heading text-lg font-normal text-foreground">Generating summary…</p>
-                        <p className="text-center font-body italic text-sm text-muted-foreground">The AI is analysing your GRC data</p>
+                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'color-mix(in srgb, var(--background) 90%, transparent)', backdropFilter: 'blur(10px)' }}>
+                    <div className="mx-4 flex max-w-xs flex-col items-center gap-3 rounded-2xl p-7" style={{ background: 'var(--card)', border: '1px solid var(--border)', boxShadow: '0 24px 60px -28px color-mix(in srgb, var(--foreground) 28%, transparent)' }}>
+                        <Sparkles className="h-6 w-6 animate-pulse" style={{ color: 'var(--primary)' }} />
+                        <p className="text-lg" style={{ color: 'var(--foreground)', fontWeight: 500 }}>Generating summary…</p>
+                        <p className="text-center text-sm" style={{ color: 'var(--muted-foreground)' }}>The AI is analysing your GRC data</p>
                     </div>
                 </div>
             )}
             {toast && (
-                <div className="fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded px-4 py-3 text-sm bg-card border" style={{ borderColor: 'color-mix(in srgb, var(--destructive) 40%, transparent)' }}>
-                    <XCircle className="h-4 w-4 shrink-0 text-destructive" />
-                    <span className="font-body text-foreground">{toast.text}</span>
+                <div className="fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded-2xl px-4 py-3 text-sm" style={{ background: 'var(--card)', border: '1px solid color-mix(in srgb, var(--destructive) 40%, transparent)', boxShadow: '0 18px 40px -18px color-mix(in srgb, var(--foreground) 28%, transparent)' }}>
+                    <XCircle className="h-4 w-4 shrink-0" style={{ color: 'var(--destructive)' }} />
+                    <span style={{ color: 'var(--foreground)' }}>{toast.text}</span>
                 </div>
             )}
         </>
@@ -416,25 +446,25 @@ function HealthBreakdown({ healthScore }: { healthScore: HealthScore }) {
     return (
         <Card>
             <CardHeader className="pb-2">
-                <CardTitle className="font-heading text-lg font-normal">Health Breakdown</CardTitle>
-                <p className="font-body italic text-xs" style={{ color: themeColors.muted }}>
+                <CardTitle className="text-lg" style={{ fontWeight: 500 }}>Health breakdown</CardTitle>
+                <p className="text-xs" style={{ color: themeColors.muted }}>
                     {healthScore.raw.compliance_basis === 'evidence' ? 'Evidence-weighted' : 'Self-assessed'} · 100 pts total
                 </p>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
                 {components.map((c) => {
                     const pct  = (c.value / c.max) * 100;
-                    const barC = pct >= 70 ? 'var(--chart-1)' : pct >= 40 ? 'var(--border)' : 'var(--destructive)';
+                    const barC = pct >= 70 ? '#46bd5f' : pct >= 40 ? '#f5b929' : '#e5484d';
                     return (
                         <div key={c.label}>
-                            <div className="mb-1.5 flex items-center justify-between">
-                                <span className="font-display text-[9px] uppercase tracking-[0.15em] text-muted-foreground">{c.label}</span>
-                                <span className="font-heading text-sm tabular-nums text-foreground">
-                                    {c.value}<span className="text-muted-foreground" style={{ opacity: 0.5 }}>/{c.max}</span>
+                            <div className="mb-2 flex items-center justify-between">
+                                <span className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.22em' }}>{c.label}</span>
+                                <span className="text-sm tabular-nums" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
+                                    {c.value}<span style={{ color: 'var(--muted-foreground)', opacity: 0.6 }}>/{c.max}</span>
                                 </span>
                             </div>
-                            <div className="h-px w-full overflow-hidden" style={{ background: 'var(--border)' }}>
-                                <div className="h-full" style={{ width: `${pct}%`, background: barC, transition: 'width 0.5s ease' }} />
+                            <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: 'color-mix(in srgb, var(--border) 70%, transparent)' }}>
+                                <div className="h-full rounded-full" style={{ width: `${pct}%`, background: barC, transition: 'width 0.5s ease' }} />
                             </div>
                         </div>
                     );
@@ -458,16 +488,16 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
         return (
             <Card>
                 <CardHeader className="pb-2">
-                    <CardTitle className="font-heading text-lg font-normal">
-                        KRI Trends
+                    <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
+                        KRI trends
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="py-8 text-center">
-                        <p className="text-sm text-muted-foreground">
+                    <div className="py-10 text-center">
+                        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                             Not enough data yet
                         </p>
-                        <p className="mt-1 text-xs text-muted-foreground/70">
+                        <p className="mt-1.5 text-xs" style={{ color: 'var(--muted-foreground)', opacity: 0.7 }}>
                             Trends appear after the first few nightly snapshots.
                         </p>
                     </div>
@@ -489,19 +519,19 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
         backgroundColor: 'var(--card)',
         borderColor: 'var(--border)',
         borderWidth: '1px',
-        borderRadius: '4px',
+        borderRadius: '12px',
         fontSize: '11px',
-        padding: '6px 10px',
-        fontFamily: "'Crimson Pro', serif",
+        padding: '8px 12px',
         color: 'var(--foreground)',
+        boxShadow: '0 18px 40px -18px color-mix(in srgb, var(--foreground) 28%, transparent)',
     };
 
     return (
         <div className="grid gap-4 lg:grid-cols-2">
             <Card>
                 <CardHeader className="pb-2">
-                    <CardTitle className="font-heading text-lg font-normal">
-                        Compliance Trend
+                    <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
+                        Compliance trend
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -517,13 +547,13 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
                             />
                             <XAxis
                                 dataKey="date"
-                                tick={{ fontSize: 10, fill: 'var(--muted-foreground)', fontFamily: "'Cinzel', serif" }}
+                                tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }}
                                 axisLine={false}
                                 tickLine={false}
                             />
                             <YAxis
                                 domain={[0, 100]}
-                                tick={{ fontSize: 10, fill: 'var(--muted-foreground)', fontFamily: "'Cinzel', serif" }}
+                                tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }}
                                 axisLine={false}
                                 tickLine={false}
                                 unit="%"
@@ -546,8 +576,8 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
             </Card>
             <Card>
                 <CardHeader className="pb-2">
-                    <CardTitle className="font-heading text-lg font-normal">
-                        Open Risks Distribution
+                    <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
+                        Open risks distribution
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -563,13 +593,13 @@ function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
                             />
                             <XAxis
                                 dataKey="date"
-                                tick={{ fontSize: 10, fill: themeColors.muted, fontFamily: "'Cinzel', serif" }}
+                                tick={{ fontSize: 10, fill: themeColors.muted }}
                                 axisLine={false}
                                 tickLine={false}
                             />
                             <YAxis
                                 allowDecimals={false}
-                                tick={{ fontSize: 10, fill: themeColors.muted, fontFamily: "'Cinzel', serif" }}
+                                tick={{ fontSize: 10, fill: themeColors.muted }}
                                 axisLine={false}
                                 tickLine={false}
                             />
@@ -718,20 +748,20 @@ export default function AdminDashboard({
                 {unreadCount > 0 && (
                     <Link
                         href="/notifications"
-                        className="group flex items-center gap-3 rounded px-4 py-3 transition-all duration-200"
+                        className="group flex items-center gap-3 rounded-full px-5 py-3 transition-all duration-200"
                         style={{
-                            borderColor: hasCritical ? 'color-mix(in srgb, var(--destructive) 40%, transparent)' : 'color-mix(in srgb, var(--primary) 30%, transparent)',
+                            borderColor: hasCritical ? 'color-mix(in srgb, var(--destructive) 30%, transparent)' : 'color-mix(in srgb, var(--primary) 25%, transparent)',
                             borderWidth: '1px',
-                            background: hasCritical ? 'color-mix(in srgb, var(--destructive) 8%, transparent)' : 'color-mix(in srgb, var(--primary) 6%, transparent)',
+                            background: hasCritical ? 'color-mix(in srgb, var(--destructive) 6%, transparent)' : 'color-mix(in srgb, var(--primary) 5%, transparent)',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.background = hasCritical ? 'color-mix(in srgb, var(--destructive) 14%, transparent)' : 'color-mix(in srgb, var(--primary) 10%, transparent)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = hasCritical ? 'color-mix(in srgb, var(--destructive) 8%, transparent)' : 'color-mix(in srgb, var(--primary) 6%, transparent)')}
+                        onMouseEnter={e => (e.currentTarget.style.background = hasCritical ? 'color-mix(in srgb, var(--destructive) 12%, transparent)' : 'color-mix(in srgb, var(--primary) 10%, transparent)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = hasCritical ? 'color-mix(in srgb, var(--destructive) 6%, transparent)' : 'color-mix(in srgb, var(--primary) 5%, transparent)')}
                     >
-                        <span className="inline-flex h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: hasCritical ? 'var(--destructive)' : 'var(--border)' }} />
-                        <AlertTriangle className="h-4 w-4 shrink-0" style={{ color: hasCritical ? 'var(--destructive)' : 'var(--border)' }} />
-                        <p className="min-w-0 flex-1 font-body text-sm text-foreground">
+                        <span className="inline-flex h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: hasCritical ? 'var(--destructive)' : 'var(--primary)' }} />
+                        <AlertTriangle className="h-4 w-4 shrink-0" style={{ color: hasCritical ? 'var(--destructive)' : 'var(--primary)' }} />
+                        <p className="min-w-0 flex-1 text-sm" style={{ color: 'var(--foreground)' }}>
                             <span style={{ fontWeight: 500 }}>{unreadCount} item{unreadCount > 1 ? 's' : ''}</span>
-                            <span className="text-muted-foreground"> require your attention</span>
+                            <span style={{ color: 'var(--muted-foreground)' }}> require your attention</span>
                         </p>
                         <ArrowUpRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" style={{ color: themeColors.muted }} />
                     </Link>
@@ -743,31 +773,31 @@ export default function AdminDashboard({
 
                 {/* Risk appetite — minimal */}
                 {appetiteCounts && (
-                    <Link href="/risk-appetite" className="group flex items-center gap-3 rounded px-4 py-2.5 transition-all duration-200"
+                    <Link href="/risk-appetite" className="group flex flex-wrap items-center gap-3 rounded-2xl px-5 py-3 transition-all duration-200"
                         style={{ border: '1px solid var(--border)', background: 'var(--card)' }}
-                        onMouseEnter={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 50%, transparent)')}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--foreground)')}
                         onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
                     >
-                        <span className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: themeColors.muted }}>{appetiteCounts.name}</span>
-                        <span className="flex items-center gap-3">
+                        <span className="text-[10px] uppercase" style={{ color: themeColors.muted, letterSpacing: '0.28em' }}>{appetiteCounts.name}</span>
+                        <span className="flex flex-wrap items-center gap-2">
                             {appetiteCounts.escalated > 0 && (
-                                <span className="inline-flex items-center gap-1 font-display text-[9px] uppercase tracking-wider" style={{ color: themeColors.destructive }}>
-                                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: themeColors.destructive }} />
+                                <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] uppercase" style={{ color: '#e5484d', background: 'color-mix(in srgb, #e5484d 10%, transparent)', letterSpacing: '0.18em' }}>
+                                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#e5484d' }} />
                                     {appetiteCounts.escalated} {appetiteCounts.labels.escalated}
                                 </span>
                             )}
                             {appetiteCounts.review > 0 && (
-                                <span className="inline-flex items-center gap-1 font-display text-[9px] uppercase tracking-wider" style={{ color: themeColors.border }}>
-                                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: themeColors.border }} />
+                                <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] uppercase" style={{ color: '#f5b929', background: 'color-mix(in srgb, #f5b929 10%, transparent)', letterSpacing: '0.18em' }}>
+                                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#f5b929' }} />
                                     {appetiteCounts.review} {appetiteCounts.labels.review}
                                 </span>
                             )}
-                            <span className="inline-flex items-center gap-1 font-display text-[9px] uppercase tracking-wider" style={{ color: themeColors.success }}>
-                                <span className="h-1.5 w-1.5 rounded-full" style={{ background: themeColors.success }} />
+                            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] uppercase" style={{ color: '#46bd5f', background: 'color-mix(in srgb, #46bd5f 10%, transparent)', letterSpacing: '0.18em' }}>
+                                <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#46bd5f' }} />
                                 {appetiteCounts.acceptable} {appetiteCounts.labels.acceptable}
                             </span>
                         </span>
-                        <span className="ml-auto flex items-center gap-1 font-display text-[9px] uppercase tracking-wider transition-colors duration-200" style={{ color: themeColors.muted }}>
+                        <span className="ml-auto flex items-center gap-1 text-[10px] uppercase transition-colors duration-200" style={{ color: themeColors.muted, letterSpacing: '0.22em' }}>
                             Configure <ArrowRight className="h-3 w-3" />
                         </span>
                     </Link>
@@ -819,16 +849,16 @@ export default function AdminDashboard({
                     >
                         <Card>
                             <CardHeader className="pb-2">
-                                <CardTitle className="flex items-center gap-2 font-heading text-lg font-normal">
+                                <CardTitle className="flex items-center gap-2 text-lg" style={{ fontWeight: 500 }}>
                                     <Zap className="h-4 w-4" style={{ color: themeColors.primary }} strokeWidth={1.5} />
-                                    Rule Adjustments
+                                    Rule adjustments
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="font-heading text-4xl font-normal tabular-nums" style={{ color: themeColors.foreground }}>
+                                <p className="text-4xl tabular-nums" style={{ color: themeColors.foreground, fontWeight: 500, letterSpacing: '-0.02em' }}>
                                     {ruleAdjustments}
                                 </p>
-                                <p className="mt-2 font-body italic text-sm" style={{ color: themeColors.muted }}>
+                                <p className="mt-2 text-sm" style={{ color: themeColors.muted }}>
                                     risk score{ruleAdjustments !== 1 ? 's' : ''} auto-adjusted by compliance rules in the last 30 days
                                 </p>
                             </CardContent>
@@ -838,10 +868,10 @@ export default function AdminDashboard({
 
                 <TopRisks risks={recentRisks} />
 
-                {/* Ornate footer */}
+                {/* Footer note */}
                 <div className="pb-4 text-center space-y-2">
                     <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent)', opacity: 0.5 }} />
-                    <p className="font-display text-[9px] uppercase tracking-[0.25em] text-muted-foreground opacity-40">
+                    <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', opacity: 0.5, letterSpacing: '0.32em' }}>
                         Nightly checks · 02:00 · last run {lastSchedulerRun ?? 'never'}
                     </p>
                 </div>

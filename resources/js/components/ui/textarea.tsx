@@ -11,14 +11,11 @@ const Textarea = React.forwardRef<
       ref={ref}
       data-slot="textarea"
       className={cn(
-        // Aged oak textarea
-        "flex min-h-[100px] w-full rounded border border-border bg-card",
-        "px-3 py-2.5 text-base text-foreground",
-        "font-body placeholder:text-muted-foreground placeholder:italic",
-        "resize-y transition-all duration-300 outline-none",
-        // Focus — brass ring
-        "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-1 focus-visible:ring-offset-background",
-        // Disabled
+        "flex min-h-[110px] w-full rounded-2xl border border-border bg-card",
+        "px-4 py-3 text-sm text-foreground",
+        "font-body placeholder:text-muted-foreground/80",
+        "resize-y transition-all duration-200 outline-none",
+        "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0",
         "disabled:pointer-events-none disabled:opacity-40",
         className
       )}

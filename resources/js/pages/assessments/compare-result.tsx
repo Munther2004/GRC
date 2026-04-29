@@ -72,15 +72,15 @@ interface Props {
 const statusConfig: Record<string, { label: string; cls: string }> = {
     compliant: {
         label: 'Compliant',
-        cls: 'bg-emerald-950 text-emerald-400 border-green-200',
+        cls: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
     },
     partially_compliant: {
         label: 'Partial',
-        cls: 'bg-amber-950 text-amber-400 border-border',
+        cls: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
     },
     non_compliant: {
         label: 'Non-Compliant',
-        cls: 'bg-red-950 text-red-400 border-red-200',
+        cls: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
     },
     not_applicable: {
         label: 'N/A',
@@ -88,24 +88,24 @@ const statusConfig: Record<string, { label: string; cls: string }> = {
     },
     not_assessed: {
         label: 'Not Assessed',
-        cls: 'bg-muted text-muted-foreground/60 border-border',
+        cls: 'bg-muted text-muted-foreground border-border',
     },
 };
 
 const directionConfig: Record<string, { label: string; cls: string }> = {
     improved: {
         label: '↑ Improved',
-        cls: 'bg-emerald-950 text-emerald-400 border-green-200',
+        cls: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
     },
     regressed: {
         label: '↓ Regressed',
-        cls: 'bg-red-950 text-red-400 border-red-200',
+        cls: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
     },
     unchanged: {
         label: '→ Unchanged',
         cls: 'bg-muted text-muted-foreground border-border',
     },
-    new: { label: '✦ New', cls: 'bg-accent text-foreground border-primary/20' },
+    new: { label: '✦ New', cls: 'bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-primary border-[color-mix(in_srgb,var(--primary)_25%,transparent)]' },
     removed: {
         label: '✕ Removed',
         cls: 'bg-muted text-muted-foreground border-border',
@@ -116,15 +116,15 @@ const directionConfig: Record<string, { label: string; cls: string }> = {
 const verdictConfig: Record<string, { label: string; cls: string }> = {
     Adequate: {
         label: 'Adequate',
-        cls: 'bg-emerald-950 text-emerald-400 border-green-200',
+        cls: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
     },
     'Partially Adequate': {
         label: 'Partial',
-        cls: 'bg-amber-950 text-amber-400 border-border',
+        cls: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
     },
     Insufficient: {
         label: 'Insufficient',
-        cls: 'bg-red-950 text-red-400 border-red-200',
+        cls: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
     },
 };
 
@@ -178,15 +178,13 @@ function VerdictBadge({ verdict }: { verdict: string | null }) {
 function DeltaChip({ delta, suffix = '' }: { delta: number; suffix?: string }) {
     if (delta === 0)
         return (
-            <span className="text-xs font-medium text-muted-foreground">No change</span>
+            <span className="text-xs font-medium" style={{ color: 'var(--muted-foreground)' }}>No change</span>
         );
     const positive = delta > 0;
     return (
         <span
-            className={cn(
-                'text-xs font-bold',
-                positive ? 'text-emerald-400' : 'text-red-400',
-            )}
+            className="text-xs"
+            style={{ color: positive ? '#46bd5f' : '#e5484d', fontWeight: 600 }}
         >
             {positive ? '+' : ''}
             {delta}
@@ -239,16 +237,16 @@ export default function CompareResult({
         summary.compliance_delta > 0
             ? {
                   label: 'Overall Improved',
-                  cls: 'bg-emerald-950 text-emerald-400 border-green-200',
+                  cls: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
               }
             : summary.compliance_delta < 0
               ? {
                     label: 'Overall Regressed',
-                    cls: 'bg-red-950 text-red-400 border-red-200',
+                    cls: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
                 }
               : {
                     label: 'No Change',
-                    cls: 'bg-muted text-foreground/75 border-border',
+                    cls: 'bg-muted text-foreground border-border',
                 };
 
     const exportUrl = `/assessments/compare/export?assessment_a_id=${assessmentA.id}&assessment_b_id=${assessmentB.id}`;
@@ -279,44 +277,44 @@ export default function CompareResult({
                 </div>
 
                 {/* Header "A vs B" */}
-                <div className="rounded-xl border bg-background p-5 shadow-sm">
+                <div className="rounded-2xl border p-5" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
                     <div className="flex flex-col items-center justify-center gap-4 text-center sm:flex-row sm:gap-6">
                         <div className="flex-1">
-                            <p className="mb-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                            <p className="mb-1 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                 Baseline (A)
                             </p>
-                            <p className="text-lg font-bold text-foreground">
+                            <p className="text-lg" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                 {assessmentA.title}
                             </p>
                             <div className="mt-1 flex items-center justify-center gap-2">
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline">
                                     {assessmentA.framework}
                                 </Badge>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     {assessmentA.date}
                                 </span>
                             </div>
                         </div>
 
                         <div className="flex flex-col items-center gap-0.5 px-4">
-                            <ArrowRight className="h-6 w-6 text-gray-300" />
-                            <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+                            <ArrowRight className="h-6 w-6" style={{ color: 'var(--muted-foreground)' }} />
+                            <span className="text-xs uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em', fontWeight: 500 }}>
                                 vs
                             </span>
                         </div>
 
                         <div className="flex-1">
-                            <p className="mb-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                            <p className="mb-1 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                 Latest (B)
                             </p>
-                            <p className="text-lg font-bold text-foreground">
+                            <p className="text-lg" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                 {assessmentB.title}
                             </p>
                             <div className="mt-1 flex items-center justify-center gap-2">
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline">
                                     {assessmentB.framework}
                                 </Badge>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     {assessmentB.date}
                                 </span>
                             </div>
@@ -329,15 +327,15 @@ export default function CompareResult({
                     {/* Compliance Score */}
                     <Card className="col-span-2 md:col-span-1">
                         <CardContent className="p-4">
-                            <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                            <p className="mb-2 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                 Compliance Score
                             </p>
                             <div className="flex items-center gap-2">
-                                <span className="text-xl font-bold text-muted-foreground">
+                                <span className="text-xl tabular-nums" style={{ color: 'var(--muted-foreground)', fontWeight: 500 }}>
                                     {summary.compliance_score_a}%
                                 </span>
-                                <ArrowRight className="h-4 w-4 text-gray-300" />
-                                <span className="text-xl font-bold text-foreground">
+                                <ArrowRight className="h-4 w-4" style={{ color: 'var(--muted-foreground)' }} />
+                                <span className="text-xl tabular-nums" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                     {summary.compliance_score_b}%
                                 </span>
                             </div>
@@ -353,18 +351,18 @@ export default function CompareResult({
                     {/* Controls Changed */}
                     <Card>
                         <CardContent className="p-4">
-                            <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                            <p className="mb-2 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                 Controls Changed
                             </p>
-                            <p className="font-heading text-4xl font-normal text-foreground">
+                            <p className="text-4xl tabular-nums" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                 {summary.changed_count}
                             </p>
-                            <p className="mt-1 text-xs text-muted-foreground">
-                                <span className="font-medium text-emerald-400">
+                            <p className="mt-1 text-xs" style={{ color: 'var(--muted-foreground)' }}>
+                                <span style={{ color: '#46bd5f', fontWeight: 500 }}>
                                     {summary.improved_count}↑
                                 </span>
                                 {' / '}
-                                <span className="font-medium text-red-400">
+                                <span style={{ color: '#e5484d', fontWeight: 500 }}>
                                     {summary.regressed_count}↓
                                 </span>
                             </p>
@@ -374,15 +372,15 @@ export default function CompareResult({
                     {/* Evidence Quality */}
                     <Card>
                         <CardContent className="p-4">
-                            <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                            <p className="mb-2 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                 Evidence Quality
                             </p>
                             <div className="flex items-center gap-2">
-                                <span className="text-lg font-bold text-muted-foreground">
+                                <span className="text-lg tabular-nums" style={{ color: 'var(--muted-foreground)', fontWeight: 500 }}>
                                     {summary.evidence_quality_a}%
                                 </span>
-                                <ArrowRight className="h-3 w-3 text-gray-300" />
-                                <span className="text-lg font-bold text-foreground">
+                                <ArrowRight className="h-3 w-3" style={{ color: 'var(--muted-foreground)' }} />
+                                <span className="text-lg tabular-nums" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                     {summary.evidence_quality_b}%
                                 </span>
                             </div>
@@ -398,10 +396,10 @@ export default function CompareResult({
                     {/* Total Controls */}
                     <Card>
                         <CardContent className="p-4">
-                            <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                            <p className="mb-2 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                 Total Controls
                             </p>
-                            <p className="font-heading text-4xl font-normal text-foreground">
+                            <p className="text-4xl tabular-nums" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                 {summary.total_controls}
                             </p>
                             <p className="mt-1 text-xs text-muted-foreground">
@@ -413,7 +411,7 @@ export default function CompareResult({
                     {/* Net Change */}
                     <Card>
                         <CardContent className="flex h-full flex-col items-start justify-center p-4">
-                            <p className="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                            <p className="mb-2 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                 Net Change
                             </p>
                             <Badge
@@ -532,25 +530,25 @@ export default function CompareResult({
                             <table className="w-full text-sm">
                                 <thead className="border-y border-border bg-muted/30">
                                     <tr>
-                                        <th className="px-4 py-3 text-left text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                        <th className="px-4 py-3 text-left text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em', fontWeight: 500 }}>
                                             Control
                                         </th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                        <th className="px-3 py-3 text-left text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em', fontWeight: 500 }}>
                                             Framework
                                         </th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                        <th className="px-3 py-3 text-left text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em', fontWeight: 500 }}>
                                             Status A
                                         </th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                        <th className="px-3 py-3 text-left text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em', fontWeight: 500 }}>
                                             Status B
                                         </th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                        <th className="px-3 py-3 text-left text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em', fontWeight: 500 }}>
                                             Change
                                         </th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                        <th className="px-3 py-3 text-left text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em', fontWeight: 500 }}>
                                             Evidence A
                                         </th>
-                                        <th className="px-3 py-3 text-left text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                        <th className="px-3 py-3 text-left text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em', fontWeight: 500 }}>
                                             Evidence B
                                         </th>
                                     </tr>
@@ -570,15 +568,12 @@ export default function CompareResult({
                                         filtered.map((row) => (
                                             <tr
                                                 key={row.control_id}
-                                                className={cn(
-                                                    'transition-colors hover:bg-accent/30',
-                                                    row.direction ===
-                                                        'improved' &&
-                                                        'border-l-2 border-l-green-500',
-                                                    row.direction ===
-                                                        'regressed' &&
-                                                        'border-l-2 border-l-red-500',
-                                                )}
+                                                className="transition-colors hover:bg-muted/30"
+                                                style={
+                                                    row.direction === 'improved' ? { borderLeft: '2px solid #46bd5f' }
+                                                    : row.direction === 'regressed' ? { borderLeft: '2px solid #e5484d' }
+                                                    : undefined
+                                                }
                                             >
                                                 {/* Control */}
                                                 <td className="px-4 py-3">

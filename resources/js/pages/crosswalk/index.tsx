@@ -1,10 +1,9 @@
 import { Head, router } from '@inertiajs/react';
-import { Link } from '@inertiajs/react';
 import {
     ArrowRight,
-    GitCompare,
     AlertTriangle,
     CheckCircle2,
+    GitCompare,
     Search,
     ChevronDown,
     ChevronUp,
@@ -12,7 +11,6 @@ import {
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FilterBar } from '@/components/ui/filter-bar';
 import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatStrip } from '@/components/ui/stat-strip';
@@ -65,24 +63,24 @@ interface Props {
 }
 
 const mappingTypeColors: Record<string, string> = {
-    equivalent: 'bg-emerald-950 text-emerald-400 border-green-200',
-    partial: 'bg-amber-950 text-amber-400 border-border',
-    related: 'bg-muted text-foreground/75 border-border',
+    equivalent: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
+    partial: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
+    related: 'bg-muted text-foreground border-border',
 };
 
 const statusColors: Record<string, string> = {
-    compliant: 'bg-emerald-950 text-emerald-400',
-    partially_compliant: 'bg-amber-950 text-amber-400',
-    non_compliant: 'bg-red-950 text-red-400',
+    compliant: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f]',
+    partially_compliant: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929]',
+    non_compliant: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d]',
     not_applicable: 'bg-muted text-muted-foreground',
 };
 
 const statusLabel = (s: string | null) => {
     if (!s)
-        return { label: 'Not Set', cls: 'bg-muted text-muted-foreground/60' };
+        return { label: 'Not Set', cls: 'bg-muted text-muted-foreground' };
     return {
         label: s.replace(/_/g, ' '),
-        cls: statusColors[s] ?? 'bg-muted text-muted-foreground/60',
+        cls: statusColors[s] ?? 'bg-muted text-muted-foreground',
     };
 };
 
@@ -93,7 +91,7 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
 
     return (
         <div
-            className={`overflow-hidden rounded-lg border ${!hasMappings ? 'border-dashed border-border bg-muted/20' : 'bg-card'}`}
+            className={`overflow-hidden rounded-2xl border ${!hasMappings ? 'border-dashed bg-muted/20' : 'bg-card'}`}
         >
             <div
                 className="flex cursor-pointer items-start gap-3 p-3 transition-colors hover:bg-muted/40"
@@ -113,12 +111,12 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
                             {ctrl.category}
                         </span>
                         <span
-                            className={`rounded px-1.5 py-0.5 text-xs capitalize ${cls}`}
+                            className={`rounded-full px-2 py-0.5 text-xs capitalize ${cls}`}
                         >
                             {label}
                         </span>
                         {!hasMappings && (
-                            <span className="flex items-center gap-0.5 text-xs text-amber-400">
+                            <span className="flex items-center gap-0.5 text-xs" style={{ color: '#f5b929' }}>
                                 <AlertTriangle className="h-3 w-3" /> No
                                 crosswalk mapping
                             </span>
@@ -159,31 +157,28 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
                                 <div className="min-w-0 flex-1 space-y-0.5">
                                     <div className="flex flex-wrap items-center gap-2">
                                         <Badge
-                                            className={`border text-xs capitalize ${mappingTypeColors[m.mapping_type]}`}
+                                            className={`border capitalize ${mappingTypeColors[m.mapping_type]}`}
                                         >
                                             {m.mapping_type}
                                         </Badge>
-                                        <Badge
-                                            variant="secondary"
-                                            className="text-xs"
-                                        >
+                                        <Badge variant="secondary">
                                             {m.control.framework}
                                         </Badge>
-                                        <span className="font-mono text-foreground/85">
+                                        <span className="font-mono" style={{ color: 'var(--foreground)' }}>
                                             {m.control.control_id}
                                         </span>
-                                        <span className="truncate text-muted-foreground">
+                                        <span className="truncate" style={{ color: 'var(--muted-foreground)' }}>
                                             {m.control.title}
                                         </span>
                                     </div>
                                     <div className="flex flex-wrap items-center gap-2">
                                         <span
-                                            className={`rounded px-1.5 py-0.5 text-xs capitalize ${sc}`}
+                                            className={`rounded-full px-2 py-0.5 text-xs capitalize ${sc}`}
                                         >
                                             {sl}
                                         </span>
                                         {m.notes && (
-                                            <span className="text-muted-foreground italic">
+                                            <span style={{ color: 'var(--muted-foreground)' }}>
                                                 {m.notes}
                                             </span>
                                         )}
@@ -225,71 +220,44 @@ export default function CrosswalkIndex({
 
             <div className="mx-auto max-w-6xl space-y-6">
                 <PageHeader
-                    icon={GitCompare}
-                    title="Framework Control Crosswalk"
+                    title="Framework control crosswalk"
                     description="Cross-framework mapping across ISO 27001, NIST 800-53, OWASP ASVS, and CIS Controls"
                 />
 
                 <StatStrip
                     stats={[
-                        {
-                            label: 'Total Controls',
-                            value: stats.total_controls,
-                            variant: 'default',
-                        },
-                        {
-                            label: 'With Mappings',
-                            value: stats.with_mappings,
-                            variant: 'primary',
-                        },
-                        {
-                            label: 'No Mapping',
-                            value: stats.without_mappings,
-                            variant: 'warning',
-                        },
-                        {
-                            label: 'Equivalent',
-                            value: stats.equivalent,
-                            variant: 'success',
-                        },
-                        {
-                            label: 'Partial',
-                            value: stats.partial,
-                            variant: 'warning',
-                        },
-                        {
-                            label: 'Related',
-                            value: stats.related,
-                            variant: 'default',
-                        },
+                        { label: 'Total controls', value: stats.total_controls, tone: 'neutral' },
+                        { label: 'With mappings',  value: stats.with_mappings, tone: 'ok' },
+                        { label: 'No mapping',     value: stats.without_mappings, tone: 'warn' },
+                        { label: 'Equivalent',     value: stats.equivalent, tone: 'ok' },
+                        { label: 'Partial',        value: stats.partial, tone: 'warn' },
+                        { label: 'Related',        value: stats.related, tone: 'neutral' },
                     ]}
                 />
 
                 {/* Mapping type legend */}
-                <div className="flex flex-wrap items-center gap-3 text-xs">
-                    <span className="font-medium text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className="font-medium" style={{ color: 'var(--muted-foreground)' }}>
                         Mapping types:
                     </span>
-                    <span className="flex items-center gap-1 rounded border border-border bg-emerald-950 px-2 py-1 text-emerald-400">
-                        <CheckCircle2 className="h-3 w-3" /> Equivalent — direct
-                        1:1 control match
+                    <span className="flex items-center gap-1 rounded-full border px-2.5 py-1" style={{ borderColor: 'rgba(70,189,95,0.4)', background: 'rgba(70,189,95,0.12)', color: '#46bd5f' }}>
+                        <CheckCircle2 className="h-3 w-3" /> Equivalent — direct 1:1 control match
                     </span>
-                    <span className="flex items-center gap-1 rounded border border-border bg-amber-950 px-2 py-1 text-amber-400">
+                    <span className="flex items-center gap-1 rounded-full border px-2.5 py-1" style={{ borderColor: 'rgba(245,185,41,0.4)', background: 'rgba(245,185,41,0.12)', color: '#f5b929' }}>
                         Partial — overlapping but not identical scope
                     </span>
-                    <span className="flex items-center gap-1 rounded border border-border bg-muted px-2 py-1 text-foreground/75">
+                    <span className="flex items-center gap-1 rounded-full border bg-muted px-2.5 py-1" style={{ color: 'var(--foreground)' }}>
                         Related — thematically linked, different scope
                     </span>
-                    <span className="flex items-center gap-1 rounded border border-dashed border-border bg-muted/20 px-2 py-1 text-amber-400">
-                        <AlertTriangle className="h-3 w-3" /> No mapping —
-                        coverage gap
+                    <span className="flex items-center gap-1 rounded-full border border-dashed bg-muted/20 px-2.5 py-1" style={{ color: '#f5b929' }}>
+                        <AlertTriangle className="h-3 w-3" /> No mapping — coverage gap
                     </span>
                 </div>
 
                 {/* Filters */}
                 <div className="flex flex-wrap gap-3">
                     <div className="relative min-w-[200px] flex-1">
-                        <Search className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground/60" />
+                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--muted-foreground)' }} />
                         <Input
                             placeholder="Search control ID or title..."
                             value={search}
@@ -301,7 +269,7 @@ export default function CrosswalkIndex({
                     <select
                         value={frameworkId}
                         onChange={(e) => setFrameworkId(e.target.value)}
-                        className="rounded-md border bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                        className="rounded-full border bg-card px-4 py-2 text-sm focus:ring-2 focus:ring-ring focus:outline-none"
                     >
                         <option value="">All Frameworks</option>
                         {frameworks.map((f) => (
@@ -312,7 +280,8 @@ export default function CrosswalkIndex({
                     </select>
                     <button
                         onClick={applyFilters}
-                        className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
+                        className="rounded-full bg-primary px-5 py-2 text-sm transition-all hover:brightness-110"
+                        style={{ color: 'var(--primary-foreground)' }}
                     >
                         Filter
                     </button>
@@ -323,7 +292,7 @@ export default function CrosswalkIndex({
                                 setFrameworkId('');
                                 router.visit(route('crosswalk.index'));
                             }}
-                            className="rounded-md border px-4 py-2 text-sm transition-colors hover:bg-muted"
+                            className="rounded-full border px-5 py-2 text-sm transition-colors hover:bg-muted"
                         >
                             Clear
                         </button>

@@ -65,16 +65,16 @@ interface Props {
 }
 
 const statusColors: Record<string, string> = {
-    draft: 'bg-muted text-foreground/75 border-border',
-    in_progress: 'bg-accent text-foreground border-primary/20',
-    submitted: 'bg-amber-950 text-amber-400 border-yellow-200',
-    completed: 'bg-green-50 text-emerald-400 border-green-200',
+    draft: 'bg-muted text-muted-foreground border-border',
+    in_progress: 'bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-primary border-[color-mix(in_srgb,var(--primary)_25%,transparent)]',
+    submitted: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
+    completed: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
 };
 
 const complianceColor = (pct: number) => {
-    if (pct >= 80) return 'text-emerald-400';
-    if (pct >= 50) return 'text-amber-400';
-    return 'text-red-500';
+    if (pct >= 80) return 'text-[#46bd5f]';
+    if (pct >= 50) return 'text-[#f5b929]';
+    return 'text-[#e5484d]';
 };
 
 export default function AssessmentsIndex({
@@ -355,14 +355,16 @@ export default function AssessmentsIndex({
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
                                                                 <div
-                                                                    className={`h-full rounded-full ${a.evidence_weighted_score >= 70 ? 'bg-green-500' : a.evidence_weighted_score >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                                                                    className="h-full rounded-full"
                                                                     style={{
                                                                         width: `${a.evidence_weighted_score}%`,
+                                                                        background: a.evidence_weighted_score >= 70 ? '#46bd5f' : a.evidence_weighted_score >= 40 ? '#f5b929' : '#e5484d',
                                                                     }}
                                                                 />
                                                             </div>
                                                             <span
-                                                                className={`text-sm font-semibold ${a.evidence_weighted_score >= 70 ? 'text-emerald-400' : a.evidence_weighted_score >= 40 ? 'text-amber-500' : 'text-red-500'}`}
+                                                                className="text-sm tabular-nums"
+                                                                style={{ color: a.evidence_weighted_score >= 70 ? '#46bd5f' : a.evidence_weighted_score >= 40 ? '#f5b929' : '#e5484d', fontWeight: 500 }}
                                                             >
                                                                 {
                                                                     a.evidence_weighted_score
@@ -433,7 +435,8 @@ export default function AssessmentsIndex({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                                                className="h-8 w-8"
+                                                                style={{ color: 'var(--destructive)' }}
                                                                 onClick={() =>
                                                                     setDeleteModal(
                                                                         a,
@@ -487,7 +490,7 @@ export default function AssessmentsIndex({
                         Delete assessment confirmation dialog
                     </DialogDescription>
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-red-400">
+                        <DialogTitle className="flex items-center gap-2" style={{ color: 'var(--destructive)' }}>
                             <Trash2 className="h-4 w-4" /> Delete Assessment
                         </DialogTitle>
                     </DialogHeader>
@@ -495,11 +498,11 @@ export default function AssessmentsIndex({
                     {deleteModal && (
                         <div className="space-y-4 py-1">
                             {/* Assessment info */}
-                            <div className="rounded-lg border bg-accent/30 p-3">
-                                <p className="font-heading text-lg font-normal">
+                            <div className="rounded-2xl border p-3" style={{ background: 'color-mix(in srgb, var(--muted) 30%, transparent)' }}>
+                                <p className="text-lg" style={{ fontWeight: 500 }}>
                                     {deleteModal.title}
                                 </p>
-                                <p className="mt-0.5 text-xs text-muted-foreground">
+                                <p className="mt-0.5 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     {deleteModal.framework.short_name} &middot;{' '}
                                     {deleteModal.items_count} control
                                     {deleteModal.items_count !== 1 ? 's' : ''}{' '}
@@ -511,9 +514,9 @@ export default function AssessmentsIndex({
                             </div>
 
                             {/* Warning */}
-                            <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20">
-                                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
-                                <p className="text-sm text-red-400">
+                            <div className="flex items-start gap-2 rounded-2xl border p-3" style={{ borderColor: 'color-mix(in srgb, var(--destructive) 30%, transparent)', background: 'color-mix(in srgb, var(--destructive) 8%, transparent)' }}>
+                                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--destructive)' }} />
+                                <p className="text-sm" style={{ color: 'var(--destructive)' }}>
                                     Deleting this assessment will reset all{' '}
                                     {deleteModal.items_count} control status
                                     {deleteModal.items_count !== 1 ? 'es' : ''}{' '}

@@ -15,12 +15,14 @@ type Props = {
     fullscreen?: boolean;
 };
 
+// Classic risk heatmap palette: green (safe) → yellow (caution) → orange (warning) → red (critical)
 function getCellColors(score: number): { bg: string; text: string } {
-    if (score >= 20) return { bg: 'color-mix(in srgb, var(--destructive) 85%, transparent)', text: 'var(--foreground)' };
-    if (score >= 15) return { bg: 'color-mix(in srgb, var(--destructive) 60%, transparent)', text: 'var(--foreground)' };
-    if (score >= 10) return { bg: 'color-mix(in srgb, var(--primary) 55%, transparent)',     text: 'var(--foreground)' };
-    if (score >= 5)  return { bg: 'color-mix(in srgb, var(--primary) 30%, transparent)',     text: 'var(--foreground)' };
-    return             { bg: 'color-mix(in srgb, var(--primary) 12%, transparent)',          text: 'var(--muted-foreground)' };
+    if (score >= 20) return { bg: '#e5484d', text: '#ffffff' }; // red — critical
+    if (score >= 15) return { bg: '#ec5e5e', text: '#ffffff' }; // soft red — high
+    if (score >= 10) return { bg: '#f76b15', text: '#ffffff' }; // orange — high-medium
+    if (score >= 6)  return { bg: '#f5b929', text: '#1a1a1a' }; // yellow — medium
+    if (score >= 3)  return { bg: '#a3d977', text: '#1a3009' }; // light green — low
+    return             { bg: '#46bd5f', text: '#ffffff' };       // green — minimal
 }
 
 export function RiskHeatmap({ risks, fullscreen = false }: Props) {
@@ -111,10 +113,10 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                                                         onMouseLeave={() => setHovered(null)}
                                                         disabled={isEmpty}
                                                         title={isEmpty ? 'No risks' : `${cellRisks.length} risk${cellRisks.length > 1 ? 's' : ''}`}
-                                                        className="relative aspect-square rounded transition-all duration-200 min-w-24"
+                                                        className="relative aspect-square rounded-2xl transition-all duration-200 min-w-24"
                                                         style={{
                                                             background: colors.bg,
-                                                            opacity: isEmpty ? 0.2 : 1,
+                                                            opacity: isEmpty ? 0.5 : 1,
                                                             cursor: isEmpty ? 'default' : 'pointer',
                                                             outline: isHighlighted ? '2px solid var(--primary)' : 'none',
                                                             transform: isHovered && !isEmpty ? 'scale(1.08)' : 'scale(1)',
@@ -193,12 +195,12 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                             {/* Legend */}
                             <div className="mt-8 pt-6" style={{ borderTop: '1px solid var(--border)' }}>
                                 <div className="flex items-center justify-between gap-4">
-                                    <span className="font-display text-xs tracking-wider uppercase text-muted-foreground">Low</span>
+                                    <span className="text-xs uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.22em' }}>Low</span>
                                     <div
                                         className="h-2 flex-1 rounded-full"
-                                        style={{ background: 'linear-gradient(to right, color-mix(in srgb, var(--primary) 12%, transparent), color-mix(in srgb, var(--primary) 30%, transparent), color-mix(in srgb, var(--primary) 55%, transparent), color-mix(in srgb, var(--destructive) 85%, transparent))' }}
+                                        style={{ background: 'linear-gradient(to right, #46bd5f 0%, #a3d977 25%, #f5b929 50%, #f76b15 75%, #e5484d 100%)' }}
                                     />
-                                    <span className="font-display text-xs tracking-wider uppercase text-muted-foreground">Critical</span>
+                                    <span className="text-xs uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.22em' }}>Critical</span>
                                 </div>
                             </div>
 
@@ -243,22 +245,22 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
         <Card>
             <CardHeader className="flex-row items-start justify-between gap-4 pb-4">
                 <div className="space-y-1">
-                    <CardTitle className="font-heading text-lg font-normal">
-                        Risk Heat Map
+                    <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
+                        Risk heat map
                     </CardTitle>
-                    <p className="font-body text-[11px] italic text-muted-foreground">
-                        <span className="font-heading not-italic text-foreground">
+                    <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
+                        <span style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                             {totalPlotted}
                         </span>{' '}
                         plotted
                         <span className="mx-1.5 opacity-40">·</span>
-                        <span className="font-heading not-italic text-destructive">
+                        <span style={{ color: 'var(--destructive)', fontWeight: 500 }}>
                             {criticalCount}
                         </span>{' '}
                         critical
                     </p>
                 </div>
-                <div className="font-display text-[10px] tracking-wider uppercase text-muted-foreground opacity-60">
+                <div className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                     L × I
                 </div>
             </CardHeader>
@@ -300,7 +302,7 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                                                     onMouseLeave={() => setHovered(null)}
                                                     disabled={isEmpty}
                                                     title={isEmpty ? 'No risks' : `${cellRisks.length} risk${cellRisks.length > 1 ? 's' : ''}`}
-                                                    className="relative aspect-square rounded transition-all duration-200"
+                                                    className="relative aspect-square rounded-xl transition-all duration-200"
                                                     style={{
                                                         background: colors.bg,
                                                         opacity: isEmpty ? 0.2 : 1,
@@ -382,12 +384,12 @@ export function RiskHeatmap({ risks, fullscreen = false }: Props) {
                         {/* Legend */}
                         <div className="mt-5 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
                             <div className="flex items-center justify-between gap-2">
-                                <span className="font-display text-[9px] tracking-wider uppercase text-muted-foreground">Low</span>
+                                <span className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.22em' }}>Low</span>
                                 <div
-                                    className="h-1 flex-1 rounded-full"
-                                    style={{ background: 'linear-gradient(to right, color-mix(in srgb, var(--primary) 12%, transparent), color-mix(in srgb, var(--primary) 30%, transparent), color-mix(in srgb, var(--primary) 55%, transparent), color-mix(in srgb, var(--destructive) 85%, transparent))' }}
+                                    className="h-1.5 flex-1 rounded-full"
+                                    style={{ background: 'linear-gradient(to right, #46bd5f 0%, #a3d977 25%, #f5b929 50%, #f76b15 75%, #e5484d 100%)' }}
                                 />
-                                <span className="font-display text-[9px] tracking-wider uppercase text-muted-foreground">Critical</span>
+                                <span className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.22em' }}>Critical</span>
                             </div>
                         </div>
 

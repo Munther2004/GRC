@@ -31,8 +31,8 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
     return (
         <Card>
             <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-lg font-normal">
-                    Compliance by Framework
+                <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
+                    Compliance by framework
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -69,7 +69,7 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                                     paddingTop: '20px',
                                 }}
                                 formatter={(value: string, entry: any) => (
-                                    <span style={{ color: 'var(--muted-foreground)', fontFamily: "'Cinzel', serif", fontSize: '10px', letterSpacing: '0.05em' }}>
+                                    <span style={{ color: 'var(--muted-foreground)', fontSize: '11px', letterSpacing: '0.05em' }}>
                                         {value} ({entry.payload.value}%)
                                     </span>
                                 )}
@@ -90,10 +90,10 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                         }}
                     >
                         <div style={{ textAlign: 'center' }}>
-                            <div className="font-heading text-3xl font-normal" style={{ color: 'var(--foreground)' }}>
+                            <div className="text-3xl tabular-nums" style={{ color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.02em' }}>
                                 {Math.round(score)}%
                             </div>
-                            <div className="font-display text-[9px] uppercase tracking-[0.2em]" style={{ color: 'var(--muted-foreground)' }}>
+                            <div className="mt-1 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                 Overall
                             </div>
                         </div>

@@ -18,6 +18,16 @@ type SharedProps = {
     notifications: { unread_count: number; recent: NotificationItem[] }
 }
 
+function roleLabel(role: string): string {
+    switch (role) {
+        case 'super_admin': return 'Super Admin'
+        case 'admin':       return 'Admin'
+        case 'auditor':     return 'Auditor'
+        case 'user':        return 'User'
+        default:            return 'Member'
+    }
+}
+
 function timeAgo(dateStr: string): string {
     const date = new Date(dateStr)
     const now  = new Date()
@@ -40,9 +50,11 @@ function notificationIcon(type: string) {
 }
 
 export function AdminHeader() {
-    const { notifications } = usePage<SharedProps>().props
+    const { auth, notifications } = usePage<SharedProps>().props
     const unreadCount = notifications?.unread_count ?? 0
     const recent      = notifications?.recent ?? []
+    const role        = auth?.user?.role ?? 'user'
+    const roleName    = roleLabel(role)
     const [open, setOpen] = useState(false)
     const dropdownRef     = useRef<HTMLDivElement>(null)
 
@@ -83,11 +95,12 @@ export function AdminHeader() {
 
     return (
         <header
-            className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-4 px-6"
+            className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 px-6"
             style={{
-                background: 'color-mix(in srgb, var(--background) 92%, transparent)',
-                borderBottom: '1px solid var(--border)',
-                backdropFilter: 'blur(12px)',
+                background: 'color-mix(in srgb, var(--card) 72%, transparent)',
+                borderBottom: '1px solid color-mix(in srgb, var(--border) 70%, transparent)',
+                backdropFilter: 'blur(14px) saturate(140%)',
+                WebkitBackdropFilter: 'blur(14px) saturate(140%)',
             }}
         >
             <button className="lg:hidden p-2 -ml-2" aria-label="Open menu">
@@ -97,11 +110,11 @@ export function AdminHeader() {
             {/* Search */}
             <div className="flex flex-1 items-center">
                 <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2" style={{ color: 'var(--muted-foreground)' }} />
+                    <Search className="absolute left-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2" style={{ color: 'var(--muted-foreground)' }} />
                     <input
                         type="search"
-                        placeholder="Search..."
-                        className="h-8 w-full rounded pl-9 pr-12 text-sm outline-none transition-all duration-300 font-body"
+                        placeholder="Search…"
+                        className="h-9 w-full rounded-full pl-10 pr-4 text-sm outline-none transition-all duration-200"
                         style={{
                             background: 'var(--card)',
                             border: '1px solid var(--border)',
@@ -110,14 +123,22 @@ export function AdminHeader() {
                         onFocus={e  => (e.currentTarget.style.borderColor = 'var(--primary)')}
                         onBlur={e   => (e.currentTarget.style.borderColor = 'var(--border)')}
                     />
-                    <kbd
-                        className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 hidden sm:inline-flex h-5 items-center rounded border px-1.5 font-display text-[9px] uppercase tracking-wider"
-                        style={{ background: 'var(--background)', borderColor: 'var(--border)', color: 'var(--muted-foreground)' }}
-                    >
-                        ⌘K
-                    </kbd>
                 </div>
             </div>
+
+            {/* Role capsule */}
+            <span
+                className="hidden md:inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] uppercase"
+                style={{
+                    color: 'var(--primary)',
+                    background: 'color-mix(in srgb, var(--primary) 8%, transparent)',
+                    border: '1px solid color-mix(in srgb, var(--primary) 22%, transparent)',
+                    letterSpacing: '0.22em',
+                    fontWeight: 500,
+                }}
+            >
+                {roleName}
+            </span>
 
             {/* Theme toggle */}
             <ThemeToggle compact />
@@ -125,17 +146,17 @@ export function AdminHeader() {
             {/* Bell */}
             <div className="relative" ref={dropdownRef}>
                 <button
-                    className="relative flex items-center justify-center w-9 h-9 rounded transition-colors duration-200"
-                    style={{ color: 'var(--muted-foreground)' }}
+                    className="relative flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200"
+                    style={{ color: 'var(--muted-foreground)', border: '1px solid transparent' }}
                     onClick={() => setOpen(v => !v)}
                     aria-label="Notifications"
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
+                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--foreground)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted-foreground)'; e.currentTarget.style.borderColor = 'transparent'; }}
                 >
                     <Bell className="h-4 w-4" />
                     {unreadCount > 0 && (
                         <span
-                            className="absolute top-1 right-1 min-w-3.5 h-3.5 px-0.5 rounded-full flex items-center justify-center font-display text-[8px]"
+                            className="absolute top-0.5 right-0.5 min-w-4 h-4 px-1 rounded-full flex items-center justify-center text-[9px] font-medium"
                             style={{ background: 'var(--destructive)', color: 'var(--destructive-foreground)' }}
                         >
                             {unreadCount > 99 ? '99+' : unreadCount}
@@ -145,24 +166,24 @@ export function AdminHeader() {
 
                 {open && (
                     <div
-                        className="absolute right-0 top-full mt-2 w-80 rounded z-50 overflow-hidden"
+                        className="absolute right-0 top-full mt-2 w-80 rounded-2xl z-50 overflow-hidden"
                         style={{
                             background: 'var(--card)',
                             border: '1px solid var(--border)',
-                            boxShadow: '0 12px 40px rgba(0,0,0,0.65)',
+                            boxShadow: '0 24px 60px -28px color-mix(in srgb, var(--foreground) 28%, transparent), 0 8px 22px -10px color-mix(in srgb, var(--foreground) 12%, transparent)',
                         }}
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--border)' }}>
-                            <span className="font-heading text-base" style={{ color: 'var(--foreground)' }}>
+                            <span className="text-sm flex items-center gap-2" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                 Notifications
                                 {unreadCount > 0 && (
                                     <span
-                                        className="ml-2 font-display text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full"
+                                        className="text-[10px] uppercase tracking-[0.18em] px-2 py-0.5 rounded-full"
                                         style={{
-                                            background: 'color-mix(in srgb, var(--destructive) 25%, transparent)',
-                                            color: 'var(--primary)',
-                                            border: '1px solid color-mix(in srgb, var(--destructive) 40%, transparent)',
+                                            background: 'color-mix(in srgb, var(--destructive) 12%, transparent)',
+                                            color: 'var(--destructive)',
+                                            border: '1px solid color-mix(in srgb, var(--destructive) 28%, transparent)',
                                         }}
                                     >
                                         {unreadCount}
@@ -172,7 +193,7 @@ export function AdminHeader() {
                             {unreadCount > 0 && (
                                 <button
                                     onClick={handleMarkAllRead}
-                                    className="font-display text-[9px] uppercase tracking-wider transition-colors duration-200"
+                                    className="text-xs transition-colors duration-200"
                                     style={{ color: 'var(--muted-foreground)' }}
                                     onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
                                     onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
@@ -194,7 +215,7 @@ export function AdminHeader() {
                                         key={n.id}
                                         className="group flex items-start gap-3 px-4 py-3 last:border-0 transition-colors duration-150"
                                         style={{
-                                            borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)',
+                                            borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)',
                                             background: n.is_read ? 'transparent' : 'color-mix(in srgb, var(--primary) 4%, transparent)',
                                         }}
                                         onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--primary) 8%, transparent)')}
@@ -203,13 +224,13 @@ export function AdminHeader() {
                                         <button onClick={() => handleNotificationClick(n)} className="flex flex-1 gap-3 text-left min-w-0">
                                             <div className="mt-0.5 shrink-0">{notificationIcon(n.type)}</div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm truncate font-body" style={{ color: n.is_read ? 'var(--muted-foreground)' : 'var(--foreground)' }}>
+                                                <p className="text-sm truncate" style={{ color: n.is_read ? 'var(--muted-foreground)' : 'var(--foreground)', fontWeight: n.is_read ? 400 : 500 }}>
                                                     {n.title}
                                                 </p>
-                                                <p className="font-body text-xs italic line-clamp-2 mt-0.5" style={{ color: 'var(--muted-foreground)' }}>
+                                                <p className="text-xs line-clamp-2 mt-0.5" style={{ color: 'var(--muted-foreground)' }}>
                                                     {n.message}
                                                 </p>
-                                                <p className="font-display text-[9px] uppercase tracking-wider mt-1" style={{ color: 'var(--muted-foreground)', opacity: 0.5 }}>
+                                                <p className="text-[10px] uppercase tracking-[0.2em] mt-1.5" style={{ color: 'var(--muted-foreground)', opacity: 0.6 }}>
                                                     {timeAgo(n.created_at)}
                                                 </p>
                                             </div>

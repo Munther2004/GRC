@@ -110,12 +110,12 @@ export default function TwoFactorChallenge() {
                                 Continue
                             </Button>
 
-                            <div className="font-body text-center text-sm italic" style={{ color: '#7ABFA8' }}>
+                            <div className="text-center text-sm" style={{ color: 'var(--muted-foreground)' }}>
                                 <span>or you can </span>
                                 <button
                                     type="button"
-                                    className="font-display cursor-pointer text-[10px] uppercase tracking-widest underline underline-offset-4 transition-colors duration-200"
-                                    style={{ color: '#408A71' }}
+                                    className="cursor-pointer text-sm underline underline-offset-4 transition-colors duration-200"
+                                    style={{ color: 'var(--primary)' }}
                                     onClick={() => toggleRecoveryMode(clearErrors)}
                                 >
                                     {authConfigContent.toggleText}

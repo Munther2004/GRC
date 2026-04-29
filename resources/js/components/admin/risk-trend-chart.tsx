@@ -35,20 +35,20 @@ export function RiskTrendChart({ trendData = [] }: Props) {
     const tooltipStyle = {
         backgroundColor: 'var(--card)',
         border: '1px solid var(--border)',
-        borderRadius: '4px',
+        borderRadius: '12px',
         fontSize: '11px',
-        padding: '6px 10px',
-        fontFamily: "'Crimson Pro', serif",
+        padding: '8px 12px',
         color: 'var(--foreground)',
+        boxShadow: '0 18px 40px -18px color-mix(in srgb, var(--foreground) 28%, transparent)',
     };
 
     return (
         <Card>
             <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-lg font-normal">
-                    Risk Trend
+                <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
+                    Risk trend
                 </CardTitle>
-                <p className="font-body text-[11px] italic text-muted-foreground">
+                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                     Risk levels over time — ISO/IEC 27005 scoring
                 </p>
             </CardHeader>
@@ -84,16 +84,16 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                                     dataKey="month"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: "'Cinzel', serif" }}
+                                    tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontFamily: "'Cinzel', serif" }}
+                                    tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }}
                                 />
                                 <Tooltip
                                     contentStyle={tooltipStyle}
-                                    labelStyle={{ color: 'var(--primary)', fontFamily: "'Cinzel', serif", fontSize: '10px' }}
+                                    labelStyle={{ color: 'var(--primary)', fontSize: '10px' }}
                                 />
                                 <Legend
                                     iconType="circle"
@@ -101,7 +101,6 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                                     wrapperStyle={{
                                         fontSize: '10px',
                                         paddingTop: '10px',
-                                        fontFamily: "'Cinzel', serif",
                                         letterSpacing: '0.05em',
                                         color: 'var(--muted-foreground)',
                                     }}

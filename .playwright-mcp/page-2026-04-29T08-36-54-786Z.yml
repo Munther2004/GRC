@@ -1,0 +1,275 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e8]
+        - generic [ref=e10]: GRC · Charter
+      - navigation [ref=e11]:
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - link "Dashboard" [ref=e14] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e15]
+              - generic [ref=e20]: Dashboard
+          - listitem [ref=e21]:
+            - link "AI Assistant" [ref=e22] [cursor=pointer]:
+              - /url: /chatbot
+              - img [ref=e23]
+              - generic [ref=e25]: AI Assistant
+          - listitem [ref=e26]:
+            - link "Risk Register" [ref=e27] [cursor=pointer]:
+              - /url: /risks
+              - img [ref=e28]
+              - generic [ref=e30]: Risk Register
+          - listitem [ref=e31]:
+            - link "Assessments" [ref=e32] [cursor=pointer]:
+              - /url: /assessments
+              - img [ref=e33]
+              - generic [ref=e36]: Assessments
+          - listitem [ref=e37]:
+            - link "Evidence" [ref=e38] [cursor=pointer]:
+              - /url: /evidence
+              - img [ref=e39]
+              - generic [ref=e41]: Evidence
+          - listitem [ref=e42]:
+            - link "Gap Analysis" [ref=e43] [cursor=pointer]:
+              - /url: /gap-analysis
+              - img [ref=e44]
+              - generic [ref=e48]: Gap Analysis
+          - listitem [ref=e49]:
+            - link "Security Audit" [ref=e50] [cursor=pointer]:
+              - /url: /security-audits
+              - img [ref=e51]
+              - generic [ref=e53]: Security Audit
+          - listitem [ref=e54]:
+            - link "Crosswalk" [ref=e55] [cursor=pointer]:
+              - /url: /crosswalk
+              - img [ref=e56]
+              - generic [ref=e61]: Crosswalk
+          - listitem [ref=e62]:
+            - link "Controls Hub" [ref=e63] [cursor=pointer]:
+              - /url: /controls/hub
+              - img [ref=e64]
+              - generic [ref=e69]: Controls Hub
+          - listitem [ref=e70]:
+            - link "Remediation" [ref=e71] [cursor=pointer]:
+              - /url: /remediation-tasks
+              - img [ref=e72]
+              - generic [ref=e75]: Remediation
+          - listitem [ref=e76]:
+            - link "Reports" [ref=e77] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e78]
+              - generic [ref=e80]: Reports
+        - generic [ref=e81]:
+          - paragraph [ref=e82]: Review
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - link "Approvals 1" [ref=e85] [cursor=pointer]:
+                - /url: /controls/approvals
+                - img [ref=e86]
+                - generic [ref=e89]: Approvals
+                - generic [ref=e90]: "1"
+            - listitem [ref=e91]:
+              - link "Audit Logs" [ref=e92] [cursor=pointer]:
+                - /url: /audit-logs
+                - img [ref=e93]
+                - generic [ref=e96]: Audit Logs
+            - listitem [ref=e97]:
+              - link "Notifications 5" [ref=e98] [cursor=pointer]:
+                - /url: /notifications
+                - img [ref=e99]
+                - generic [ref=e102]: Notifications
+                - generic [ref=e103]: "5"
+        - generic [ref=e104]:
+          - paragraph [ref=e105]: Administration
+          - list [ref=e106]:
+            - listitem [ref=e107]:
+              - link "Users" [ref=e108] [cursor=pointer]:
+                - /url: /admin/users
+                - img [ref=e109]
+                - generic [ref=e114]: Users
+            - listitem [ref=e115]:
+              - link "Risk Appetite" [ref=e116] [cursor=pointer]:
+                - /url: /risk-appetite
+                - img [ref=e117]
+                - generic [ref=e118]: Risk Appetite
+        - generic [ref=e119]:
+          - paragraph [ref=e120]: Platform
+          - list [ref=e121]:
+            - listitem [ref=e122]:
+              - link "Corporations" [ref=e123] [cursor=pointer]:
+                - /url: /admin/corporations
+                - img [ref=e124]
+                - generic [ref=e128]: Corporations
+            - listitem [ref=e129]:
+              - link "Frameworks" [ref=e130] [cursor=pointer]:
+                - /url: /admin/frameworks
+                - img [ref=e131]
+                - generic [ref=e133]: Frameworks
+            - listitem [ref=e134]:
+              - link "Controls Library" [ref=e135] [cursor=pointer]:
+                - /url: /admin/controls
+                - img [ref=e136]
+                - generic [ref=e139]: Controls Library
+      - generic [ref=e141]:
+        - generic [ref=e143]: SA
+        - generic [ref=e144]:
+          - paragraph [ref=e145]: System Admin
+          - paragraph [ref=e146]: admin@grc.com
+        - button "Log out" [ref=e147] [cursor=pointer]:
+          - img [ref=e148]
+  - generic [ref=e151]:
+    - banner [ref=e152]:
+      - generic [ref=e154]:
+        - img [ref=e155]
+        - searchbox "Search…" [ref=e158]
+      - generic [ref=e159]: Super Admin
+      - button "Switch to dark mode" [ref=e160] [cursor=pointer]:
+        - img [ref=e163]
+      - button "Notifications" [ref=e170] [cursor=pointer]:
+        - img [ref=e171]
+        - generic [ref=e174]: "5"
+    - main [ref=e175]:
+      - generic [ref=e176]:
+        - generic [ref=e178]:
+          - generic [ref=e179]:
+            - heading "Assessments" [level=1] [ref=e180]
+            - paragraph [ref=e181]: Self-assessment questionnaires per framework
+          - generic [ref=e182]:
+            - link "Compare" [ref=e183] [cursor=pointer]:
+              - /url: /assessments/compare
+              - button "Compare" [ref=e184]:
+                - img
+                - text: Compare
+            - link "New Assessment" [ref=e185] [cursor=pointer]:
+              - /url: /assessments/create
+              - button "New Assessment" [ref=e186]:
+                - img
+                - text: New Assessment
+        - generic [ref=e188]:
+          - generic [ref=e189]:
+            - paragraph [ref=e192]: Total
+            - paragraph [ref=e193]: "4"
+          - generic [ref=e194]:
+            - paragraph [ref=e197]: In Progress
+            - paragraph [ref=e198]: "0"
+          - generic [ref=e199]:
+            - paragraph [ref=e202]: Completed
+            - paragraph [ref=e203]: "4"
+          - generic [ref=e204]:
+            - paragraph [ref=e207]: Avg Compliance
+            - paragraph [ref=e208]: 71%
+        - generic [ref=e209]:
+          - generic [ref=e210]:
+            - generic:
+              - img
+            - textbox "Search assessments..." [ref=e211]
+          - combobox [ref=e212] [cursor=pointer]:
+            - generic: All Statuses
+            - img
+          - combobox [ref=e213] [cursor=pointer]:
+            - generic: All Frameworks
+            - img
+          - button "Search" [ref=e214] [cursor=pointer]
+        - generic [ref=e215]:
+          - generic [ref=e217]: 4 assessments
+          - table [ref=e220]:
+            - rowgroup [ref=e221]:
+              - row "Assessment Framework Period Self-Assessed Evidence Score Status Due Date Actions" [ref=e222]:
+                - columnheader "Assessment" [ref=e223]
+                - columnheader "Framework" [ref=e224]
+                - columnheader "Period" [ref=e225]
+                - columnheader "Self-Assessed" [ref=e226]
+                - columnheader "Evidence Score" [ref=e227]
+                - columnheader "Status" [ref=e228]
+                - columnheader "Due Date" [ref=e229]
+                - columnheader "Actions" [ref=e230]
+            - rowgroup [ref=e231]:
+              - row "fhx System Admin ISO27001 fhc 72.5% 36.3% completed —" [ref=e232]:
+                - cell "fhx System Admin" [ref=e233]:
+                  - paragraph [ref=e234]: fhx
+                  - paragraph [ref=e235]: System Admin
+                - cell "ISO27001" [ref=e236]:
+                  - generic [ref=e237]: ISO27001
+                - cell "fhc" [ref=e238]
+                - cell "72.5%" [ref=e239]:
+                  - generic [ref=e243]: 72.5%
+                - cell "36.3%" [ref=e244]:
+                  - generic [ref=e248]: 36.3%
+                - cell "completed" [ref=e249]:
+                  - generic [ref=e250]: completed
+                - cell "—" [ref=e251]
+                - cell [ref=e252]:
+                  - generic [ref=e253]:
+                    - link [ref=e254] [cursor=pointer]:
+                      - /url: /assessments/10
+                      - button [ref=e255]:
+                        - img
+                    - button [ref=e256] [cursor=pointer]:
+                      - img
+              - row "fghfghs System Admin ISO27001 sfhy 76.9% 38.5% completed —" [ref=e257]:
+                - cell "fghfghs System Admin" [ref=e258]:
+                  - paragraph [ref=e259]: fghfghs
+                  - paragraph [ref=e260]: System Admin
+                - cell "ISO27001" [ref=e261]:
+                  - generic [ref=e262]: ISO27001
+                - cell "sfhy" [ref=e263]
+                - cell "76.9%" [ref=e264]:
+                  - generic [ref=e268]: 76.9%
+                - cell "38.5%" [ref=e269]:
+                  - generic [ref=e273]: 38.5%
+                - cell "completed" [ref=e274]:
+                  - generic [ref=e275]: completed
+                - cell "—" [ref=e276]
+                - cell [ref=e277]:
+                  - generic [ref=e278]:
+                    - link [ref=e279] [cursor=pointer]:
+                      - /url: /assessments/9
+                      - button [ref=e280]:
+                        - img
+                    - button [ref=e281] [cursor=pointer]:
+                      - img
+              - row "MN System Admin ISO27001 BNM 67.9% 34% completed —" [ref=e282]:
+                - cell "MN System Admin" [ref=e283]:
+                  - paragraph [ref=e284]: MN
+                  - paragraph [ref=e285]: System Admin
+                - cell "ISO27001" [ref=e286]:
+                  - generic [ref=e287]: ISO27001
+                - cell "BNM" [ref=e288]
+                - cell "67.9%" [ref=e289]:
+                  - generic [ref=e293]: 67.9%
+                - cell "34%" [ref=e294]:
+                  - generic [ref=e298]: 34%
+                - cell "completed" [ref=e299]:
+                  - generic [ref=e300]: completed
+                - cell "—" [ref=e301]
+                - cell [ref=e302]:
+                  - generic [ref=e303]:
+                    - link [ref=e304] [cursor=pointer]:
+                      - /url: /assessments/8
+                      - button [ref=e305]:
+                        - img
+                    - button [ref=e306] [cursor=pointer]:
+                      - img
+              - row "NIST Q2 System Admin NIST800-53 Q2 2026 65.5% Pending review completed —" [ref=e307]:
+                - cell "NIST Q2 System Admin" [ref=e308]:
+                  - paragraph [ref=e309]: NIST Q2
+                  - paragraph [ref=e310]: System Admin
+                - cell "NIST800-53" [ref=e311]:
+                  - generic [ref=e312]: NIST800-53
+                - cell "Q2 2026" [ref=e313]
+                - cell "65.5%" [ref=e314]:
+                  - generic [ref=e318]: 65.5%
+                - cell "Pending review" [ref=e319]
+                - cell "completed" [ref=e320]:
+                  - generic [ref=e321]: completed
+                - cell "—" [ref=e322]
+                - cell [ref=e323]:
+                  - generic [ref=e324]:
+                    - link [ref=e325] [cursor=pointer]:
+                      - /url: /assessments/7
+                      - button [ref=e326]:
+                        - img
+                    - button [ref=e327] [cursor=pointer]:
+                      - img

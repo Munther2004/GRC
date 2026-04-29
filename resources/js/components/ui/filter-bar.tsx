@@ -6,12 +6,15 @@ interface FilterBarProps {
     className?: string
 }
 
-/** Aged oak filter row — replaces Card-wrapped filter sections */
 export function FilterBar({ children, className }: FilterBarProps) {
     return (
         <div
-            className={cn('flex flex-wrap items-center gap-2 rounded px-4 py-3', className)}
-            style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+            className={cn('flex flex-wrap items-center gap-2.5 rounded-2xl px-4 py-3', className)}
+            style={{
+                background: 'var(--card)',
+                border: '1px solid var(--border)',
+                boxShadow: '0 10px 30px -16px color-mix(in srgb, var(--foreground) 14%, transparent)',
+            }}
         >
             {children}
         </div>

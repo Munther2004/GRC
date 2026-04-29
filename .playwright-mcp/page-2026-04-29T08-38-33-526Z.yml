@@ -1,0 +1,271 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e8]
+        - generic [ref=e10]: GRC · Charter
+      - navigation [ref=e11]:
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - link "Dashboard" [ref=e14] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e15]
+              - generic [ref=e20]: Dashboard
+          - listitem [ref=e21]:
+            - link "AI Assistant" [ref=e22] [cursor=pointer]:
+              - /url: /chatbot
+              - img [ref=e23]
+              - generic [ref=e25]: AI Assistant
+          - listitem [ref=e26]:
+            - link "Risk Register" [ref=e27] [cursor=pointer]:
+              - /url: /risks
+              - img [ref=e28]
+              - generic [ref=e30]: Risk Register
+          - listitem [ref=e31]:
+            - link "Assessments" [ref=e32] [cursor=pointer]:
+              - /url: /assessments
+              - img [ref=e33]
+              - generic [ref=e36]: Assessments
+          - listitem [ref=e37]:
+            - link "Evidence" [ref=e38] [cursor=pointer]:
+              - /url: /evidence
+              - img [ref=e39]
+              - generic [ref=e41]: Evidence
+          - listitem [ref=e42]:
+            - link "Gap Analysis" [ref=e43] [cursor=pointer]:
+              - /url: /gap-analysis
+              - img [ref=e44]
+              - generic [ref=e48]: Gap Analysis
+          - listitem [ref=e49]:
+            - link "Security Audit" [ref=e50] [cursor=pointer]:
+              - /url: /security-audits
+              - img [ref=e51]
+              - generic [ref=e53]: Security Audit
+          - listitem [ref=e54]:
+            - link "Crosswalk" [ref=e55] [cursor=pointer]:
+              - /url: /crosswalk
+              - img [ref=e56]
+              - generic [ref=e61]: Crosswalk
+          - listitem [ref=e62]:
+            - link "Controls Hub" [ref=e63] [cursor=pointer]:
+              - /url: /controls/hub
+              - img [ref=e64]
+              - generic [ref=e69]: Controls Hub
+          - listitem [ref=e70]:
+            - link "Remediation" [ref=e71] [cursor=pointer]:
+              - /url: /remediation-tasks
+              - img [ref=e72]
+              - generic [ref=e75]: Remediation
+          - listitem [ref=e76]:
+            - link "Reports" [ref=e77] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e78]
+              - generic [ref=e80]: Reports
+        - generic [ref=e81]:
+          - paragraph [ref=e82]: Review
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - link "Approvals 1" [ref=e85] [cursor=pointer]:
+                - /url: /controls/approvals
+                - img [ref=e86]
+                - generic [ref=e89]: Approvals
+                - generic [ref=e90]: "1"
+            - listitem [ref=e91]:
+              - link "Audit Logs" [ref=e92] [cursor=pointer]:
+                - /url: /audit-logs
+                - img [ref=e93]
+                - generic [ref=e96]: Audit Logs
+            - listitem [ref=e97]:
+              - link "Notifications 5" [ref=e98] [cursor=pointer]:
+                - /url: /notifications
+                - img [ref=e99]
+                - generic [ref=e102]: Notifications
+                - generic [ref=e103]: "5"
+        - generic [ref=e104]:
+          - paragraph [ref=e105]: Administration
+          - list [ref=e106]:
+            - listitem [ref=e107]:
+              - link "Users" [ref=e108] [cursor=pointer]:
+                - /url: /admin/users
+                - img [ref=e109]
+                - generic [ref=e114]: Users
+            - listitem [ref=e115]:
+              - link "Risk Appetite" [ref=e116] [cursor=pointer]:
+                - /url: /risk-appetite
+                - img [ref=e117]
+                - generic [ref=e118]: Risk Appetite
+        - generic [ref=e119]:
+          - paragraph [ref=e120]: Platform
+          - list [ref=e121]:
+            - listitem [ref=e122]:
+              - link "Corporations" [ref=e123] [cursor=pointer]:
+                - /url: /admin/corporations
+                - img [ref=e124]
+                - generic [ref=e128]: Corporations
+            - listitem [ref=e129]:
+              - link "Frameworks" [ref=e130] [cursor=pointer]:
+                - /url: /admin/frameworks
+                - img [ref=e131]
+                - generic [ref=e133]: Frameworks
+            - listitem [ref=e134]:
+              - link "Controls Library" [ref=e135] [cursor=pointer]:
+                - /url: /admin/controls
+                - img [ref=e136]
+                - generic [ref=e139]: Controls Library
+      - generic [ref=e141]:
+        - generic [ref=e143]: SA
+        - generic [ref=e144]:
+          - paragraph [ref=e145]: System Admin
+          - paragraph [ref=e146]: admin@grc.com
+        - button "Log out" [ref=e147] [cursor=pointer]:
+          - img [ref=e148]
+  - generic [ref=e151]:
+    - banner [ref=e152]:
+      - generic [ref=e154]:
+        - img [ref=e155]
+        - searchbox "Search…" [ref=e158]
+      - generic [ref=e159]: Super Admin
+      - button "Switch to dark mode" [ref=e160] [cursor=pointer]:
+        - img [ref=e163]
+      - button "Notifications" [ref=e170] [cursor=pointer]:
+        - img [ref=e171]
+        - generic [ref=e174]: "5"
+    - main [ref=e175]:
+      - generic [ref=e176]:
+        - generic [ref=e177]:
+          - generic [ref=e178]:
+            - heading "Users & Roles" [level=1] [ref=e179]
+            - paragraph [ref=e180]: Manage users across all corporations.
+          - link "Add User" [ref=e181] [cursor=pointer]:
+            - /url: /admin/users/create
+            - button "Add User" [ref=e182]:
+              - img
+              - text: Add User
+        - generic [ref=e183]:
+          - generic [ref=e185]:
+            - img [ref=e186]
+            - generic [ref=e191]:
+              - paragraph [ref=e192]: "4"
+              - paragraph [ref=e193]: Total Users
+          - generic [ref=e195]:
+            - img [ref=e196]
+            - generic [ref=e198]:
+              - paragraph [ref=e199]: "1"
+              - paragraph [ref=e200]: Super Admins
+          - generic [ref=e202]:
+            - img [ref=e203]
+            - generic [ref=e205]:
+              - paragraph [ref=e206]: "0"
+              - paragraph [ref=e207]: Admins
+          - generic [ref=e209]:
+            - img [ref=e210]
+            - generic [ref=e213]:
+              - paragraph [ref=e214]: "2"
+              - paragraph [ref=e215]: Auditors
+          - generic [ref=e217]:
+            - img [ref=e218]
+            - generic [ref=e223]:
+              - paragraph [ref=e224]: "1"
+              - paragraph [ref=e225]: Users
+        - generic [ref=e228]:
+          - generic [ref=e229]:
+            - img [ref=e230]
+            - textbox "Search by name or email..." [ref=e233]
+          - combobox [ref=e234] [cursor=pointer]:
+            - generic: All Roles
+            - img
+          - button "Search" [ref=e235] [cursor=pointer]
+        - generic [ref=e236]:
+          - generic [ref=e238]: 4 users
+          - table [ref=e241]:
+            - rowgroup [ref=e242]:
+              - row "Name Email Role Corporation Joined Actions" [ref=e243]:
+                - columnheader "Name" [ref=e244]
+                - columnheader "Email" [ref=e245]
+                - columnheader "Role" [ref=e246]
+                - columnheader "Corporation" [ref=e247]
+                - columnheader "Joined" [ref=e248]
+                - columnheader "Actions" [ref=e249]
+            - rowgroup [ref=e250]:
+              - row "M Moayyad MOA20210776@std.psut.edu.jo Auditor — 05/03/2026" [ref=e251]:
+                - cell "M Moayyad" [ref=e252]:
+                  - generic [ref=e253]:
+                    - generic [ref=e255]: M
+                    - generic [ref=e256]: Moayyad
+                - cell "MOA20210776@std.psut.edu.jo" [ref=e257]
+                - cell "Auditor" [ref=e258]:
+                  - generic [ref=e259]: Auditor
+                - cell "—" [ref=e260]
+                - cell "05/03/2026" [ref=e261]
+                - cell [ref=e262]:
+                  - generic [ref=e263]:
+                    - link [ref=e264] [cursor=pointer]:
+                      - /url: /admin/users/4/edit
+                      - button [ref=e265]:
+                        - img
+                    - button [ref=e266] [cursor=pointer]:
+                      - img
+              - row "SA System Admin admin@grc.com Super Admin — 04/03/2026" [ref=e267]:
+                - cell "SA System Admin" [ref=e268]:
+                  - generic [ref=e269]:
+                    - generic [ref=e271]: SA
+                    - generic [ref=e272]: System Admin
+                - cell "admin@grc.com" [ref=e273]
+                - cell "Super Admin" [ref=e274]:
+                  - generic [ref=e275]: Super Admin
+                - cell "—" [ref=e276]
+                - cell "04/03/2026" [ref=e277]
+                - cell [ref=e278]:
+                  - generic [ref=e279]:
+                    - link [ref=e280] [cursor=pointer]:
+                      - /url: /admin/users/1/edit
+                      - button [ref=e281]:
+                        - img
+                    - button [ref=e282] [cursor=pointer]:
+                      - img
+              - row "AU Auditor User auditor@grc.com Auditor — 04/03/2026" [ref=e283]:
+                - cell "AU Auditor User" [ref=e284]:
+                  - generic [ref=e285]:
+                    - generic [ref=e287]: AU
+                    - generic [ref=e288]: Auditor User
+                - cell "auditor@grc.com" [ref=e289]
+                - cell "Auditor" [ref=e290]:
+                  - generic [ref=e291]: Auditor
+                - cell "—" [ref=e292]
+                - cell "04/03/2026" [ref=e293]
+                - cell [ref=e294]:
+                  - generic [ref=e295]:
+                    - link [ref=e296] [cursor=pointer]:
+                      - /url: /admin/users/2/edit
+                      - button [ref=e297]:
+                        - img
+                    - button [ref=e298] [cursor=pointer]:
+                      - img
+              - row "RU Regular User user@grc.com User — 04/03/2026" [ref=e299]:
+                - cell "RU Regular User" [ref=e300]:
+                  - generic [ref=e301]:
+                    - generic [ref=e303]: RU
+                    - generic [ref=e304]: Regular User
+                - cell "user@grc.com" [ref=e305]
+                - cell "User" [ref=e306]:
+                  - generic [ref=e307]: User
+                - cell "—" [ref=e308]
+                - cell "04/03/2026" [ref=e309]
+                - cell [ref=e310]:
+                  - generic [ref=e311]:
+                    - link [ref=e312] [cursor=pointer]:
+                      - /url: /admin/users/3/edit
+                      - button [ref=e313]:
+                        - img
+                    - button [ref=e314] [cursor=pointer]:
+                      - img
+        - generic [ref=e315]:
+          - link "« Previous" [ref=e316] [cursor=pointer]:
+            - /url: ""
+            - button "« Previous" [disabled]
+          - link "1" [ref=e317] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/users?page=1
+            - button "1" [ref=e318]
+          - link "Next »" [ref=e319] [cursor=pointer]:
+            - /url: ""
+            - button "Next »" [disabled]

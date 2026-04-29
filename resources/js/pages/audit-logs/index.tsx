@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { PageHeader } from '@/components/ui/page-header';
 import {
     Select,
     SelectTrigger,
@@ -13,7 +12,6 @@ import {
     SelectContent,
     SelectItem,
 } from '@/components/ui/select';
-import { StatStrip } from '@/components/ui/stat-strip';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
 
@@ -48,19 +46,19 @@ interface Props {
 }
 
 const actionColors: Record<string, string> = {
-    created: 'bg-green-50 text-green-700 border-green-200',
-    updated: 'bg-primary/10 text-primary border-primary/20',
-    deleted: 'bg-red-950 text-red-400 border-red-200',
-    submitted: 'bg-secondary/10 text-secondary-foreground border-secondary/20',
-    uploaded: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    created: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
+    updated: 'bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-primary border-[color-mix(in_srgb,var(--primary)_25%,transparent)]',
+    deleted: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
+    submitted: 'bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-primary border-[color-mix(in_srgb,var(--primary)_20%,transparent)]',
+    uploaded: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
 };
 
 const modelColors: Record<string, string> = {
-    Assessment: 'bg-accent text-foreground',
-    Risk: 'bg-orange-950 text-orange-400',
-    User: 'bg-secondary/20 text-secondary-foreground',
-    Evidence: 'bg-amber-950 text-amber-400',
-    Framework: 'bg-emerald-950 text-emerald-400',
+    Assessment: 'bg-muted text-foreground',
+    Risk: 'bg-[rgba(247,107,21,0.12)] text-[#f76b15]',
+    User: 'bg-[color-mix(in_srgb,var(--primary)_15%,transparent)] text-primary',
+    Evidence: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929]',
+    Framework: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f]',
     Control: 'bg-muted text-foreground',
 };
 
@@ -108,10 +106,10 @@ export default function AuditLogsIndex({
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="font-heading text-4xl font-normal text-foreground">
+                    <h1 className="text-4xl tracking-[-0.02em]" style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}>
                         Audit Logs
                     </h1>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                         Complete trail of all system activity
                     </p>
                 </div>
@@ -123,29 +121,29 @@ export default function AuditLogsIndex({
                             label: 'Total Events',
                             value: stats.total,
                             icon: ScrollText,
-                            color: 'text-primary',
+                            color: 'var(--primary)',
                         },
                         {
                             label: 'Today',
                             value: stats.today,
                             icon: Clock,
-                            color: 'text-green-500',
+                            color: '#46bd5f',
                         },
                         {
                             label: 'This Week',
                             value: stats.week,
                             icon: Calendar,
-                            color: 'text-secondary-foreground',
+                            color: '#f5b929',
                         },
                     ].map(({ label, value, icon: Icon, color }) => (
                         <Card key={label}>
                             <CardContent className="flex items-center gap-3 p-4">
-                                <Icon className={`h-8 w-8 ${color}`} />
+                                <Icon className="h-8 w-8" style={{ color }} />
                                 <div>
-                                    <p className="text-2xl font-bold">
+                                    <p className="text-2xl tabular-nums" style={{ fontWeight: 500 }}>
                                         {value}
                                     </p>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                         {label}
                                     </p>
                                 </div>
@@ -333,7 +331,7 @@ export default function AuditLogsIndex({
                                                 <td className="px-4 py-3">
                                                     <Badge
                                                         variant="outline"
-                                                        className={`text-xs capitalize ${actionColors[log.action] ?? 'bg-muted text-muted-foreground'}`}
+                                                        className={`capitalize ${actionColors[log.action] ?? 'bg-muted text-muted-foreground'}`}
                                                     >
                                                         {log.action}
                                                     </Badge>
@@ -345,10 +343,10 @@ export default function AuditLogsIndex({
                                                         {log.model_type}
                                                     </span>
                                                 </td>
-                                                <td className="max-w-xs truncate px-4 py-3 text-foreground/80">
+                                                <td className="max-w-xs truncate px-4 py-3" style={{ color: 'var(--foreground)' }}>
                                                     {log.description}
                                                 </td>
-                                                <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                                                <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                     {log.ip_address ?? '—'}
                                                 </td>
                                             </tr>

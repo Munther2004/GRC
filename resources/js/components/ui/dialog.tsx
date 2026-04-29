@@ -45,10 +45,9 @@ function DialogContent({ className, children, ...props }: React.ComponentProps<t
         className={cn(
           "fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
           "w-full max-w-[calc(100%-2rem)] sm:max-w-lg",
-          "bg-card border border-border rounded",
-          "shadow-[0_20px_60px_rgba(0,0,0,0.7)]",
+          "bg-card border border-border rounded-2xl",
+          "shadow-[0_24px_60px_-28px_color-mix(in_srgb,var(--foreground)_28%,transparent),0_8px_22px_-10px_color-mix(in_srgb,var(--foreground)_12%,transparent)]",
           "grid gap-4 p-6",
-          "ornate-frame",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
           "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -59,8 +58,8 @@ function DialogContent({ className, children, ...props }: React.ComponentProps<t
       >
         {children}
         <DialogPrimitive.Close className={cn(
-          "absolute top-4 right-4 rounded opacity-60 transition-all duration-200",
-          "text-muted-foreground hover:text-primary hover:opacity-100",
+          "absolute top-4 right-4 rounded-full p-1 opacity-60 transition-all duration-200",
+          "text-muted-foreground hover:text-foreground hover:bg-muted hover:opacity-100",
           "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-card",
           "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         )}>
@@ -100,9 +99,10 @@ function DialogTitle({ className, ...props }: React.ComponentProps<typeof Dialog
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn(
-        "font-heading text-xl font-normal leading-snug text-foreground",
+        "text-xl leading-snug text-foreground",
         className
       )}
+      style={{ fontWeight: 500, letterSpacing: '-0.01em' }}
       {...props}
     />
   )
@@ -112,7 +112,7 @@ function DialogDescription({ className, ...props }: React.ComponentProps<typeof 
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("font-body text-sm text-muted-foreground italic", className)}
+      className={cn("text-sm text-muted-foreground", className)}
       {...props}
     />
   )

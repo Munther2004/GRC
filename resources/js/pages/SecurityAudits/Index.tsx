@@ -1,8 +1,7 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     Upload,
     FileText,
-    ShieldAlert,
     ShieldCheck,
     Trash2,
     Loader2,

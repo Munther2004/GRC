@@ -1,4 +1,4 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import {
     ArrowLeft,
@@ -86,50 +86,50 @@ interface AISummary {
 }
 
 const complianceColor = (pct: number) => {
-    if (pct >= 80) return 'text-emerald-400';
-    if (pct >= 50) return 'text-amber-400';
-    return 'text-red-500';
+    if (pct >= 80) return 'text-[#46bd5f]';
+    if (pct >= 50) return 'text-[#f5b929]';
+    return 'text-[#e5484d]';
 };
 
 const complianceBg = (pct: number) => {
-    if (pct >= 80) return 'bg-green-500';
-    if (pct >= 50) return 'bg-yellow-500';
-    return 'bg-red-500';
+    if (pct >= 80) return 'bg-[#46bd5f]';
+    if (pct >= 50) return 'bg-[#f5b929]';
+    return 'bg-[#e5484d]';
 };
 
 // Evidence-backed score uses tighter thresholds (≥70 green, 40-69 amber, <40 red)
 const evidenceScoreColor = (pct: number) => {
-    if (pct >= 70) return 'text-emerald-400';
-    if (pct >= 40) return 'text-amber-500';
-    return 'text-red-500';
+    if (pct >= 70) return 'text-[#46bd5f]';
+    if (pct >= 40) return 'text-[#f5b929]';
+    return 'text-[#e5484d]';
 };
 
 const evidenceScoreBg = (pct: number) => {
-    if (pct >= 70) return 'bg-green-500';
-    if (pct >= 40) return 'bg-amber-500';
-    return 'bg-red-500';
+    if (pct >= 70) return 'bg-[#46bd5f]';
+    if (pct >= 40) return 'bg-[#f5b929]';
+    return 'bg-[#e5484d]';
 };
 
 const STATUS_STYLES: Record<string, string> = {
-    Strong: 'bg-emerald-950 text-emerald-400 border-green-300',
-    Adequate: 'bg-accent text-foreground border-primary/30',
-    'Needs Improvement': 'bg-amber-950 text-amber-400 border-yellow-300',
-    'At Risk': 'bg-orange-950 text-orange-400 border-orange-300',
-    Critical: 'bg-red-950 text-red-400 border-red-300',
+    Strong: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
+    Adequate: 'bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-primary border-[color-mix(in_srgb,var(--primary)_30%,transparent)]',
+    'Needs Improvement': 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
+    'At Risk': 'bg-[rgba(247,107,21,0.12)] text-[#f76b15] border-[rgba(247,107,21,0.4)]',
+    Critical: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
 };
 
 const RATING_STYLES: Record<string, string> = {
-    Excellent: 'bg-emerald-950 text-emerald-400 border-green-300',
-    Good: 'bg-accent text-foreground border-primary/30',
-    Fair: 'bg-amber-950 text-amber-400 border-yellow-300',
-    Poor: 'bg-orange-950 text-orange-400 border-orange-300',
-    Critical: 'bg-red-950 text-red-400 border-red-300',
+    Excellent: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
+    Good: 'bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-primary border-[color-mix(in_srgb,var(--primary)_30%,transparent)]',
+    Fair: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
+    Poor: 'bg-[rgba(247,107,21,0.12)] text-[#f76b15] border-[rgba(247,107,21,0.4)]',
+    Critical: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
 };
 
 const SEVERITY_STYLES: Record<string, string> = {
-    High: 'bg-red-950 text-red-400 border-red-200',
-    Medium: 'bg-amber-950 text-amber-400 border-yellow-200',
-    Low: 'bg-emerald-950 text-emerald-400 border-green-200',
+    High: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
+    Medium: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
+    Low: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
 };
 
 export default function AssessmentShow({
@@ -197,17 +197,17 @@ export default function AssessmentShow({
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="font-heading text-4xl font-normal text-foreground">
+                            <h1 className="text-4xl tracking-[-0.02em]" style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}>
                                 {assessment.title}
                             </h1>
                             <div className="mt-1 flex items-center gap-2">
                                 <Badge variant="outline">
                                     {assessment.framework.short_name}
                                 </Badge>
-                                <span className="text-sm text-muted-foreground">
+                                <span className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                                     {assessment.period}
                                 </span>
-                                <span className="text-sm text-muted-foreground/60">
+                                <span className="text-sm" style={{ color: 'var(--muted-foreground)', opacity: 0.7 }}>
                                     by {assessment.user?.name}
                                 </span>
                             </div>
@@ -216,10 +216,11 @@ export default function AssessmentShow({
                     <div className="flex items-center gap-2">
                         <Button
                             disabled={loadingSummary}
+                            variant="outline"
                             onClick={
                                 aiSummary ? generateSummary : generateSummary
                             }
-                            className="gap-2 bg-secondary text-foreground hover:bg-secondary/80 disabled:opacity-60"
+                            className="gap-2"
                         >
                             {loadingSummary ? (
                                 <>
@@ -265,27 +266,28 @@ export default function AssessmentShow({
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-5">
-                                {/* ── Evidence-Backed Score (primary) ──────────────── */}
+                                {/* Evidence-Backed Score (primary) */}
                                 <div>
-                                    <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                                    <p className="mb-2 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                         Evidence-Backed Score
                                     </p>
                                     <div className="mb-3 flex items-end gap-4">
                                         <span
-                                            className={`text-6xl font-bold ${evidenceScoreColor(evidenceScore.weighted_score)}`}
+                                            className={`text-6xl tabular-nums ${evidenceScoreColor(evidenceScore.weighted_score)}`}
+                                            style={{ fontWeight: 500, letterSpacing: '-0.02em' }}
                                         >
                                             {evidenceScore.weighted_score}%
                                         </span>
                                         <div className="mb-2">
-                                            <p className="text-sm text-muted-foreground">
+                                            <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                                                 {assessment.framework.name}
                                             </p>
-                                            <p className="text-xs text-muted-foreground">
+                                            <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                 {total} controls assessed
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="h-4 w-full overflow-hidden rounded-full bg-secondary">
+                                    <div className="h-3 w-full overflow-hidden rounded-full" style={{ background: 'var(--muted)' }}>
                                         <div
                                             className={`h-full rounded-full transition-all ${evidenceScoreBg(evidenceScore.weighted_score)}`}
                                             style={{
@@ -295,37 +297,38 @@ export default function AssessmentShow({
                                     </div>
                                 </div>
 
-                                {/* ── Self-Assessment Score (secondary) ────────────── */}
+                                {/* Self-Assessment Score (secondary) */}
                                 <div className="flex items-center gap-3">
                                     <div>
                                         <span
-                                            className={`text-2xl font-semibold ${complianceColor(assessment.compliance_percentage)}`}
+                                            className={`text-2xl tabular-nums ${complianceColor(assessment.compliance_percentage)}`}
+                                            style={{ fontWeight: 500 }}
                                         >
                                             {assessment.compliance_percentage}%
                                         </span>
-                                        <span className="ml-2 text-xs text-muted-foreground">
+                                        <span className="ml-2 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                             Self-assessed
                                         </span>
                                     </div>
                                 </div>
 
-                                {/* ── Evidence quality breakdown ────────────────────── */}
-                                <div className="flex flex-wrap gap-4 border-t border-border/50 pt-1 dark:border-border">
-                                    <span className="flex items-center gap-1.5 text-sm text-emerald-400">
+                                {/* Evidence quality breakdown */}
+                                <div className="flex flex-wrap gap-4 border-t pt-3" style={{ borderColor: 'var(--border)' }}>
+                                    <span className="flex items-center gap-1.5 text-sm" style={{ color: '#46bd5f' }}>
                                         <CheckCircle className="h-4 w-4" />
                                         <strong>
                                             {evidenceScore.fully_evidenced}
                                         </strong>{' '}
                                         Fully evidenced
                                     </span>
-                                    <span className="flex items-center gap-1.5 text-sm text-amber-500">
+                                    <span className="flex items-center gap-1.5 text-sm" style={{ color: '#f5b929' }}>
                                         <AlertTriangle className="h-4 w-4" />
                                         <strong>
                                             {evidenceScore.weak_evidence}
                                         </strong>{' '}
                                         Weak evidence
                                     </span>
-                                    <span className="flex items-center gap-1.5 text-sm text-red-500">
+                                    <span className="flex items-center gap-1.5 text-sm" style={{ color: '#e5484d' }}>
                                         <XCircle className="h-4 w-4" />
                                         <strong>
                                             {evidenceScore.no_evidence}
@@ -334,37 +337,37 @@ export default function AssessmentShow({
                                     </span>
                                 </div>
 
-                                <p className="text-xs text-muted-foreground italic">
+                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     Score reflects both self-assessment answers
                                     and uploaded evidence quality.
                                 </p>
 
-                                {/* ── Status breakdown ─────────────────────────────── */}
+                                {/* Status breakdown */}
                                 <div className="grid grid-cols-4 gap-3">
                                     {[
                                         {
                                             label: 'Compliant',
                                             value: breakdown.compliant,
                                             icon: CheckCircle,
-                                            color: 'text-green-500',
+                                            color: '#46bd5f',
                                         },
                                         {
                                             label: 'Partial',
                                             value: breakdown.partially_compliant,
                                             icon: AlertTriangle,
-                                            color: 'text-yellow-500',
+                                            color: '#f5b929',
                                         },
                                         {
                                             label: 'Non-Compliant',
                                             value: breakdown.non_compliant,
                                             icon: XCircle,
-                                            color: 'text-red-500',
+                                            color: '#e5484d',
                                         },
                                         {
                                             label: 'N/A',
                                             value: breakdown.not_applicable,
                                             icon: MinusCircle,
-                                            color: 'text-muted-foreground',
+                                            color: 'var(--muted-foreground)',
                                         },
                                     ].map(
                                         ({
@@ -375,15 +378,17 @@ export default function AssessmentShow({
                                         }) => (
                                             <div
                                                 key={label}
-                                                className="rounded-lg bg-muted/30 p-3 text-center"
+                                                className="rounded-2xl p-3 text-center"
+                                                style={{ background: 'color-mix(in srgb, var(--muted) 50%, transparent)' }}
                                             >
                                                 <Icon
-                                                    className={`h-5 w-5 ${color} mx-auto mb-1`}
+                                                    className="h-5 w-5 mx-auto mb-1"
+                                                    style={{ color }}
                                                 />
-                                                <p className="text-xl font-bold">
+                                                <p className="text-xl tabular-nums" style={{ fontWeight: 500 }}>
                                                     {value}
                                                 </p>
-                                                <p className="text-xs text-muted-foreground">
+                                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                     {label}
                                                 </p>
                                             </div>
@@ -405,20 +410,21 @@ export default function AssessmentShow({
                                     ([category, data]) => (
                                         <div key={category}>
                                             <div className="mb-1 flex items-center justify-between text-sm">
-                                                <span className="font-medium">
+                                                <span style={{ fontWeight: 500 }}>
                                                     {category}
                                                 </span>
                                                 <span
-                                                    className={`font-semibold ${complianceColor(data.percentage)}`}
+                                                    className={`tabular-nums ${complianceColor(data.percentage)}`}
+                                                    style={{ fontWeight: 500 }}
                                                 >
                                                     {data.percentage}%{' '}
-                                                    <span className="font-normal text-muted-foreground">
+                                                    <span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}>
                                                         ({data.compliant}/
                                                         {data.total})
                                                     </span>
                                                 </span>
                                             </div>
-                                            <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                                            <div className="h-2 w-full overflow-hidden rounded-full" style={{ background: 'var(--muted)' }}>
                                                 <div
                                                     className={`h-full rounded-full ${complianceBg(data.percentage)}`}
                                                     style={{
@@ -436,7 +442,7 @@ export default function AssessmentShow({
                         {nonCompliantItems.length > 0 && (
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-base text-red-400">
+                                    <CardTitle className="text-base" style={{ color: '#e5484d' }}>
                                         Gap Analysis —{' '}
                                         {nonCompliantItems.length} controls
                                         require attention
@@ -446,28 +452,30 @@ export default function AssessmentShow({
                                     {nonCompliantItems.map((item) => (
                                         <div
                                             key={item.id}
-                                            className={`rounded-lg border p-3 text-sm ${ item.compliance_status === 'non_compliant' ? 'border-red-200 bg-red-50 dark:bg-red-950' : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-950' }`}
+                                            className="rounded-2xl border p-3 text-sm"
+                                            style={item.compliance_status === 'non_compliant' ? { borderColor: 'rgba(229,72,77,0.4)', background: 'rgba(229,72,77,0.06)' } : { borderColor: 'rgba(245,185,41,0.4)', background: 'rgba(245,185,41,0.06)' }}
                                         >
                                             <div className="flex items-start justify-between gap-2">
                                                 <div>
-                                                    <span className="mr-2 rounded bg-card px-1.5 py-0.5 font-mono text-xs dark:bg-secondary">
+                                                    <span className="mr-2 rounded-full bg-card px-2 py-0.5 font-mono text-xs">
                                                         {
                                                             item.control
                                                                 .control_id
                                                         }
                                                     </span>
-                                                    <span className="font-medium">
+                                                    <span style={{ fontWeight: 500 }}>
                                                         {item.control.title}
                                                     </span>
                                                     {item.comments && (
-                                                        <p className="mt-1 text-xs text-foreground/80">
+                                                        <p className="mt-1 text-xs" style={{ color: 'var(--foreground)', opacity: 0.8 }}>
                                                             {item.comments}
                                                         </p>
                                                     )}
                                                 </div>
                                                 <Badge
                                                     variant="outline"
-                                                    className={`shrink-0 text-xs ${ item.compliance_status === 'non_compliant' ? 'border-red-200 bg-red-950 text-red-400' : 'border-yellow-200 bg-amber-950 text-amber-400' }`}
+                                                    className="shrink-0"
+                                                    style={item.compliance_status === 'non_compliant' ? { color: '#e5484d', borderColor: 'rgba(229,72,77,0.4)', background: 'rgba(229,72,77,0.1)' } : { color: '#f5b929', borderColor: 'rgba(245,185,41,0.4)', background: 'rgba(245,185,41,0.1)' }}
                                                 >
                                                     {item.compliance_status ===
                                                     'non_compliant'
@@ -487,7 +495,7 @@ export default function AssessmentShow({
                         <Card>
                             <CardContent className="space-y-3 p-4">
                                 <div>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                         Status
                                     </p>
                                     <Badge
@@ -498,35 +506,35 @@ export default function AssessmentShow({
                                     </Badge>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                         Framework
                                     </p>
-                                    <p className="font-heading text-lg font-normal">
+                                    <p className="text-lg" style={{ fontWeight: 500 }}>
                                         {assessment.framework.name}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                         Period
                                     </p>
-                                    <p className="font-heading text-lg font-normal">
+                                    <p className="text-lg" style={{ fontWeight: 500 }}>
                                         {assessment.period}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                         Scope
                                     </p>
-                                    <p className="text-sm text-foreground/80">
+                                    <p className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.85 }}>
                                         {assessment.scope}
                                     </p>
                                 </div>
                                 {assessment.due_date && (
                                     <div>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                             Due Date
                                         </p>
-                                        <p className="font-heading text-lg font-normal">
+                                        <p className="text-lg" style={{ fontWeight: 500 }}>
                                             {new Date(
                                                 assessment.due_date,
                                             ).toLocaleDateString()}
@@ -534,7 +542,7 @@ export default function AssessmentShow({
                                     </div>
                                 )}
                                 <div>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                         Created
                                     </p>
                                     <p className="text-sm">
@@ -572,13 +580,13 @@ export default function AssessmentShow({
 
                 {/* Loading state */}
                 {loadingSummary && (
-                    <Card className="border-secondary/20 dark:border-secondary/20">
+                    <Card>
                         <CardContent className="flex flex-col items-center gap-3 p-8 text-center">
-                            <Loader2 className="h-5 w-5 animate-spin text-secondary" />
-                            <p className="text-sm font-medium text-foreground/85">
+                            <Loader2 className="h-5 w-5 animate-spin" style={{ color: 'var(--primary)' }} />
+                            <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
                                 Analyzing assessment data...
                             </p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                 This may take a few seconds
                             </p>
                         </CardContent>
@@ -587,8 +595,8 @@ export default function AssessmentShow({
 
                 {/* Error state */}
                 {summaryError && !loadingSummary && (
-                    <Card className="border-red-200">
-                        <CardContent className="flex items-center gap-3 p-4 text-red-400">
+                    <Card style={{ borderColor: 'color-mix(in srgb, var(--destructive) 30%, transparent)' }}>
+                        <CardContent className="flex items-center gap-3 p-4" style={{ color: 'var(--destructive)' }}>
                             <XCircle className="h-5 w-5 shrink-0" />
                             <span className="text-sm">{summaryError}</span>
                         </CardContent>
@@ -603,17 +611,17 @@ export default function AssessmentShow({
                             <div className="flex flex-wrap items-center gap-2">
                                 <Badge
                                     variant="outline"
-                                    className={`px-3 py-1 text-sm font-semibold ${STATUS_STYLES[aiSummary.overall_status] ?? STATUS_STYLES['At Risk']}`}
+                                    className={STATUS_STYLES[aiSummary.overall_status] ?? STATUS_STYLES['At Risk']}
                                 >
                                     {aiSummary.overall_status}
                                 </Badge>
                                 <Badge
                                     variant="outline"
-                                    className={`px-3 py-1 text-sm ${RATING_STYLES[aiSummary.compliance_rating] ?? RATING_STYLES['Fair']}`}
+                                    className={RATING_STYLES[aiSummary.compliance_rating] ?? RATING_STYLES['Fair']}
                                 >
                                     {aiSummary.compliance_rating} Compliance
                                 </Badge>
-                                <span className="flex items-center gap-1 text-xs font-medium text-secondary-foreground dark:text-secondary-foreground">
+                                <span className="flex items-center gap-1 text-xs font-medium" style={{ color: 'var(--primary)' }}>
                                     <Sparkles className="h-3.5 w-3.5" /> AI
                                     Generated
                                 </span>
@@ -627,7 +635,7 @@ export default function AssessmentShow({
                                 >
                                     {copied ? (
                                         <>
-                                            <CheckCheck className="h-3.5 w-3.5 text-emerald-400" />{' '}
+                                            <CheckCheck className="h-3.5 w-3.5" style={{ color: '#46bd5f' }} />{' '}
                                             Copied!
                                         </>
                                     ) : (
@@ -658,14 +666,14 @@ export default function AssessmentShow({
                         </div>
 
                         {/* Executive Summary */}
-                        <Card className="border-secondary/20 dark:border-secondary/20">
+                        <Card style={{ borderColor: 'color-mix(in srgb, var(--primary) 25%, transparent)' }}>
                             <CardHeader className="pb-3">
-                                <CardTitle className="text-base text-secondary-foreground dark:text-secondary-foreground">
+                                <CardTitle className="text-base" style={{ color: 'var(--primary)' }}>
                                     Executive Summary
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed whitespace-pre-line text-foreground/85">
+                                <div className="max-w-none whitespace-pre-line text-sm leading-relaxed" style={{ color: 'var(--foreground)', opacity: 0.85 }}>
                                     {aiSummary.executive_summary}
                                 </div>
                             </CardContent>
@@ -676,28 +684,29 @@ export default function AssessmentShow({
                             {/* Key Findings */}
                             <Card>
                                 <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-semibold text-red-400 dark:text-red-400">
-                                        🔴 Key Findings
+                                    <CardTitle className="text-sm" style={{ color: '#e5484d', fontWeight: 500 }}>
+                                        Key Findings
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3">
                                     {aiSummary.key_findings.map((f, i) => (
                                         <div
                                             key={i}
-                                            className="rounded-lg border border-border/50 bg-accent/30 p-3 dark:border-border"
+                                            className="rounded-2xl border p-3"
+                                            style={{ borderColor: 'var(--border)', background: 'color-mix(in srgb, var(--muted) 30%, transparent)' }}
                                         >
                                             <div className="mb-1 flex items-start justify-between gap-2">
-                                                <p className="text-sm leading-tight font-semibold text-foreground">
+                                                <p className="text-sm leading-tight" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                                     {f.finding}
                                                 </p>
                                                 <Badge
                                                     variant="outline"
-                                                    className={`shrink-0 px-1.5 py-0 text-xs ${SEVERITY_STYLES[f.severity] ?? SEVERITY_STYLES['Medium']}`}
+                                                    className={`shrink-0 ${SEVERITY_STYLES[f.severity] ?? SEVERITY_STYLES['Medium']}`}
                                                 >
                                                     {f.severity}
                                                 </Badge>
                                             </div>
-                                            <p className="text-xs text-muted-foreground">
+                                            <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                 {f.detail}
                                             </p>
                                         </div>
@@ -708,8 +717,8 @@ export default function AssessmentShow({
                             {/* Immediate Priorities */}
                             <Card>
                                 <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-semibold text-orange-400 dark:text-orange-400">
-                                        ⚡ Immediate Priorities
+                                    <CardTitle className="text-sm" style={{ color: '#f76b15', fontWeight: 500 }}>
+                                        Immediate Priorities
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-2">
@@ -717,12 +726,13 @@ export default function AssessmentShow({
                                         (p, i) => (
                                             <div
                                                 key={i}
-                                                className="flex gap-3 rounded-r-lg border-l-2 border-orange-400 bg-orange-50 p-2.5 dark:bg-orange-900/10"
+                                                className="flex gap-3 rounded-r-2xl border-l-2 p-2.5"
+                                                style={{ borderColor: '#f76b15', background: 'rgba(247,107,21,0.08)' }}
                                             >
-                                                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
+                                                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-semibold" style={{ background: 'rgba(247,107,21,0.18)', color: '#f76b15' }}>
                                                     {i + 1}
                                                 </span>
-                                                <p className="text-sm text-foreground/85">
+                                                <p className="text-sm" style={{ color: 'var(--foreground)' }}>
                                                     {p}
                                                 </p>
                                             </div>
@@ -734,8 +744,8 @@ export default function AssessmentShow({
                             {/* Positive Observations */}
                             <Card>
                                 <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-semibold text-emerald-400 dark:text-green-400">
-                                        ✅ Positive Observations
+                                    <CardTitle className="text-sm" style={{ color: '#46bd5f', fontWeight: 500 }}>
+                                        Positive Observations
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-2">
@@ -745,8 +755,8 @@ export default function AssessmentShow({
                                                 key={i}
                                                 className="flex items-start gap-2"
                                             >
-                                                <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
-                                                <p className="text-sm text-foreground/85">
+                                                <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: '#46bd5f' }} />
+                                                <p className="text-sm" style={{ color: 'var(--foreground)' }}>
                                                     {obs}
                                                 </p>
                                             </div>
@@ -768,12 +778,13 @@ export default function AssessmentShow({
                                     (step, i) => (
                                         <div
                                             key={i}
-                                            className="flex gap-4 rounded-r-lg border-l-4 border-secondary bg-secondary/10 p-3 dark:bg-secondary/10"
+                                            className="flex gap-4 rounded-r-2xl border-l-4 p-3"
+                                            style={{ borderColor: 'var(--primary)', background: 'color-mix(in srgb, var(--primary) 8%, transparent)' }}
                                         >
-                                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary/20 text-sm font-bold text-secondary-foreground dark:bg-secondary/40 dark:text-secondary-foreground">
+                                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm" style={{ background: 'color-mix(in srgb, var(--primary) 20%, transparent)', color: 'var(--primary)', fontWeight: 600 }}>
                                                 {i + 1}
                                             </span>
-                                            <p className="pt-1 text-sm text-foreground/85">
+                                            <p className="pt-1 text-sm" style={{ color: 'var(--foreground)' }}>
                                                 {step}
                                             </p>
                                         </div>
@@ -783,7 +794,7 @@ export default function AssessmentShow({
                         </Card>
 
                         {/* Disclaimer */}
-                        <p className="pb-2 text-center text-xs text-muted-foreground/60 italic">
+                        <p className="pb-2 text-center text-xs" style={{ color: 'var(--muted-foreground)' }}>
                             This summary was generated by AI based on assessment
                             data. Review findings with your compliance team
                             before acting.

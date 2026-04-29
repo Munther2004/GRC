@@ -9,8 +9,6 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
-import { StatStrip } from '@/components/ui/stat-strip';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
 

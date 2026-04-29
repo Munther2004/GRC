@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
   [
-    "inline-flex items-center justify-center rounded border px-2 py-0.5",
-    "font-display text-[10px] uppercase tracking-[0.12em] w-fit whitespace-nowrap shrink-0",
+    "inline-flex items-center justify-center rounded-full border px-2.5 py-0.5",
+    "font-medium text-[10px] uppercase tracking-[0.18em] w-fit whitespace-nowrap shrink-0",
     "[&>svg]:size-3 gap-1 [&>svg]:pointer-events-none",
     "transition-all duration-200",
   ].join(" "),
@@ -15,11 +15,11 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-primary/50 bg-primary/15 text-primary",
+          "border-[color-mix(in_srgb,var(--primary)_25%,transparent)] bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-primary",
         secondary:
-          "border-destructive/50 bg-destructive/15 text-primary",
+          "border-border bg-muted text-foreground",
         destructive:
-          "border-destructive/60 bg-destructive/20 text-foreground",
+          "border-[color-mix(in_srgb,var(--destructive)_30%,transparent)] bg-[color-mix(in_srgb,var(--destructive)_10%,transparent)] text-destructive",
         outline:
           "border-border bg-transparent text-muted-foreground",
       },

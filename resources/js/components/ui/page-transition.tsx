@@ -17,13 +17,13 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
             setIsTransitioning(false)
         }
 
-        // Inertia event listeners
-        router.on('start', handleStart)
-        router.on('finish', handleFinish)
+        // Inertia event listeners — router.on returns a cleanup callback in newer versions
+        const cleanupStart  = router.on('start', handleStart)
+        const cleanupFinish = router.on('finish', handleFinish)
 
         return () => {
-            router.off('start', handleStart)
-            router.off('finish', handleFinish)
+            cleanupStart()
+            cleanupFinish()
         }
     }, [])
 

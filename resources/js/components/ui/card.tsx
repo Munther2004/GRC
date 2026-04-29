@@ -2,16 +2,15 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Aged oak panel — the library card
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "relative bg-card text-card-foreground flex flex-col gap-5 rounded-lg border border-border py-5 elev-1",
-        "transition-all duration-300 ease-out lift-on-hover",
-        "hover:border-primary/40",
-        "ornate-frame",
+        "relative bg-card text-card-foreground flex flex-col gap-5 rounded-2xl border border-border py-5",
+        "shadow-[0_10px_30px_-16px_color-mix(in_srgb,var(--foreground)_18%,transparent)]",
+        "transition-all duration-200 ease-out",
+        "hover:-translate-y-px hover:shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--foreground)_24%,transparent)]",
         className
       )}
       {...props}

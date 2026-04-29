@@ -139,10 +139,10 @@ export default function RiskEdit({
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="font-heading text-4xl font-normal" style={{ color: 'var(--foreground)' }}>
+                        <h1 className="text-4xl tracking-[-0.02em]" style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}>
                             Edit Risk
                         </h1>
-                        <p className="max-w-md truncate text-sm text-muted-foreground">
+                        <p className="max-w-md truncate text-sm" style={{ color: 'var(--muted-foreground)' }}>
                             {risk.title}
                         </p>
                     </div>
@@ -166,7 +166,7 @@ export default function RiskEdit({
                                     ) => setData('title', e.target.value)}
                                 />
                                 {errors.title && (
-                                    <p className="font-body text-xs italic" style={{ color: "#8B2635" }}>
+                                    <p className="text-xs" style={{ color: 'var(--destructive)' }}>
                                         {errors.title}
                                     </p>
                                 )}
@@ -184,7 +184,7 @@ export default function RiskEdit({
                                     rows={4}
                                 />
                                 {errors.description && (
-                                    <p className="font-body text-xs italic" style={{ color: "#8B2635" }}>
+                                    <p className="text-xs" style={{ color: 'var(--destructive)' }}>
                                         {errors.description}
                                     </p>
                                 )}
@@ -262,7 +262,7 @@ export default function RiskEdit({
                                                 e.target.value,
                                             )
                                         }
-                                        className="w-full" style={{ accentColor: "#408A71" }}
+                                        className="w-full" style={{ accentColor: 'var(--primary)' }}
                                     />
                                     <div className="flex justify-between text-xs text-muted-foreground/70">
                                         <span>Rare</span>
@@ -282,7 +282,7 @@ export default function RiskEdit({
                                         onChange={(
                                             e: React.ChangeEvent<HTMLInputElement>,
                                         ) => setData('impact', e.target.value)}
-                                        className="w-full" style={{ accentColor: "#408A71" }}
+                                        className="w-full" style={{ accentColor: 'var(--primary)' }}
                                     />
                                     <div className="flex justify-between text-xs text-muted-foreground/70">
                                         <span>Negligible</span>
@@ -301,7 +301,7 @@ export default function RiskEdit({
                                     type="button"
                                     size="sm"
                                     variant="outline"
-                                    className="gap-1.5" style={{ borderColor: "rgba(64,138,113,0.4)", color: "#408A71" }}
+                                    className="gap-1.5"
                                     onClick={validateScores}
                                     disabled={loadingValidation || !canValidate}
                                 >
@@ -317,9 +317,9 @@ export default function RiskEdit({
                             </div>
 
                             {validationError && (
-                                <div className="flex items-start gap-2 rounded p-3" style={{ background: "rgba(139,38,53,0.1)", border: "1px solid rgba(139,38,53,0.3)" }}>
-                                    <XCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "#8B2635" }} />
-                                    <p className="font-body text-sm italic" style={{ color: "#8B2635" }}>
+                                <div className="flex items-start gap-2 rounded-2xl p-3" style={{ background: 'color-mix(in srgb, var(--destructive) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--destructive) 30%, transparent)' }}>
+                                    <XCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--destructive)' }} />
+                                    <p className="text-sm" style={{ color: 'var(--destructive)' }}>
                                         {validationError}
                                     </p>
                                 </div>
@@ -327,15 +327,15 @@ export default function RiskEdit({
 
                             {validationResult &&
                                 validationResult.error === true && (
-                                    <div className="rounded" style={{ background: "rgba(139,38,53,0.08)", border: "1px solid rgba(139,38,53,0.3)" }}>
-                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(139,38,53,0.15)" }}>
-                                            <XCircle className="h-4 w-4" style={{ color: "#8B2635" }} />
-                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#8B2635" }}>
+                                    <div className="rounded-2xl overflow-hidden" style={{ background: 'color-mix(in srgb, var(--destructive) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--destructive) 30%, transparent)' }}>
+                                        <div className="flex items-center gap-2 px-4 py-2" style={{ background: 'color-mix(in srgb, var(--destructive) 12%, transparent)' }}>
+                                            <XCircle className="h-4 w-4" style={{ color: 'var(--destructive)' }} />
+                                            <span className="text-[10px] uppercase" style={{ color: 'var(--destructive)', letterSpacing: '0.28em' }}>
                                                 Validation Unavailable
                                             </span>
                                         </div>
                                         <div className="px-4 py-3">
-                                            <p className="font-body text-sm italic" style={{ color: "#8B2635" }}>
+                                            <p className="text-sm" style={{ color: 'var(--destructive)' }}>
                                                 {validationResult.reasoning}
                                             </p>
                                         </div>
@@ -345,21 +345,21 @@ export default function RiskEdit({
                             {validationResult &&
                                 !validationResult.error &&
                                 validationResult.valid && (
-                                    <div className="rounded" style={{ background: "rgba(176,228,204,0.08)", border: "1px solid rgba(176,228,204,0.3)" }}>
-                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(176,228,204,0.15)" }}>
-                                            <CheckCircle2 className="h-4 w-4" style={{ color: "#B0E4CC" }} />
-                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#B0E4CC" }}>
+                                    <div className="rounded-2xl overflow-hidden" style={{ background: 'color-mix(in srgb, var(--primary) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--primary) 30%, transparent)' }}>
+                                        <div className="flex items-center gap-2 px-4 py-2" style={{ background: 'color-mix(in srgb, var(--primary) 12%, transparent)' }}>
+                                            <CheckCircle2 className="h-4 w-4" style={{ color: 'var(--primary)' }} />
+                                            <span className="text-[10px] uppercase" style={{ color: 'var(--primary)', letterSpacing: '0.28em' }}>
                                                 Scores Validated — Looks Good
                                             </span>
                                             <span
-                                                className="ml-auto font-display rounded px-1.5 py-0.5 text-[9px] uppercase tracking-widest" style={{ color: validationResult.confidence === 'high' ? '#B0E4CC' : validationResult.confidence === 'medium' ? '#408A71' : '#7ABFA8' }}
+                                                className="ml-auto rounded-full px-2 py-0.5 text-[9px] uppercase" style={{ color: 'var(--primary)', letterSpacing: '0.28em' }}
                                             >
                                                 {validationResult.confidence}{' '}
                                                 confidence
                                             </span>
                                         </div>
                                         <div className="px-4 py-3">
-                                            <p className="text-sm text-muted-foreground">
+                                            <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                                                 {validationResult.reasoning}
                                             </p>
                                         </div>
@@ -369,33 +369,33 @@ export default function RiskEdit({
                             {validationResult &&
                                 !validationResult.error &&
                                 !validationResult.valid && (
-                                    <div className="rounded" style={{ background: "rgba(40,90,72,0.08)", border: "1px solid rgba(40,90,72,0.3)" }}>
-                                        <div className="flex items-center gap-2 rounded-t px-4 py-2" style={{ background: "rgba(40,90,72,0.15)" }}>
-                                            <AlertTriangle className="h-4 w-4" style={{ color: "#285A48" }} />
-                                            <span className="font-display text-[10px] uppercase tracking-widest" style={{ color: "#285A48" }}>
+                                    <div className="rounded-2xl overflow-hidden" style={{ background: 'color-mix(in srgb, #f5b929 8%, transparent)', border: '1px solid color-mix(in srgb, #f5b929 30%, transparent)' }}>
+                                        <div className="flex items-center gap-2 px-4 py-2" style={{ background: 'color-mix(in srgb, #f5b929 14%, transparent)' }}>
+                                            <AlertTriangle className="h-4 w-4" style={{ color: '#f5b929' }} />
+                                            <span className="text-[10px] uppercase" style={{ color: '#f5b929', letterSpacing: '0.28em' }}>
                                                 Scores Adjusted —
                                                 Recommendations Available
                                             </span>
                                             <span
-                                                className="ml-auto font-display rounded px-1.5 py-0.5 text-[9px] uppercase tracking-widest" style={{ color: validationResult.confidence === 'high' ? '#B0E4CC' : validationResult.confidence === 'medium' ? '#408A71' : '#7ABFA8' }}
+                                                className="ml-auto rounded-full px-2 py-0.5 text-[9px] uppercase" style={{ color: '#f5b929', letterSpacing: '0.28em' }}
                                             >
                                                 {validationResult.confidence}{' '}
                                                 confidence
                                             </span>
                                         </div>
                                         <div className="space-y-3 px-4 py-3">
-                                            <p className="text-sm text-muted-foreground">
+                                            <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                                                 {validationResult.reasoning}
                                             </p>
                                             <div className="flex items-center justify-between gap-4 pt-1">
                                                 <div className="flex items-center gap-3 text-sm">
-                                                    <span className="text-muted-foreground">
+                                                    <span style={{ color: 'var(--muted-foreground)' }}>
                                                         Recommended:
                                                     </span>
                                                     <span className="font-medium">
                                                         Likelihood{' '}
                                                         <span
-                                                            className={`rounded px-1.5 py-0.5 text-xs font-bold ${levelColors[validationResult.recommended_likelihood]}`}
+                                                            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${levelColors[validationResult.recommended_likelihood]}`}
                                                         >
                                                             {
                                                                 validationResult.recommended_likelihood
@@ -405,7 +405,7 @@ export default function RiskEdit({
                                                     <span className="font-medium">
                                                         Impact{' '}
                                                         <span
-                                                            className={`rounded px-1.5 py-0.5 text-xs font-bold ${levelColors[validationResult.recommended_impact]}`}
+                                                            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${levelColors[validationResult.recommended_impact]}`}
                                                         >
                                                             {
                                                                 validationResult.recommended_impact
@@ -416,7 +416,7 @@ export default function RiskEdit({
                                                 <Button
                                                     type="button"
                                                     size="sm"
-                                                    className="shrink-0" style={{ background: "#408A71", color: "#091413" }}
+                                                    className="shrink-0"
                                                     onClick={
                                                         applyRecommendations
                                                     }
@@ -429,16 +429,16 @@ export default function RiskEdit({
                                 )}
 
                             <div
-                                className="flex items-center justify-between rounded border p-4" style={level.style}
+                                className="flex items-center justify-between rounded-2xl border p-4" style={level.style}
                             >
                                 <div className="flex items-center gap-2">
                                     <AlertTriangle className="h-5 w-5" />
-                                    <span className="font-semibold">
+                                    <span style={{ fontWeight: 500 }}>
                                         Risk Level: {level.label}
                                     </span>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-3xl font-bold">
+                                    <span className="text-3xl tabular-nums" style={{ fontWeight: 500 }}>
                                         {score}
                                     </span>
                                     <span className="ml-1 text-sm">/ 25</span>

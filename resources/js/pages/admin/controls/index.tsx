@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { PageHeader } from '@/components/ui/page-header';
 import {
     Select,
     SelectContent,
@@ -13,7 +12,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { StatStrip } from '@/components/ui/stat-strip';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
 

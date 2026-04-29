@@ -10,13 +10,6 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
@@ -63,10 +56,10 @@ export default function AssessmentCreate({ frameworks }: Props) {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="font-heading text-4xl font-normal text-foreground">
+                        <h1 className="text-4xl tracking-[-0.02em]" style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}>
                             New Assessment
                         </h1>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                             Create a compliance self-assessment
                         </p>
                     </div>
@@ -96,21 +89,24 @@ export default function AssessmentCreate({ frameworks }: Props) {
                                                 String(f.id),
                                             )
                                         }
-                                        className={`rounded-lg border-2 p-4 text-left transition-all ${ data.framework_id === String(f.id) ? 'border-primary bg-primary/10 dark:bg-primary/10' : 'border-border hover:border-border dark:border-border' }`}
+                                        className="rounded-2xl border-2 p-4 text-left transition-all"
+                                        style={data.framework_id === String(f.id) ? { borderColor: 'var(--primary)', background: 'color-mix(in srgb, var(--primary) 10%, transparent)' } : { borderColor: 'var(--border)' }}
                                     >
                                         <div className="flex items-center gap-3">
                                             <div
-                                                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${ data.framework_id === String(f.id) ? 'bg-primary' : 'bg-muted/50' }`}
+                                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                                                style={data.framework_id === String(f.id) ? { background: 'var(--primary)' } : { background: 'color-mix(in srgb, var(--muted) 60%, transparent)' }}
                                             >
                                                 <Shield
-                                                    className={`h-5 w-5 ${data.framework_id === String(f.id) ? 'text-white' : 'text-muted-foreground'}`}
+                                                    className="h-5 w-5"
+                                                    style={data.framework_id === String(f.id) ? { color: 'var(--primary-foreground)' } : { color: 'var(--muted-foreground)' }}
                                                 />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-semibold">
+                                                <p className="text-sm" style={{ fontWeight: 500 }}>
                                                     {f.short_name}
                                                 </p>
-                                                <p className="text-xs text-muted-foreground">
+                                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                     {f.name}
                                                 </p>
                                             </div>
@@ -119,13 +115,13 @@ export default function AssessmentCreate({ frameworks }: Props) {
                                 ))}
                             </div>
                             {errors.framework_id && (
-                                <p className="text-xs text-red-500">
+                                <p className="text-xs" style={{ color: 'var(--destructive)' }}>
                                     {errors.framework_id}
                                 </p>
                             )}
 
                             {selectedFramework && (
-                                <div className="rounded-lg bg-primary/10 p-3 text-sm text-primary dark:bg-primary/10 dark:text-primary">
+                                <div className="rounded-2xl p-3 text-sm" style={{ background: 'color-mix(in srgb, var(--primary) 10%, transparent)', color: 'var(--primary)' }}>
                                     {selectedFramework.description}
                                 </div>
                             )}
@@ -153,7 +149,7 @@ export default function AssessmentCreate({ frameworks }: Props) {
                                     placeholder="e.g. ISO 27001 Annual Audit Q1 2026"
                                 />
                                 {errors.title && (
-                                    <p className="text-xs text-red-500">
+                                    <p className="text-xs" style={{ color: 'var(--destructive)' }}>
                                         {errors.title}
                                     </p>
                                 )}
@@ -201,7 +197,7 @@ export default function AssessmentCreate({ frameworks }: Props) {
                                     placeholder="Describe the scope of this assessment, e.g. departments, systems, or processes covered..."
                                 />
                                 {errors.scope && (
-                                    <p className="text-xs text-red-500">
+                                    <p className="text-xs" style={{ color: 'var(--destructive)' }}>
                                         {errors.scope}
                                     </p>
                                 )}

@@ -25,4 +25,5 @@ export interface SharedProps {
     auth: Auth;
     flash: FlashProps;
     notifications: NotificationsProps;
+    [key: string]: unknown;
 }

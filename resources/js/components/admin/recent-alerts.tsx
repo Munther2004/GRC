@@ -29,15 +29,15 @@ export function RecentAlerts({ activity = [] }: Props) {
     return (
         <Card className="h-full">
             <CardHeader className="flex-row items-start justify-between gap-4 pb-3">
-                <CardTitle className="font-heading text-lg font-normal">
-                    Recent Activity
+                <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
+                    Recent activity
                 </CardTitle>
                 <Link
                     href="/audit-logs"
-                    className="font-display inline-flex items-center gap-1 text-[10px] uppercase tracking-widest transition-colors"
-                    style={{ color: 'var(--muted-foreground)' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--primary)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
+                    className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-[11px] uppercase transition-colors"
+                    style={{ color: 'var(--muted-foreground)', letterSpacing: '0.18em' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--foreground)'; e.currentTarget.style.color = 'var(--foreground)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted-foreground)'; }}
                 >
                     View all <ArrowUpRight className="h-3 w-3" />
                 </Link>
@@ -45,8 +45,8 @@ export function RecentAlerts({ activity = [] }: Props) {
             <CardContent className="p-0">
                 {activity.length === 0 ? (
                     <div className="px-5 py-10 text-center">
-                        <Info className="mx-auto mb-2 h-5 w-5 text-muted-foreground opacity-50" />
-                        <p className="font-body text-sm italic text-muted-foreground">
+                        <Info className="mx-auto mb-2 h-5 w-5" style={{ color: 'var(--muted-foreground)', opacity: 0.5 }} />
+                        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                             No recent activity
                         </p>
                     </div>
@@ -65,13 +65,13 @@ export function RecentAlerts({ activity = [] }: Props) {
                                         style={{ background: sevColor[sev] }}
                                     />
                                     <div className="min-w-0 flex-1 space-y-0.5">
-                                        <p className="font-body truncate text-sm text-foreground">
+                                        <p className="truncate text-sm" style={{ color: 'var(--foreground)' }}>
                                             {log.description}
                                         </p>
-                                        <p className="font-body text-[11px] italic text-muted-foreground">
-                                            <span className="text-foreground opacity-60">{log.user_name}</span>
+                                        <p className="text-[11px]" style={{ color: 'var(--muted-foreground)' }}>
+                                            <span style={{ color: 'var(--foreground)', opacity: 0.7 }}>{log.user_name}</span>
                                             <span className="mx-1.5 opacity-40">·</span>
-                                            <span className="font-display not-italic text-[10px]">{log.created_at}</span>
+                                            <span>{log.created_at}</span>
                                         </p>
                                     </div>
                                 </div>

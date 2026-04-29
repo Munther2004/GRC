@@ -1,0 +1,387 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e8]
+        - generic [ref=e10]: GRC · Charter
+      - navigation [ref=e11]:
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - link "Dashboard" [ref=e14] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e15]
+              - generic [ref=e20]: Dashboard
+          - listitem [ref=e21]:
+            - link "AI Assistant" [ref=e22] [cursor=pointer]:
+              - /url: /chatbot
+              - img [ref=e23]
+              - generic [ref=e25]: AI Assistant
+          - listitem [ref=e26]:
+            - link "Risk Register" [ref=e27] [cursor=pointer]:
+              - /url: /risks
+              - img [ref=e28]
+              - generic [ref=e30]: Risk Register
+          - listitem [ref=e31]:
+            - link "Assessments" [ref=e32] [cursor=pointer]:
+              - /url: /assessments
+              - img [ref=e33]
+              - generic [ref=e36]: Assessments
+          - listitem [ref=e37]:
+            - link "Evidence" [ref=e38] [cursor=pointer]:
+              - /url: /evidence
+              - img [ref=e39]
+              - generic [ref=e41]: Evidence
+          - listitem [ref=e42]:
+            - link "Gap Analysis" [ref=e43] [cursor=pointer]:
+              - /url: /gap-analysis
+              - img [ref=e44]
+              - generic [ref=e48]: Gap Analysis
+          - listitem [ref=e49]:
+            - link "Security Audit" [ref=e50] [cursor=pointer]:
+              - /url: /security-audits
+              - img [ref=e51]
+              - generic [ref=e53]: Security Audit
+          - listitem [ref=e54]:
+            - link "Crosswalk" [ref=e55] [cursor=pointer]:
+              - /url: /crosswalk
+              - img [ref=e56]
+              - generic [ref=e61]: Crosswalk
+          - listitem [ref=e62]:
+            - link "Controls Hub" [ref=e63] [cursor=pointer]:
+              - /url: /controls/hub
+              - img [ref=e64]
+              - generic [ref=e69]: Controls Hub
+          - listitem [ref=e70]:
+            - link "Remediation" [ref=e71] [cursor=pointer]:
+              - /url: /remediation-tasks
+              - img [ref=e72]
+              - generic [ref=e75]: Remediation
+          - listitem [ref=e76]:
+            - link "Reports" [ref=e77] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e78]
+              - generic [ref=e80]: Reports
+        - generic [ref=e81]:
+          - paragraph [ref=e82]: Review
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - link "Approvals" [ref=e85] [cursor=pointer]:
+                - /url: /controls/approvals
+                - img [ref=e86]
+                - generic [ref=e89]: Approvals
+            - listitem [ref=e90]:
+              - link "Audit Logs" [ref=e91] [cursor=pointer]:
+                - /url: /audit-logs
+                - img [ref=e92]
+                - generic [ref=e95]: Audit Logs
+            - listitem [ref=e96]:
+              - link "Notifications" [ref=e97] [cursor=pointer]:
+                - /url: /notifications
+                - img [ref=e98]
+                - generic [ref=e101]: Notifications
+        - generic [ref=e102]:
+          - paragraph [ref=e103]: Administration
+          - list [ref=e104]:
+            - listitem [ref=e105]:
+              - link "Users" [ref=e106] [cursor=pointer]:
+                - /url: /admin/users
+                - img [ref=e107]
+                - generic [ref=e112]: Users
+            - listitem [ref=e113]:
+              - link "Risk Appetite" [ref=e114] [cursor=pointer]:
+                - /url: /risk-appetite
+                - img [ref=e115]
+                - generic [ref=e116]: Risk Appetite
+        - generic [ref=e117]:
+          - paragraph [ref=e118]: Platform
+          - list [ref=e119]:
+            - listitem [ref=e120]:
+              - link "Corporations" [ref=e121] [cursor=pointer]:
+                - /url: /admin/corporations
+                - img [ref=e122]
+                - generic [ref=e126]: Corporations
+            - listitem [ref=e127]:
+              - link "Frameworks" [ref=e128] [cursor=pointer]:
+                - /url: /admin/frameworks
+                - img [ref=e129]
+                - generic [ref=e131]: Frameworks
+            - listitem [ref=e132]:
+              - link "Controls Library" [ref=e133] [cursor=pointer]:
+                - /url: /admin/controls
+                - img [ref=e134]
+                - generic [ref=e137]: Controls Library
+      - generic [ref=e139]:
+        - generic [ref=e141]: SA
+        - generic [ref=e142]:
+          - paragraph [ref=e143]: System Admin
+          - paragraph [ref=e144]: admin@grc.com
+        - button "Log out" [ref=e145] [cursor=pointer]:
+          - img [ref=e146]
+  - generic [ref=e149]:
+    - banner [ref=e150]:
+      - generic [ref=e152]:
+        - img [ref=e153]
+        - searchbox "Search…" [ref=e156]
+      - generic [ref=e157]: Super Admin
+      - button "Switch to dark mode" [ref=e158] [cursor=pointer]:
+        - img [ref=e161]
+      - button "Notifications" [ref=e168] [cursor=pointer]:
+        - img [ref=e169]
+    - main [ref=e172]:
+      - generic [ref=e173]:
+        - generic [ref=e175]:
+          - generic [ref=e176]:
+            - heading "Notifications" [level=1] [ref=e177]
+            - paragraph [ref=e178]: 175 total · 5 unread
+          - generic [ref=e180]:
+            - button "Mark all read" [ref=e181] [cursor=pointer]
+            - button "Clear all" [ref=e182] [cursor=pointer]:
+              - img
+              - text: Clear all
+        - generic [ref=e184]:
+          - button "All" [ref=e185] [cursor=pointer]
+          - button "Unread" [ref=e186] [cursor=pointer]
+          - button "Critical risk" [ref=e187] [cursor=pointer]
+          - button "Overdue risk" [ref=e188] [cursor=pointer]
+          - button "Overdue assessment" [ref=e189] [cursor=pointer]
+          - button "Pending evidence" [ref=e190] [cursor=pointer]
+        - generic [ref=e191]:
+          - generic [ref=e192]:
+            - img [ref=e194]
+            - generic [ref=e197]:
+              - paragraph [ref=e198]: Security Audit Found Critical Issues
+              - paragraph [ref=e199]: Analysis of test-user-accounts.csv found 8 findings (2 critical, 2 high)
+              - paragraph [ref=e200]: 16h ago
+            - generic [ref=e201]:
+              - button "Go to resource" [ref=e202] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e203] [cursor=pointer]:
+                - img
+          - generic [ref=e204]:
+            - img [ref=e206]
+            - generic [ref=e209]:
+              - paragraph [ref=e210]: Security Audit Failed
+              - paragraph [ref=e211]: "Analysis of test-password-policy.txt could not be completed: API request failed"
+              - paragraph [ref=e212]: 7d ago
+            - generic [ref=e213]:
+              - button "Go to resource" [ref=e214] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e215] [cursor=pointer]:
+                - img
+          - generic [ref=e216]:
+            - img [ref=e218]
+            - generic [ref=e221]:
+              - paragraph [ref=e222]: Security Audit Found Critical Issues
+              - paragraph [ref=e223]: Analysis of test-user-accounts.csv found 7 findings (2 critical, 2 high)
+              - paragraph [ref=e224]: 7d ago
+            - generic [ref=e225]:
+              - button "Go to resource" [ref=e226] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e227] [cursor=pointer]:
+                - img
+          - generic [ref=e228]:
+            - img [ref=e230]
+            - generic [ref=e233]:
+              - paragraph [ref=e234]: Risks Generated from Security Audit
+              - paragraph [ref=e235]: 9 risks created from test-server-config.txt findings
+              - paragraph [ref=e236]: 7d ago
+            - generic [ref=e237]:
+              - button "Go to resource" [ref=e238] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e239] [cursor=pointer]:
+                - img
+          - generic [ref=e240]:
+            - img [ref=e242]
+            - generic [ref=e245]:
+              - paragraph [ref=e246]: Security Audit Found Critical Issues
+              - paragraph [ref=e247]: Analysis of test-server-config.txt found 10 findings (2 critical, 4 high)
+              - paragraph [ref=e248]: 7d ago
+            - generic [ref=e249]:
+              - button "Go to resource" [ref=e250] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e251] [cursor=pointer]:
+                - img
+          - generic [ref=e252]:
+            - img [ref=e254]
+            - generic [ref=e257]:
+              - paragraph [ref=e258]: Security Audit Failed
+              - paragraph [ref=e259]: "Analysis of test-password-policy.txt could not be completed: Call to undefined method App\\Services\\AIService::analyzeSecurityConfig()"
+              - paragraph [ref=e260]: 7d ago
+            - generic [ref=e261]:
+              - button "Go to resource" [ref=e262] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e263] [cursor=pointer]:
+                - img
+          - generic [ref=e264]:
+            - img [ref=e266]
+            - generic [ref=e269]:
+              - paragraph [ref=e270]: Security Audit Failed
+              - paragraph [ref=e271]: "Analysis of test-user-accounts.csv could not be completed: Call to undefined method App\\Services\\AIService::analyzeSecurityConfig()"
+              - paragraph [ref=e272]: 7d ago
+            - generic [ref=e273]:
+              - button "Go to resource" [ref=e274] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e275] [cursor=pointer]:
+                - img
+          - generic [ref=e276]:
+            - img [ref=e278]
+            - generic [ref=e281]:
+              - paragraph [ref=e282]: Security Audit Failed
+              - paragraph [ref=e283]: "Analysis of test-user-accounts.csv could not be completed: Call to undefined method App\\Services\\AIService::analyzeSecurityConfig()"
+              - paragraph [ref=e284]: 7d ago
+            - generic [ref=e285]:
+              - button "Go to resource" [ref=e286] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e287] [cursor=pointer]:
+                - img
+          - generic [ref=e288]:
+            - img [ref=e290]
+            - generic [ref=e293]:
+              - paragraph [ref=e294]: Security Audit Failed
+              - paragraph [ref=e295]: "Analysis of test-user-accounts.csv could not be completed: Call to undefined method App\\Services\\AIService::analyzeSecurityConfig()"
+              - paragraph [ref=e296]: 7d ago
+            - generic [ref=e297]:
+              - button "Go to resource" [ref=e298] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e299] [cursor=pointer]:
+                - img
+          - generic [ref=e300]:
+            - img [ref=e302]
+            - generic [ref=e305]:
+              - paragraph [ref=e306]: Security Audit Failed
+              - paragraph [ref=e307]: "Analysis of test-user-accounts.csv could not be completed: Call to undefined method App\\Services\\AIService::analyzeSecurityConfig()"
+              - paragraph [ref=e308]: 7d ago
+            - generic [ref=e309]:
+              - button "Go to resource" [ref=e310] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e311] [cursor=pointer]:
+                - img
+          - generic [ref=e312]:
+            - img [ref=e314]
+            - generic [ref=e317]:
+              - paragraph [ref=e318]: Security Audit Failed
+              - paragraph [ref=e319]: "Analysis of test-server-config.txt could not be completed: Call to undefined method App\\Services\\AIService::analyzeSecurityConfig()"
+              - paragraph [ref=e320]: 7d ago
+            - generic [ref=e321]:
+              - button "Go to resource" [ref=e322] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e323] [cursor=pointer]:
+                - img
+          - generic [ref=e324]:
+            - img [ref=e326]
+            - generic [ref=e329]:
+              - paragraph [ref=e330]: Security Audit Failed
+              - paragraph [ref=e331]: "Analysis of test-password-policy.txt could not be completed: Call to undefined method App\\Services\\AIService::analyzeSecurityConfig()"
+              - paragraph [ref=e332]: 7d ago
+            - generic [ref=e333]:
+              - button "Go to resource" [ref=e334] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e335] [cursor=pointer]:
+                - img
+          - generic [ref=e336]:
+            - img [ref=e338]
+            - generic [ref=e341]:
+              - paragraph [ref=e342]: Security Audit Failed
+              - paragraph [ref=e343]: "Analysis of test-user-accounts.csv could not be completed: Call to undefined method App\\Services\\AIService::analyzeSecurityConfig()"
+              - paragraph [ref=e344]: 7d ago
+            - generic [ref=e345]:
+              - button "Go to resource" [ref=e346] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e347] [cursor=pointer]:
+                - img
+          - generic [ref=e348]:
+            - img [ref=e350]
+            - generic [ref=e353]:
+              - paragraph [ref=e354]: Security Audit Failed
+              - paragraph [ref=e355]: "Analysis of test-user-accounts.csv could not be completed: Call to undefined method App\\Services\\AIService::analyzeSecurityConfig()"
+              - paragraph [ref=e356]: 7d ago
+            - generic [ref=e357]:
+              - button "Go to resource" [ref=e358] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e359] [cursor=pointer]:
+                - img
+          - generic [ref=e360]:
+            - img [ref=e362]
+            - generic [ref=e364]:
+              - paragraph [ref=e365]: AI Generated New Risk
+              - paragraph [ref=e366]: "AI generated new risk: Inadequate Coordination of Audit Testing May Disrupt Operations from Partially Compliant control A.8.34"
+              - paragraph [ref=e367]: 7d ago
+            - generic [ref=e368]:
+              - button "Go to resource" [ref=e369] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e370] [cursor=pointer]:
+                - img
+          - generic [ref=e371]:
+            - img [ref=e373]
+            - generic [ref=e375]:
+              - paragraph [ref=e376]: AI Generated New Risk
+              - paragraph [ref=e377]: "AI generated new risk: Inconsistent Change Management Controls Create System Instability Risk from Partially Compliant control A.8.32"
+              - paragraph [ref=e378]: 7d ago
+            - generic [ref=e379]:
+              - button "Go to resource" [ref=e380] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e381] [cursor=pointer]:
+                - img
+          - generic [ref=e382]:
+            - img [ref=e384]
+            - generic [ref=e386]:
+              - paragraph [ref=e387]: AI Generated New Risk
+              - paragraph [ref=e388]: "AI generated new risk: Inadequate Oversight of Outsourced System Development Activities from Partially Compliant control A.8.30"
+              - paragraph [ref=e389]: 7d ago
+            - generic [ref=e390]:
+              - button "Go to resource" [ref=e391] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e392] [cursor=pointer]:
+                - img
+          - generic [ref=e393]:
+            - img [ref=e395]
+            - generic [ref=e397]:
+              - paragraph [ref=e398]: AI Generated New Risk
+              - paragraph [ref=e399]: "AI generated new risk: Absence of Secure Coding Practices Exposes Software to Vulnerabilities from Non-Compliant control A.8.28"
+              - paragraph [ref=e400]: 7d ago
+            - generic [ref=e401]:
+              - button "Go to resource" [ref=e402] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e403] [cursor=pointer]:
+                - img
+          - generic [ref=e404]:
+            - img [ref=e406]
+            - generic [ref=e408]:
+              - paragraph [ref=e409]: AI Generated New Risk
+              - paragraph [ref=e410]: "AI generated new risk: Unrestricted Web Access Enables Malware and Data Exfiltration from Non-Compliant control A.8.23"
+              - paragraph [ref=e411]: 7d ago
+            - generic [ref=e412]:
+              - button "Go to resource" [ref=e413] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e414] [cursor=pointer]:
+                - img
+          - generic [ref=e415]:
+            - img [ref=e417]
+            - generic [ref=e419]:
+              - paragraph [ref=e420]: AI Generated New Risk
+              - paragraph [ref=e421]: "AI generated new risk: Unsecured Network Infrastructure Exposes Critical Information Assets from Non-Compliant control A.8.20"
+              - paragraph [ref=e422]: 7d ago
+            - generic [ref=e423]:
+              - button "Go to resource" [ref=e424] [cursor=pointer]:
+                - img
+              - button "Delete notification" [ref=e425] [cursor=pointer]:
+                - img
+        - generic [ref=e426]:
+          - link "1" [ref=e427] [cursor=pointer]:
+            - /url: /notifications?page=1
+          - link "2" [ref=e428] [cursor=pointer]:
+            - /url: /notifications?page=2
+          - link "3" [ref=e429] [cursor=pointer]:
+            - /url: /notifications?page=3
+          - link "4" [ref=e430] [cursor=pointer]:
+            - /url: /notifications?page=4
+          - link "5" [ref=e431] [cursor=pointer]:
+            - /url: /notifications?page=5
+          - link "6" [ref=e432] [cursor=pointer]:
+            - /url: /notifications?page=6
+          - link "7" [ref=e433] [cursor=pointer]:
+            - /url: /notifications?page=7
+          - link "8" [ref=e434] [cursor=pointer]:
+            - /url: /notifications?page=8
+          - link "9" [ref=e435] [cursor=pointer]:
+            - /url: /notifications?page=9

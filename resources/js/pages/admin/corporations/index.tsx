@@ -1,6 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
 import {
-    Plus,
     Search,
     Building2,
     Eye,

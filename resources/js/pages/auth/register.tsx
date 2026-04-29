@@ -117,7 +117,7 @@ export default function Register() {
                             )}
                         </div>
 
-                        <div className="font-body text-center text-sm italic" style={{ color: '#7ABFA8' }}>
+                        <div className="text-center text-sm" style={{ color: 'var(--muted-foreground)' }}>
                             Already have an account?{' '}
                             <TextLink href={login()} tabIndex={6}>
                                 Log in

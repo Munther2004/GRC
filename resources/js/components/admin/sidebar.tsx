@@ -81,11 +81,9 @@ export function AdminSidebar() {
     const role      = auth.user.role
     const isSuper   = role === 'super_admin'
     const isAdmin   = role === 'admin'
-    const isAuditor = role === 'auditor'
     const showAdminSection = isSuper || isAdmin
     const showPlatformSection = isSuper
     const initials  = auth.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
-    const roleName  = isSuper ? 'Super Admin' : isAdmin ? 'Admin' : isAuditor ? 'Auditor' : 'Member'
 
     const getBadge = (key?: string): number | undefined => {
         if (!key) return undefined
@@ -108,26 +106,16 @@ export function AdminSidebar() {
                     style={{ borderBottom: '1px solid var(--sidebar-border)' }}
                 >
                     <div
-                        className="flex items-center justify-center w-7 h-7 rounded-sm"
-                        style={{ border: '1px solid color-mix(in srgb, var(--sidebar-primary) 60%, transparent)', background: 'color-mix(in srgb, var(--sidebar-primary) 10%, transparent)' }}
+                        className="flex items-center justify-center w-8 h-8 rounded-lg"
+                        style={{ background: 'var(--sidebar-foreground)', color: 'var(--sidebar)' }}
                     >
-                        <Shield className="w-3.5 h-3.5" style={{ color: 'var(--sidebar-primary)' }} strokeWidth={1.5} />
+                        <Shield className="w-3.5 h-3.5" strokeWidth={1.8} />
                     </div>
-                    <span className="font-display text-xs uppercase tracking-[0.25em]" style={{ color: 'var(--sidebar-foreground)' }}>
-                        GRC
-                    </span>
-                    <span
-                        className="ml-auto font-display text-[9px] uppercase tracking-[0.2em] px-1.5 py-0.5 rounded-sm"
-                        style={{ color: 'var(--muted-foreground)', border: '1px solid var(--sidebar-border)' }}
-                    >
-                        {roleName}
+                    <span className="text-[12px] uppercase" style={{ color: 'var(--sidebar-foreground)', letterSpacing: '0.28em', fontWeight: 600 }}>
+                        GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Charter</span>
                     </span>
                 </div>
 
-                {/* Ornate divider */}
-                <div style={{ position: 'relative', height: '1px', margin: '0 16px', background: 'linear-gradient(90deg, transparent, var(--sidebar-border) 30%, var(--sidebar-primary) 50%, var(--sidebar-border) 70%, transparent)' }}>
-                    <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', color: 'var(--sidebar-primary)', fontSize: '8px', background: 'var(--sidebar)', padding: '0 8px' }}>✶</span>
-                </div>
 
                 <nav className="flex flex-1 flex-col gap-5 px-3 py-4">
                     {/* Main */}
@@ -184,19 +172,18 @@ export function AdminSidebar() {
 
                 {/* ── User footer ───────────────────────────────────────── */}
                 <div style={{ borderTop: '1px solid var(--sidebar-border)', padding: '12px' }}>
-                    <div className="flex items-center gap-2.5 rounded px-2 py-1.5">
-                        {/* Initials medallion */}
+                    <div className="flex items-center gap-3 rounded-2xl px-3 py-2.5" style={{ background: 'color-mix(in srgb, var(--sidebar-primary) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--sidebar-primary) 14%, transparent)' }}>
                         <div
                             className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                            style={{ background: 'color-mix(in srgb, var(--sidebar-primary) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--sidebar-primary) 50%, transparent)' }}
+                            style={{ background: 'var(--sidebar-primary)', color: 'var(--sidebar-primary-foreground)' }}
                         >
-                            <span className="font-display text-[10px]" style={{ color: 'var(--sidebar-primary)' }}>{initials}</span>
+                            <span className="text-[10px]" style={{ fontWeight: 600 }}>{initials}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold truncate leading-tight" style={{ color: 'var(--sidebar-foreground)' }}>
+                            <p className="text-sm truncate leading-tight" style={{ color: 'var(--sidebar-foreground)', fontWeight: 500 }}>
                                 {auth.user.name}
                             </p>
-                            <p className="text-xs truncate leading-tight" style={{ color: 'var(--muted-foreground)' }}>
+                            <p className="text-[11px] truncate leading-tight mt-0.5" style={{ color: 'var(--muted-foreground)' }}>
                                 {auth.user.email}
                             </p>
                         </div>
@@ -205,7 +192,7 @@ export function AdminSidebar() {
                             method="post"
                             as="button"
                             title="Log out"
-                            className="transition-colors duration-200"
+                            className="transition-colors duration-200 p-1 rounded-full"
                             style={{ color: 'var(--muted-foreground)' }}
                             onMouseEnter={e => (e.currentTarget.style.color = 'var(--sidebar-primary)')}
                             onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
@@ -221,7 +208,7 @@ export function AdminSidebar() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
-        <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.1em]" style={{ color: 'var(--muted-foreground)' }}>
+        <p className="px-3 pb-2 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
             {children}
         </p>
     )
@@ -244,22 +231,22 @@ function NavItem({
             <Link
                 href={item.href}
                 className={cn(
-                    "group flex items-center gap-2.5 rounded px-3 py-2 transition-all duration-200",
-                    "text-sm font-medium",
+                    "group flex items-center gap-3 rounded-full px-3 py-2 transition-all duration-200",
+                    "text-sm",
                 )}
                 style={isActive
-                    ? { color: 'var(--sidebar-primary)', background: 'color-mix(in srgb, var(--sidebar-primary) 10%, transparent)', borderLeft: '2px solid var(--sidebar-primary)', paddingLeft: '10px' }
-                    : { color: 'var(--muted-foreground)', background: 'transparent', borderLeft: '2px solid transparent', paddingLeft: '10px' }
+                    ? { color: 'var(--sidebar-primary)', background: 'color-mix(in srgb, var(--sidebar-primary) 10%, transparent)', fontWeight: 500 }
+                    : { color: 'var(--muted-foreground)', background: 'transparent', fontWeight: 400 }
                 }
-                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.color = 'var(--sidebar-foreground)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--sidebar-primary) 8%, transparent)' } }}
+                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.color = 'var(--sidebar-foreground)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--sidebar-primary) 6%, transparent)' } }}
                 onMouseLeave={e => { if (!isActive) { e.currentTarget.style.color = 'var(--muted-foreground)'; e.currentTarget.style.background = 'transparent' } }}
             >
-                <item.icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+                <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
                 <span className="flex-1 truncate">{item.name}</span>
                 {badge !== undefined && badge > 0 && (
                     <span
-                        className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full tabular-nums"
-                        style={{ background: 'color-mix(in srgb, var(--destructive) 25%, transparent)', color: 'var(--sidebar-primary)', border: '1px solid color-mix(in srgb, var(--destructive) 40%, transparent)' }}
+                        className="text-[10px] px-2 py-0.5 rounded-full tabular-nums"
+                        style={{ background: 'color-mix(in srgb, var(--destructive) 14%, transparent)', color: 'var(--destructive)', fontWeight: 500 }}
                     >
                         {badge > 99 ? '99+' : badge}
                     </span>

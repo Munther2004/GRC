@@ -1,0 +1,427 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e8]
+        - generic [ref=e10]: GRC · Charter
+      - navigation [ref=e11]:
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - link "Dashboard" [ref=e14] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e15]
+              - generic [ref=e20]: Dashboard
+          - listitem [ref=e21]:
+            - link "AI Assistant" [ref=e22] [cursor=pointer]:
+              - /url: /chatbot
+              - img [ref=e23]
+              - generic [ref=e25]: AI Assistant
+          - listitem [ref=e26]:
+            - link "Risk Register" [ref=e27] [cursor=pointer]:
+              - /url: /risks
+              - img [ref=e28]
+              - generic [ref=e30]: Risk Register
+          - listitem [ref=e31]:
+            - link "Assessments" [ref=e32] [cursor=pointer]:
+              - /url: /assessments
+              - img [ref=e33]
+              - generic [ref=e36]: Assessments
+          - listitem [ref=e37]:
+            - link "Evidence" [ref=e38] [cursor=pointer]:
+              - /url: /evidence
+              - img [ref=e39]
+              - generic [ref=e41]: Evidence
+          - listitem [ref=e42]:
+            - link "Gap Analysis" [ref=e43] [cursor=pointer]:
+              - /url: /gap-analysis
+              - img [ref=e44]
+              - generic [ref=e48]: Gap Analysis
+          - listitem [ref=e49]:
+            - link "Security Audit" [ref=e50] [cursor=pointer]:
+              - /url: /security-audits
+              - img [ref=e51]
+              - generic [ref=e53]: Security Audit
+          - listitem [ref=e54]:
+            - link "Crosswalk" [ref=e55] [cursor=pointer]:
+              - /url: /crosswalk
+              - img [ref=e56]
+              - generic [ref=e61]: Crosswalk
+          - listitem [ref=e62]:
+            - link "Controls Hub" [ref=e63] [cursor=pointer]:
+              - /url: /controls/hub
+              - img [ref=e64]
+              - generic [ref=e69]: Controls Hub
+          - listitem [ref=e70]:
+            - link "Remediation" [ref=e71] [cursor=pointer]:
+              - /url: /remediation-tasks
+              - img [ref=e72]
+              - generic [ref=e75]: Remediation
+          - listitem [ref=e76]:
+            - link "Reports" [ref=e77] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e78]
+              - generic [ref=e80]: Reports
+        - generic [ref=e81]:
+          - paragraph [ref=e82]: Review
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - link "Approvals 1" [ref=e85] [cursor=pointer]:
+                - /url: /controls/approvals
+                - img [ref=e86]
+                - generic [ref=e89]: Approvals
+                - generic [ref=e90]: "1"
+            - listitem [ref=e91]:
+              - link "Audit Logs" [ref=e92] [cursor=pointer]:
+                - /url: /audit-logs
+                - img [ref=e93]
+                - generic [ref=e96]: Audit Logs
+            - listitem [ref=e97]:
+              - link "Notifications 5" [ref=e98] [cursor=pointer]:
+                - /url: /notifications
+                - img [ref=e99]
+                - generic [ref=e102]: Notifications
+                - generic [ref=e103]: "5"
+        - generic [ref=e104]:
+          - paragraph [ref=e105]: Administration
+          - list [ref=e106]:
+            - listitem [ref=e107]:
+              - link "Users" [ref=e108] [cursor=pointer]:
+                - /url: /admin/users
+                - img [ref=e109]
+                - generic [ref=e114]: Users
+            - listitem [ref=e115]:
+              - link "Risk Appetite" [ref=e116] [cursor=pointer]:
+                - /url: /risk-appetite
+                - img [ref=e117]
+                - generic [ref=e118]: Risk Appetite
+        - generic [ref=e119]:
+          - paragraph [ref=e120]: Platform
+          - list [ref=e121]:
+            - listitem [ref=e122]:
+              - link "Corporations" [ref=e123] [cursor=pointer]:
+                - /url: /admin/corporations
+                - img [ref=e124]
+                - generic [ref=e128]: Corporations
+            - listitem [ref=e129]:
+              - link "Frameworks" [ref=e130] [cursor=pointer]:
+                - /url: /admin/frameworks
+                - img [ref=e131]
+                - generic [ref=e133]: Frameworks
+            - listitem [ref=e134]:
+              - link "Controls Library" [ref=e135] [cursor=pointer]:
+                - /url: /admin/controls
+                - img [ref=e136]
+                - generic [ref=e139]: Controls Library
+      - generic [ref=e141]:
+        - generic [ref=e143]: SA
+        - generic [ref=e144]:
+          - paragraph [ref=e145]: System Admin
+          - paragraph [ref=e146]: admin@grc.com
+        - button "Log out" [ref=e147] [cursor=pointer]:
+          - img [ref=e148]
+  - generic [ref=e151]:
+    - banner [ref=e152]:
+      - generic [ref=e154]:
+        - img [ref=e155]
+        - searchbox "Search…" [ref=e158]
+      - generic [ref=e159]: Super Admin
+      - button "Switch to dark mode" [ref=e160] [cursor=pointer]:
+        - img [ref=e163]
+      - button "Notifications" [ref=e170] [cursor=pointer]:
+        - img [ref=e171]
+        - generic [ref=e174]: "5"
+    - main [ref=e175]:
+      - generic [ref=e176]:
+        - generic [ref=e177]:
+          - heading "Audit Logs" [level=1] [ref=e178]
+          - paragraph [ref=e179]: Complete trail of all system activity
+        - generic [ref=e180]:
+          - generic [ref=e182]:
+            - img [ref=e183]
+            - generic [ref=e186]:
+              - paragraph [ref=e187]: "273"
+              - paragraph [ref=e188]: Total Events
+          - generic [ref=e190]:
+            - img [ref=e191]
+            - generic [ref=e194]:
+              - paragraph [ref=e195]: "1"
+              - paragraph [ref=e196]: Today
+          - generic [ref=e198]:
+            - img [ref=e199]
+            - generic [ref=e201]:
+              - paragraph [ref=e202]: "2"
+              - paragraph [ref=e203]: This Week
+        - generic [ref=e205]:
+          - generic [ref=e206]:
+            - generic [ref=e207]:
+              - img [ref=e208]
+              - textbox "Search descriptions..." [ref=e211]
+            - combobox [ref=e212] [cursor=pointer]:
+              - generic: All Actions
+              - img
+            - combobox [ref=e213] [cursor=pointer]:
+              - generic: All Modules
+              - img
+          - generic [ref=e214]:
+            - generic [ref=e215]:
+              - generic [ref=e216]: "From:"
+              - textbox [ref=e217]
+            - generic [ref=e218]:
+              - generic [ref=e219]: "To:"
+              - textbox [ref=e220]
+            - button "Apply" [ref=e221] [cursor=pointer]
+            - button "Clear" [ref=e222] [cursor=pointer]
+        - generic [ref=e223]:
+          - generic [ref=e225]:
+            - img [ref=e226]
+            - text: 273 events
+          - generic [ref=e228]:
+            - table [ref=e230]:
+              - rowgroup [ref=e231]:
+                - row "Time User Action Module Description IP" [ref=e232]:
+                  - columnheader "Time" [ref=e233]
+                  - columnheader "User" [ref=e234]
+                  - columnheader "Action" [ref=e235]
+                  - columnheader "Module" [ref=e236]
+                  - columnheader "Description" [ref=e237]
+                  - columnheader "IP" [ref=e238]
+              - rowgroup [ref=e239]:
+                - row "29/04/2026 11:17 System Admin exported Report AI Executive Summary PDF generated 127.0.0.1" [ref=e240]:
+                  - cell "29/04/2026 11:17" [ref=e241]
+                  - cell "System Admin" [ref=e242]:
+                    - paragraph [ref=e243]: System Admin
+                  - cell "exported" [ref=e244]:
+                    - generic [ref=e245]: exported
+                  - cell "Report" [ref=e246]
+                  - cell "AI Executive Summary PDF generated" [ref=e247]
+                  - cell "127.0.0.1" [ref=e248]
+                - row "28/04/2026 19:35 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-user-accounts.csv for security analysis 127.0.0.1" [ref=e249]:
+                  - cell "28/04/2026 19:35" [ref=e250]
+                  - cell "System Admin" [ref=e251]:
+                    - paragraph [ref=e252]: System Admin
+                  - cell "security_audit_uploaded" [ref=e253]:
+                    - generic [ref=e254]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e255]
+                  - cell "Uploaded test-user-accounts.csv for security analysis" [ref=e256]
+                  - cell "127.0.0.1" [ref=e257]
+                - row "22/04/2026 00:21 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-password-policy.txt for security analysis 127.0.0.1" [ref=e258]:
+                  - cell "22/04/2026 00:21" [ref=e259]
+                  - cell "System Admin" [ref=e260]:
+                    - paragraph [ref=e261]: System Admin
+                  - cell "security_audit_uploaded" [ref=e262]:
+                    - generic [ref=e263]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e264]
+                  - cell "Uploaded test-password-policy.txt for security analysis" [ref=e265]
+                  - cell "127.0.0.1" [ref=e266]
+                - 'row "22/04/2026 00:20 System Admin security_audit_saved_as_evidence App\\Models\\SecurityAudit Saved security audit report as evidence (Evidence #11) 127.0.0.1" [ref=e267]':
+                  - cell "22/04/2026 00:20" [ref=e268]
+                  - cell "System Admin" [ref=e269]:
+                    - paragraph [ref=e270]: System Admin
+                  - cell "security_audit_saved_as_evidence" [ref=e271]:
+                    - generic [ref=e272]: security_audit_saved_as_evidence
+                  - cell "App\\Models\\SecurityAudit" [ref=e273]
+                  - 'cell "Saved security audit report as evidence (Evidence #11)" [ref=e274]'
+                  - cell "127.0.0.1" [ref=e275]
+                - row "22/04/2026 00:20 System Admin security_audit_exported App\\Models\\SecurityAudit Exported security audit report PDF for test-user-accounts.csv 127.0.0.1" [ref=e276]:
+                  - cell "22/04/2026 00:20" [ref=e277]
+                  - cell "System Admin" [ref=e278]:
+                    - paragraph [ref=e279]: System Admin
+                  - cell "security_audit_exported" [ref=e280]:
+                    - generic [ref=e281]: security_audit_exported
+                  - cell "App\\Models\\SecurityAudit" [ref=e282]
+                  - cell "Exported security audit report PDF for test-user-accounts.csv" [ref=e283]
+                  - cell "127.0.0.1" [ref=e284]
+                - row "22/04/2026 00:19 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-user-accounts.csv for security analysis 127.0.0.1" [ref=e285]:
+                  - cell "22/04/2026 00:19" [ref=e286]
+                  - cell "System Admin" [ref=e287]:
+                    - paragraph [ref=e288]: System Admin
+                  - cell "security_audit_uploaded" [ref=e289]:
+                    - generic [ref=e290]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e291]
+                  - cell "Uploaded test-user-accounts.csv for security analysis" [ref=e292]
+                  - cell "127.0.0.1" [ref=e293]
+                - row "22/04/2026 00:19 System Admin security_audit_deleted App\\Models\\SecurityAudit Deleted security audit for test-password-policy.txt 127.0.0.1" [ref=e294]:
+                  - cell "22/04/2026 00:19" [ref=e295]
+                  - cell "System Admin" [ref=e296]:
+                    - paragraph [ref=e297]: System Admin
+                  - cell "security_audit_deleted" [ref=e298]:
+                    - generic [ref=e299]: security_audit_deleted
+                  - cell "App\\Models\\SecurityAudit" [ref=e300]
+                  - cell "Deleted security audit for test-password-policy.txt" [ref=e301]
+                  - cell "127.0.0.1" [ref=e302]
+                - 'row "22/04/2026 00:19 System Admin security_audit_saved_as_evidence App\\Models\\SecurityAudit Saved security audit report as evidence (Evidence #10) 127.0.0.1" [ref=e303]':
+                  - cell "22/04/2026 00:19" [ref=e304]
+                  - cell "System Admin" [ref=e305]:
+                    - paragraph [ref=e306]: System Admin
+                  - cell "security_audit_saved_as_evidence" [ref=e307]:
+                    - generic [ref=e308]: security_audit_saved_as_evidence
+                  - cell "App\\Models\\SecurityAudit" [ref=e309]
+                  - 'cell "Saved security audit report as evidence (Evidence #10)" [ref=e310]'
+                  - cell "127.0.0.1" [ref=e311]
+                - row "22/04/2026 00:19 System Admin security_audit_risks_generated App\\Models\\SecurityAudit Generated 9 risks from security audit findings 127.0.0.1" [ref=e312]:
+                  - cell "22/04/2026 00:19" [ref=e313]
+                  - cell "System Admin" [ref=e314]:
+                    - paragraph [ref=e315]: System Admin
+                  - cell "security_audit_risks_generated" [ref=e316]:
+                    - generic [ref=e317]: security_audit_risks_generated
+                  - cell "App\\Models\\SecurityAudit" [ref=e318]
+                  - cell "Generated 9 risks from security audit findings" [ref=e319]
+                  - cell "127.0.0.1" [ref=e320]
+                - row "22/04/2026 00:19 System Admin security_audit_exported App\\Models\\SecurityAudit Exported security audit report PDF for test-server-config.txt 127.0.0.1" [ref=e321]:
+                  - cell "22/04/2026 00:19" [ref=e322]
+                  - cell "System Admin" [ref=e323]:
+                    - paragraph [ref=e324]: System Admin
+                  - cell "security_audit_exported" [ref=e325]:
+                    - generic [ref=e326]: security_audit_exported
+                  - cell "App\\Models\\SecurityAudit" [ref=e327]
+                  - cell "Exported security audit report PDF for test-server-config.txt" [ref=e328]
+                  - cell "127.0.0.1" [ref=e329]
+                - row "22/04/2026 00:19 System Admin security_audit_exported App\\Models\\SecurityAudit Exported security audit report PDF for test-server-config.txt 127.0.0.1" [ref=e330]:
+                  - cell "22/04/2026 00:19" [ref=e331]
+                  - cell "System Admin" [ref=e332]:
+                    - paragraph [ref=e333]: System Admin
+                  - cell "security_audit_exported" [ref=e334]:
+                    - generic [ref=e335]: security_audit_exported
+                  - cell "App\\Models\\SecurityAudit" [ref=e336]
+                  - cell "Exported security audit report PDF for test-server-config.txt" [ref=e337]
+                  - cell "127.0.0.1" [ref=e338]
+                - row "22/04/2026 00:17 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-server-config.txt for security analysis 127.0.0.1" [ref=e339]:
+                  - cell "22/04/2026 00:17" [ref=e340]
+                  - cell "System Admin" [ref=e341]:
+                    - paragraph [ref=e342]: System Admin
+                  - cell "security_audit_uploaded" [ref=e343]:
+                    - generic [ref=e344]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e345]
+                  - cell "Uploaded test-server-config.txt for security analysis" [ref=e346]
+                  - cell "127.0.0.1" [ref=e347]
+                - row "22/04/2026 00:15 System Admin exported Report Executive Dashboard PDF exported 127.0.0.1" [ref=e348]:
+                  - cell "22/04/2026 00:15" [ref=e349]
+                  - cell "System Admin" [ref=e350]:
+                    - paragraph [ref=e351]: System Admin
+                  - cell "exported" [ref=e352]:
+                    - generic [ref=e353]: exported
+                  - cell "Report" [ref=e354]
+                  - cell "Executive Dashboard PDF exported" [ref=e355]
+                  - cell "127.0.0.1" [ref=e356]
+                - row "22/04/2026 00:13 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-password-policy.txt for security analysis 127.0.0.1" [ref=e357]:
+                  - cell "22/04/2026 00:13" [ref=e358]
+                  - cell "System Admin" [ref=e359]:
+                    - paragraph [ref=e360]: System Admin
+                  - cell "security_audit_uploaded" [ref=e361]:
+                    - generic [ref=e362]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e363]
+                  - cell "Uploaded test-password-policy.txt for security analysis" [ref=e364]
+                  - cell "127.0.0.1" [ref=e365]
+                - row "22/04/2026 00:12 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-user-accounts.csv for security analysis 127.0.0.1" [ref=e366]:
+                  - cell "22/04/2026 00:12" [ref=e367]
+                  - cell "System Admin" [ref=e368]:
+                    - paragraph [ref=e369]: System Admin
+                  - cell "security_audit_uploaded" [ref=e370]:
+                    - generic [ref=e371]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e372]
+                  - cell "Uploaded test-user-accounts.csv for security analysis" [ref=e373]
+                  - cell "127.0.0.1" [ref=e374]
+                - row "22/04/2026 00:09 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-user-accounts.csv for security analysis 127.0.0.1" [ref=e375]:
+                  - cell "22/04/2026 00:09" [ref=e376]
+                  - cell "System Admin" [ref=e377]:
+                    - paragraph [ref=e378]: System Admin
+                  - cell "security_audit_uploaded" [ref=e379]:
+                    - generic [ref=e380]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e381]
+                  - cell "Uploaded test-user-accounts.csv for security analysis" [ref=e382]
+                  - cell "127.0.0.1" [ref=e383]
+                - row "22/04/2026 00:08 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-user-accounts.csv for security analysis 127.0.0.1" [ref=e384]:
+                  - cell "22/04/2026 00:08" [ref=e385]
+                  - cell "System Admin" [ref=e386]:
+                    - paragraph [ref=e387]: System Admin
+                  - cell "security_audit_uploaded" [ref=e388]:
+                    - generic [ref=e389]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e390]
+                  - cell "Uploaded test-user-accounts.csv for security analysis" [ref=e391]
+                  - cell "127.0.0.1" [ref=e392]
+                - row "22/04/2026 00:08 System Admin security_audit_deleted App\\Models\\SecurityAudit Deleted security audit for test-user-accounts.csv 127.0.0.1" [ref=e393]:
+                  - cell "22/04/2026 00:08" [ref=e394]
+                  - cell "System Admin" [ref=e395]:
+                    - paragraph [ref=e396]: System Admin
+                  - cell "security_audit_deleted" [ref=e397]:
+                    - generic [ref=e398]: security_audit_deleted
+                  - cell "App\\Models\\SecurityAudit" [ref=e399]
+                  - cell "Deleted security audit for test-user-accounts.csv" [ref=e400]
+                  - cell "127.0.0.1" [ref=e401]
+                - row "22/04/2026 00:07 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-user-accounts.csv for security analysis 127.0.0.1" [ref=e402]:
+                  - cell "22/04/2026 00:07" [ref=e403]
+                  - cell "System Admin" [ref=e404]:
+                    - paragraph [ref=e405]: System Admin
+                  - cell "security_audit_uploaded" [ref=e406]:
+                    - generic [ref=e407]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e408]
+                  - cell "Uploaded test-user-accounts.csv for security analysis" [ref=e409]
+                  - cell "127.0.0.1" [ref=e410]
+                - row "22/04/2026 00:07 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-server-config.txt for security analysis 127.0.0.1" [ref=e411]:
+                  - cell "22/04/2026 00:07" [ref=e412]
+                  - cell "System Admin" [ref=e413]:
+                    - paragraph [ref=e414]: System Admin
+                  - cell "security_audit_uploaded" [ref=e415]:
+                    - generic [ref=e416]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e417]
+                  - cell "Uploaded test-server-config.txt for security analysis" [ref=e418]
+                  - cell "127.0.0.1" [ref=e419]
+                - row "22/04/2026 00:07 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-password-policy.txt for security analysis 127.0.0.1" [ref=e420]:
+                  - cell "22/04/2026 00:07" [ref=e421]
+                  - cell "System Admin" [ref=e422]:
+                    - paragraph [ref=e423]: System Admin
+                  - cell "security_audit_uploaded" [ref=e424]:
+                    - generic [ref=e425]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e426]
+                  - cell "Uploaded test-password-policy.txt for security analysis" [ref=e427]
+                  - cell "127.0.0.1" [ref=e428]
+                - row "22/04/2026 00:07 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-user-accounts.csv for security analysis 127.0.0.1" [ref=e429]:
+                  - cell "22/04/2026 00:07" [ref=e430]
+                  - cell "System Admin" [ref=e431]:
+                    - paragraph [ref=e432]: System Admin
+                  - cell "security_audit_uploaded" [ref=e433]:
+                    - generic [ref=e434]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e435]
+                  - cell "Uploaded test-user-accounts.csv for security analysis" [ref=e436]
+                  - cell "127.0.0.1" [ref=e437]
+                - row "22/04/2026 00:04 System Admin security_audit_uploaded App\\Models\\SecurityAudit Uploaded test-user-accounts.csv for security analysis 127.0.0.1" [ref=e438]:
+                  - cell "22/04/2026 00:04" [ref=e439]
+                  - cell "System Admin" [ref=e440]:
+                    - paragraph [ref=e441]: System Admin
+                  - cell "security_audit_uploaded" [ref=e442]:
+                    - generic [ref=e443]: security_audit_uploaded
+                  - cell "App\\Models\\SecurityAudit" [ref=e444]
+                  - cell "Uploaded test-user-accounts.csv for security analysis" [ref=e445]
+                  - cell "127.0.0.1" [ref=e446]
+                - 'row "21/04/2026 23:45 System created Risk AI Rule: Auto-created risk #165 from Partially Compliant control #93 in assessment #10 127.0.0.1" [ref=e447]':
+                  - cell "21/04/2026 23:45" [ref=e448]
+                  - cell "System" [ref=e449]:
+                    - paragraph [ref=e450]: System
+                  - cell "created" [ref=e451]:
+                    - generic [ref=e452]: created
+                  - cell "Risk" [ref=e453]
+                  - 'cell "AI Rule: Auto-created risk #165 from Partially Compliant control #93 in assessment #10" [ref=e454]'
+                  - cell "127.0.0.1" [ref=e455]
+                - 'row "21/04/2026 23:45 System created Risk AI Rule: Auto-created risk #164 from Partially Compliant control #91 in assessment #10 127.0.0.1" [ref=e456]':
+                  - cell "21/04/2026 23:45" [ref=e457]
+                  - cell "System" [ref=e458]:
+                    - paragraph [ref=e459]: System
+                  - cell "created" [ref=e460]:
+                    - generic [ref=e461]: created
+                  - cell "Risk" [ref=e462]
+                  - 'cell "AI Rule: Auto-created risk #164 from Partially Compliant control #91 in assessment #10" [ref=e463]'
+                  - cell "127.0.0.1" [ref=e464]
+            - generic [ref=e465]:
+              - button "« Previous" [disabled]
+              - button "1" [ref=e466] [cursor=pointer]
+              - button "2" [ref=e467] [cursor=pointer]
+              - button "3" [ref=e468] [cursor=pointer]
+              - button "4" [ref=e469] [cursor=pointer]
+              - button "5" [ref=e470] [cursor=pointer]
+              - button "6" [ref=e471] [cursor=pointer]
+              - button "7" [ref=e472] [cursor=pointer]
+              - button "8" [ref=e473] [cursor=pointer]
+              - button "9" [ref=e474] [cursor=pointer]
+              - button "10" [ref=e475] [cursor=pointer]
+              - button "11" [ref=e476] [cursor=pointer]
+              - button "Next »" [ref=e477] [cursor=pointer]

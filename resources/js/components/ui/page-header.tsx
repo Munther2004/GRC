@@ -10,25 +10,28 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, children, className }: PageHeaderProps) {
     return (
-        <div className={cn('space-y-1 pb-5', className)}>
+        <div className={cn('pb-6', className)}>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                <div className="space-y-1">
-                    <h1 className="font-heading text-2xl font-semibold leading-tight tracking-tight text-foreground">
+                <div className="space-y-2">
+                    <h1
+                        className="text-3xl tracking-[-0.02em] sm:text-4xl"
+                        style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}
+                    >
                         {title}
                     </h1>
                     {description && (
-                        <p className="font-body text-sm text-muted-foreground">
+                        <p className="max-w-2xl text-sm" style={{ color: 'var(--muted-foreground)' }}>
                             {description}
                         </p>
                     )}
                 </div>
                 {children && (
-                    <div className="flex items-center gap-2 shrink-0">{children}</div>
+                    <div className="flex flex-wrap items-center gap-2 shrink-0">{children}</div>
                 )}
             </div>
-            {/* Ornate gradient rule */}
             <div
-                className="mt-3 h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-70"
+                className="mt-5 h-px"
+                style={{ background: 'linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent)' }}
             />
         </div>
     )

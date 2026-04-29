@@ -6,64 +6,126 @@ import type { AuthLayoutProps } from '@/types';
 
 export default function AuthSimpleLayout({ children, title, description }: AuthLayoutProps) {
     return (
-        <div className="relative flex min-h-svh flex-col items-center justify-center gap-6 overflow-hidden p-6 bg-background text-foreground md:p-10">
-            {/* Ambient gradient mesh */}
+        <div className="relative flex min-h-svh flex-col overflow-hidden bg-background text-foreground">
+            {/* Ambient mesh halo + soft grid (matches landing page) */}
             <div
                 aria-hidden
-                className="pointer-events-none absolute inset-0 mesh-bg"
+                className="pointer-events-none fixed inset-0 z-0"
+                style={{
+                    background:
+                        'radial-gradient(60% 60% at 18% 18%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 70%),' +
+                        'radial-gradient(50% 50% at 82% 6%, color-mix(in srgb, var(--chart-2) 8%, transparent), transparent 75%),' +
+                        'radial-gradient(45% 45% at 88% 78%, color-mix(in srgb, var(--chart-3) 8%, transparent), transparent 78%)',
+                }}
+            />
+            <div
+                aria-hidden
+                className="pointer-events-none fixed inset-0 z-0"
+                style={{
+                    backgroundImage:
+                        'linear-gradient(color-mix(in srgb, var(--foreground) 5%, transparent) 1px, transparent 1px),' +
+                        'linear-gradient(90deg, color-mix(in srgb, var(--foreground) 5%, transparent) 1px, transparent 1px)',
+                    backgroundSize: '64px 64px',
+                    maskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%)',
+                    WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%)',
+                }}
             />
 
-            {/* Theme toggle (top-right) */}
-            <div className="absolute right-4 top-4 z-10 md:right-6 md:top-6">
-                <ThemeToggle compact />
-            </div>
-
-            <div className="relative z-10 w-full max-w-sm">
-                <div className="flex flex-col gap-8">
-                    {/* Wordmark */}
-                    <div className="flex flex-col items-center gap-4">
-                        <Link href={home()} className="flex flex-col items-center gap-3">
-                            <div
-                                className="flex h-12 w-12 items-center justify-center rounded-lg"
-                                style={{
-                                    background: 'color-mix(in srgb, var(--primary) 8%, transparent)',
-                                    border: '1px solid color-mix(in srgb, var(--primary) 40%, transparent)',
-                                }}
-                            >
-                                <Shield className="h-6 w-6" style={{ color: 'var(--primary)' }} strokeWidth={1.5} />
-                            </div>
-                            <span className="font-display text-xs uppercase tracking-[0.3em]" style={{ color: 'var(--foreground)' }}>
-                                GRC Platform
-                            </span>
-                        </Link>
-
-                        {/* Ornate divider */}
-                        <div style={{ position: 'relative', height: '1px', width: '100%', background: 'linear-gradient(90deg, transparent, var(--border) 30%, var(--primary) 50%, var(--border) 70%, transparent)' }}>
-                            <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', color: 'var(--primary)', fontSize: '8px', background: 'var(--background)', padding: '0 8px' }}>✶</span>
-                        </div>
-
-                        <div className="space-y-2 text-center">
-                            <h1 className="font-heading text-2xl font-normal" style={{ color: 'var(--foreground)' }}>{title}</h1>
-                            <p className="font-body text-center text-sm italic" style={{ color: 'var(--muted-foreground)' }}>
-                                {description}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Form card with soft elevation + glass tint */}
-                    <div
-                        className="elev-2 rounded-xl p-6"
-                        style={{
-                            background: 'color-mix(in srgb, var(--card) 92%, transparent)',
-                            border: '1px solid var(--border)',
-                            backdropFilter: 'blur(10px)',
-                            WebkitBackdropFilter: 'blur(10px)',
-                        }}
-                    >
-                        {children}
+            {/* Glass nav (matches landing page) */}
+            <header
+                className="relative z-30 sticky top-0"
+                style={{
+                    background: 'color-mix(in srgb, var(--card) 72%, transparent)',
+                    backdropFilter: 'blur(14px) saturate(140%)',
+                    WebkitBackdropFilter: 'blur(14px) saturate(140%)',
+                    borderBottom: '1px solid color-mix(in srgb, var(--border) 70%, transparent)',
+                }}
+            >
+                <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+                    <Link href={home()} className="flex items-center gap-3">
+                        <span
+                            className="flex h-8 w-8 items-center justify-center rounded-lg"
+                            style={{ background: 'var(--foreground)', color: 'var(--background)' }}
+                        >
+                            <Shield className="h-4 w-4" strokeWidth={1.8} />
+                        </span>
+                        <span
+                            className="text-[12px] uppercase"
+                            style={{ color: 'var(--foreground)', letterSpacing: '0.28em', fontWeight: 600 }}
+                        >
+                            GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Charter</span>
+                        </span>
+                    </Link>
+                    <div className="flex items-center gap-2">
+                        <ThemeToggle compact />
                     </div>
                 </div>
-            </div>
+            </header>
+
+            <main className="relative z-10 flex flex-1 items-center justify-center px-6 py-14">
+                <div className="w-full max-w-sm">
+                    <div className="flex flex-col gap-8">
+                        {/* Wordmark + heading */}
+                        <div className="flex flex-col items-center gap-5 text-center">
+                            <div
+                                className="flex h-12 w-12 items-center justify-center rounded-2xl"
+                                style={{
+                                    background: 'color-mix(in srgb, var(--primary) 8%, transparent)',
+                                    border: '1px solid color-mix(in srgb, var(--primary) 24%, transparent)',
+                                }}
+                            >
+                                <Shield className="h-5 w-5" style={{ color: 'var(--primary)' }} strokeWidth={1.6} />
+                            </div>
+
+                            <span
+                                className="text-[10px] uppercase"
+                                style={{ color: 'var(--primary)', letterSpacing: '0.4em' }}
+                            >
+                                The Charter
+                            </span>
+
+                            <div className="space-y-3">
+                                <h1
+                                    className="text-3xl tracking-[-0.02em]"
+                                    style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}
+                                >
+                                    {title}
+                                </h1>
+                                <p
+                                    className="text-sm leading-relaxed"
+                                    style={{ color: 'var(--muted-foreground)' }}
+                                >
+                                    {description}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Form card */}
+                        <div
+                            className="rounded-2xl p-6 sm:p-7"
+                            style={{
+                                background: 'color-mix(in srgb, var(--card) 88%, transparent)',
+                                border: '1px solid var(--border)',
+                                boxShadow: '0 24px 60px -28px color-mix(in srgb, var(--foreground) 28%, transparent), 0 8px 22px -10px color-mix(in srgb, var(--foreground) 12%, transparent)',
+                                backdropFilter: 'blur(10px)',
+                                WebkitBackdropFilter: 'blur(10px)',
+                            }}
+                        >
+                            {children}
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer
+                className="relative z-10"
+                style={{ borderTop: '1px solid var(--border)', background: 'color-mix(in srgb, var(--card) 70%, transparent)' }}
+            >
+                <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-5 text-[11px]" style={{ color: 'var(--muted-foreground)' }}>
+                    <span>© Twenty Twenty-Six · GRC Charter</span>
+                    <span>Fides · Ratio · Ordo</span>
+                </div>
+            </footer>
         </div>
     );
 }

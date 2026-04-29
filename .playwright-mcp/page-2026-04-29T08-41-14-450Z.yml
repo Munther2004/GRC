@@ -1,0 +1,44 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - link "GRC · Charter" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e10]: GRC · Charter
+      - generic [ref=e11]:
+        - button "Switch to light mode" [ref=e12] [cursor=pointer]:
+          - img [ref=e15]
+        - link "Home" [ref=e17] [cursor=pointer]:
+          - /url: /
+          - img [ref=e18]
+          - text: Home
+  - main [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - img [ref=e23]
+        - text: Graduation Project · PSUT 2025/2026
+      - heading "Meet the team." [level=1] [ref=e27]
+      - paragraph [ref=e28]: Graduation Project — PSUT, NIS Engineering, 2025/2026
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - generic [ref=e31]: GA
+        - heading "Ghaith Abboud" [level=3] [ref=e32]
+        - paragraph [ref=e33]: Full Stack Developer
+      - generic [ref=e34]:
+        - generic [ref=e35]: MZ
+        - heading "Moayyad Zeidan" [level=3] [ref=e36]
+        - paragraph [ref=e37]: Full Stack Developer
+      - generic [ref=e38]:
+        - generic [ref=e39]: ME
+        - heading "Munther Elatrash" [level=3] [ref=e40]
+        - paragraph [ref=e41]: Full Stack Developer
+    - generic [ref=e42]:
+      - paragraph [ref=e43]: Project Supervisor
+      - paragraph [ref=e44]: Prof. Ali Al-Haj
+      - paragraph [ref=e45]: Princess Sumaya University for Technology
+  - contentinfo [ref=e46]:
+    - generic [ref=e47]:
+      - generic [ref=e48]:
+        - img [ref=e49]
+        - generic [ref=e52]: GRC · Charter
+      - paragraph [ref=e53]: © Twenty Twenty-Six · GRC Charter · All rights reserved

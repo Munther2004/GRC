@@ -85,22 +85,34 @@ interface Props {
 }
 
 const levelColors = (level: string): { color: string; bg: string } => ({
-    critical: { color: '#8B2635', bg: 'rgba(139,38,53,0.15)' },
-    high:     { color: '#285A48', bg: 'rgba(40,90,72,0.15)' },
-    medium:   { color: '#408A71', bg: 'rgba(64,138,113,0.15)' },
-    low:      { color: '#B0E4CC', bg: 'rgba(176,228,204,0.15)' },
-}[level] ?? { color: '#7ABFA8', bg: 'rgba(156,139,122,0.1)' });
+    critical: { color: '#e5484d', bg: 'color-mix(in srgb, #e5484d 12%, transparent)' },
+    high:     { color: '#f76b15', bg: 'color-mix(in srgb, #f76b15 12%, transparent)' },
+    medium:   { color: '#f5b929', bg: 'color-mix(in srgb, #f5b929 14%, transparent)' },
+    low:      { color: '#46bd5f', bg: 'color-mix(in srgb, #46bd5f 12%, transparent)' },
+}[level] ?? { color: 'var(--muted-foreground)', bg: 'color-mix(in srgb, var(--muted-foreground) 10%, transparent)' });
 
 const statusColor = (status: string): string => ({
-    open:         '#8B2635',
-    in_progress:  '#408A71',
-    under_review: '#285A48',
-    closed:       '#B0E4CC',
-}[status] ?? '#7ABFA8');
+    open:         '#e5484d',
+    in_progress:  'var(--primary)',
+    under_review: 'var(--chart-2)',
+    closed:       '#46bd5f',
+}[status] ?? 'var(--muted-foreground)');
 
 function AppetiteDot({ band }: { band: AppetiteBand }) {
-    const color = band.band === 'escalated' ? '#8B2635' : band.band === 'review' ? '#285A48' : '#B0E4CC';
-    return <span className="font-display text-[10px] uppercase tracking-[0.05em]" style={{ color }}>{band.label}</span>;
+    const color = band.band === 'escalated' ? '#e5484d' : band.band === 'review' ? '#f5b929' : '#46bd5f';
+    return (
+        <span
+            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] uppercase"
+            style={{
+                color,
+                background: `color-mix(in srgb, ${color} 12%, transparent)`,
+                letterSpacing: '0.18em',
+            }}
+        >
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+            {band.label}
+        </span>
+    );
 }
 
 export default function RisksIndex({ risks, stats, riskExposure, filters, frameworks, appetite }: Props) {
@@ -141,11 +153,11 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
         <AdminLayout>
             <Head title="Risk Register" />
             <div className="space-y-6">
-                <PageHeader title="Risk Register" description="ISO/IEC 27005 — Likelihood × Impact management">
+                <PageHeader title="Risk register" description="ISO/IEC 27005 — likelihood × impact management">
                     {canEdit && (
                         <Link href={route('risks.create')}>
-                            <Button size="sm" className="gap-2">
-                                <Plus className="h-3.5 w-3.5" /> New Risk
+                            <Button className="gap-2">
+                                <Plus className="h-3.5 w-3.5" /> New risk
                             </Button>
                         </Link>
                     )}
@@ -161,29 +173,29 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
 
                 <FilterBar>
                     <div className="relative min-w-45 flex-1">
-                        <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" style={{ color: '#7ABFA8' }} />
+                        <Search className="absolute top-1/2 left-4 h-3.5 w-3.5 -translate-y-1/2" style={{ color: 'var(--muted-foreground)' }} />
                         <Input
-                            placeholder="Search risks..."
+                            placeholder="Search risks…"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && applyFilters({ search })}
-                            className="h-8 pl-9 text-sm"
+                            className="h-9 pl-10 text-sm"
                         />
                     </div>
                     <Select value={status} onValueChange={(v) => { setStatus(v); applyFilters({ status: v === 'all' ? '' : v }); }}>
-                        <SelectTrigger className="h-8 w-32 text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
+                        <SelectTrigger className="h-9 w-36 text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="all">All statuses</SelectItem>
                             <SelectItem value="open">Open</SelectItem>
-                            <SelectItem value="in_progress">In Progress</SelectItem>
-                            <SelectItem value="under_review">Under Review</SelectItem>
+                            <SelectItem value="in_progress">In progress</SelectItem>
+                            <SelectItem value="under_review">Under review</SelectItem>
                             <SelectItem value="closed">Closed</SelectItem>
                         </SelectContent>
                     </Select>
                     <Select value={level} onValueChange={(v) => { setLevel(v); applyFilters({ level: v === 'all' ? '' : v }); }}>
-                        <SelectTrigger className="h-8 w-30 text-sm"><SelectValue placeholder="Level" /></SelectTrigger>
+                        <SelectTrigger className="h-9 w-32 text-sm"><SelectValue placeholder="Level" /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Levels</SelectItem>
+                            <SelectItem value="all">All levels</SelectItem>
                             <SelectItem value="critical">Critical</SelectItem>
                             <SelectItem value="high">High</SelectItem>
                             <SelectItem value="medium">Medium</SelectItem>
@@ -191,9 +203,9 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                         </SelectContent>
                     </Select>
                     <Select value={category} onValueChange={(v) => { setCategory(v); applyFilters({ category: v === 'all' ? '' : v }); }}>
-                        <SelectTrigger className="h-8 w-40 text-sm"><SelectValue placeholder="Category" /></SelectTrigger>
+                        <SelectTrigger className="h-9 w-44 text-sm"><SelectValue placeholder="Category" /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Categories</SelectItem>
+                            <SelectItem value="all">All categories</SelectItem>
                             {['Information Security','Operational','Compliance','Financial','Strategic','Technical','Human Resources','Third Party','Physical','Legal'].map((c) => (
                                 <SelectItem key={c} value={c}>{c}</SelectItem>
                             ))}
@@ -201,44 +213,44 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                     </Select>
                     {frameworks.length > 0 && (
                         <Select value={framework} onValueChange={(v) => { setFramework(v); applyFilters({ framework: v === 'all' ? '' : v }); }}>
-                            <SelectTrigger className="h-8 w-32 text-sm"><SelectValue placeholder="Framework" /></SelectTrigger>
+                            <SelectTrigger className="h-9 w-36 text-sm"><SelectValue placeholder="Framework" /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Frameworks</SelectItem>
+                                <SelectItem value="all">All frameworks</SelectItem>
                                 {frameworks.map((f) => <SelectItem key={f.id} value={f.short_name}>{f.short_name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     )}
                     <button
                         onClick={toggleHasPlan}
-                        className="inline-flex h-8 items-center gap-1.5 rounded px-3 font-display text-[10px] uppercase tracking-widest transition-colors"
+                        className="inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-[12px] transition-colors"
                         style={hasPlan
-                            ? { border: '1px solid rgba(176,228,204,0.4)', background: 'rgba(176,228,204,0.1)', color: '#B0E4CC' }
-                            : { border: '1px solid #285A48', color: '#7ABFA8' }
+                            ? { border: '1px solid color-mix(in srgb, var(--primary) 35%, transparent)', background: 'color-mix(in srgb, var(--primary) 8%, transparent)', color: 'var(--primary)' }
+                            : { border: '1px solid var(--border)', color: 'var(--muted-foreground)' }
                         }
                     >
-                        Has Plan
+                        Has plan
                     </button>
                     {appetite && (
                         <button
                             onClick={toggleEscalatedOnly}
-                            className="inline-flex h-8 items-center gap-1.5 rounded px-3 font-display text-[10px] uppercase tracking-widest transition-colors"
+                            className="inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-[12px] transition-colors"
                             style={escalatedOnly
-                                ? { border: '1px solid rgba(139,38,53,0.4)', background: 'rgba(139,38,53,0.1)', color: '#8B2635' }
-                                : { border: '1px solid #285A48', color: '#7ABFA8' }
+                                ? { border: '1px solid color-mix(in srgb, #e5484d 35%, transparent)', background: 'color-mix(in srgb, #e5484d 8%, transparent)', color: '#e5484d' }
+                                : { border: '1px solid var(--border)', color: 'var(--muted-foreground)' }
                             }
                         >
                             <Sliders className="h-3 w-3" /> Escalated
                         </button>
                     )}
-                    <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => applyFilters({ search })}>
+                    <Button size="sm" variant="ghost" className="h-9" onClick={() => applyFilters({ search })}>
                         Search
                     </Button>
                 </FilterBar>
 
                 <Card>
                     <CardHeader className="flex-row items-center justify-between pb-0">
-                        <CardTitle className="font-body text-sm italic" style={{ color: '#7ABFA8' }}>
-                            <span className="font-heading not-italic text-base" style={{ color: 'var(--foreground)' }}>
+                        <CardTitle className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
+                            <span className="text-base" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                 {risks.total}
                             </span>{' '}
                             risk{risks.total !== 1 ? 's' : ''}
@@ -247,10 +259,10 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                     <CardContent className="mt-4 p-0">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <thead style={{ borderTop: '1px solid #285A48', borderBottom: '1px solid #285A48', background: 'rgba(13,31,28,0.6)' }}>
+                                <thead style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'color-mix(in srgb, var(--muted) 50%, transparent)' }}>
                                     <tr>
                                         {['Risk','Category','Owner','Score','Level',...(appetite ? ['Appetite'] : []),'Status','Treatment','Due',''].map((h) => (
-                                            <th key={h} className="px-4 py-2.5 text-left font-display text-[9px] uppercase tracking-[0.15em]" style={{ color: '#7ABFA8' }}>
+                                            <th key={h} className="px-4 py-3 text-left text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.22em' }}>
                                                 {h}
                                             </th>
                                         ))}
@@ -260,9 +272,9 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                     {risks.data.length === 0 ? (
                                         <tr>
                                             <td colSpan={appetite ? 10 : 9} className="px-4 py-12 text-center">
-                                                <p className="font-body text-sm italic" style={{ color: '#7ABFA8' }}>
+                                                <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                                                     No risks found.{' '}
-                                                    <Link href={route('risks.create')} style={{ color: '#408A71' }}>
+                                                    <Link href={route('risks.create')} className="underline-offset-4 hover:underline" style={{ color: 'var(--primary)' }}>
                                                         Add the first one.
                                                     </Link>
                                                 </p>
@@ -276,71 +288,71 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                 <tr
                                                     key={risk.id}
                                                     className="transition-colors"
-                                                    style={{ borderBottom: '1px solid rgba(40,90,72,0.4)' }}
-                                                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(61,51,43,0.3)')}
+                                                    style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 60%, transparent)' }}
+                                                    onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--primary) 5%, transparent)')}
                                                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                                                 >
                                                     <td className="max-w-60 px-4 py-3">
-                                                        <div className="flex items-center gap-1.5">
-                                                            <p className="font-body truncate text-sm" style={{ color: 'var(--foreground)' }}>{risk.title}</p>
+                                                        <div className="flex items-center gap-2">
+                                                            <p className="truncate text-sm" style={{ color: 'var(--foreground)', fontWeight: 500 }}>{risk.title}</p>
                                                             {risk.auto_generated === 1 && (
-                                                                <span className="font-display inline-flex shrink-0 items-center gap-0.5 text-[9px] uppercase tracking-wider" style={{ color: '#408A71' }}>
+                                                                <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] uppercase" style={{ color: 'var(--primary)', background: 'color-mix(in srgb, var(--primary) 10%, transparent)', letterSpacing: '0.18em' }}>
                                                                     <Sparkles className="h-2.5 w-2.5" /> AI
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className="mt-0.5 flex items-center gap-1.5">
-                                                            <span className="font-body text-[11px] italic" style={{ color: '#7ABFA8' }}>{risk.user?.name}</span>
+                                                        <div className="mt-0.5 flex items-center gap-2">
+                                                            <span className="text-[11px]" style={{ color: 'var(--muted-foreground)' }}>{risk.user?.name}</span>
                                                             {risk.framework_name && (
-                                                                <span className="font-display text-[9px]" style={{ color: 'rgba(156,139,122,0.6)' }}>{risk.framework_name}</span>
+                                                                <span className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.18em', opacity: 0.7 }}>{risk.framework_name}</span>
                                                             )}
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 py-3 font-body text-sm" style={{ color: 'rgba(232,223,212,0.75)' }}>{risk.category}</td>
-                                                    <td className="px-4 py-3 font-body text-sm" style={{ color: 'rgba(232,223,212,0.75)' }}>{risk.owner}</td>
+                                                    <td className="px-4 py-3 text-sm" style={{ color: 'var(--muted-foreground)' }}>{risk.category}</td>
+                                                    <td className="px-4 py-3 text-sm" style={{ color: 'var(--muted-foreground)' }}>{risk.owner}</td>
                                                     <td className="px-4 py-3">
-                                                        <span className="font-heading text-sm tabular-nums" style={{ color: '#408A71' }}>{score}</span>
-                                                        <span className="font-display text-[10px]" style={{ color: '#7ABFA8' }}>/25</span>
-                                                        <p className="font-display text-[9px]" style={{ color: '#7ABFA8' }}>{risk.likelihood}×{risk.impact}</p>
+                                                        <span className="text-base tabular-nums" style={{ color: 'var(--primary)', fontWeight: 500, letterSpacing: '-0.01em' }}>{score}</span>
+                                                        <span className="text-[11px] ml-0.5" style={{ color: 'var(--muted-foreground)' }}>/25</span>
+                                                        <p className="text-[11px] mt-0.5" style={{ color: 'var(--muted-foreground)' }}>{risk.likelihood}×{risk.impact}</p>
                                                     </td>
                                                     <td className="px-4 py-3">
                                                         <span
-                                                            className="inline-flex items-center gap-1 rounded px-2 py-0.5 font-display text-[9px] uppercase tracking-[0.08em]"
-                                                            style={{ color: lc.color, background: lc.bg }}
+                                                            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] uppercase"
+                                                            style={{ color: lc.color, background: lc.bg, letterSpacing: '0.18em' }}
                                                         >
-                                                            <span className="h-1 w-1 rounded-full shrink-0" style={{ background: lc.color }} />
+                                                            <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: lc.color }} />
                                                             {risk.risk_level}
                                                         </span>
                                                     </td>
                                                     {appetite && (
                                                         <td className="px-4 py-3">
-                                                            {risk.appetite_band ? <AppetiteDot band={risk.appetite_band} /> : <span style={{ color: '#7ABFA8' }}>—</span>}
+                                                            {risk.appetite_band ? <AppetiteDot band={risk.appetite_band} /> : <span style={{ color: 'var(--muted-foreground)' }}>—</span>}
                                                         </td>
                                                     )}
                                                     <td className="px-4 py-3">
-                                                        <span className="font-display text-[10px] capitalize tracking-[0.05em]" style={{ color: statusColor(risk.status) }}>
+                                                        <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] uppercase capitalize" style={{ color: statusColor(risk.status), border: `1px solid color-mix(in srgb, ${statusColor(risk.status)} 25%, transparent)`, letterSpacing: '0.18em' }}>
                                                             {risk.status.replace('_', ' ')}
                                                         </span>
                                                     </td>
-                                                    <td className="px-4 py-3 font-body text-sm capitalize" style={{ color: 'rgba(232,223,212,0.75)' }}>{risk.treatment}</td>
-                                                    <td className="px-4 py-3 font-display text-[10px]" style={{ color: '#7ABFA8' }}>
+                                                    <td className="px-4 py-3 text-sm capitalize" style={{ color: 'var(--muted-foreground)' }}>{risk.treatment}</td>
+                                                    <td className="px-4 py-3 text-[11px]" style={{ color: 'var(--muted-foreground)' }}>
                                                         {risk.due_date ? new Date(risk.due_date).toLocaleDateString() : '—'}
                                                     </td>
                                                     <td className="px-4 py-3">
                                                         <div className="flex items-center gap-1">
                                                             <Link href={route('risks.show', risk.id)}>
-                                                                <button className="rounded p-1.5 transition-colors" style={{ color: '#7ABFA8' }}
-                                                                    onMouseEnter={e => (e.currentTarget.style.color = '#408A71')}
-                                                                    onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
+                                                                <button className="rounded-full p-2 transition-colors" style={{ color: 'var(--muted-foreground)' }}
+                                                                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--primary) 8%, transparent)'; }}
+                                                                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted-foreground)'; e.currentTarget.style.background = 'transparent'; }}
                                                                 >
                                                                     <Eye className="h-3.5 w-3.5" />
                                                                 </button>
                                                             </Link>
                                                             {canEdit && (
                                                                 <Link href={route('risks.edit', risk.id)}>
-                                                                    <button className="rounded p-1.5 transition-colors" style={{ color: '#7ABFA8' }}
-                                                                        onMouseEnter={e => (e.currentTarget.style.color = '#408A71')}
-                                                                        onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
+                                                                    <button className="rounded-full p-2 transition-colors" style={{ color: 'var(--muted-foreground)' }}
+                                                                        onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--primary) 8%, transparent)'; }}
+                                                                        onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted-foreground)'; e.currentTarget.style.background = 'transparent'; }}
                                                                     >
                                                                         <Pencil className="h-3.5 w-3.5" />
                                                                     </button>
@@ -348,9 +360,9 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                             )}
                                                             {canEdit && (
                                                                 <button
-                                                                    className="rounded p-1.5 transition-colors" style={{ color: '#7ABFA8' }}
-                                                                    onMouseEnter={e => (e.currentTarget.style.color = '#8B2635')}
-                                                                    onMouseLeave={e => (e.currentTarget.style.color = '#7ABFA8')}
+                                                                    className="rounded-full p-2 transition-colors" style={{ color: 'var(--muted-foreground)' }}
+                                                                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--destructive)'; e.currentTarget.style.background = 'color-mix(in srgb, var(--destructive) 8%, transparent)'; }}
+                                                                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted-foreground)'; e.currentTarget.style.background = 'transparent'; }}
                                                                     onClick={() => deleteRisk(risk.id, risk.title)}
                                                                 >
                                                                     <Trash2 className="h-3.5 w-3.5" />
@@ -366,7 +378,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                             </table>
                         </div>
                         {risks.links.length > 3 && (
-                            <div className="flex items-center justify-center gap-1 p-4" style={{ borderTop: '1px solid #285A48' }}>
+                            <div className="flex items-center justify-center gap-1 p-4" style={{ borderTop: '1px solid var(--border)' }}>
                                 {risks.links.map((link, i) => (
                                     <Button key={i} variant={link.active ? 'default' : 'outline'} size="sm" disabled={!link.url}
                                         onClick={() => link.url && router.get(link.url)}

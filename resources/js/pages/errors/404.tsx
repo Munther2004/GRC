@@ -2,44 +2,52 @@ import { Head, Link } from '@inertiajs/react';
 import { SearchX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const themeColors = {
-    background: '#091413',
-    foreground: '#E0F5EC',
-    primary: '#408A71',
-    muted: '#7ABFA8',
-};
-
 export default function Error404() {
     return (
         <>
             <Head title="404 — Not Found" />
-            <div
-                className="flex min-h-screen items-center justify-center p-6"
-                style={{ background: themeColors.background }}
-            >
-                <div className="max-w-md text-center">
+            <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background p-6 text-foreground">
+                <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                        background:
+                            'radial-gradient(60% 60% at 50% 50%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 70%)',
+                    }}
+                />
+                <div className="relative max-w-md text-center">
                     <div className="mb-6 flex justify-center">
                         <div
-                            className="flex h-20 w-20 items-center justify-center rounded-full"
-                            style={{ background: `rgba(64,138,113,0.08)`, border: `1px solid rgba(64,138,113,0.3)` }}
+                            className="flex h-20 w-20 items-center justify-center rounded-2xl"
+                            style={{
+                                background: 'color-mix(in srgb, var(--primary) 8%, transparent)',
+                                border: '1px solid color-mix(in srgb, var(--primary) 24%, transparent)',
+                                color: 'var(--primary)',
+                            }}
                         >
-                            <SearchX className="h-10 w-10" style={{ color: themeColors.primary }} strokeWidth={1.5} />
+                            <SearchX className="h-9 w-9" strokeWidth={1.6} />
                         </div>
                     </div>
-                    <p className="font-display mb-1 text-[10px] uppercase tracking-[0.3em]" style={{ color: themeColors.muted }}>
+                    <p className="mb-2 text-[11px] uppercase" style={{ color: 'var(--primary)', letterSpacing: '0.4em' }}>
                         Error
                     </p>
-                    <h1 className="font-heading mb-2 text-7xl font-normal" style={{ color: themeColors.primary }}>
+                    <h1
+                        className="mb-3 text-7xl"
+                        style={{ color: 'var(--foreground)', fontWeight: 500, letterSpacing: '-0.04em' }}
+                    >
                         404
                     </h1>
-                    <h2 className="font-heading mb-3 text-xl font-normal" style={{ color: themeColors.foreground }}>
-                        Page Not Found
+                    <h2
+                        className="mb-3 text-2xl tracking-[-0.01em]"
+                        style={{ color: 'var(--foreground)', fontWeight: 500 }}
+                    >
+                        Page not found.
                     </h2>
-                    <p className="font-body mb-8 italic" style={{ color: themeColors.muted }}>
+                    <p className="mb-8 text-base" style={{ color: 'var(--muted-foreground)' }}>
                         The page you're looking for doesn't exist or has been moved.
                     </p>
                     <Link href="/">
-                        <Button>Return to Dashboard</Button>
+                        <Button>Return home</Button>
                     </Link>
                 </div>
             </div>

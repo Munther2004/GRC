@@ -1,0 +1,42 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - link "GRC · Charter" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e10]: GRC · Charter
+      - button "Switch to light mode" [ref=e12] [cursor=pointer]:
+        - img [ref=e15]
+  - main [ref=e17]:
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - img [ref=e22]
+        - generic [ref=e24]: The Charter
+        - generic [ref=e25]:
+          - heading "Log in to your account" [level=1] [ref=e26]
+          - paragraph [ref=e27]: Enter your email and password below to log in
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Email or Username
+            - textbox "Email or Username" [active] [ref=e33]:
+              - /placeholder: your@email.com or username
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - generic [ref=e36]: Password
+              - link "Forgot password?" [ref=e37] [cursor=pointer]:
+                - /url: /forgot-password
+            - textbox "Password" [ref=e38]
+          - generic [ref=e39]:
+            - checkbox "Remember me" [ref=e40] [cursor=pointer]
+            - checkbox
+            - generic [ref=e41]: Remember me
+          - button "Log in" [ref=e42] [cursor=pointer]
+        - generic [ref=e43]:
+          - text: Don't have an account?
+          - link "Sign up" [ref=e44] [cursor=pointer]:
+            - /url: /register
+  - contentinfo [ref=e45]:
+    - generic [ref=e46]:
+      - generic [ref=e47]: © Twenty Twenty-Six · GRC Charter
+      - generic [ref=e48]: Fides · Ratio · Ordo

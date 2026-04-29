@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
   [
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded",
-    "font-display text-xs uppercase tracking-[0.15em]",
-    "transition-all duration-300 ease-out",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full",
+    "font-medium text-[13px] tracking-normal",
+    "transition-all duration-200 ease-out",
     "disabled:pointer-events-none disabled:opacity-40",
     "[&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
     "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
@@ -19,21 +19,21 @@ const buttonVariants = cva(
       variant: {
         default: [
           "bg-primary text-primary-foreground",
-          "shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_8px_rgba(0,0,0,0.3)]",
-          "hover:brightness-110 hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--primary)_35%,transparent)]",
+          "shadow-[0_10px_30px_-16px_color-mix(in_srgb,var(--foreground)_28%,transparent)]",
+          "hover:-translate-y-px hover:brightness-[1.08] hover:shadow-[0_14px_36px_-18px_color-mix(in_srgb,var(--foreground)_36%,transparent)]",
         ].join(" "),
         secondary: [
-          "border-2 border-primary bg-transparent text-primary",
-          "hover:border-destructive hover:bg-destructive hover:text-destructive-foreground",
+          "border border-border bg-transparent text-foreground",
+          "hover:border-foreground hover:bg-muted",
         ].join(" "),
         destructive: [
           "bg-destructive text-destructive-foreground",
-          "shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_2px_8px_rgba(0,0,0,0.3)]",
-          "hover:brightness-110",
+          "shadow-[0_10px_30px_-16px_color-mix(in_srgb,var(--destructive)_40%,transparent)]",
+          "hover:-translate-y-px hover:brightness-[1.08]",
         ].join(" "),
         outline: [
-          "border border-border bg-transparent text-muted-foreground",
-          "hover:border-primary hover:text-primary hover:bg-muted",
+          "border border-border bg-transparent text-foreground",
+          "hover:border-primary hover:text-primary hover:bg-[color-mix(in_srgb,var(--primary)_6%,transparent)]",
         ].join(" "),
         ghost: [
           "bg-transparent text-muted-foreground",
@@ -45,9 +45,9 @@ const buttonVariants = cva(
         ].join(" "),
       },
       size: {
-        default: "h-10 px-6 py-2",
-        sm:      "h-8 px-4 py-1 text-[10px]",
-        lg:      "h-12 px-8 py-2.5",
+        default: "h-10 px-5 py-2",
+        sm:      "h-8 px-4 py-1 text-[11px]",
+        lg:      "h-12 px-7 py-3 text-sm",
         icon:    "size-9 p-0",
       },
     },

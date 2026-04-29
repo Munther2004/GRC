@@ -32,8 +32,8 @@ interface Props {
 
 const statusColors: Record<string, string> = {
     draft: 'bg-muted text-muted-foreground',
-    in_progress: 'bg-accent text-foreground',
-    completed: 'bg-green-50 text-green-700',
+    in_progress: 'bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-primary',
+    completed: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f]',
 };
 
 export default function AssessmentCompare({ assessments }: Props) {
@@ -68,10 +68,6 @@ export default function AssessmentCompare({ assessments }: Props) {
 
     const canCompare = selectedA && selectedB && selectedA !== selectedB;
 
-    const compareHref = canCompare
-        ? `/assessments/compare/result?assessment_a_id=${selectedA}&assessment_b_id=${selectedB}`
-        : '#';
-
     const handleCompare = () => {
         if (!canCompare) return;
         router.get('/assessments/compare/result', {
@@ -99,14 +95,14 @@ export default function AssessmentCompare({ assessments }: Props) {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20 dark:bg-primary/20">
-                        <GitCompare className="h-5 w-5 text-primary" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full" style={{ background: 'color-mix(in srgb, var(--primary) 18%, transparent)' }}>
+                        <GitCompare className="h-5 w-5" style={{ color: 'var(--primary)' }} />
                     </div>
                     <div>
-                        <h1 className="font-heading text-4xl font-normal text-foreground">
+                        <h1 className="text-4xl tracking-[-0.02em]" style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}>
                             Assessment Comparison
                         </h1>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                             Select two assessments to compare side by side
                         </p>
                     </div>
@@ -123,7 +119,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                         <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-[1fr_auto_1fr]">
                             {/* Assessment A */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                <label className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                     Assessment A — Baseline
                                 </label>
                                 <Select
@@ -162,7 +158,7 @@ export default function AssessmentCompare({ assessments }: Props) {
 
                                 {/* Preview card */}
                                 {assessmentAObj && (
-                                    <div className="space-y-1.5 rounded-lg border bg-accent/30 p-3">
+                                    <div className="space-y-1.5 rounded-2xl border p-3" style={{ background: 'color-mix(in srgb, var(--muted) 30%, transparent)' }}>
                                         <div className="flex items-center justify-between gap-2">
                                             <p className="truncate text-sm font-medium">
                                                 {assessmentAObj.title}
@@ -203,7 +199,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                             <div className="flex items-center justify-center pt-7">
                                 <div className="flex flex-col items-center gap-1">
                                     <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                                    <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+                                    <span className="text-xs uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em', fontWeight: 500 }}>
                                         vs
                                     </span>
                                 </div>
@@ -211,7 +207,7 @@ export default function AssessmentCompare({ assessments }: Props) {
 
                             {/* Assessment B */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                <label className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                     Assessment B — Latest
                                 </label>
                                 <Select
@@ -254,7 +250,7 @@ export default function AssessmentCompare({ assessments }: Props) {
 
                                 {/* Preview card */}
                                 {assessmentBObj && (
-                                    <div className="space-y-1.5 rounded-lg border bg-accent/30 p-3">
+                                    <div className="space-y-1.5 rounded-2xl border p-3" style={{ background: 'color-mix(in srgb, var(--muted) 30%, transparent)' }}>
                                         <div className="flex items-center justify-between gap-2">
                                             <p className="truncate text-sm font-medium">
                                                 {assessmentBObj.title}

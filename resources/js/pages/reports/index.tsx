@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import {
-    AlertTriangle, ClipboardList, TrendingUp, CheckCircle,
+    AlertTriangle, CheckCircle,
     XCircle, Clock, Eye, Download, Sparkles, Loader2,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -34,24 +34,16 @@ interface Props {
     stats: { total_risks: number; open_risks: number; total_assessments: number; total_frameworks: number };
 }
 
-const themeColors = {
-    success: '#B0E4CC',
-    primary: '#408A71',
-    destructive: '#8B2635',
-    border: '#285A48',
-    card: '#0D1F1C',
-};
-
-const complianceColor = (pct: number) => pct >= 80 ? themeColors.success : pct >= 50 ? themeColors.primary : themeColors.destructive;
+const complianceColor = (pct: number) => pct >= 80 ? '#46bd5f' : pct >= 50 ? '#f5b929' : '#e5484d';
 const complianceStyle = (pct: number): React.CSSProperties => ({ color: complianceColor(pct) });
 
-const RISK_COLORS = { critical: 'var(--destructive)', high: 'var(--border)', medium: 'var(--primary)', low: 'var(--chart-1)' };
+const RISK_COLORS = { critical: '#e5484d', high: '#f76b15', medium: '#f5b929', low: '#46bd5f' };
 
 const tooltipStyle = {
-    contentStyle: { backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '4px', fontFamily: "'Crimson Pro', serif", color: 'var(--foreground)' },
-    labelStyle:   { color: 'var(--primary)', fontFamily: "'Cinzel', serif", fontSize: '10px' },
+    contentStyle: { backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '12px', color: 'var(--foreground)' },
+    labelStyle:   { color: 'var(--primary)', fontSize: '11px' },
 };
-const axisStyle = { fill: 'var(--muted-foreground)', fontSize: 11, fontFamily: "'Cinzel', serif" };
+const axisStyle = { fill: 'var(--muted-foreground)', fontSize: 11 };
 
 export default function ReportsIndex({
     overallCompliance, complianceByFramework, riskByLevel, riskByCategory,
@@ -109,9 +101,9 @@ export default function ReportsIndex({
 
             <div className="space-y-8">
                 <div className="flex items-start justify-between gap-4">
-                    <PageHeader icon={TrendingUp} title="Reports" description="Organisation security and compliance summary" />
+                    <PageHeader title="Reports" description="Organisation security and compliance summary" />
                     <div className="flex shrink-0 items-center gap-2 pt-1">
-                        <span className="font-display text-[9px] uppercase tracking-wider" style={{ color: 'rgba(156,139,122,0.6)' }}>
+                        <span className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                             {new Date().toLocaleDateString()}
                         </span>
                         <a href="/reports/export-pdf" target="_blank">
@@ -140,14 +132,14 @@ export default function ReportsIndex({
                 {/* Compliance Overview */}
                 <div className="grid grid-cols-3 gap-6">
                     <Card>
-                        <CardHeader><CardTitle className="font-heading text-lg font-normal">Overall Compliance</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Overall Compliance</CardTitle></CardHeader>
                         <CardContent>
                             <div className="flex flex-col items-center justify-center py-4">
-                                <span className="font-heading text-7xl font-normal" style={complianceStyle(overallCompliance)}>
+                                <span className="text-7xl tabular-nums" style={{ ...complianceStyle(overallCompliance), fontWeight: 500, letterSpacing: '-0.02em' }}>
                                     {overallCompliance}%
                                 </span>
-                                <p className="font-body mt-2 text-sm italic text-muted-foreground">Across all frameworks</p>
-                                <div className="mt-4 h-1 w-full overflow-hidden rounded-full" style={{ background: 'rgba(var(--color-border) / 0.5)' }}>
+                                <p className="mt-2 text-sm" style={{ color: 'var(--muted-foreground)' }}>Across all frameworks</p>
+                                <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full" style={{ background: 'var(--muted)' }}>
                                     <div className="h-full rounded-full transition-all" style={{ width: `${overallCompliance}%`, backgroundColor: complianceColor(overallCompliance) }} />
                                 </div>
                             </div>
@@ -155,12 +147,12 @@ export default function ReportsIndex({
                     </Card>
 
                     <Card className="col-span-2">
-                        <CardHeader><CardTitle className="font-heading text-lg font-normal">Compliance by Framework</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Compliance by Framework</CardTitle></CardHeader>
                         <CardContent>
                             <div className="h-48 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={frameworkChartData} barSize={40}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke={themeColors.border} vertical={false} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={axisStyle} />
                                         <YAxis domain={[0, 100]} axisLine={false} tickLine={false} tick={axisStyle} />
                                         <Tooltip {...tooltipStyle} formatter={(v: any) => [`${v}%`, 'Compliance']} />
@@ -175,14 +167,14 @@ export default function ReportsIndex({
                             <div className="mt-4 space-y-2">
                                 {complianceByFramework.map((f) => (
                                     <div key={f.id} className="flex items-center justify-between">
-                                        <span className="font-body text-sm text-foreground">{f.short_name}</span>
+                                        <span className="text-sm" style={{ color: 'var(--foreground)' }}>{f.short_name}</span>
                                         <div className="flex items-center gap-3">
-                                            <span className="font-body text-xs italic text-muted-foreground">
+                                            <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                 {f.assessments_count} assessment{f.assessments_count !== 1 ? 's' : ''}
                                             </span>
                                             {f.latest_score !== null
-                                                ? <span className="font-heading text-base" style={complianceStyle(f.latest_score)}>{f.latest_score}%</span>
-                                                : <span className="font-body text-xs italic text-muted-foreground">No data</span>
+                                                ? <span className="text-base tabular-nums" style={{ ...complianceStyle(f.latest_score), fontWeight: 500 }}>{f.latest_score}%</span>
+                                                : <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>No data</span>
                                             }
                                         </div>
                                     </div>
@@ -195,7 +187,7 @@ export default function ReportsIndex({
                 {/* Monthly Trend */}
                 {monthlyTrend.length > 0 && (
                     <Card>
-                        <CardHeader><CardTitle className="font-heading text-lg font-normal">Compliance Trend — Last 6 Months</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Compliance Trend — Last 6 Months</CardTitle></CardHeader>
                         <CardContent>
                             <div className="h-48 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -215,7 +207,7 @@ export default function ReportsIndex({
                 {/* Risk Summary */}
                 <div className="grid grid-cols-3 gap-6">
                     <Card>
-                        <CardHeader><CardTitle className="font-heading text-lg font-normal">Risks by Level</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Risks by Level</CardTitle></CardHeader>
                         <CardContent>
                             <div className="h-48 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -224,7 +216,7 @@ export default function ReportsIndex({
                                             {riskLevelData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                                         </Pie>
                                         <Tooltip {...tooltipStyle} />
-                                        <Legend iconSize={8} wrapperStyle={{ fontSize: 10, fontFamily: "'Cinzel', serif", color: 'var(--muted-foreground)' }} />
+                                        <Legend iconSize={8} wrapperStyle={{ fontSize: 10, color: 'var(--muted-foreground)' }} />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>
@@ -232,8 +224,8 @@ export default function ReportsIndex({
                                 {riskLevelData.map((r) => (
                                     <div key={r.name} className="flex items-center gap-2">
                                         <div className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.color }} />
-                                        <span className="font-body text-xs text-muted-foreground">
-                                            {r.name}: <span className="font-heading not-italic text-foreground">{r.value}</span>
+                                        <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
+                                            {r.name}: <span style={{ color: 'var(--foreground)', fontWeight: 500 }}>{r.value}</span>
                                         </span>
                                     </div>
                                 ))}
@@ -242,7 +234,7 @@ export default function ReportsIndex({
                     </Card>
 
                     <Card>
-                        <CardHeader><CardTitle className="font-heading text-lg font-normal">Risks by Category</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Risks by Category</CardTitle></CardHeader>
                         <CardContent>
                             <div className="h-64 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -259,20 +251,20 @@ export default function ReportsIndex({
                     </Card>
 
                     <Card>
-                        <CardHeader><CardTitle className="font-heading text-lg font-normal">Risks by Status</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Risks by Status</CardTitle></CardHeader>
                         <CardContent className="space-y-2 pt-2">
                             {[
-                                { label: 'Open',         value: riskByStatus.open,         icon: AlertTriangle, color: 'var(--destructive)', bg: 'rgba(var(--color-destructive) / 0.1)'  },
-                                { label: 'In Progress',  value: riskByStatus.in_progress,  icon: Clock,         color: 'var(--primary)', bg: 'rgba(var(--color-primary) / 0.1)' },
-                                { label: 'Under Review', value: riskByStatus.under_review, icon: Eye,           color: 'var(--border)', bg: 'rgba(var(--color-border) / 0.1)' },
-                                { label: 'Closed',       value: riskByStatus.closed,       icon: CheckCircle,   color: 'var(--primary)', bg: 'rgba(var(--color-primary) / 0.1)' },
-                            ].map(({ label, value, icon: Icon, color, bg }) => (
-                                    <div key={label} className="flex items-center justify-between rounded p-3" style={{ background: bg, borderColor: color, borderWidth: '1px', borderOpacity: '0.2' }}>
+                                { label: 'Open',         value: riskByStatus.open,         icon: AlertTriangle, color: '#e5484d' },
+                                { label: 'In Progress',  value: riskByStatus.in_progress,  icon: Clock,         color: 'var(--primary)' },
+                                { label: 'Under Review', value: riskByStatus.under_review, icon: Eye,           color: '#f5b929' },
+                                { label: 'Closed',       value: riskByStatus.closed,       icon: CheckCircle,   color: '#46bd5f' },
+                            ].map(({ label, value, icon: Icon, color }) => (
+                                <div key={label} className="flex items-center justify-between rounded-2xl p-3.5" style={{ background: `color-mix(in srgb, ${color} 8%, transparent)`, border: `1px solid color-mix(in srgb, ${color} 25%, transparent)` }}>
                                     <div className="flex items-center gap-2">
                                         <Icon className="h-4 w-4" style={{ color }} strokeWidth={1.5} />
-                                        <span className="font-display text-[10px] uppercase tracking-[0.1em] text-foreground">{label}</span>
+                                        <span className="text-[10px] uppercase" style={{ color: 'var(--foreground)', letterSpacing: '0.28em' }}>{label}</span>
                                     </div>
-                                    <span className="font-heading text-xl font-normal" style={{ color }}>{value}</span>
+                                    <span className="text-xl tabular-nums" style={{ color, fontWeight: 500 }}>{value}</span>
                                 </div>
                             ))}
                         </CardContent>
@@ -281,21 +273,21 @@ export default function ReportsIndex({
 
                 {/* Assessment History */}
                 <Card>
-                    <CardHeader><CardTitle className="font-heading text-lg font-normal">Assessment History</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Assessment History</CardTitle></CardHeader>
                     <CardContent className="p-0">
                         {assessmentHistory.length === 0 ? (
                             <div className="p-8 text-center">
-                                <p className="font-body italic text-muted-foreground">
+                                <p style={{ color: 'var(--muted-foreground)' }}>
                                     No completed assessments yet.{' '}
-                                    <Link href="/assessments" className="text-primary">Start one.</Link>
+                                    <Link href="/assessments" className="text-primary hover:underline">Start one.</Link>
                                 </p>
                             </div>
                         ) : (
                             <table className="w-full text-sm">
-                                <thead style={{ borderTopColor: 'var(--border)', borderTopWidth: '1px', borderBottomColor: 'var(--border)', borderBottomWidth: '1px', background: 'rgba(var(--color-card) / 0.4)' }}>
+                                <thead style={{ borderTopColor: 'var(--border)', borderTopWidth: '1px', borderBottomColor: 'var(--border)', borderBottomWidth: '1px', background: 'color-mix(in srgb, var(--muted) 30%, transparent)' }}>
                                     <tr>
                                         {['Assessment', 'Framework', 'Period', 'Score', 'Completed', 'By'].map((h) => (
-                                            <th key={h} className="px-4 py-3 text-left font-display text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+                                            <th key={h} className="px-4 py-3 text-left text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em', fontWeight: 500 }}>
                                                 {h}
                                             </th>
                                         ))}
@@ -303,34 +295,28 @@ export default function ReportsIndex({
                                 </thead>
                                 <tbody>
                                     {assessmentHistory.map((a) => (
-                                        <tr key={a.id} className="transition-colors" style={{ borderBottomColor: 'var(--border)', borderBottomWidth: '1px', borderBottomOpacity: '0.4' }}
-                                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(var(--color-muted) / 0.1)')}
-                                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                                        >
+                                        <tr key={a.id} className="transition-colors hover:bg-muted/30" style={{ borderBottom: '1px solid var(--border)' }}>
                                             <td className="px-4 py-3">
-                                                <Link href={route('assessments.show', a.id)} className="font-body text-sm transition-colors text-primary"
-                                                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--foreground)')}
-                                                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--primary)')}                                                
-                                                >
+                                                <Link href={route('assessments.show', a.id)} className="text-sm transition-colors hover:underline" style={{ color: 'var(--primary)' }}>
                                                     {a.title}
                                                 </Link>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <Badge variant="outline">{a.framework}</Badge>
                                             </td>
-                                            <td className="px-4 py-3 font-body italic text-muted-foreground">{a.period}</td>
+                                            <td className="px-4 py-3" style={{ color: 'var(--muted-foreground)' }}>{a.period}</td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-1 w-16 overflow-hidden rounded-full" style={{ background: 'rgba(var(--color-border) / 0.5)' }}>
+                                                    <div className="h-1 w-16 overflow-hidden rounded-full" style={{ background: 'var(--muted)' }}>
                                                         <div className="h-full rounded-full" style={{ width: `${a.compliance_percentage}%`, background: complianceColor(a.compliance_percentage) }} />
                                                     </div>
-                                                    <span className="font-heading text-base" style={complianceStyle(a.compliance_percentage)}>
+                                                    <span className="text-base tabular-nums" style={{ ...complianceStyle(a.compliance_percentage), fontWeight: 500 }}>
                                                         {a.compliance_percentage}%
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 font-display text-[10px] text-muted-foreground">{a.completed_at}</td>
-                                            <td className="px-4 py-3 font-body italic text-muted-foreground">{a.user}</td>
+                                            <td className="px-4 py-3 text-xs" style={{ color: 'var(--muted-foreground)' }}>{a.completed_at}</td>
+                                            <td className="px-4 py-3" style={{ color: 'var(--muted-foreground)' }}>{a.user}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -342,14 +328,14 @@ export default function ReportsIndex({
 
             {/* Gap Analysis overlay */}
             {generatingGap && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}>
-                    <div className="mx-4 flex max-w-sm flex-col items-center gap-4 rounded p-8 bg-card border" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}>
-                        <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'rgba(var(--color-primary) / 0.1)', borderColor: 'rgba(var(--color-primary) / 0.3)', borderWidth: '1px' }}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
+                    <div className="mx-4 flex max-w-sm flex-col items-center gap-4 rounded-2xl p-8 bg-card border" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'color-mix(in srgb, var(--primary) 12%, transparent)', borderColor: 'color-mix(in srgb, var(--primary) 30%, transparent)', borderWidth: '1px' }}>
                             <Sparkles className="h-7 w-7 animate-pulse text-primary" />
                         </div>
                         <div className="text-center">
-                            <p className="font-heading text-xl font-normal text-foreground">Generating Gap Analysis</p>
-                            <p className="font-body text-sm italic text-muted-foreground">AI is analysing your compliance gaps…</p>
+                            <p className="text-xl" style={{ color: 'var(--foreground)', fontWeight: 500 }}>Generating Gap Analysis</p>
+                            <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>AI is analysing your compliance gaps…</p>
                         </div>
                         <Loader2 className="h-5 w-5 animate-spin text-primary" />
                     </div>
@@ -358,14 +344,14 @@ export default function ReportsIndex({
 
             {/* Executive Summary overlay */}
             {generating && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}>
-                    <div className="mx-4 flex max-w-sm flex-col items-center gap-4 rounded p-8 bg-card border" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}>
-                        <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'rgba(var(--color-primary) / 0.1)', borderColor: 'rgba(var(--color-primary) / 0.3)', borderWidth: '1px' }}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
+                    <div className="mx-4 flex max-w-sm flex-col items-center gap-4 rounded-2xl p-8 bg-card border" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'color-mix(in srgb, var(--primary) 12%, transparent)', borderColor: 'color-mix(in srgb, var(--primary) 30%, transparent)', borderWidth: '1px' }}>
                             <Sparkles className="h-7 w-7 animate-pulse text-primary" />
                         </div>
                         <div className="text-center">
-                            <p className="font-heading text-xl font-normal text-foreground">Generating Executive Summary</p>
-                            <p className="font-body text-sm italic text-muted-foreground">AI is analysing your GRC data…</p>
+                            <p className="text-xl" style={{ color: 'var(--foreground)', fontWeight: 500 }}>Generating Executive Summary</p>
+                            <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>AI is analysing your GRC data…</p>
                         </div>
                         <Loader2 className="h-5 w-5 animate-spin text-primary" />
                     </div>
@@ -375,11 +361,16 @@ export default function ReportsIndex({
             {/* Toast */}
             {toast && (
                 <div
-                    className="fixed right-6 bottom-6 z-50 flex items-center gap-3 rounded px-4 py-3 font-display text-[10px] uppercase tracking-widest"
-                    style={toast.type === 'success'
-                        ? { background: 'rgba(var(--color-chart-1) / 0.15)', borderColor: 'rgba(var(--color-chart-1) / 0.4)', borderWidth: '1px', color: 'var(--chart-1)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }
-                        : { background: 'rgba(var(--color-destructive) / 0.15)',  borderColor: 'rgba(var(--color-destructive) / 0.4)',  borderWidth: '1px', color: 'var(--destructive)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }
-                    }
+                    className="fixed right-6 bottom-6 z-50 flex items-center gap-3 rounded-full px-4 py-3 text-[10px] uppercase"
+                    style={{
+                        ...(toast.type === 'success'
+                            ? { background: 'rgba(70,189,95,0.12)', borderColor: 'rgba(70,189,95,0.4)', color: '#46bd5f' }
+                            : { background: 'color-mix(in srgb, var(--destructive) 12%, transparent)', borderColor: 'color-mix(in srgb, var(--destructive) 40%, transparent)', color: 'var(--destructive)' }
+                        ),
+                        borderWidth: '1px',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                        letterSpacing: '0.28em',
+                    }}
                 >
                     {toast.type === 'success' ? <CheckCircle className="h-4 w-4 shrink-0" /> : <XCircle className="h-4 w-4 shrink-0" />}
                     <span>{toast.text}</span>

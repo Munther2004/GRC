@@ -72,20 +72,20 @@ interface Props {
 }
 
 const statusOptions = [
-    { value: 'compliant', label: 'Compliant', color: 'bg-green-500' },
+    { value: 'compliant', label: 'Compliant', color: 'bg-[#46bd5f]' },
     {
         value: 'partially_compliant',
         label: 'Partially Compliant',
-        color: 'bg-yellow-500',
+        color: 'bg-[#f5b929]',
     },
-    { value: 'non_compliant', label: 'Non-Compliant', color: 'bg-red-500' },
-    { value: 'not_applicable', label: 'Not Applicable', color: 'bg-gray-400' },
+    { value: 'non_compliant', label: 'Non-Compliant', color: 'bg-[#e5484d]' },
+    { value: 'not_applicable', label: 'Not Applicable', color: 'bg-muted-foreground' },
 ];
 
 const statusBadgeColors: Record<string, string> = {
-    compliant: 'bg-green-50 text-green-700 border-green-200',
-    partially_compliant: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    non_compliant: 'bg-red-950 text-red-400 border-red-200',
+    compliant: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
+    partially_compliant: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
+    non_compliant: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
     not_applicable: 'bg-muted text-muted-foreground border-border',
 };
 
@@ -277,9 +277,9 @@ export default function Questionnaire({
             <div className="mx-auto max-w-4xl space-y-6">
                 {/* Controls Hub pre-fill notice */}
                 {prefilledCount > 0 && (
-                    <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm dark:border-primary/30 dark:bg-primary/10">
-                        <CheckCircle className="h-4 w-4 shrink-0 text-primary" />
-                        <span className="text-primary dark:text-primary">
+                    <div className="flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: 'color-mix(in srgb, var(--primary) 25%, transparent)', background: 'color-mix(in srgb, var(--primary) 8%, transparent)' }}>
+                        <CheckCircle className="h-4 w-4 shrink-0" style={{ color: 'var(--primary)' }} />
+                        <span style={{ color: 'var(--primary)' }}>
                             <strong>{prefilledCount}</strong> control
                             {prefilledCount !== 1 ? 's' : ''} pre-filled from
                             Controls Hub — update if status has changed.
@@ -296,14 +296,14 @@ export default function Questionnaire({
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="text-xl font-bold text-foreground">
+                            <h1 className="text-2xl tracking-[-0.02em]" style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}>
                                 {assessment.title}
                             </h1>
                             <div className="mt-1 flex items-center gap-2">
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline">
                                     {assessment.framework.short_name}
                                 </Badge>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     Page {pagination.current_page} of{' '}
                                     {pagination.total_pages}
                                 </span>
@@ -314,7 +314,8 @@ export default function Questionnaire({
                         <Button
                             onClick={qaAutoFill}
                             variant="outline"
-                            className="gap-2 border-orange-400 text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950"
+                            className="gap-2"
+                            style={{ borderColor: '#f76b15', color: '#f76b15' }}
                             disabled={saving}
                             title="QA: randomly fills all controls and submits the assessment"
                         >
@@ -323,7 +324,8 @@ export default function Questionnaire({
                         </Button>
                         <Button
                             onClick={submitAssessment}
-                            className="gap-2 bg-green-600 hover:bg-green-700"
+                            className="gap-2"
+                            style={{ background: '#46bd5f', color: '#091413' }}
                             disabled={saving}
                         >
                             <CheckCircle className="h-4 w-4" />
@@ -336,20 +338,20 @@ export default function Questionnaire({
                 <Card>
                     <CardContent className="p-4">
                         <div className="mb-2 flex items-center justify-between">
-                            <span className="font-heading text-lg font-normal">
+                            <span className="text-lg" style={{ fontWeight: 500 }}>
                                 Overall Progress
                             </span>
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                                 {progress.answered} / {progress.total} answered
                             </span>
                         </div>
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                        <div className="h-2 w-full overflow-hidden rounded-full" style={{ background: 'var(--muted)' }}>
                             <div
-                                className="h-full rounded-full bg-primary transition-all duration-500"
-                                style={{ width: `${progress.percent}%` }}
+                                className="h-full rounded-full transition-all duration-500"
+                                style={{ width: `${progress.percent}%`, background: 'var(--primary)' }}
                             />
                         </div>
-                        <p className="mt-1 text-xs text-muted-foreground">
+                        <p className="mt-1 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                             {progress.percent}% complete
                         </p>
                     </CardContent>
@@ -371,27 +373,33 @@ export default function Questionnaire({
                         return (
                             <Card
                                 key={item.id}
-                                className={`transition-all ${ answer?.compliance_status === 'compliant' ? 'border-green-200 dark:border-green-800' : answer?.compliance_status === 'partially_compliant' ? 'border-yellow-200 dark:border-yellow-800' : answer?.compliance_status === 'non_compliant' ? 'border-red-200 dark:border-red-800' : '' }`}
+                                className="transition-all"
+                                style={
+                                    answer?.compliance_status === 'compliant' ? { borderColor: 'rgba(70,189,95,0.4)' }
+                                    : answer?.compliance_status === 'partially_compliant' ? { borderColor: 'rgba(245,185,41,0.4)' }
+                                    : answer?.compliance_status === 'non_compliant' ? { borderColor: 'rgba(229,72,77,0.4)' }
+                                    : undefined
+                                }
                             >
                                 <CardHeader className="pb-3">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex flex-1 items-start gap-3">
-                                            <span className="mt-0.5 w-6 shrink-0 font-mono text-xs text-muted-foreground">
+                                            <span className="mt-0.5 w-6 shrink-0 font-mono text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                 {globalIndex}
                                             </span>
                                             <div className="flex-1">
                                                 <div className="flex flex-wrap items-center gap-2">
-                                                    <span className="rounded bg-muted/50 px-2 py-0.5 font-mono text-xs text-foreground/80">
+                                                    <span className="rounded-full px-2 py-0.5 font-mono text-xs" style={{ background: 'color-mix(in srgb, var(--muted) 50%, transparent)', color: 'var(--foreground)' }}>
                                                         {
                                                             item.control
                                                                 .control_id
                                                         }
                                                     </span>
-                                                    <span className="text-xs text-muted-foreground">
+                                                    <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                         {item.control.category}
                                                     </span>
                                                 </div>
-                                                <CardTitle className="mt-1 text-sm font-semibold">
+                                                <CardTitle className="mt-1 text-sm">
                                                     {item.control.title}
                                                 </CardTitle>
                                             </div>
@@ -400,7 +408,7 @@ export default function Questionnaire({
                                             {answer?.compliance_status && (
                                                 <Badge
                                                     variant="outline"
-                                                    className={`text-xs capitalize ${statusBadgeColors[answer.compliance_status]}`}
+                                                    className={`capitalize ${statusBadgeColors[answer.compliance_status]}`}
                                                 >
                                                     {answer.compliance_status.replace(
                                                         '_',
@@ -418,7 +426,8 @@ export default function Questionnaire({
                                                 disabled={
                                                     helpLoading[item.control_id]
                                                 }
-                                                className={`flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-all ${ activeHelpControlId === item.control_id ? 'border-secondary/30 bg-secondary/20 text-secondary-foreground dark:border-secondary/30 dark:bg-secondary/40 dark:text-secondary-foreground' : 'border-secondary/20 text-secondary-foreground hover:bg-secondary/10 dark:border-secondary/20 dark:text-secondary-foreground dark:hover:bg-secondary/40' }`}
+                                                className="flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-all"
+                                                style={activeHelpControlId === item.control_id ? { borderColor: 'color-mix(in srgb, var(--primary) 30%, transparent)', background: 'color-mix(in srgb, var(--primary) 18%, transparent)', color: 'var(--primary)' } : { borderColor: 'color-mix(in srgb, var(--primary) 25%, transparent)', color: 'var(--primary)' }}
                                                 title="Get AI explanation for this control"
                                             >
                                                 {helpLoading[
@@ -441,7 +450,7 @@ export default function Questionnaire({
                                                             : item.id,
                                                     )
                                                 }
-                                                className="text-muted-foreground hover:text-muted-foreground"
+                                                className="text-muted-foreground hover:text-foreground"
                                             >
                                                 <ChevronRight
                                                     className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
@@ -453,19 +462,19 @@ export default function Questionnaire({
 
                                 <CardContent className="space-y-4">
                                     {/* Description */}
-                                    <p className="text-sm text-foreground/80">
+                                    <p className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.85 }}>
                                         {item.control.description}
                                     </p>
 
                                     {/* AI Help Panel */}
                                     {activeHelpControlId ===
                                         item.control_id && (
-                                        <div className="overflow-hidden rounded-lg border border-secondary/20 bg-secondary/5 transition-all duration-200 dark:border-secondary/20 dark:bg-secondary/20">
+                                        <div className="overflow-hidden rounded-2xl border transition-all duration-200" style={{ borderColor: 'color-mix(in srgb, var(--primary) 25%, transparent)', background: 'color-mix(in srgb, var(--primary) 5%, transparent)' }}>
                                             {/* Panel header */}
-                                            <div className="flex items-center justify-between border-b border-secondary/20 bg-secondary/10 px-4 py-2.5 dark:border-secondary/20 dark:bg-secondary/30">
+                                            <div className="flex items-center justify-between border-b px-4 py-2.5" style={{ borderColor: 'color-mix(in srgb, var(--primary) 25%, transparent)', background: 'color-mix(in srgb, var(--primary) 12%, transparent)' }}>
                                                 <div className="flex items-center gap-2">
-                                                    <Sparkles className="h-3.5 w-3.5 text-secondary-foreground dark:text-secondary-foreground" />
-                                                    <span className="text-xs font-semibold text-secondary-foreground dark:text-secondary-foreground">
+                                                    <Sparkles className="h-3.5 w-3.5" style={{ color: 'var(--primary)' }} />
+                                                    <span className="text-xs" style={{ color: 'var(--primary)', fontWeight: 500 }}>
                                                         AI Guidance —{' '}
                                                         {
                                                             item.control
@@ -481,7 +490,8 @@ export default function Questionnaire({
                                                             null,
                                                         )
                                                     }
-                                                    className="text-secondary/60 transition-colors hover:text-secondary-foreground dark:hover:text-secondary-foreground"
+                                                    className="transition-colors hover:opacity-80"
+                                                    style={{ color: 'var(--muted-foreground)' }}
                                                 >
                                                     <X className="h-3.5 w-3.5" />
                                                 </button>
@@ -489,7 +499,7 @@ export default function Questionnaire({
 
                                             {/* Loading state */}
                                             {helpLoading[item.control_id] && (
-                                                <div className="flex items-center gap-2 px-4 py-4 text-sm text-secondary-foreground dark:text-secondary-foreground">
+                                                <div className="flex items-center gap-2 px-4 py-4 text-sm" style={{ color: 'var(--primary)' }}>
                                                     <Loader2 className="h-4 w-4 animate-spin" />
                                                     Asking Claude for
                                                     guidance...
@@ -500,7 +510,7 @@ export default function Questionnaire({
                                             {!helpLoading[item.control_id] &&
                                                 helpError[item.control_id] && (
                                                     <div className="space-y-2 px-4 py-3">
-                                                        <p className="text-xs text-red-400 dark:text-red-400">
+                                                        <p className="text-xs" style={{ color: 'var(--destructive)' }}>
                                                             {
                                                                 helpError[
                                                                     item
@@ -519,7 +529,7 @@ export default function Questionnaire({
                                                                         item.control_id,
                                                                     )
                                                                 }
-                                                                className="text-xs text-secondary-foreground underline hover:no-underline dark:text-secondary-foreground"
+                                                                className="text-xs underline hover:no-underline" style={{ color: 'var(--primary)' }}
                                                             >
                                                                 Retry
                                                             </button>
@@ -539,11 +549,10 @@ export default function Questionnaire({
                                                         <div className="space-y-3 px-4 py-3 text-xs">
                                                             {/* Plain English */}
                                                             <div>
-                                                                <p className="mb-1 font-semibold text-secondary-foreground dark:text-secondary-foreground">
-                                                                    💬 What this
-                                                                    means
+                                                                <p className="mb-1" style={{ color: 'var(--primary)', fontWeight: 500 }}>
+                                                                    What this means
                                                                 </p>
-                                                                <p className="text-foreground/85">
+                                                                <p style={{ color: 'var(--foreground)', opacity: 0.85 }}>
                                                                     {
                                                                         ex.plain_english
                                                                     }
@@ -552,11 +561,10 @@ export default function Questionnaire({
 
                                                             {/* What it requires */}
                                                             <div>
-                                                                <p className="mb-1 font-semibold text-secondary-foreground dark:text-secondary-foreground">
-                                                                    ✅ What it
-                                                                    requires
+                                                                <p className="mb-1" style={{ color: 'var(--primary)', fontWeight: 500 }}>
+                                                                    What it requires
                                                                 </p>
-                                                                <ul className="space-y-0.5 text-foreground/85">
+                                                                <ul className="space-y-0.5" style={{ color: 'var(--foreground)', opacity: 0.85 }}>
                                                                     {ex.what_it_requires.map(
                                                                         (
                                                                             req,
@@ -568,7 +576,7 @@ export default function Questionnaire({
                                                                                 }
                                                                                 className="flex gap-1.5"
                                                                             >
-                                                                                <span className="shrink-0 text-secondary/60">
+                                                                                <span className="shrink-0" style={{ color: 'var(--muted-foreground)' }}>
                                                                                     •
                                                                                 </span>
                                                                                 {
@@ -582,11 +590,10 @@ export default function Questionnaire({
 
                                                             {/* Evidence examples */}
                                                             <div>
-                                                                <p className="mb-1 font-semibold text-secondary-foreground dark:text-secondary-foreground">
-                                                                    📎 Evidence
-                                                                    examples
+                                                                <p className="mb-1" style={{ color: 'var(--primary)', fontWeight: 500 }}>
+                                                                    Evidence examples
                                                                 </p>
-                                                                <ul className="space-y-0.5 text-foreground/85">
+                                                                <ul className="space-y-0.5" style={{ color: 'var(--foreground)', opacity: 0.85 }}>
                                                                     {ex.evidence_examples.map(
                                                                         (
                                                                             ev,
@@ -598,7 +605,7 @@ export default function Questionnaire({
                                                                                 }
                                                                                 className="flex gap-1.5"
                                                                             >
-                                                                                <span className="shrink-0 text-secondary/60">
+                                                                                <span className="shrink-0" style={{ color: 'var(--muted-foreground)' }}>
                                                                                     •
                                                                                 </span>
                                                                                 {
@@ -612,12 +619,10 @@ export default function Questionnaire({
 
                                                             {/* Compliant looks like */}
                                                             <div>
-                                                                <p className="mb-1 font-semibold text-secondary-foreground dark:text-secondary-foreground">
-                                                                    ✔ Compliant
-                                                                    implementation
-                                                                    looks like
+                                                                <p className="mb-1" style={{ color: 'var(--primary)', fontWeight: 500 }}>
+                                                                    Compliant implementation looks like
                                                                 </p>
-                                                                <p className="text-foreground/85">
+                                                                <p style={{ color: 'var(--foreground)', opacity: 0.85 }}>
                                                                     {
                                                                         ex.compliant_looks_like
                                                                     }
@@ -625,13 +630,11 @@ export default function Questionnaire({
                                                             </div>
 
                                                             {/* Risk */}
-                                                            <div className="rounded-md border border-border bg-amber-50 px-3 py-2 dark:border-amber-800 dark:bg-amber-950/30">
-                                                                <p className="mb-0.5 font-semibold text-amber-700 dark:text-amber-400">
-                                                                    ⚠ Risk if
-                                                                    not
-                                                                    implemented
+                                                            <div className="rounded-2xl border px-3 py-2" style={{ borderColor: 'rgba(245,185,41,0.4)', background: 'rgba(245,185,41,0.08)' }}>
+                                                                <p className="mb-0.5" style={{ color: '#f5b929', fontWeight: 500 }}>
+                                                                    Risk if not implemented
                                                                 </p>
-                                                                <p className="text-foreground/85">
+                                                                <p style={{ color: 'var(--foreground)', opacity: 0.85 }}>
                                                                     {
                                                                         ex.non_compliant_risks
                                                                     }
@@ -647,8 +650,8 @@ export default function Questionnaire({
                                     {isExpanded &&
                                         item.control
                                             .implementation_guidance && (
-                                            <div className="rounded-lg bg-primary/10 p-3 text-xs text-primary dark:bg-primary/10 dark:text-primary">
-                                                <p className="mb-1 font-semibold">
+                                            <div className="rounded-2xl p-3 text-xs" style={{ background: 'color-mix(in srgb, var(--primary) 10%, transparent)', color: 'var(--primary)' }}>
+                                                <p className="mb-1" style={{ fontWeight: 500 }}>
                                                     Implementation Guidance:
                                                 </p>
                                                 <p>
@@ -662,7 +665,7 @@ export default function Questionnaire({
 
                                     {/* Compliance Status Buttons */}
                                     <div>
-                                        <p className="mb-2 text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                        <p className="mb-2 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                             Compliance Status
                                         </p>
                                         <div className="flex flex-wrap gap-2">
@@ -677,11 +680,11 @@ export default function Questionnaire({
                                                             opt.value,
                                                         )
                                                     }
-                                                    className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
+                                                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                                                         answer?.compliance_status ===
                                                         opt.value
                                                             ? `${opt.color} border-transparent text-white`
-                                                            : 'border-border bg-card text-foreground/80 hover:border-border dark:bg-secondary'
+                                                            : 'border-border bg-card text-foreground hover:border-foreground'
                                                     }`}
                                                 >
                                                     {opt.label}
@@ -693,7 +696,7 @@ export default function Questionnaire({
                                     {/* Comments */}
                                     {!isNA && (
                                         <div>
-                                            <p className="mb-1 text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                            <p className="mb-1 text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                                 Comments
                                             </p>
                                             <textarea
@@ -709,7 +712,7 @@ export default function Questionnaire({
                                                 }
                                                 rows={2}
                                                 placeholder="Add implementation notes, findings, or observations..."
-                                                className="w-full resize-none rounded-md border border-border bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none dark:bg-secondary"
+                                                className="w-full resize-none rounded-2xl border border-border bg-card px-3 py-2 text-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none"
                                             />
                                         </div>
                                     )}
@@ -718,7 +721,7 @@ export default function Questionnaire({
                                     {!isNA && (
                                         <div>
                                             <div className="mb-1 flex items-center justify-between">
-                                                <p className="text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+                                                <p className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                                     Evidence
                                                 </p>
                                                 <button
@@ -728,7 +731,7 @@ export default function Questionnaire({
                                                             item.id
                                                         ]?.click()
                                                     }
-                                                    className="flex items-center gap-1 text-xs text-primary hover:text-primary/80"
+                                                    className="flex items-center gap-1 text-xs hover:opacity-80" style={{ color: 'var(--primary)' }}
                                                 >
                                                     <Upload className="h-3 w-3" />{' '}
                                                     Upload file
@@ -759,10 +762,10 @@ export default function Questionnaire({
                                             {/* Expiry date picker shown when a file is selected for this item */}
                                             {pendingUpload?.itemId ===
                                                 item.id && (
-                                                <div className="mt-2 space-y-2 rounded-lg border border-primary/20 bg-primary/10 p-3 dark:border-primary/30 dark:bg-primary/10">
-                                                    <p className="text-xs font-medium text-primary dark:text-primary">
+                                                <div className="mt-2 space-y-2 rounded-2xl border p-3" style={{ borderColor: 'color-mix(in srgb, var(--primary) 25%, transparent)', background: 'color-mix(in srgb, var(--primary) 8%, transparent)' }}>
+                                                    <p className="text-xs" style={{ color: 'var(--primary)', fontWeight: 500 }}>
                                                         File selected:{' '}
-                                                        <span className="font-semibold">
+                                                        <span style={{ fontWeight: 600 }}>
                                                             {
                                                                 pendingUpload
                                                                     .file.name
@@ -771,7 +774,7 @@ export default function Questionnaire({
                                                     </p>
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex-1">
-                                                            <label className="mb-1 block text-xs text-muted-foreground">
+                                                            <label className="mb-1 block text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                                 Expiry Date
                                                                 (optional)
                                                             </label>
@@ -796,7 +799,7 @@ export default function Questionnaire({
                                                                             .value,
                                                                     )
                                                                 }
-                                                                className="rounded border border-border bg-card px-2 py-1 text-xs focus:ring-2 focus:ring-ring focus:outline-none dark:bg-secondary"
+                                                                className="rounded-full border border-border bg-card px-3 py-1 text-xs focus:ring-2 focus:ring-ring focus:outline-none"
                                                             />
                                                         </div>
                                                         <div className="flex gap-2 pt-4">
@@ -805,7 +808,6 @@ export default function Questionnaire({
                                                                 onClick={
                                                                     confirmEvidenceUpload
                                                                 }
-                                                                className="h-7 text-xs"
                                                             >
                                                                 Upload
                                                             </Button>
@@ -817,7 +819,6 @@ export default function Questionnaire({
                                                                         null,
                                                                     )
                                                                 }
-                                                                className="h-7 text-xs"
                                                             >
                                                                 Cancel
                                                             </Button>
@@ -832,20 +833,20 @@ export default function Questionnaire({
                                                     {item.evidence.map((ev) => (
                                                         <div
                                                             key={ev.id}
-                                                            className="flex items-center gap-2 rounded bg-muted/30 p-2 text-xs text-muted-foreground"
+                                                            className="flex items-center gap-2 rounded-full p-2 text-xs" style={{ background: 'color-mix(in srgb, var(--muted) 30%, transparent)', color: 'var(--muted-foreground)' }}
                                                         >
-                                                            <CheckCircle className="h-3 w-3 shrink-0 text-green-500" />
+                                                            <CheckCircle className="h-3 w-3 shrink-0" style={{ color: '#46bd5f' }} />
                                                             <span className="truncate">
                                                                 {ev.title}
                                                             </span>
-                                                            <span className="shrink-0 text-muted-foreground">
+                                                            <span className="shrink-0" style={{ color: 'var(--muted-foreground)' }}>
                                                                 ({ev.file_name})
                                                             </span>
                                                         </div>
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <p className="text-xs text-muted-foreground italic">
+                                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                     No evidence uploaded
                                                 </p>
                                             )}
@@ -885,7 +886,8 @@ export default function Questionnaire({
                                             page !== pagination.current_page &&
                                             goToPage(page)
                                         }
-                                        className={`h-8 w-8 rounded text-sm font-medium transition-colors ${ page === pagination.current_page ? 'bg-primary text-white' : 'text-muted-foreground hover:bg-muted dark:hover:bg-secondary' }`}
+                                        className="h-8 w-8 rounded-full text-sm font-medium transition-colors"
+                                        style={page === pagination.current_page ? { background: 'var(--primary)', color: 'var(--primary-foreground)' } : { color: 'var(--muted-foreground)' }}
                                     >
                                         {page}
                                     </button>
@@ -919,7 +921,8 @@ export default function Questionnaire({
                                     <Button
                                         onClick={submitAssessment}
                                         disabled={saving}
-                                        className="gap-2 bg-green-600 hover:bg-green-700"
+                                        className="gap-2"
+                                        style={{ background: '#46bd5f', color: '#091413' }}
                                     >
                                         <CheckCircle className="h-4 w-4" />{' '}
                                         Submit

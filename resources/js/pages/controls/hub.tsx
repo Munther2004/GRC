@@ -7,7 +7,6 @@ import {
     XCircle,
     MinusCircle,
     AlertCircle,
-    Shield,
     Search,
     Clock,
     FileWarning,
@@ -34,10 +33,7 @@ import {
     DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import AdminLayout from '@/layouts/admin-layout';
-import { route } from '@/lib/routes';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Select,
     SelectContent,
@@ -45,6 +41,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import AdminLayout from '@/layouts/admin-layout';
+import { route } from '@/lib/routes';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -149,27 +148,27 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_BADGE: Record<string, string> = {
     compliant:
-        'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800',
+        'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
     partially_compliant:
-        'bg-amber-50 text-amber-700 border-border dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800',
+        'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
     non_compliant:
-        'bg-red-950 text-red-400 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800',
+        'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
     not_applicable:
-        'bg-muted text-muted-foreground border-border dark:bg-secondary dark:text-muted-foreground dark:border-border',
+        'bg-muted text-muted-foreground border-border',
 };
 
 const RISK_LEVEL_BADGE: Record<string, string> = {
-    critical: 'bg-red-600 text-white',
-    high: 'bg-orange-500 text-white',
-    medium: 'bg-yellow-500 text-black',
-    low: 'bg-green-600 text-white',
+    critical: 'bg-[#e5484d] text-white',
+    high: 'bg-[#f76b15] text-white',
+    medium: 'bg-[#f5b929] text-[#091413]',
+    low: 'bg-[#46bd5f] text-white',
 };
 
 const PRIORITY_STYLES: Record<string, string> = {
-    Critical: 'bg-red-950 text-red-400 border-red-300',
-    High: 'bg-orange-950 text-orange-400 border-orange-300',
-    Medium: 'bg-amber-950 text-amber-400 border-yellow-300',
-    Low: 'bg-emerald-950 text-emerald-400 border-green-300',
+    Critical: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
+    High: 'bg-[rgba(247,107,21,0.12)] text-[#f76b15] border-[rgba(247,107,21,0.4)]',
+    Medium: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
+    Low: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
 };
 
 function StatusBadge({ status }: { status: ControlRow['current_status'] }) {
@@ -207,15 +206,15 @@ function EvidenceBadge({ status }: { status: ControlRow['evidence_status'] }) {
     const config = {
         valid: {
             icon: FileCheck2,
-            cls: 'text-emerald-400',
+            cls: 'text-[#46bd5f]',
             label: 'Evidence OK',
         },
         expiring: {
             icon: FileWarning,
-            cls: 'text-amber-400',
+            cls: 'text-[#f5b929]',
             label: 'Expiring Soon',
         },
-        expired: { icon: FileX, cls: 'text-red-500', label: 'Expired' },
+        expired: { icon: FileX, cls: 'text-[#e5484d]', label: 'Expired' },
     }[status];
 
     const Icon = config.icon;
@@ -447,17 +446,17 @@ export default function ControlsHub({
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="font-heading text-4xl font-normal text-foreground">
+                        <h1 className="text-4xl tracking-[-0.02em]" style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}>
                             Controls Hub
                         </h1>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                             Live compliance status across all controls
                         </p>
                     </div>
                     {canReview && (
                         <Link href={route('controls.approvals')}>
-                            <Button variant="outline" className="gap-2 text-sm">
-                                <Clock className="h-4 w-4 text-amber-500" />
+                            <Button variant="outline" className="gap-2">
+                                <Clock className="h-4 w-4" style={{ color: '#f5b929' }} />
                                 Approval Queue
                             </Button>
                         </Link>
@@ -469,44 +468,44 @@ export default function ControlsHub({
                     <CardContent className="space-y-3 p-4">
                         <div className="grid grid-cols-2 gap-4 text-center md:grid-cols-6">
                             <div>
-                                <p className="text-2xl font-bold">
+                                <p className="text-2xl tabular-nums" style={{ fontWeight: 500 }}>
                                     {stats.total}
                                 </p>
-                                <p className="text-xs text-muted-foreground">Total</p>
+                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Total</p>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-emerald-400">
+                                <p className="text-2xl tabular-nums" style={{ color: '#46bd5f', fontWeight: 500 }}>
                                     {stats.compliant}
                                 </p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     Compliant
                                 </p>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-amber-400">
+                                <p className="text-2xl tabular-nums" style={{ color: '#f5b929', fontWeight: 500 }}>
                                     {stats.partiallyCompliant}
                                 </p>
-                                <p className="text-xs text-muted-foreground">Partial</p>
+                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Partial</p>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-red-400">
+                                <p className="text-2xl tabular-nums" style={{ color: '#e5484d', fontWeight: 500 }}>
                                     {stats.nonCompliant}
                                 </p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     Non-Compliant
                                 </p>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-muted-foreground">
+                                <p className="text-2xl tabular-nums" style={{ color: 'var(--muted-foreground)', fontWeight: 500 }}>
                                     {stats.notApplicable}
                                 </p>
-                                <p className="text-xs text-muted-foreground">N/A</p>
+                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>N/A</p>
                             </div>
                             <div>
-                                <p className="text-2xl font-bold">
+                                <p className="text-2xl tabular-nums" style={{ fontWeight: 500 }}>
                                     {stats.compliancePct}%
                                 </p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     Compliant Rate
                                 </p>
                             </div>
@@ -515,27 +514,31 @@ export default function ControlsHub({
                             {stats.total > 0 && (
                                 <>
                                     <div
-                                        className="h-full bg-green-500 transition-all"
+                                        className="h-full transition-all"
                                         style={{
                                             width: `${(stats.compliant / stats.total) * 100}%`,
+                                            background: '#46bd5f',
                                         }}
                                     />
                                     <div
-                                        className="h-full bg-amber-400 transition-all"
+                                        className="h-full transition-all"
                                         style={{
                                             width: `${(stats.partiallyCompliant / stats.total) * 100}%`,
+                                            background: '#f5b929',
                                         }}
                                     />
                                     <div
-                                        className="h-full bg-red-500 transition-all"
+                                        className="h-full transition-all"
                                         style={{
                                             width: `${(stats.nonCompliant / stats.total) * 100}%`,
+                                            background: '#e5484d',
                                         }}
                                     />
                                     <div
-                                        className="h-full bg-gray-400 transition-all"
+                                        className="h-full transition-all"
                                         style={{
                                             width: `${(stats.notApplicable / stats.total) * 100}%`,
+                                            background: 'var(--muted-foreground)',
                                         }}
                                     />
                                 </>
@@ -633,7 +636,7 @@ export default function ControlsHub({
                 {/* Controls table */}
                 <Card>
                     <CardHeader className="pb-0">
-                        <CardTitle className="font-heading text-xl font-normal">
+                        <CardTitle className="text-xl" style={{ fontWeight: 500 }}>
                             {controls.total} control
                             {controls.total !== 1 ? 's' : ''}
                         </CardTitle>
@@ -712,7 +715,7 @@ export default function ControlsHub({
                                                             }
                                                         />
                                                         {ctrl.pending_request && (
-                                                            <span className="inline-flex w-fit items-center gap-1 rounded border border-border bg-amber-50 px-1.5 py-0.5 text-xs text-amber-700 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-400">
+                                                            <span className="inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-xs" style={{ background: 'rgba(245,185,41,0.12)', border: '1px solid rgba(245,185,41,0.4)', color: '#f5b929' }}>
                                                                 <Clock className="h-2.5 w-2.5 shrink-0" />
                                                                 Pending:{' '}
                                                                 {STATUS_LABELS[
@@ -732,7 +735,8 @@ export default function ControlsHub({
                                                 <td className="px-4 py-3">
                                                     {ctrl.highest_risk_level ? (
                                                         <span
-                                                            className={`rounded px-1.5 py-0.5 text-xs font-bold ${RISK_LEVEL_BADGE[ctrl.highest_risk_level]}`}
+                                                            className={`rounded-full px-2 py-0.5 text-xs ${RISK_LEVEL_BADGE[ctrl.highest_risk_level]}`}
+                                                            style={{ fontWeight: 500 }}
                                                         >
                                                             {ctrl.highest_risk_level
                                                                 .charAt(0)
@@ -757,7 +761,7 @@ export default function ControlsHub({
                                                             }
                                                         />
                                                         {ctrl.has_weak_evidence && (
-                                                            <span className="flex items-center gap-1 text-xs font-medium text-red-400 dark:text-red-400">
+                                                            <span className="flex items-center gap-1 text-xs font-medium" style={{ color: 'var(--destructive)' }}>
                                                                 <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                                                                 Weak Evidence
                                                             </span>
@@ -798,7 +802,8 @@ export default function ControlsHub({
                                                             <Button
                                                                 size="sm"
                                                                 variant="outline"
-                                                                className="h-7 cursor-default border-amber-300 px-2 text-xs text-amber-400"
+                                                                className="h-7 cursor-default px-2"
+                                                                style={{ borderColor: 'rgba(245,185,41,0.4)', color: '#f5b929' }}
                                                                 disabled
                                                                 title={`Pending approval — requested by ${ctrl.pending_request.requested_by}`}
                                                             >
@@ -835,6 +840,7 @@ export default function ControlsHub({
                                                             'non_compliant' && (
                                                             <Button
                                                                 size="sm"
+                                                                variant="outline"
                                                                 disabled={
                                                                     analyzing ===
                                                                     ctrl.id
@@ -844,15 +850,14 @@ export default function ControlsHub({
                                                                         ctrl,
                                                                     )
                                                                 }
-                                                                className="h-7 bg-secondary px-2 text-xs text-foreground hover:bg-secondary/80 disabled:opacity-60"
+                                                                className="h-7 px-2"
                                                             >
                                                                 {analyzing ===
                                                                 ctrl.id ? (
                                                                     <Loader2 className="h-3 w-3 animate-spin" />
                                                                 ) : (
                                                                     <>
-                                                                        ✨ AI
-                                                                        Fix
+                                                                        AI Fix
                                                                     </>
                                                                 )}
                                                             </Button>
@@ -913,15 +918,15 @@ export default function ControlsHub({
 
                     {updateModal && (
                         <div className="space-y-4 py-2">
-                            <div className="rounded-lg bg-muted/30 p-3">
-                                <p className="font-mono text-xs text-muted-foreground">
+                            <div className="rounded-2xl p-3" style={{ background: 'color-mix(in srgb, var(--muted) 30%, transparent)' }}>
+                                <p className="font-mono text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     {updateModal.control_id}
                                 </p>
-                                <p className="mt-0.5 text-sm font-medium">
+                                <p className="mt-0.5 text-sm" style={{ fontWeight: 500 }}>
                                     {updateModal.title}
                                 </p>
                                 <div className="mt-2 flex items-center gap-2">
-                                    <span className="text-xs text-muted-foreground">
+                                    <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                         Current:
                                     </span>
                                     <StatusBadge
@@ -930,9 +935,9 @@ export default function ControlsHub({
                                 </div>
                             </div>
 
-                            <div className="flex items-start gap-2 rounded-lg border border-border bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-950/20">
-                                <Clock className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
-                                <p className="text-xs text-amber-700 dark:text-amber-400">
+                            <div className="flex items-start gap-2 rounded-2xl border p-3" style={{ borderColor: 'rgba(245,185,41,0.4)', background: 'rgba(245,185,41,0.08)' }}>
+                                <Clock className="mt-0.5 h-4 w-4 shrink-0" style={{ color: '#f5b929' }} />
+                                <p className="text-xs" style={{ color: '#f5b929' }}>
                                     Status changes require approval from an
                                     administrator or auditor before taking
                                     effect.
@@ -1265,18 +1270,19 @@ export default function ControlsHub({
                             </div>
                             {planModal.plan.quick_wins.length > 0 && (
                                 <div>
-                                    <p className="mb-2 text-xs font-semibold text-emerald-400">
-                                        ⚡ Quick Wins
+                                    <p className="mb-2 text-xs" style={{ color: '#46bd5f', fontWeight: 600 }}>
+                                        Quick Wins
                                     </p>
                                     <div className="space-y-1.5">
                                         {planModal.plan.quick_wins.map(
                                             (w, i) => (
                                                 <div
                                                     key={i}
-                                                    className="flex items-start gap-2 rounded-lg bg-green-50 p-2.5 dark:bg-green-900/20"
+                                                    className="flex items-start gap-2 rounded-2xl p-2.5"
+                                                    style={{ background: 'rgba(70,189,95,0.08)' }}
                                                 >
-                                                    <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
-                                                    <span className="text-xs text-green-800 dark:text-green-300">
+                                                    <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: '#46bd5f' }} />
+                                                    <span className="text-xs" style={{ color: 'var(--foreground)' }}>
                                                         {w}
                                                     </span>
                                                 </div>
@@ -1287,7 +1293,7 @@ export default function ControlsHub({
                             )}
                             {planModal.plan.remediation_steps.length > 0 && (
                                 <div>
-                                    <p className="mb-3 text-xs font-semibold text-foreground/85">
+                                    <p className="mb-3 text-xs" style={{ color: 'var(--foreground)', fontWeight: 600 }}>
                                         Remediation Steps
                                     </p>
                                     <div className="space-y-3">
@@ -1297,17 +1303,17 @@ export default function ControlsHub({
                                                     key={s.step}
                                                     className="flex gap-3"
                                                 >
-                                                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary/20 text-xs font-bold text-secondary-foreground dark:bg-secondary/40 dark:text-secondary-foreground">
+                                                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs" style={{ background: 'color-mix(in srgb, var(--primary) 20%, transparent)', color: 'var(--primary)', fontWeight: 600 }}>
                                                         {s.step}
                                                     </div>
                                                     <div className="flex-1">
-                                                        <p className="text-sm font-semibold text-foreground">
+                                                        <p className="text-sm" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                                             {s.action}
                                                         </p>
-                                                        <p className="mt-0.5 text-xs text-muted-foreground">
+                                                        <p className="mt-0.5 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                             {s.detail}
                                                         </p>
-                                                        <div className="mt-1.5 rounded bg-muted/50 px-2 py-1 text-xs text-muted-foreground">
+                                                        <div className="mt-1.5 rounded-full bg-muted/50 px-2 py-1 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                             Evidence:{' '}
                                                             {s.evidence_needed}
                                                         </div>
@@ -1320,12 +1326,12 @@ export default function ControlsHub({
                             )}
                         </div>
 
-                        <div className="border-t border-border/50 p-4 dark:border-border">
+                        <div className="border-t p-4" style={{ borderColor: 'var(--border)' }}>
                             {savedRisk ? (
                                 <div className="flex flex-col items-center gap-3 py-1">
-                                    <div className="flex items-center gap-2 text-emerald-400 dark:text-green-400">
+                                    <div className="flex items-center gap-2" style={{ color: '#46bd5f' }}>
                                         <CheckCircle2 className="h-5 w-5" />
-                                        <span className="text-sm font-semibold">
+                                        <span className="text-sm" style={{ fontWeight: 500 }}>
                                             Remediation plan saved!
                                         </span>
                                     </div>
@@ -1337,7 +1343,7 @@ export default function ControlsHub({
                                             setPlanModal(null);
                                             setSavedRisk(null);
                                         }}
-                                        className="w-full gap-2 bg-secondary py-2.5 text-sm font-semibold text-foreground hover:bg-secondary/80"
+                                        className="w-full gap-2"
                                     >
                                         View Risk Record{' '}
                                         <ArrowRight className="h-4 w-4" />
@@ -1347,12 +1353,12 @@ export default function ControlsHub({
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="text-xs">
                                         {saveError && (
-                                            <span className="text-red-500">
+                                            <span style={{ color: 'var(--destructive)' }}>
                                                 {saveError}
                                             </span>
                                         )}
                                         {saving && (
-                                            <span className="text-muted-foreground">
+                                            <span style={{ color: 'var(--muted-foreground)' }}>
                                                 Saving...
                                             </span>
                                         )}
@@ -1369,7 +1375,7 @@ export default function ControlsHub({
                                             size="sm"
                                             disabled={saving}
                                             onClick={handleSavePlan}
-                                            className="gap-1 bg-secondary text-foreground hover:bg-secondary/80"
+                                            className="gap-1"
                                         >
                                             {saving ? (
                                                 <>
@@ -1388,15 +1394,20 @@ export default function ControlsHub({
                 </div>
             )}
 
-            {/* ── Toast ───────────────────────────────────────────────────────── */}
+            {/* Toast */}
             {toast && (
                 <div
-                    className={`fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-lg ${ toast.type === 'success' ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-800' }`}
+                    className="fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-2xl border px-4 py-3 text-sm shadow-lg"
+                    style={{
+                        borderColor: toast.type === 'success' ? 'rgba(70,189,95,0.4)' : 'rgba(229,72,77,0.4)',
+                        background: 'var(--popover)',
+                        color: 'var(--foreground)',
+                    }}
                 >
                     {toast.type === 'success' ? (
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" style={{ color: '#46bd5f' }} />
                     ) : (
-                        <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                        <XCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--destructive)' }} />
                     )}
                     <span className="flex-1">{toast.text}</span>
                     <button

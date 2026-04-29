@@ -5,7 +5,6 @@ import {
     FolderOpen,
     CheckCircle,
     XCircle,
-    Clock,
     LayoutList,
     Layers,
     X,
@@ -23,6 +22,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FilterBar } from '@/components/ui/filter-bar';
 import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
 import {
@@ -33,7 +33,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { StatStrip } from '@/components/ui/stat-strip';
-import { FilterBar } from '@/components/ui/filter-bar';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
 import type { SharedProps } from '@/types';
@@ -67,19 +66,19 @@ const GROUP_STATUS: Record<
     { dot: string; label: string; text: string }
 > = {
     adequate: {
-        dot: 'bg-emerald-500',
+        dot: 'bg-[#46bd5f]',
         label: 'Adequate',
-        text: 'text-emerald-400',
+        text: 'text-[#46bd5f]',
     },
     partial: {
-        dot: 'bg-amber-500',
+        dot: 'bg-[#f5b929]',
         label: 'Partially Adequate',
-        text: 'text-amber-400',
+        text: 'text-[#f5b929]',
     },
     insufficient: {
-        dot: 'bg-red-500',
+        dot: 'bg-[#e5484d]',
         label: 'Insufficient',
-        text: 'text-red-400',
+        text: 'text-[#e5484d]',
     },
     unreviewed: {
         dot: 'bg-muted-foreground/40',
@@ -421,7 +420,7 @@ export default function EvidenceIndex({
                             {evidence.total} file
                             {evidence.total !== 1 ? 's' : ''}
                         </p>
-                        <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+                        <div className="flex items-center gap-1 rounded-full bg-muted p-1">
                             <Button
                                 variant={
                                     viewMode === 'list' ? 'default' : 'ghost'
@@ -453,7 +452,7 @@ export default function EvidenceIndex({
                             <CardContent className="p-0">
                                 {evidence.data.length === 0 ? (
                                     <div className="p-12 text-center">
-                                        <FolderOpen className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+                                        <FolderOpen className="mx-auto mb-3 h-12 w-12" style={{ color: 'var(--muted-foreground)' }} />
                                         <p className="font-medium text-muted-foreground">
                                             No evidence files found
                                         </p>
@@ -505,7 +504,7 @@ export default function EvidenceIndex({
                             {evidence.data.length === 0 && (
                                 <Card>
                                     <CardContent className="p-12 text-center">
-                                        <FolderOpen className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+                                        <FolderOpen className="mx-auto mb-3 h-12 w-12" style={{ color: 'var(--muted-foreground)' }} />
                                         <p className="font-medium text-muted-foreground">
                                             No evidence files found
                                         </p>
@@ -519,11 +518,11 @@ export default function EvidenceIndex({
 
                             {/* Unlinked evidence */}
                             {unlinked.length > 0 && (
-                                <Card className="border-amber-500/30">
+                                <Card style={{ borderColor: 'rgba(245,185,41,0.3)' }}>
                                     <CardHeader className="px-4 pt-4 pb-2">
                                         <div className="flex items-center gap-2">
-                                            <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
-                                            <CardTitle className="text-sm font-semibold text-amber-400">
+                                            <AlertTriangle className="h-4 w-4 shrink-0" style={{ color: '#f5b929' }} />
+                                            <CardTitle className="text-sm" style={{ color: '#f5b929', fontWeight: 500 }}>
                                                 Unlinked Evidence (
                                                 {unlinked.length} file
                                                 {unlinked.length !== 1
@@ -532,7 +531,7 @@ export default function EvidenceIndex({
                                                 )
                                             </CardTitle>
                                         </div>
-                                        <p className="mt-1 text-xs text-amber-400/70">
+                                        <p className="mt-1 text-xs" style={{ color: '#f5b929', opacity: 0.7 }}>
                                             These files are not linked to any
                                             control and will not count toward
                                             compliance. Link them to a control
@@ -540,7 +539,7 @@ export default function EvidenceIndex({
                                         </p>
                                     </CardHeader>
                                     <CardContent className="p-0">
-                                        <div className="divide-y divide-amber-500/20">
+                                        <div className="divide-y" style={{ borderColor: 'rgba(245,185,41,0.2)' }}>
                                             {unlinked.map((ev) => (
                                                 <EvidenceRow
                                                     key={ev.id}
@@ -568,8 +567,8 @@ export default function EvidenceIndex({
                                                     <span
                                                         className={`h-2.5 w-2.5 shrink-0 rounded-full ${sc.dot}`}
                                                     />
-                                                    <CardTitle className="text-sm font-semibold text-foreground">
-                                                        <span className="mr-1.5 font-mono text-muted-foreground/60">
+                                                    <CardTitle className="text-sm" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
+                                                        <span className="mr-1.5 font-mono" style={{ color: 'var(--muted-foreground)' }}>
                                                             {group.controlId}
                                                         </span>
                                                         {group.controlTitle}
@@ -622,12 +621,17 @@ export default function EvidenceIndex({
             {/* Toast notification */}
             {toast && (
                 <div
-                    className={`fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-xl backdrop-blur-xl ${ toast.type === 'success' ? 'border-emerald-500/30 bg-popover text-foreground' : 'border-red-500/30 bg-popover text-foreground' }`}
+                    className="fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded-2xl border px-4 py-3 text-sm shadow-xl backdrop-blur-xl"
+                    style={{
+                        borderColor: toast.type === 'success' ? 'rgba(70,189,95,0.3)' : 'rgba(229,72,77,0.3)',
+                        background: 'var(--popover)',
+                        color: 'var(--foreground)',
+                    }}
                 >
                     {toast.type === 'success' ? (
-                        <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                        <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: '#46bd5f' }} />
                     ) : (
-                        <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+                        <XCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--destructive)' }} />
                     )}
                     <span className="flex-1">{toast.text}</span>
                     <button

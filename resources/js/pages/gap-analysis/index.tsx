@@ -3,7 +3,6 @@ import axios from 'axios';
 import {
     Search,
     XCircle,
-    AlertTriangle,
     Eye,
     Loader2,
     X,
@@ -17,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { Input } from '@/components/ui/input';
+import { PageHeader } from '@/components/ui/page-header';
 import {
     Select,
     SelectContent,
@@ -24,10 +24,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { StatStrip } from '@/components/ui/stat-strip';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
-import { PageHeader } from '@/components/ui/page-header';
-import { StatStrip } from '@/components/ui/stat-strip';
 
 interface Item {
     id: number;
@@ -90,10 +89,10 @@ interface Props {
 }
 
 const PRIORITY_STYLES: Record<string, string> = {
-    Critical: 'bg-red-500/15 text-red-400 border-red-500/30',
-    High: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
-    Medium: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-    Low: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+    Critical: 'bg-[rgba(229,72,77,0.12)] text-[#e5484d] border-[rgba(229,72,77,0.4)]',
+    High: 'bg-[rgba(247,107,21,0.12)] text-[#f76b15] border-[rgba(247,107,21,0.4)]',
+    Medium: 'bg-[rgba(245,185,41,0.12)] text-[#f5b929] border-[rgba(245,185,41,0.4)]',
+    Low: 'bg-[rgba(70,189,95,0.12)] text-[#46bd5f] border-[rgba(70,189,95,0.4)]',
 };
 
 function formatPlanAsText(item: Item, plan: RemediationPlan): string {
@@ -247,7 +246,7 @@ export default function GapAnalysisIndex({
                 {stats.by_framework.length > 0 && (
                     <Card>
                         <CardHeader className="pb-3">
-                            <CardTitle className="font-heading text-lg font-normal">
+                            <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
                                 Gaps by Framework
                             </CardTitle>
                         </CardHeader>
@@ -259,14 +258,14 @@ export default function GapAnalysisIndex({
                                     return (
                                         <div
                                             key={f.name}
-                                            className="rounded-lg border border-border bg-muted/30 p-3"
+                                            className="rounded-2xl border bg-muted/30 p-3"
                                         >
-                                            <p className="mb-2 truncate text-xs font-medium text-muted-foreground">
+                                            <p className="mb-2 truncate text-xs font-medium" style={{ color: 'var(--muted-foreground)' }}>
                                                 {f.name}
                                             </p>
                                             <div className="space-y-1">
                                                 <div className="flex justify-between text-xs">
-                                                    <span className="text-red-400">
+                                                    <span style={{ color: '#e5484d' }}>
                                                         Non-Compliant
                                                     </span>
                                                     <span className="font-mono tabular-nums">
@@ -274,7 +273,7 @@ export default function GapAnalysisIndex({
                                                     </span>
                                                 </div>
                                                 <div className="flex justify-between text-xs">
-                                                    <span className="text-amber-400">
+                                                    <span style={{ color: '#f5b929' }}>
                                                         Partial
                                                     </span>
                                                     <span className="font-mono tabular-nums">
@@ -285,15 +284,17 @@ export default function GapAnalysisIndex({
                                                     {fTotal > 0 && (
                                                         <>
                                                             <div
-                                                                className="h-full bg-red-500"
+                                                                className="h-full"
                                                                 style={{
                                                                     width: `${(f.non_compliant / fTotal) * 100}%`,
+                                                                    background: '#e5484d',
                                                                 }}
                                                             />
                                                             <div
-                                                                className="h-full bg-amber-400"
+                                                                className="h-full"
                                                                 style={{
                                                                     width: `${(f.partially_compliant / fTotal) * 100}%`,
+                                                                    background: '#f5b929',
                                                                 }}
                                                             />
                                                         </>
@@ -418,48 +419,46 @@ export default function GapAnalysisIndex({
                                 {items.data.map((item) => (
                                     <div
                                         key={item.id}
-                                        className={`p-4 transition-colors hover:bg-accent/30 ${ item.compliance_status === 'non_compliant' ? 'border-l-4 border-destructive' : 'border-l-4 border-yellow-400' } ${lastAnalyzed === item.id ? 'ring-2 ring-primary ring-inset' : ''}`}
+                                        className={`p-4 transition-colors hover:bg-muted/30 ${lastAnalyzed === item.id ? 'ring-2 ring-primary ring-inset' : ''}`}
+                                        style={{ borderLeft: item.compliance_status === 'non_compliant' ? '4px solid #e5484d' : '4px solid #f5b929' }}
                                     >
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="min-w-0 flex-1">
                                                 <div className="mb-1 flex flex-wrap items-center gap-2">
-                                                    <span className="rounded bg-muted/50 px-2 py-0.5 font-mono text-xs text-foreground/80">
+                                                    <span className="rounded-full bg-muted/50 px-2 py-0.5 font-mono text-xs" style={{ color: 'var(--foreground)' }}>
                                                         {
                                                             item.control
                                                                 .control_id
                                                         }
                                                     </span>
-                                                    <Badge
-                                                        variant="outline"
-                                                        className="text-xs"
-                                                    >
+                                                    <Badge variant="outline">
                                                         {
                                                             item.assessment
                                                                 .framework
                                                                 .short_name
                                                         }
                                                     </Badge>
-                                                    <span className="text-xs text-muted-foreground">
+                                                    <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                         {item.control.category}
                                                     </span>
                                                 </div>
-                                                <p className="text-sm font-semibold text-foreground">
+                                                <p className="text-sm" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                                     {item.control.title}
                                                 </p>
-                                                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                                                <p className="mt-1 line-clamp-2 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                     {item.control.description}
                                                 </p>
                                                 {item.comments && (
-                                                    <div className="mt-2 rounded bg-muted/30 p-2 text-xs text-foreground/80">
-                                                        <span className="font-semibold">
+                                                    <div className="mt-2 rounded-2xl bg-muted/30 p-2 text-xs" style={{ color: 'var(--foreground)' }}>
+                                                        <span style={{ fontWeight: 500 }}>
                                                             Notes:{' '}
                                                         </span>
                                                         {item.comments}
                                                     </div>
                                                 )}
-                                                <p className="mt-2 text-xs text-muted-foreground">
+                                                <p className="mt-2 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                     Assessment:{' '}
-                                                    <span className="font-medium">
+                                                    <span style={{ fontWeight: 500 }}>
                                                         {item.assessment.title}
                                                     </span>{' '}
                                                     ·{' '}
@@ -469,11 +468,10 @@ export default function GapAnalysisIndex({
                                             <div className="flex shrink-0 flex-col items-end gap-2">
                                                 <Badge
                                                     variant="outline"
-                                                    className={
-                                                        item.compliance_status ===
-                                                        'non_compliant'
-                                                            ? 'border-red-200 bg-red-950 text-red-400'
-                                                            : 'border-yellow-200 bg-amber-950 text-amber-400'
+                                                    style={
+                                                        item.compliance_status === 'non_compliant'
+                                                            ? { color: '#e5484d', borderColor: 'rgba(229,72,77,0.4)', background: 'rgba(229,72,77,0.1)' }
+                                                            : { color: '#f5b929', borderColor: 'rgba(245,185,41,0.4)', background: 'rgba(245,185,41,0.1)' }
                                                     }
                                                 >
                                                     {item.compliance_status ===
@@ -484,6 +482,7 @@ export default function GapAnalysisIndex({
                                                 <div className="flex items-center gap-1">
                                                     <Button
                                                         size="sm"
+                                                        variant="outline"
                                                         disabled={
                                                             analyzing ===
                                                             item.id
@@ -491,7 +490,7 @@ export default function GapAnalysisIndex({
                                                         onClick={() =>
                                                             handleAiFix(item)
                                                         }
-                                                        className="gap-1 bg-secondary text-xs text-foreground hover:bg-secondary/80 disabled:opacity-60"
+                                                        className="gap-1"
                                                     >
                                                         {analyzing ===
                                                         item.id ? (
@@ -500,7 +499,7 @@ export default function GapAnalysisIndex({
                                                                 Analyzing...
                                                             </>
                                                         ) : (
-                                                            <>✨ AI Fix</>
+                                                            <>AI Fix</>
                                                         )}
                                                     </Button>
                                                     <Link
@@ -512,7 +511,7 @@ export default function GapAnalysisIndex({
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"
-                                                            className="gap-1 text-xs"
+                                                            className="gap-1"
                                                         >
                                                             <Eye className="h-3 w-3" />{' '}
                                                             View
@@ -559,18 +558,18 @@ export default function GapAnalysisIndex({
                         e.target === e.currentTarget && setPlanModal(null)
                     }
                 >
-                    <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-xl border border-border bg-popover shadow-2xl backdrop-blur-xl">
+                    <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl border bg-popover shadow-2xl backdrop-blur-xl" style={{ borderColor: 'var(--border)' }}>
                         {/* Modal Header */}
-                        <div className="flex items-start justify-between border-b border-border p-5">
+                        <div className="flex items-start justify-between border-b p-5" style={{ borderColor: 'var(--border)' }}>
                             <div className="flex min-w-0 flex-1 items-start gap-2">
-                                <span className="mt-0.5 text-lg leading-none text-primary">
+                                <span className="mt-0.5 text-lg leading-none" style={{ color: 'var(--primary)' }}>
                                     ✨
                                 </span>
                                 <div className="min-w-0">
-                                    <h2 className="text-sm leading-snug font-semibold text-foreground">
+                                    <h2 className="text-sm leading-snug" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                         AI Remediation Plan
                                     </h2>
-                                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                                    <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                         {planModal.item.control.control_id}:{' '}
                                         {planModal.item.control.title}
                                     </p>
@@ -587,7 +586,7 @@ export default function GapAnalysisIndex({
                         {/* Scrollable Body */}
                         <div className="flex-1 space-y-5 overflow-y-auto p-5">
                             {/* Summary */}
-                            <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm text-foreground/85">
+                            <div className="rounded-2xl border bg-muted/30 p-3 text-sm" style={{ borderColor: 'var(--border)', color: 'var(--foreground)', opacity: 0.9 }}>
                                 {planModal.plan.summary}
                             </div>
 
@@ -595,13 +594,13 @@ export default function GapAnalysisIndex({
                             <div className="flex items-center gap-3">
                                 <Badge
                                     variant="outline"
-                                    className={`text-xs font-semibold ${PRIORITY_STYLES[planModal.plan.priority] ?? PRIORITY_STYLES['High']}`}
+                                    className={PRIORITY_STYLES[planModal.plan.priority] ?? PRIORITY_STYLES['High']}
                                 >
                                     {planModal.plan.priority} Priority
                                 </Badge>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     Estimated effort:{' '}
-                                    <span className="font-medium text-foreground/85">
+                                    <span style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                         {planModal.plan.estimated_effort}
                                     </span>
                                 </span>
@@ -610,18 +609,19 @@ export default function GapAnalysisIndex({
                             {/* Quick Wins */}
                             {planModal.plan.quick_wins.length > 0 && (
                                 <div>
-                                    <p className="mb-2 text-xs font-medium text-emerald-400">
-                                        ⚡ Quick Wins — Do These First
+                                    <p className="mb-2 text-xs" style={{ color: '#46bd5f', fontWeight: 500 }}>
+                                        Quick Wins — Do These First
                                     </p>
                                     <div className="space-y-1.5">
                                         {planModal.plan.quick_wins.map(
                                             (win, i) => (
                                                 <div
                                                     key={i}
-                                                    className="flex items-start gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-2.5"
+                                                    className="flex items-start gap-2 rounded-2xl border p-2.5"
+                                                    style={{ borderColor: 'rgba(70,189,95,0.3)', background: 'rgba(70,189,95,0.08)' }}
                                                 >
-                                                    <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
-                                                    <span className="text-xs text-foreground/80">
+                                                    <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: '#46bd5f' }} />
+                                                    <span className="text-xs" style={{ color: 'var(--foreground)' }}>
                                                         {win}
                                                     </span>
                                                 </div>
@@ -634,7 +634,7 @@ export default function GapAnalysisIndex({
                             {/* Remediation Steps */}
                             {planModal.plan.remediation_steps.length > 0 && (
                                 <div>
-                                    <p className="mb-3 text-xs font-medium text-foreground/85">
+                                    <p className="mb-3 text-xs" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                         Remediation Steps
                                     </p>
                                     <div className="space-y-3">
@@ -644,17 +644,17 @@ export default function GapAnalysisIndex({
                                                     key={s.step}
                                                     className="flex gap-3"
                                                 >
-                                                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">
+                                                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs" style={{ background: 'color-mix(in srgb, var(--primary) 20%, transparent)', color: 'var(--primary)', fontWeight: 600 }}>
                                                         {s.step}
                                                     </div>
                                                     <div className="min-w-0 flex-1">
-                                                        <p className="text-sm font-medium text-foreground">
+                                                        <p className="text-sm" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                                             {s.action}
                                                         </p>
-                                                        <p className="mt-0.5 text-xs text-muted-foreground">
+                                                        <p className="mt-0.5 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                             {s.detail}
                                                         </p>
-                                                        <div className="mt-1.5 rounded border border-border bg-muted/50 px-2 py-1 text-xs text-muted-foreground">
+                                                        <div className="mt-1.5 rounded-full border bg-muted/50 px-2 py-1 text-xs" style={{ borderColor: 'var(--border)', color: 'var(--muted-foreground)' }}>
                                                             Evidence needed:{' '}
                                                             {s.evidence_needed}
                                                         </div>
@@ -669,7 +669,7 @@ export default function GapAnalysisIndex({
                             {/* Resources Needed */}
                             {planModal.plan.resources_needed.length > 0 && (
                                 <div>
-                                    <p className="mb-2 text-xs font-medium text-foreground/85">
+                                    <p className="mb-2 text-xs" style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                         Resources Needed
                                     </p>
                                     <ul className="space-y-1">
@@ -677,9 +677,9 @@ export default function GapAnalysisIndex({
                                             (r, i) => (
                                                 <li
                                                     key={i}
-                                                    className="flex items-start gap-1.5 text-xs text-muted-foreground"
+                                                    className="flex items-start gap-1.5 text-xs" style={{ color: 'var(--muted-foreground)' }}
                                                 >
-                                                    <span className="shrink-0 text-muted-foreground/60">
+                                                    <span className="shrink-0" style={{ color: 'var(--muted-foreground)' }}>
                                                         ·
                                                     </span>
                                                     {r}
@@ -692,12 +692,12 @@ export default function GapAnalysisIndex({
                         </div>
 
                         {/* Footer */}
-                        <div className="border-t border-border p-4">
+                        <div className="border-t p-4" style={{ borderColor: 'var(--border)' }}>
                             {savedRisk ? (
                                 <div className="flex flex-col items-center gap-3 py-1">
-                                    <div className="flex items-center gap-2 text-emerald-400">
+                                    <div className="flex items-center gap-2" style={{ color: '#46bd5f' }}>
                                         <CheckCircle2 className="h-5 w-5" />
-                                        <span className="text-sm font-semibold">
+                                        <span className="text-sm" style={{ fontWeight: 500 }}>
                                             Remediation plan saved!
                                         </span>
                                     </div>
@@ -722,12 +722,12 @@ export default function GapAnalysisIndex({
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="text-xs">
                                         {saveError && (
-                                            <span className="text-red-400">
+                                            <span style={{ color: 'var(--destructive)' }}>
                                                 {saveError}
                                             </span>
                                         )}
                                         {saving && (
-                                            <span className="text-muted-foreground">
+                                            <span style={{ color: 'var(--muted-foreground)' }}>
                                                 Creating risk and saving...
                                             </span>
                                         )}

@@ -83,7 +83,8 @@
       "mcp__playwright__browser_fill_form",
       "mcp__playwright__browser_snapshot",
       "mcp__playwright__browser_wait_for",
-      "mcp__playwright__browser_press_key"
+      "mcp__playwright__browser_press_key",
+      "Bash(php *)"
     ]
   },
   "enableAllProjectMcpServers": true,

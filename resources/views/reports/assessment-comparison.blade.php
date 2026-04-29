@@ -2,46 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Assessment Comparison Report — GRC Management System</title>
+    <title>Assessment Comparison Report — GRC Charter</title>
+    @include('reports._partials._styles')
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: DejaVu Sans, Arial, sans-serif;
-            font-size: 10px;
-            color: #1a1a2e;
-            background: #ffffff;
-            line-height: 1.5;
-        }
-
-        /* ── Header ── */
-        .header {
-            background: #1e3a5f;
-            color: #ffffff;
-            padding: 22px 28px 18px;
-        }
-        .header-eyebrow {
-            font-size: 8px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: #7fafd4;
-            margin-bottom: 5px;
-        }
-        .header-title    { font-size: 20px; font-weight: bold; }
-        .header-subtitle { font-size: 11px; color: #a8c4e0; margin-top: 3px; }
-        .header-meta     { margin-top: 8px; font-size: 8px; color: #7fafd4; }
-
-        .accent-bar {
-            height: 3px;
-            background: linear-gradient(90deg, #2563eb, #0ea5e9);
-        }
-
-        /* ── VS Banner ── */
+        /* Page-specific: VS banner */
         .vs-banner {
             display: flex;
             align-items: stretch;
-            border-bottom: 1px solid #e2e8f0;
-            background: #f8fafc;
+            border-bottom: 1px solid #d9d9dd;
+            background: #fafaf8;
         }
         .vs-side {
             flex: 1;
@@ -54,122 +23,65 @@
             justify-content: center;
             font-size: 9px;
             font-weight: bold;
-            color: #94a3b8;
+            color: #93939f;
             letter-spacing: 1px;
-            border-left: 1px solid #e2e8f0;
-            border-right: 1px solid #e2e8f0;
+            border-left: 1px solid #d9d9dd;
+            border-right: 1px solid #d9d9dd;
             background: #ffffff;
         }
-        .vs-label  { font-size: 8px; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 3px; }
-        .vs-title  { font-size: 12px; font-weight: bold; color: #1e3a5f; }
-        .vs-meta   { font-size: 8.5px; color: #64748b; margin-top: 2px; }
-        .fw-badge  { display: inline-block; padding: 1px 6px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 8px; color: #475569; margin-right: 5px; }
+        .vs-label  { font-size: 8px; text-transform: uppercase; letter-spacing: 0.8px; color: #93939f; margin-bottom: 3px; }
+        .vs-title  { font-size: 12px; font-weight: bold; color: #003c33; }
+        .vs-meta   { font-size: 8.5px; color: #75758a; margin-top: 2px; }
+        .fw-badge  { display: inline-block; padding: 1px 6px; border: 1px solid #d9d9dd; border-radius: 999px; font-size: 8px; color: #212121; margin-right: 5px; }
 
-        /* ── KPI row ── */
-        .content { padding: 18px 24px; }
-
-        .kpi-row { display: flex; gap: 10px; margin-bottom: 20px; }
-        .kpi-box {
+        /* Comparison KPI flex (delta-aware) */
+        .kpi-flex { display: flex; gap: 10px; margin-bottom: 20px; }
+        .kpi-flex .kpi-box {
             flex: 1;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d9d9dd;
             border-radius: 6px;
             padding: 10px 12px;
             text-align: center;
-            background: #f8fafc;
+            background: #fafaf8;
         }
-        .kpi-label  { font-size: 8px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .kpi-value  { font-size: 18px; font-weight: bold; color: #1e3a5f; }
-        .kpi-sub    { font-size: 8px; color: #64748b; margin-top: 2px; }
-        .kpi-delta-pos { color: #16a34a; font-weight: bold; font-size: 9px; }
-        .kpi-delta-neg { color: #dc2626; font-weight: bold; font-size: 9px; }
-        .kpi-delta-nil { color: #64748b; font-size: 9px; }
+        .kpi-flex .kpi-label { font-size: 8px; color: #75758a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .kpi-flex .kpi-value { font-size: 18px; font-weight: bold; color: #003c33; }
+        .kpi-flex .kpi-sub   { font-size: 8px; color: #75758a; margin-top: 2px; }
+        .kpi-delta-pos { color: #46bd5f; font-weight: bold; font-size: 9px; }
+        .kpi-delta-neg { color: #e5484d; font-weight: bold; font-size: 9px; }
+        .kpi-delta-nil { color: #75758a; font-size: 9px; }
 
         .net-badge {
             display: inline-block;
             padding: 3px 10px;
-            border-radius: 10px;
+            border-radius: 999px;
             font-size: 9px;
             font-weight: bold;
         }
-        .net-improved  { background: #dcfce7; color: #166534; }
-        .net-regressed { background: #fee2e2; color: #991b1b; }
-        .net-nochange  { background: #f1f5f9; color: #475569; }
+        .net-improved  { background: #ecf9ef; color: #297a3b; }
+        .net-regressed { background: #fdeeee; color: #b3343a; }
+        .net-nochange  { background: #f1f1ee; color: #75758a; }
 
-        /* ── Section title ── */
-        .section-title {
-            font-size: 11px;
-            font-weight: bold;
-            color: #1e3a5f;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 5px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        /* Compact tables for the dense comparison rows */
+        .content table { font-size: 8.5px; }
+        .content thead th { padding: 6px 8px; font-size: 8px; }
+        .content tbody td { padding: 6px 8px; }
+        .content .badge { font-size: 7.5px; padding: 1px 6px; }
 
-        /* ── Comparison table ── */
-        table { width: 100%; border-collapse: collapse; font-size: 8.5px; }
-        th {
-            background: #1e3a5f;
-            color: #ffffff;
-            padding: 6px 8px;
-            text-align: left;
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-        td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        tr:nth-child(even) td { background: #f8fafc; }
-        tr.improved td:first-child { border-left: 3px solid #22c55e; }
-        tr.regressed td:first-child { border-left: 3px solid #ef4444; }
+        /* Direction strip on improved/regressed rows */
+        tr.improved td:first-child { border-left: 3px solid #46bd5f; }
+        tr.regressed td:first-child { border-left: 3px solid #e5484d; }
 
-        /* ── Status / direction badges ── */
-        .badge {
-            display: inline-block;
-            padding: 1px 6px;
-            border-radius: 8px;
-            font-size: 7.5px;
-            font-weight: bold;
-        }
-        .badge-compliant    { background: #dcfce7; color: #166534; }
-        .badge-partial      { background: #fef3c7; color: #92400e; }
-        .badge-nc           { background: #fee2e2; color: #991b1b; }
-        .badge-na           { background: #f1f5f9; color: #64748b; }
-        .badge-improved     { background: #dcfce7; color: #166534; }
-        .badge-regressed    { background: #fee2e2; color: #991b1b; }
-        .badge-unchanged    { background: #f1f5f9; color: #475569; }
-        .badge-new          { background: #dbeafe; color: #1d4ed8; }
-        .badge-removed      { background: #f1f5f9; color: #64748b; }
-        .badge-adequate     { background: #dcfce7; color: #166534; }
-        .badge-part-ev      { background: #fef3c7; color: #92400e; }
-        .badge-insuff       { background: #fee2e2; color: #991b1b; }
-        .badge-fw           { background: #e0f2fe; color: #0369a1; }
-
-        .text-none { color: #94a3b8; }
-
-        /* ── Footer ── */
-        .footer {
-            margin-top: 24px;
-            padding-top: 10px;
-            border-top: 1px solid #e2e8f0;
-            font-size: 7.5px;
-            color: #94a3b8;
-            text-align: center;
-        }
-
-        .page-break { page-break-after: always; }
+        .text-none { color: #93939f; }
     </style>
 </head>
 <body>
 
-<!-- Header -->
-<div class="header">
-    <div class="header-eyebrow">GRC Management System — Compliance Report</div>
-    <div class="header-title">Assessment Comparison Report</div>
-    <div class="header-subtitle">Side-by-side comparison of control status, compliance scores, and evidence quality</div>
-    <div class="header-meta">Generated: {{ $generatedAt }} &nbsp;|&nbsp; Classification: Internal</div>
-</div>
-<div class="accent-bar"></div>
+@include('reports._partials._header', [
+    'title'    => 'Assessment Comparison Report',
+    'subtitle' => 'Side-by-side comparison of control status, compliance scores, and evidence quality',
+    'meta'     => 'Generated: ' . $generatedAt . '   |   Classification: Internal',
+])
 
 <!-- VS Banner -->
 <div class="vs-banner">
@@ -200,7 +112,7 @@
         $edelta = $summary['evidence_quality_delta'];
     @endphp
 
-    <div class="kpi-row">
+    <div class="kpi-flex">
 
         <div class="kpi-box">
             <div class="kpi-label">Compliance Score</div>
@@ -361,7 +273,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" style="text-align:center; color:#94a3b8; padding: 20px;">
+                <td colspan="8" style="text-align:center; color:#93939f; padding: 20px;">
                     No controls found in either assessment.
                 </td>
             </tr>
@@ -369,10 +281,11 @@
         </tbody>
     </table>
 
-    <div class="footer">
-        GRC Management System &mdash; Assessment Comparison Report &mdash; Generated {{ $generatedAt }}<br>
-        "{{ $assessmentA['title'] }}" vs "{{ $assessmentB['title'] }}" &mdash; For internal use only
-    </div>
+    @include('reports._partials._footer', [
+        'left'  => 'GRC Charter — Assessment Comparison Report — Generated ' . $generatedAt,
+        'right' => '"' . $assessmentA['title'] . '" vs "' . $assessmentB['title'] . '"',
+        'fixed' => false,
+    ])
 
 </div>
 </body>

@@ -2,71 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Security Audit Report — GRC Management System</title>
+    <title>Security Audit Report — GRC Charter</title>
+    @include('reports._partials._styles')
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: DejaVu Sans, Arial, sans-serif;
-            font-size: 11px;
-            color: #1a1a2e;
-            background: #ffffff;
-            line-height: 1.6;
-        }
-
-        .header {
-            background: #1e3a5f;
-            color: #ffffff;
-            padding: 26px 32px 20px;
-        }
-        .header-eyebrow {
-            font-size: 9px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: #7fafd4;
-            margin-bottom: 6px;
-        }
-        .header-title    { font-size: 22px; font-weight: bold; }
-        .header-subtitle { font-size: 12px; color: #a8c4e0; margin-top: 4px; }
-        .header-meta     { margin-top: 10px; font-size: 9px; color: #7fafd4; }
-
-        .accent-bar {
-            height: 4px;
-            background: linear-gradient(90deg, #dc2626, #ea580c);
-        }
-
-        .ai-badge-strip {
-            background: #fef2f2;
-            border-bottom: 1px solid #fecaca;
-            padding: 7px 32px;
-            font-size: 9px;
-            color: #991b1b;
-            letter-spacing: 0.3px;
-        }
-
-        .content { padding: 24px 32px; }
-
-        .section { margin-bottom: 28px; }
-        .section-title {
-            font-size: 13px;
-            font-weight: bold;
-            color: #1e3a5f;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 6px;
-            margin-bottom: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
+        /* Page-specific: meta key/value table */
         .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
         .meta-table td {
             padding: 5px 10px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid #d9d9dd;
             font-size: 10px;
         }
         .meta-table td.label {
             font-weight: bold;
-            color: #475569;
+            color: #75758a;
             width: 30%;
             text-transform: uppercase;
             letter-spacing: 0.4px;
@@ -74,39 +22,42 @@
         }
 
         .summary-box {
-            background: #f8fafc;
-            border-left: 4px solid #1e3a5f;
+            background: #edfce9;
+            border-left: 3px solid #003c33;
             padding: 14px 18px;
             border-radius: 0 6px 6px 0;
             margin-bottom: 18px;
             font-size: 11px;
         }
 
-        .kpi-row { width: 100%; margin-bottom: 20px; }
-        .kpi-row td {
-            border: 1px solid #e2e8f0;
+        /* KPI summary row (table-cell layout) */
+        .kpi-row-tbl { width: 100%; margin-bottom: 20px; border-collapse: separate; border-spacing: 8px 0; }
+        .kpi-row-tbl td {
+            border: 1px solid #d9d9dd;
             border-radius: 6px;
             padding: 12px 14px;
             text-align: center;
-            background: #f8fafc;
+            background: #fafaf8;
             width: 16.6%;
         }
-        .kpi-value { font-size: 20px; font-weight: bold; }
-        .kpi-label { font-size: 8px; color: #64748b; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi-row-tbl .kpi-value { font-size: 20px; font-weight: bold; color: inherit; }
+        .kpi-row-tbl .kpi-label { font-size: 8px; color: #75758a; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
 
+        /* Posture score box */
         .score-box {
             text-align: center;
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
+            background: #edfce9;
+            border: 1px solid #c8e8c0;
             border-radius: 6px;
             padding: 16px;
             margin-bottom: 20px;
         }
-        .score-value { font-size: 36px; font-weight: bold; color: #0369a1; }
-        .score-label { font-size: 10px; color: #475569; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 4px; }
+        .score-value { font-size: 36px; font-weight: bold; color: #003c33; }
+        .score-label { font-size: 10px; color: #212121; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 4px; }
 
+        /* Finding card */
         .finding {
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d9d9dd;
             border-radius: 6px;
             margin-bottom: 12px;
             padding: 12px 14px;
@@ -115,72 +66,46 @@
         .finding-header {
             display: block;
             margin-bottom: 8px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid #d9d9dd;
             padding-bottom: 6px;
         }
-        .finding-number { font-size: 9px; color: #64748b; }
-        .finding-title { font-size: 12px; font-weight: bold; color: #1a1a2e; margin-top: 2px; }
-
-        .severity-pill {
-            display: inline-block;
-            font-size: 8px;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #fff;
-            margin-right: 6px;
-        }
-        .severity-critical { background: #dc2626; }
-        .severity-high     { background: #ea580c; }
-        .severity-medium   { background: #ca8a04; }
-        .severity-low      { background: #2563eb; }
-        .severity-info     { background: #64748b; }
-
+        .finding-number { font-size: 9px; color: #75758a; }
+        .finding-title { font-size: 12px; font-weight: bold; color: #212121; margin-top: 2px; }
         .finding-row { margin-top: 8px; }
         .finding-label {
             font-size: 8px;
             font-weight: bold;
-            color: #475569;
+            color: #75758a;
             text-transform: uppercase;
             letter-spacing: 0.4px;
             margin-bottom: 2px;
         }
-        .finding-text { font-size: 10px; color: #334155; }
+        .finding-text { font-size: 10px; color: #212121; }
         .affected {
             font-family: 'Courier New', monospace;
-            background: #f1f5f9;
+            background: #fafaf8;
             padding: 4px 6px;
             border-radius: 3px;
             font-size: 9px;
-            color: #1e293b;
+            color: #212121;
             display: inline-block;
-        }
-
-        .footer {
-            border-top: 1px solid #e2e8f0;
-            margin-top: 28px;
-            padding: 12px 32px;
-            font-size: 8px;
-            color: #94a3b8;
-            text-align: center;
+            border: 1px solid #d9d9dd;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-eyebrow">Security Configuration Audit</div>
-        <div class="header-title">{{ $audit->file_name }}</div>
-        <div class="header-subtitle">Automated security analysis report</div>
-        <div class="header-meta">Generated {{ $generatedAt->format('F j, Y · H:i') }}</div>
-    </div>
-    <div class="accent-bar"></div>
+
+    @include('reports._partials._header', [
+        'eyebrow'  => 'Security Configuration Audit',
+        'title'    => $audit->file_name,
+        'subtitle' => 'Automated security analysis report',
+        'meta'     => 'Generated ' . $generatedAt->format('F j, Y · H:i'),
+    ])
     <div class="ai-badge-strip">AI-ASSISTED ANALYSIS · This report was generated using Claude AI</div>
 
     <div class="content">
 
-        <div class="section">
+        <div class="section" style="padding:0;">
             <div class="section-title">Audit Metadata</div>
             <table class="meta-table">
                 <tr>
@@ -219,33 +144,33 @@
         </div>
 
         @if($audit->summary)
-        <div class="section">
+        <div class="section" style="padding:0;">
             <div class="section-title">Executive Summary</div>
             <div class="summary-box">{{ $audit->summary }}</div>
         </div>
         @endif
 
-        <div class="section">
+        <div class="section" style="padding:0;">
             <div class="section-title">Findings Overview</div>
             @if($audit->compliance_score !== null)
             <div class="score-box">
-                <div class="score-value">{{ number_format($audit->compliance_score, 1) }}<span style="font-size:18px;color:#475569;"> / 100</span></div>
+                <div class="score-value">{{ number_format($audit->compliance_score, 1) }}<span style="font-size:18px;color:#75758a;"> / 100</span></div>
                 <div class="score-label">Overall Security Posture Score</div>
             </div>
             @endif
-            <table class="kpi-row">
+            <table class="kpi-row-tbl">
                 <tr>
                     <td><div class="kpi-value">{{ $audit->total_findings }}</div><div class="kpi-label">Total</div></td>
-                    <td><div class="kpi-value" style="color:#dc2626;">{{ $audit->critical_count }}</div><div class="kpi-label">Critical</div></td>
-                    <td><div class="kpi-value" style="color:#ea580c;">{{ $audit->high_count }}</div><div class="kpi-label">High</div></td>
-                    <td><div class="kpi-value" style="color:#ca8a04;">{{ $audit->medium_count }}</div><div class="kpi-label">Medium</div></td>
-                    <td><div class="kpi-value" style="color:#2563eb;">{{ $audit->low_count }}</div><div class="kpi-label">Low</div></td>
-                    <td><div class="kpi-value" style="color:#64748b;">{{ $audit->info_count }}</div><div class="kpi-label">Info</div></td>
+                    <td><div class="kpi-value" style="color:#e5484d;">{{ $audit->critical_count }}</div><div class="kpi-label">Critical</div></td>
+                    <td><div class="kpi-value" style="color:#f76b15;">{{ $audit->high_count }}</div><div class="kpi-label">High</div></td>
+                    <td><div class="kpi-value" style="color:#f5b929;">{{ $audit->medium_count }}</div><div class="kpi-label">Medium</div></td>
+                    <td><div class="kpi-value" style="color:#46bd5f;">{{ $audit->low_count }}</div><div class="kpi-label">Low</div></td>
+                    <td><div class="kpi-value" style="color:#75758a;">{{ $audit->info_count }}</div><div class="kpi-label">Info</div></td>
                 </tr>
             </table>
         </div>
 
-        <div class="section">
+        <div class="section" style="padding:0;">
             <div class="section-title">Detailed Findings</div>
 
             @forelse($findings as $finding)
@@ -299,8 +224,10 @@
 
     </div>
 
-    <div class="footer">
-        GRC Management System · Security Audit Report · Generated {{ $generatedAt->format('Y-m-d H:i:s') }}
-    </div>
+    @include('reports._partials._footer', [
+        'left'  => 'GRC Charter · Security Audit Report',
+        'right' => 'Generated ' . $generatedAt->format('Y-m-d H:i:s'),
+        'fixed' => false,
+    ])
 </body>
 </html>

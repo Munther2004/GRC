@@ -2,57 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Executive Dashboard — GRC Management System</title>
+    <title>Executive Dashboard — GRC Charter</title>
+    @include('reports._partials._styles')
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: DejaVu Sans, Arial, sans-serif;
-            font-size: 10px;
-            color: #1a1a2e;
-            background: #ffffff;
-            line-height: 1.5;
-        }
-
-        /* ── Header ── */
-        .header {
-            background: #1e3a5f;
-            color: #ffffff;
-            padding: 22px 28px 18px;
-        }
-        .header-eyebrow {
-            font-size: 8px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: #7fafd4;
-            margin-bottom: 5px;
-        }
-        .header-title    { font-size: 22px; font-weight: bold; }
-        .header-sub      { font-size: 11px; color: #a8c4e0; margin-top: 3px; }
-        .header-meta     { margin-top: 10px; font-size: 8.5px; color: #7fafd4; }
-        .header-right    { float: right; text-align: right; font-size: 8px; color: #7fafd4; }
-
-        .accent-bar { height: 3px; background: linear-gradient(90deg, #2563eb, #0ea5e9); }
-
-        .content { padding: 18px 24px; }
-
-        /* ── Section title ── */
-        .section-title {
-            font-size: 10px;
-            font-weight: bold;
-            color: #1e3a5f;
-            border-bottom: 1.5px solid #e2e8f0;
-            padding-bottom: 4px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* ── Health Score banner ── */
+        /* Page-specific: Health Score banner ── */
         .health-banner {
             display: flex;
             align-items: stretch;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d9d9dd;
             border-radius: 8px;
             margin-bottom: 16px;
             overflow: hidden;
@@ -64,171 +21,110 @@
             align-items: center;
             justify-content: center;
             padding: 14px;
-            background: #f0f9ff;
-            border-right: 1px solid #e2e8f0;
+            background: #edfce9;
+            border-right: 1px solid #d9d9dd;
         }
-        .grade-letter { font-size: 40px; font-weight: 900; line-height: 1; }
-        .grade-label  { font-size: 8px; color: #64748b; margin-top: 4px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+        .grade-letter { font-size: 40px; font-weight: bold; line-height: 1; }
+        .grade-label  { font-size: 8px; color: #75758a; margin-top: 4px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
         .health-body  { flex: 1; padding: 12px 16px; }
-        .health-score-big { font-size: 20px; font-weight: bold; color: #1e3a5f; }
-        .health-score-sub { font-size: 8.5px; color: #64748b; }
-        .health-basis { font-size: 8px; color: #94a3b8; margin-top: 2px; }
+        .health-score-big { font-size: 20px; font-weight: bold; color: #003c33; }
+        .health-score-sub { font-size: 8.5px; color: #75758a; }
+        .health-basis { font-size: 8px; color: #93939f; margin-top: 2px; }
 
         /* Component bars */
         .comp-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-        .comp-label { width: 95px; font-size: 8.5px; color: #475569; }
-        .comp-track { flex: 1; height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+        .comp-label { width: 95px; font-size: 8.5px; color: #212121; }
+        .comp-track { flex: 1; height: 5px; background: #d9d9dd; border-radius: 3px; overflow: hidden; }
         .comp-fill  { height: 100%; border-radius: 3px; }
-        .comp-val   { width: 30px; font-size: 8px; text-align: right; color: #64748b; }
-        .comp-max   { width: 22px; font-size: 7.5px; text-align: right; color: #94a3b8; }
+        .comp-val   { width: 30px; font-size: 8px; text-align: right; color: #75758a; }
+        .comp-max   { width: 22px; font-size: 7.5px; text-align: right; color: #93939f; }
 
-        /* ── KPI row ── */
-        .kpi-row { display: flex; gap: 10px; margin-bottom: 18px; }
-        .kpi-box {
-            flex: 1;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 10px 12px;
-            background: #f8fafc;
-        }
-        .kpi-label { font-size: 7.5px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-        .kpi-value { font-size: 20px; font-weight: bold; color: #1e3a5f; line-height: 1.1; }
-        .kpi-sub   { font-size: 8px; color: #64748b; margin-top: 2px; }
-        .text-green { color: #16a34a; }
-        .text-amber { color: #d97706; }
-        .text-red   { color: #dc2626; }
-        .text-blue  { color: #2563eb; }
+        /* KPI flex row (page-specific) */
+        .kpi-flex { display: flex; gap: 10px; margin-bottom: 18px; }
+        .kpi-flex .kpi-box { padding: 10px 12px; }
+        .kpi-flex .kpi-label { font-size: 7.5px; color: #75758a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
 
-        /* ── Two-col layout ── */
-        .two-col { display: flex; gap: 16px; margin-bottom: 18px; }
-        .col-half { flex: 1; }
-        .box {
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        .box-header {
-            background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 7px 10px;
-            font-size: 9px;
-            font-weight: bold;
-            color: #1e3a5f;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-        .box-body { padding: 10px; }
-
-        /* ── Risk table ── */
-        table { width: 100%; border-collapse: collapse; font-size: 8.5px; }
-        th {
-            background: #1e3a5f;
-            color: #ffffff;
-            padding: 5px 7px;
-            text-align: left;
-            font-size: 7.5px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-        td { padding: 5px 7px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        tr:last-child td { border-bottom: none; }
-        tr:nth-child(even) td { background: #f8fafc; }
-
-        .badge {
-            display: inline-block;
-            padding: 1px 5px;
-            border-radius: 8px;
-            font-size: 7.5px;
-            font-weight: bold;
-        }
-        .badge-critical { background: #fee2e2; color: #991b1b; }
-        .badge-high     { background: #ffedd5; color: #9a3412; }
-        .badge-medium   { background: #fef3c7; color: #92400e; }
-        .badge-low      { background: #dcfce7; color: #166534; }
-
-        /* ── Framework bars ── */
+        /* Framework bars */
         .fw-row { margin-bottom: 9px; }
         .fw-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
-        .fw-name   { font-size: 9px; font-weight: bold; color: #1e3a5f; }
+        .fw-name   { font-size: 9px; font-weight: bold; color: #003c33; }
         .fw-pct    { font-size: 10px; font-weight: bold; }
-        .fw-track  { height: 7px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .fw-track  { height: 7px; background: #d9d9dd; border-radius: 4px; overflow: hidden; }
         .fw-fill   { height: 100%; border-radius: 4px; }
-        .fw-sub    { font-size: 7.5px; color: #94a3b8; margin-top: 2px; }
+        .fw-sub    { font-size: 7.5px; color: #93939f; margin-top: 2px; }
 
-        /* ── Evidence grid ── */
+        /* Evidence grid */
         .ev-grid { display: flex; flex-wrap: wrap; gap: 8px; }
         .ev-item { width: calc(50% - 4px); }
         .ev-value { font-size: 16px; font-weight: bold; }
-        .ev-label { font-size: 7.5px; color: #64748b; }
+        .ev-grid .ev-label { font-size: 7.5px; color: #75758a; }
 
-        /* ── Assessment box ── */
+        /* Latest assessment box */
         .latest-box {
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d9d9dd;
             border-radius: 5px;
             padding: 8px;
-            background: #f8fafc;
+            background: #fafaf8;
             margin-top: 8px;
         }
-        .latest-label { font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; margin-bottom: 2px; }
-        .latest-title { font-size: 9.5px; font-weight: bold; color: #1e3a5f; }
-        .latest-meta  { font-size: 7.5px; color: #64748b; margin-top: 2px; }
+        .latest-label { font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.5px; color: #93939f; margin-bottom: 2px; }
+        .latest-title { font-size: 9.5px; font-weight: bold; color: #003c33; }
+        .latest-meta  { font-size: 7.5px; color: #75758a; margin-top: 2px; }
         .fw-chip {
             display: inline-block;
             padding: 1px 5px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            border: 1px solid #d9d9dd;
+            border-radius: 999px;
             font-size: 7.5px;
-            color: #475569;
+            color: #212121;
             margin-right: 4px;
         }
         .stat-row { display: flex; gap: 10px; margin-bottom: 8px; }
-        .stat-box { flex: 1; text-align: center; padding: 8px 4px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; }
+        .stat-box { flex: 1; text-align: center; padding: 8px 4px; background: #fafaf8; border: 1px solid #d9d9dd; border-radius: 5px; }
         .stat-value { font-size: 16px; font-weight: bold; }
-        .stat-label { font-size: 7.5px; color: #64748b; }
+        .stat-label { font-size: 7.5px; color: #75758a; }
 
-        /* ── Trend table (sparkline substitute for PDF) ── */
+        /* Trend bars (sparkline substitute) */
         .trend-row { display: flex; gap: 8px; align-items: flex-end; }
         .trend-bar-wrap { flex: 1; text-align: center; }
-        .trend-bar-outer { height: 40px; background: #f1f5f9; border-radius: 3px 3px 0 0; display: flex; align-items: flex-end; }
+        .trend-bar-outer { height: 40px; background: #fafaf8; border-radius: 3px 3px 0 0; display: flex; align-items: flex-end; }
         .trend-bar-inner { width: 100%; border-radius: 3px 3px 0 0; }
-        .trend-date { font-size: 7px; color: #94a3b8; margin-top: 2px; }
-        .trend-val  { font-size: 8px; font-weight: bold; color: #2563eb; }
+        .trend-date { font-size: 7px; color: #93939f; margin-top: 2px; }
+        .trend-val  { font-size: 8px; font-weight: bold; color: #003c33; }
 
-        /* ── Footer ── */
-        .footer {
+        /* Static footer (no fixed bar on this template) */
+        .dashboard-footer {
             margin-top: 20px;
             padding-top: 8px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #d9d9dd;
             font-size: 7.5px;
-            color: #94a3b8;
+            color: #93939f;
             text-align: center;
         }
 
-        .page-break { page-break-after: always; }
+        /* Compact tables for this dense layout */
+        .content table { font-size: 8.5px; }
+        .content thead th { padding: 5px 7px; font-size: 7.5px; }
+        .content tbody td { padding: 5px 7px; }
     </style>
 </head>
 <body>
 
-<!-- Header -->
-<div class="header">
-    <div class="header-right">
-        Confidential &mdash; Internal Use Only<br>Generated: {{ $generatedAt }}
-    </div>
-    <div class="header-eyebrow">GRC Management System &mdash; Executive Report</div>
-    <div class="header-title">Executive Dashboard</div>
-    <div class="header-sub">Compliance &amp; Risk Posture Overview</div>
-</div>
-<div class="accent-bar"></div>
+@include('reports._partials._header', [
+    'title'    => 'Executive Dashboard',
+    'subtitle' => 'Compliance & Risk Posture Overview',
+    'right'    => 'Confidential — Internal Use Only<br>Generated: ' . e($generatedAt),
+])
 
 <div class="content">
 
     <!-- ── Health Score Banner ── -->
     @php
-        $gradeColors = ['A' => '#16a34a', 'B' => '#2563eb', 'C' => '#d97706', 'D' => '#ea580c', 'F' => '#dc2626'];
-        $gradeColor  = $gradeColors[$healthScore['grade']] ?? '#dc2626';
+        $gradeColors = ['A' => '#46bd5f', 'B' => '#003c33', 'C' => '#f5b929', 'D' => '#f76b15', 'F' => '#e5484d'];
+        $gradeColor  = $gradeColors[$healthScore['grade']] ?? '#e5484d';
 
         $compliancePct = $complianceSummary['overall_pct'];
-        $compColor = $compliancePct >= 80 ? '#16a34a' : ($compliancePct >= 60 ? '#d97706' : '#dc2626');
+        $compColor = $compliancePct >= 80 ? '#46bd5f' : ($compliancePct >= 60 ? '#f76b15' : '#e5484d');
     @endphp
 
     <div class="health-banner">
@@ -247,11 +143,11 @@
             </div>
             <div style="margin-top: 8px;">
                 @foreach([
-                    ['Compliance', $healthScore['components']['compliance'], 40, '#3b82f6'],
-                    ['Critical Risks', $healthScore['components']['critical_risks'], 20, '#ef4444'],
-                    ['Evidence Quality', $healthScore['components']['evidence_quality'], 20, '#8b5cf6'],
-                    ['Overdue Items', $healthScore['components']['overdue_items'], 10, '#f59e0b'],
-                    ['Open Risks', $healthScore['components']['open_risks'], 10, '#f97316'],
+                    ['Compliance', $healthScore['components']['compliance'], 40, '#003c33'],
+                    ['Critical Risks', $healthScore['components']['critical_risks'], 20, '#e5484d'],
+                    ['Evidence Quality', $healthScore['components']['evidence_quality'], 20, '#46bd5f'],
+                    ['Overdue Items', $healthScore['components']['overdue_items'], 10, '#f5b929'],
+                    ['Open Risks', $healthScore['components']['open_risks'], 10, '#f76b15'],
                 ] as [$lbl, $val, $mx, $clr])
                 <div class="comp-row">
                     <div class="comp-label">{{ $lbl }}</div>
@@ -267,7 +163,7 @@
     </div>
 
     <!-- ── KPI Row ── -->
-    <div class="kpi-row">
+    <div class="kpi-flex">
         <div class="kpi-box">
             <div class="kpi-label">Compliance</div>
             <div class="kpi-value" style="color: {{ $compColor }}">{{ $compliancePct }}%</div>
@@ -341,7 +237,7 @@
                             <td>{{ $risk['has_treatment'] ? 'Planned' : 'None' }}</td>
                         </tr>
                         @empty
-                        <tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:12px;">No risks recorded.</td></tr>
+                        <tr><td colspan="6" style="text-align:center;color:#93939f;padding:12px;">No risks recorded.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -356,7 +252,7 @@
                     @forelse($frameworkBreakdown as $fw)
                     @php
                         $fwPct = $fw['compliance_pct'];
-                        $fwClr = $fwPct >= 80 ? '#16a34a' : ($fwPct >= 60 ? '#d97706' : '#dc2626');
+                        $fwClr = $fwPct >= 80 ? '#46bd5f' : ($fwPct >= 60 ? '#f76b15' : '#e5484d');
                     @endphp
                     <div class="fw-row">
                         <div class="fw-header">
@@ -374,7 +270,7 @@
                         </div>
                     </div>
                     @empty
-                    <p style="color:#94a3b8;font-size:8.5px;text-align:center;padding:12px 0;">No framework data.</p>
+                    <p style="color:#93939f;font-size:8.5px;text-align:center;padding:12px 0;">No framework data.</p>
                     @endforelse
                 </div>
             </div>
@@ -391,12 +287,12 @@
                 <div class="box-body">
                     <div class="ev-grid">
                         @foreach([
-                            ['Approved',      $evidenceSummary['approved'],      '#16a34a'],
-                            ['Pending Review',$evidenceSummary['pending'],        '#d97706'],
-                            ['Rejected',      $evidenceSummary['rejected'],       '#dc2626'],
-                            ['Expiring ≤14d', $evidenceSummary['expiring_soon'],  '#ea580c'],
-                            ['Expired',       $evidenceSummary['expired'],        '#64748b'],
-                            ['Total Files',   $evidenceSummary['total'],          '#2563eb'],
+                            ['Approved',      $evidenceSummary['approved'],      '#46bd5f'],
+                            ['Pending Review',$evidenceSummary['pending'],        '#f5b929'],
+                            ['Rejected',      $evidenceSummary['rejected'],       '#e5484d'],
+                            ['Expiring ≤14d', $evidenceSummary['expiring_soon'],  '#f76b15'],
+                            ['Expired',       $evidenceSummary['expired'],        '#75758a'],
+                            ['Total Files',   $evidenceSummary['total'],          '#003c33'],
                         ] as [$lbl, $val, $clr])
                         <div class="ev-item">
                             <div class="ev-value" style="color: {{ $clr }}">{{ $val }}</div>
@@ -415,10 +311,10 @@
                 <div class="box-body">
                     <div class="stat-row">
                         @foreach([
-                            ['Total',      $assessmentSummary['total'],      '#1e3a5f'],
-                            ['Completed',  $assessmentSummary['completed'],  '#16a34a'],
-                            ['In Progress',$assessmentSummary['in_progress'],'#2563eb'],
-                            ['Overdue',    $assessmentSummary['overdue'],    $assessmentSummary['overdue'] > 0 ? '#dc2626' : '#94a3b8'],
+                            ['Total',      $assessmentSummary['total'],      '#003c33'],
+                            ['Completed',  $assessmentSummary['completed'],  '#46bd5f'],
+                            ['In Progress',$assessmentSummary['in_progress'],'#003c33'],
+                            ['Overdue',    $assessmentSummary['overdue'],    $assessmentSummary['overdue'] > 0 ? '#e5484d' : '#93939f'],
                         ] as [$lbl, $val, $clr])
                         <div class="stat-box">
                             <div class="stat-value" style="color: {{ $clr }}">{{ $val }}</div>
@@ -438,7 +334,7 @@
                             {{ $assessmentSummary['latest_date'] }}
                             @if($assessmentSummary['latest_score'] !== null)
                                 &nbsp;&middot;&nbsp;
-                                <strong style="color: {{ $assessmentSummary['latest_score'] >= 80 ? '#16a34a' : ($assessmentSummary['latest_score'] >= 60 ? '#d97706' : '#dc2626') }}">
+                                <strong style="color: {{ $assessmentSummary['latest_score'] >= 80 ? '#46bd5f' : ($assessmentSummary['latest_score'] >= 60 ? '#f76b15' : '#e5484d') }}">
                                     {{ $assessmentSummary['latest_score'] }}%
                                 </strong> compliance
                             @endif
@@ -456,7 +352,7 @@
         <div class="box-header">Compliance Trend (Last {{ count($trend) }} Snapshots)</div>
         <div class="box-body">
             @if(count($trend) < 2)
-            <p style="color:#94a3b8;font-size:8.5px;text-align:center;">Not enough snapshot data yet.</p>
+            <p style="color:#93939f;font-size:8.5px;text-align:center;">Not enough snapshot data yet.</p>
             @else
             <div class="trend-row">
                 @foreach($trend as $point)
@@ -464,7 +360,7 @@
                 <div class="trend-bar-wrap">
                     <div class="trend-val">{{ $point['compliance_score'] }}%</div>
                     <div class="trend-bar-outer">
-                        <div class="trend-bar-inner" style="height: {{ $barH }}px; background: #3b82f6;"></div>
+                        <div class="trend-bar-inner" style="height: {{ $barH }}px; background: #003c33;"></div>
                     </div>
                     <div class="trend-date">{{ $point['date'] }}</div>
                 </div>
@@ -475,9 +371,8 @@
     </div>
     @endif
 
-    <!-- Footer -->
-    <div class="footer">
-        GRC Management System &mdash; Executive Dashboard Report &mdash; Generated {{ $generatedAt }}<br>
+    <div class="dashboard-footer">
+        GRC Charter &mdash; Executive Dashboard Report &mdash; Generated {{ $generatedAt }}<br>
         Confidential &mdash; Internal Use Only &mdash; Do not distribute outside the organisation
     </div>
 

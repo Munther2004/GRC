@@ -54,7 +54,7 @@ function renderInline(text: string): React.ReactNode[] {
     return parts.map((part, i) => {
         if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
             return (
-                <strong key={i} className="font-semibold">
+                <strong key={i} className="font-medium">
                     {part.slice(2, -2)}
                 </strong>
             );
@@ -314,7 +314,7 @@ export default function ChatbotIndex({ context }: Props) {
                     <div>
                         <div className="flex items-center gap-2">
                             <Sparkles className="h-5 w-5 text-primary" />
-                            <h1 className="text-xl font-semibold tracking-tight">
+                            <h1 className="text-xl font-medium">
                                 AI Compliance Assistant
                             </h1>
                         </div>

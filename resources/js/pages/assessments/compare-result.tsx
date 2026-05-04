@@ -153,7 +153,7 @@ function DirectionBadge({ direction }: { direction: string }) {
     return (
         <Badge
             variant="outline"
-            className={cn('text-xs font-semibold whitespace-nowrap', cfg.cls)}
+            className={cn('text-xs font-medium whitespace-nowrap', cfg.cls)}
         >
             {cfg.label}
         </Badge>
@@ -417,7 +417,7 @@ export default function CompareResult({
                             <Badge
                                 variant="outline"
                                 className={cn(
-                                    'px-2 py-1 text-xs font-semibold',
+                                    'px-2 py-1 text-xs font-medium',
                                     netChange.cls,
                                 )}
                             >

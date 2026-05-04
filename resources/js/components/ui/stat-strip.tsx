@@ -20,6 +20,7 @@ export function StatStrip({ stats, className }: { stats: Stat[]; className?: str
         stats.length === 2 ? 'grid-cols-2' :
         stats.length === 3 ? 'grid-cols-3' :
         stats.length === 4 ? 'grid-cols-2 md:grid-cols-4' :
+        stats.length === 6 ? 'grid-cols-2 md:grid-cols-3' :
         'grid-cols-2 md:grid-cols-3 lg:grid-cols-5'
 
     return (

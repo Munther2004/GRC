@@ -729,7 +729,7 @@ export default function AssessmentShow({
                                                 className="flex gap-3 rounded-r-2xl border-l-2 p-2.5"
                                                 style={{ borderColor: '#f76b15', background: 'rgba(247,107,21,0.08)' }}
                                             >
-                                                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-semibold" style={{ background: 'rgba(247,107,21,0.18)', color: '#f76b15' }}>
+                                                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-medium" style={{ background: 'rgba(247,107,21,0.18)', color: '#f76b15' }}>
                                                     {i + 1}
                                                 </span>
                                                 <p className="text-sm" style={{ color: 'var(--foreground)' }}>

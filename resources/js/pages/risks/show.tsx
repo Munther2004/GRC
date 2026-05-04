@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
 import type { SharedProps } from '@/types';
@@ -152,6 +153,7 @@ export default function RiskShow({
     const { auth } = usePage<SharedProps>().props;
     const isAdmin = auth.user.role === 'super_admin' || auth.user.role === 'admin';
     const canEdit = auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'user';
+    const confirm = useConfirm();
 
     const [selectedControlId, setSelectedControlId] = useState<number | ''>('');
     const [controlSearch, setControlSearch] = useState('');
@@ -161,8 +163,14 @@ export default function RiskShow({
     const [editingPlanId, setEditingPlanId] = useState<number | null>(null);
     const [planForm, setPlanForm] = useState<PlanFormState>({ ...emptyPlan });
 
-    const deleteRisk = () => {
-        if (!confirm(`Delete "${risk.title}"? This cannot be undone.`)) return;
+    const deleteRisk = async () => {
+        const ok = await confirm({
+            title: `Delete "${risk.title}"?`,
+            description: 'This cannot be undone.',
+            confirmLabel: 'Delete',
+            tone: 'destructive',
+        });
+        if (!ok) return;
         router.delete(route('risks.destroy', risk.id));
     };
 
@@ -180,8 +188,12 @@ export default function RiskShow({
         );
     };
 
-    const unlinkControl = (controlId: number) => {
-        if (!confirm('Unlink this control?')) return;
+    const unlinkControl = async (controlId: number) => {
+        const ok = await confirm({
+            title: 'Unlink this control?',
+            confirmLabel: 'Unlink',
+        });
+        if (!ok) return;
         router.post(route('risks.unlink-control', risk.id), {
             control_id: controlId,
         });
@@ -257,8 +269,13 @@ export default function RiskShow({
         setPlanForm({ ...emptyPlan });
     };
 
-    const deletePlan = (planId: number) => {
-        if (!confirm('Delete this treatment plan?')) return;
+    const deletePlan = async (planId: number) => {
+        const ok = await confirm({
+            title: 'Delete this treatment plan?',
+            confirmLabel: 'Delete',
+            tone: 'destructive',
+        });
+        if (!ok) return;
         router.delete(
             route('risks.treatment-plans.destroy', {
                 risk: risk.id,
@@ -868,7 +885,7 @@ export default function RiskShow({
                                                     Current Risk
                                                 </p>
                                                 <div
-                                                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold ${levelColors[risk.risk_level]}`}
+                                                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-medium ${levelColors[risk.risk_level]}`}
                                                 >
                                                     <AlertTriangle className="h-3 w-3" />
                                                     {score}/25{' '}
@@ -886,7 +903,7 @@ export default function RiskShow({
                                                     After Treatment
                                                 </p>
                                                 <div
-                                                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold ${residualColor}`}
+                                                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-medium ${residualColor}`}
                                                 >
                                                     <ShieldCheck className="h-3 w-3" />
                                                     {residualScore}/25{' '}
@@ -942,7 +959,7 @@ export default function RiskShow({
                                                     >
                                                         {ctrl.control_id}
                                                     </Badge>
-                                                    <span className="text-sm font-semibold text-foreground">
+                                                    <span className="text-sm font-medium text-foreground">
                                                         {ctrl.title}
                                                     </span>
                                                     <Badge

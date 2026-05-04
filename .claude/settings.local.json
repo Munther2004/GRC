@@ -84,7 +84,9 @@
       "mcp__playwright__browser_snapshot",
       "mcp__playwright__browser_wait_for",
       "mcp__playwright__browser_press_key",
-      "Bash(php *)"
+      "Bash(php *)",
+      "Bash(git fetch *)",
+      "Bash(gh pr *)"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -26,6 +26,7 @@ import {
     CardTitle,
     CardDescription,
 } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AdminLayout from '@/layouts/admin-layout';
@@ -77,6 +78,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function CorporationShow({ corporation, managerCredentials }: Props) {
+    const confirm = useConfirm();
     const [copiedCode, setCopiedCode] = useState(false);
     const [copiedUsername, setCopiedUsername] = useState(false);
     const { data: rejectData, setData: setRejectData, post: postReject } =
@@ -106,13 +108,13 @@ export default function CorporationShow({ corporation, managerCredentials }: Pro
         postReject(route('admin.corporations.reject', corporation.id));
     };
 
-    const handleRegenerate = () => {
-        if (
-            !confirm(
-                'Regenerate the registration code? The old code will no longer work.',
-            )
-        )
-            return;
+    const handleRegenerate = async () => {
+        const ok = await confirm({
+            title: 'Regenerate the registration code?',
+            description: 'The old code will no longer work.',
+            confirmLabel: 'Regenerate',
+        });
+        if (!ok) return;
         router.post(
             route('admin.corporations.regenerate-code', corporation.id),
         );
@@ -231,7 +233,7 @@ export default function CorporationShow({ corporation, managerCredentials }: Pro
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <code className="flex-1 rounded bg-muted p-3 font-mono text-lg font-bold tracking-widest text-foreground">
+                                <code className="flex-1 rounded bg-muted p-3 font-mono text-lg font-medium tracking-widest text-foreground">
                                     {corporation.registration_code}
                                 </code>
                                 <Button

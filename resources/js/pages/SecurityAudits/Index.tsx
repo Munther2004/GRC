@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatStrip } from '@/components/ui/stat-strip';
 import AdminLayout from '@/layouts/admin-layout';
@@ -78,6 +79,7 @@ function statusBadge(status: AuditRow['status']) {
 }
 
 export default function SecurityAuditsIndex({ audits, stats }: Props) {
+    const confirm = useConfirm();
     const [dragActive, setDragActive] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -129,8 +131,13 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
         handleFile(file);
     };
 
-    const destroy = (id: number, name: string) => {
-        if (!confirm(`Delete audit for "${name}"?`)) return;
+    const destroy = async (id: number, name: string) => {
+        const ok = await confirm({
+            title: `Delete audit for "${name}"?`,
+            confirmLabel: 'Delete',
+            tone: 'destructive',
+        });
+        if (!ok) return;
         router.delete(`/security-audits/${id}`);
     };
 
@@ -285,7 +292,7 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
                                             <td className="px-4 py-3">
                                                 {a.compliance_score !== null ? (
                                                     <span
-                                                        className={`font-semibold tabular-nums ${
+                                                        className={`font-medium tabular-nums ${
                                                             a.compliance_score >= 80
                                                                 ? 'text-emerald-400'
                                                                 : a.compliance_score >= 60

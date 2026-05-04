@@ -73,7 +73,7 @@ export function NotificationToast({ toast, onDismiss }: NotificationToastProps) 
         >
             <Icon className={`w-5 h-5 shrink-0 ${config.textColor} mt-0.5`} />
             <div className="flex-1">
-                <p className="text-sm font-semibold text-foreground">{toast.title}</p>
+                <p className="text-sm font-medium text-foreground">{toast.title}</p>
                 {toast.message && (
                     <p className="text-xs text-muted-foreground mt-1">{toast.message}</p>
                 )}

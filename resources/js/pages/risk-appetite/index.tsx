@@ -14,6 +14,7 @@ import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import {
     Dialog,
     DialogContent,
@@ -136,7 +137,7 @@ function ActiveAppetiteCard({ appetite }: { appetite: RiskAppetite }) {
         <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5 dark:border-primary/30 dark:from-primary/10 dark:to-secondary/10">
             <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2 text-base font-semibold">
+                    <CardTitle className="flex items-center gap-2 text-base font-medium">
                         <Sliders className="h-4 w-4 text-primary" />
                         {appetite.name}
                     </CardTitle>
@@ -150,7 +151,7 @@ function ActiveAppetiteCard({ appetite }: { appetite: RiskAppetite }) {
                 <div>
                     <div className="flex h-8 overflow-hidden rounded-lg border border-border dark:border-border">
                         <div
-                            className="flex items-center justify-center bg-green-500 text-xs font-semibold text-white"
+                            className="flex items-center justify-center bg-green-500 text-xs font-medium text-white"
                             style={{ width: `${acceptablePct}%` }}
                             title={appetite.acceptable_label}
                         >
@@ -159,14 +160,14 @@ function ActiveAppetiteCard({ appetite }: { appetite: RiskAppetite }) {
                                 : ''}
                         </div>
                         <div
-                            className="flex items-center justify-center bg-amber-400 text-xs font-semibold text-white"
+                            className="flex items-center justify-center bg-amber-400 text-xs font-medium text-white"
                             style={{ width: `${reviewPct}%` }}
                             title={appetite.review_label}
                         >
                             {reviewPct >= 12 ? appetite.review_label : ''}
                         </div>
                         <div
-                            className="flex flex-1 items-center justify-center bg-red-500 text-xs font-semibold text-white"
+                            className="flex flex-1 items-center justify-center bg-red-500 text-xs font-medium text-white"
                             title={appetite.escalated_label}
                         >
                             {escalatedPct >= 12 ? appetite.escalated_label : ''}
@@ -561,6 +562,7 @@ export default function RiskAppetiteIndex({
     context,
 }: Props) {
     const { errors: pageErrors } = usePage<SharedProps>().props;
+    const confirm = useConfirm();
     const isSuper = context?.is_super_admin ?? false;
     const corpQuery = context?.corporation_id ? `?corporation_id=${context.corporation_id}` : '';
     const [addOpen, setAddOpen] = useState(false);
@@ -613,13 +615,13 @@ export default function RiskAppetiteIndex({
         }
     };
 
-    const handleActivate = (appetite: RiskAppetite) => {
-        if (
-            !confirm(
-                `Activate "${appetite.name}"? This will deactivate the current configuration and re-classify all risks.`,
-            )
-        )
-            return;
+    const handleActivate = async (appetite: RiskAppetite) => {
+        const ok = await confirm({
+            title: `Activate "${appetite.name}"?`,
+            description: 'This will deactivate the current configuration and re-classify all risks.',
+            confirmLabel: 'Activate',
+        });
+        if (!ok) return;
         router.post(`/risk-appetite/${appetite.id}/activate${corpQuery}`);
     };
 
@@ -738,7 +740,7 @@ export default function RiskAppetiteIndex({
                                         ].map((h) => (
                                             <th
                                                 key={h}
-                                                className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+                                                className="px-4 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
                                             >
                                                 {h}
                                             </th>

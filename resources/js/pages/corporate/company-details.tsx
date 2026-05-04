@@ -189,7 +189,7 @@ export default function CompanyDetails({ corporation }: Props) {
                     <CardContent>
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div className="rounded bg-slate-900/30 border border-slate-700 p-4">
-                                <p className="text-2xl font-bold">
+                                <p className="text-2xl font-medium">
                                     {corporation.users.length}
                                 </p>
                                 <p className="text-sm text-muted-foreground">

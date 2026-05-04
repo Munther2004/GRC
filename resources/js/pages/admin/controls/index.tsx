@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -50,6 +51,7 @@ export default function ControlsIndex({
     filters,
     stats,
 }: Props) {
+    const confirm = useConfirm();
     const [search, setSearch] = useState(filters.search ?? '');
     const [frameworkId, setFramework] = useState(filters.framework_id ?? 'all');
     const [category, setCategory] = useState(filters.category ?? 'all');
@@ -67,9 +69,14 @@ export default function ControlsIndex({
         );
     };
 
-    const deleteControl = (id: number, controlId: string) => {
-        if (!confirm(`Delete control "${controlId}"? This cannot be undone.`))
-            return;
+    const deleteControl = async (id: number, controlId: string) => {
+        const ok = await confirm({
+            title: `Delete control "${controlId}"?`,
+            description: 'This cannot be undone.',
+            confirmLabel: 'Delete',
+            tone: 'destructive',
+        });
+        if (!ok) return;
         router.delete(route('admin.controls.destroy', id));
     };
 
@@ -94,7 +101,7 @@ export default function ControlsIndex({
                             <CardContent className="flex items-center gap-3 p-4">
                                 <Settings className="h-5 w-5 text-primary" />
                                 <div>
-                                    <p className="text-2xl font-bold">
+                                    <p className="text-2xl font-medium">
                                         {f.controls_count}
                                     </p>
                                     <p className="text-xs text-muted-foreground">

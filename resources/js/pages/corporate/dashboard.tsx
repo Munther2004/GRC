@@ -86,7 +86,7 @@ export default function CorporateDashboard({ corporation, stats, users }: Props)
                             <CardContent className="flex items-center gap-3 p-4">
                                 <Icon className={`h-8 w-8 ${color}`} />
                                 <div>
-                                    <p className="text-2xl font-bold">{value}</p>
+                                    <p className="text-2xl font-medium">{value}</p>
                                     <p className="text-xs text-muted-foreground">{label}</p>
                                 </div>
                             </CardContent>
@@ -110,7 +110,7 @@ export default function CorporateDashboard({ corporation, stats, users }: Props)
                         {/* Code display */}
                         <div className="flex items-center gap-2">
                             <code
-                                className="flex-1 rounded p-3 font-mono text-xl font-bold tracking-widest"
+                                className="flex-1 rounded p-3 font-mono text-xl font-medium tracking-widest"
                                 style={{ background: 'rgba(var(--color-chart-1) / 0.08)', color: 'var(--chart-1)', border: '1px solid rgba(var(--color-chart-1) / 0.3)' }}
                             >
                                 {corporation.registration_code}

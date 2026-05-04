@@ -337,7 +337,7 @@ export default function AssessmentsIndex({
                                                                 />
                                                             </div>
                                                             <span
-                                                                className={`text-sm font-semibold ${complianceColor(a.compliance_percentage)}`}
+                                                                className={`text-sm font-medium ${complianceColor(a.compliance_percentage)}`}
                                                             >
                                                                 {
                                                                     a.compliance_percentage

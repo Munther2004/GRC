@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import {
     Dialog,
     DialogContent,
@@ -404,6 +405,7 @@ export default function RemediationTasksIndex({
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
     const canEdit = auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'user';
+    const confirm = useConfirm();
 
     // Filter state
     const [search, setSearch] = useState(filters.search ?? '');
@@ -521,8 +523,12 @@ export default function RemediationTasksIndex({
         });
     };
 
-    const markComplete = (t: Task) => {
-        if (!confirm(`Mark "${t.title}" as completed?`)) return;
+    const markComplete = async (t: Task) => {
+        const ok = await confirm({
+            title: `Mark "${t.title}" as completed?`,
+            confirmLabel: 'Mark complete',
+        });
+        if (!ok) return;
         router.post(route('remediation-tasks.complete', t.id));
     };
 
@@ -534,7 +540,7 @@ export default function RemediationTasksIndex({
                 {/* ── Header ── */}
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground">
+                        <h1 className="flex items-center gap-2 text-2xl font-medium text-foreground">
                             <ClipboardList className="h-6 w-6 text-primary" />
                             Remediation Tasks
                         </h1>
@@ -575,7 +581,7 @@ export default function RemediationTasksIndex({
                     </Card>
                     <Card>
                         <CardContent className="p-4">
-                            <p className="text-2xl font-bold text-primary">
+                            <p className="text-2xl font-medium text-primary">
                                 {stats.open_in_progress}
                             </p>
                             <p className="mt-0.5 text-xs text-muted-foreground">
@@ -586,7 +592,7 @@ export default function RemediationTasksIndex({
                     <Card>
                         <CardContent className="p-4">
                             <p
-                                className={`text-2xl font-bold ${stats.overdue > 0 ? 'text-red-600' : 'text-green-600'}`}
+                                className={`text-2xl font-medium ${stats.overdue > 0 ? 'text-red-600' : 'text-green-600'}`}
                             >
                                 {stats.overdue}
                             </p>
@@ -600,7 +606,7 @@ export default function RemediationTasksIndex({
                     </Card>
                     <Card>
                         <CardContent className="p-4">
-                            <p className="text-2xl font-bold text-green-600">
+                            <p className="text-2xl font-medium text-green-600">
                                 {stats.completed_this_month}
                             </p>
                             <p className="mt-0.5 text-xs text-muted-foreground">
@@ -717,7 +723,7 @@ export default function RemediationTasksIndex({
                                             ].map((h) => (
                                                 <th
                                                     key={h}
-                                                    className="px-4 py-3 text-left text-xs font-semibold tracking-wider whitespace-nowrap text-muted-foreground uppercase"
+                                                    className="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-muted-foreground uppercase"
                                                 >
                                                     {h}
                                                 </th>
@@ -754,7 +760,7 @@ export default function RemediationTasksIndex({
 
                                                 {/* Control */}
                                                 <td className="max-w-[200px] px-4 py-3">
-                                                    <span className="font-mono text-xs font-semibold text-muted-foreground">
+                                                    <span className="font-mono text-xs font-medium text-muted-foreground">
                                                         {
                                                             task.control
                                                                 .control_id
@@ -793,7 +799,7 @@ export default function RemediationTasksIndex({
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     {task.due_date ? (
                                                         <span
-                                                            className={`flex items-center gap-1 text-xs ${task.is_overdue ? 'font-semibold text-red-600' : 'text-muted-foreground dark:text-muted-foreground'}`}
+                                                            className={`flex items-center gap-1 text-xs ${task.is_overdue ? 'font-medium text-red-600' : 'text-muted-foreground dark:text-muted-foreground'}`}
                                                         >
                                                             <Calendar className="h-3 w-3 shrink-0" />
                                                             {new Date(
@@ -962,7 +968,7 @@ export default function RemediationTasksIndex({
                         </DialogTitle>
                         {editTask && (
                             <p className="mt-1 text-sm text-muted-foreground">
-                                <span className="font-mono font-semibold">
+                                <span className="font-mono font-medium">
                                     {editTask.control.control_id}
                                 </span>{' '}
                                 — {editTask.control.title}

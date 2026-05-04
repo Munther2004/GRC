@@ -3,6 +3,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
+import { ConfirmProvider } from '@/components/ui/confirm-dialog';
 import { initializeTheme } from '@/hooks/use-appearance';
 import { initializeFont } from '@/hooks/use-font';
 import { initializePreferences } from '@/hooks/use-preferences';
@@ -25,7 +26,9 @@ createInertiaApp({
         const root = createRoot(el);
         root.render(
             <StrictMode>
-                <App {...props} />
+                <ConfirmProvider>
+                    <App {...props} />
+                </ConfirmProvider>
             </StrictMode>,
         );
     },

@@ -99,7 +99,7 @@ function ControlCard({ ctrl }: { ctrl: ControlRow }) {
             >
                 <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="shrink-0 font-mono text-xs font-semibold text-foreground/85">
+                        <span className="shrink-0 font-mono text-xs font-medium text-foreground/85">
                             {ctrl.control_id}
                         </span>
                         <span className="truncate text-xs text-foreground/70">

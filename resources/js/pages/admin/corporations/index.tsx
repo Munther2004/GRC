@@ -89,13 +89,7 @@ export default function CorporationsIndex({
         );
     };
 
-    const deleteCorporation = (id: number, name: string) => {
-        if (
-            !confirm(
-                `Delete corporation "${name}"? This cannot be undone.`,
-            )
-        )
-            return;
+    const deleteCorporation = (id: number, _name: string) => {
         router.delete(route('admin.corporations.destroy', id));
     };
 
@@ -151,7 +145,7 @@ export default function CorporationsIndex({
                             <CardContent className="flex items-center gap-3 p-4">
                                 <Icon className={`h-8 w-8 ${color}`} />
                                 <div>
-                                    <p className="text-2xl font-bold">
+                                    <p className="text-2xl font-medium">
                                         {value}
                                     </p>
                                     <p className="text-xs text-muted-foreground">

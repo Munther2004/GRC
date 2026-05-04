@@ -70,7 +70,10 @@ class SecurityAuditController extends Controller
                 'required',
                 'file',
                 'max:10240',
-                'mimes:csv,txt,json,yaml,yml,ini,conf,config,cfg,env,toml,xml,docx,xlsx',
+                // Text/config formats go directly to Claude; png/jpg/jpeg/webp
+                // screenshots are routed through the optional Gemini Vision
+                // preprocessing layer before Claude — see AnalyzeSecurityConfigJob.
+                'mimes:csv,txt,json,yaml,yml,ini,conf,config,cfg,env,toml,xml,docx,xlsx,png,jpg,jpeg,webp',
             ],
         ]);
 

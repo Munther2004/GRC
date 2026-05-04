@@ -63,6 +63,12 @@
     --sidebar-ring:         #003c33;
 
     --radius: 0.25rem;
+
+    /* Severity ramp — token-aware so chips and dots stay consistent across the app. */
+    --severity-low:      #2a8a3f;
+    --severity-medium:   #b08220;
+    --severity-high:     #d4581a;
+    --severity-critical: var(--destructive);
 }
 
 .dark {
@@ -100,6 +106,12 @@
     --sidebar-border:       #285A48;
     --sidebar-ring:         #408A71;
     --radius: 0.25rem;
+
+    /* Severity ramp — dark variants tuned for the forest canvas. */
+    --severity-low:      #46bd5f;
+    --severity-medium:   #f5b929;
+    --severity-high:     #f76b15;
+    --severity-critical: #e5484d;
 }
 
 @theme inline {

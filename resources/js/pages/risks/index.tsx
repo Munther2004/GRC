@@ -230,9 +230,10 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                     )}
                     <button
                         onClick={toggleHasPlan}
+                        aria-pressed={hasPlan}
                         className="inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-[12px] transition-colors"
                         style={hasPlan
-                            ? { border: '1px solid color-mix(in srgb, var(--primary) 35%, transparent)', background: 'color-mix(in srgb, var(--primary) 8%, transparent)', color: 'var(--primary)' }
+                            ? { border: '1px solid var(--foreground)', background: 'var(--foreground)', color: 'var(--background)', fontWeight: 500 }
                             : { border: '1px solid var(--border)', color: 'var(--muted-foreground)' }
                         }
                     >
@@ -265,8 +266,9 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="mt-4 p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
+                        <div className="relative">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
                                 <thead style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'color-mix(in srgb, var(--muted) 50%, transparent)' }}>
                                     <tr>
                                         {['Risk','Category','Owner','Score','Level',...(appetite ? ['Appetite'] : []),'Status','Treatment','Due',''].map((h) => (
@@ -384,6 +386,17 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                     )}
                                 </tbody>
                             </table>
+                            </div>
+                            {/* Right-edge scroll-shadow — visible only on mobile to hint
+                                that the table is horizontally scrollable. */}
+                            <div
+                                aria-hidden
+                                className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:hidden"
+                                style={{
+                                    background:
+                                        'linear-gradient(to right, transparent, var(--card) 85%)',
+                                }}
+                            />
                         </div>
                         {risks.links.length > 3 && (
                             <div className="flex items-center justify-center gap-1 p-4" style={{ borderTop: '1px solid var(--border)' }}>

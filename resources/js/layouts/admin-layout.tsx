@@ -28,10 +28,23 @@ function FlashToast() {
 
     if (!visible || !text) return null;
 
+    // Anchor to the bottom-right corner with explicit inline styles so the
+    // position can't be lost to a Tailwind purge or cascade conflict.
+    // max-w-sm (24rem) keeps the toast's left edge well clear of the sidebar
+    // at any viewport width: at lg+ the sidebar is at most 256px and the toast
+    // sits at right:24px with width ≤ 384px, so its left edge can't reach the
+    // sidebar. At <lg the sidebar is off-canvas.
     return (
         <div
-            className="fixed right-6 bottom-6 z-50 flex max-w-sm items-start gap-3 rounded px-4 py-3 text-sm ornate-frame bg-card border"
+            className="fixed z-50 flex max-w-sm items-start gap-3 rounded px-4 py-3 text-sm ornate-frame bg-card border"
             style={{
+                // `.ornate-frame` sets `position: relative` in app.css and beats
+                // Tailwind's `.fixed` on specificity ties. Inline style wins, so
+                // we force fixed positioning here.
+                position: 'fixed',
+                right: '24px',
+                bottom: '24px',
+                left: 'auto',
                 borderColor: isSuccess ? 'rgba(var(--color-primary) / 0.4)' : 'rgba(var(--color-destructive) / 0.4)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
                 backdropFilter: 'blur(12px)',

@@ -36,7 +36,7 @@ export function ComplianceChart({ score = 0, frameworkScores }: Props) {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="relative h-[280px] w-full">
+                <div className="relative h-[280px] w-full min-w-0">
                     <ResponsiveContainer width="100%" height="100%">
                         <RadialBarChart
                             cx="50%"

@@ -25,7 +25,9 @@ type PaginatedData = {
     per_page: number;
 };
 
-type Props = { notifications: PaginatedData };
+// Renamed from `notifications` so the shared sidebar-badge prop
+// (also keyed `notifications`) is not overwritten on this page.
+type Props = { notificationList: PaginatedData };
 type FilterTab = 'all' | 'unread' | 'overdue_assessment' | 'pending_evidence' | 'critical_risk' | 'overdue_risk';
 
 function timeAgo(dateStr: string): string {
@@ -55,44 +57,48 @@ const tabs: { key: FilterTab; label: string }[] = [
     { key: 'pending_evidence',    label: 'Pending evidence' },
 ];
 
-export default function NotificationsPage({ notifications }: Props) {
+export default function NotificationsPage({ notificationList }: Props) {
     const confirm = useConfirm();
     const [activeTab, setActiveTab] = useState<FilterTab>('all');
 
-    const filtered = notifications.data.filter((n) => {
+    const filtered = notificationList.data.filter((n) => {
         if (activeTab === 'all')    return true;
         if (activeTab === 'unread') return !n.is_read;
         return n.type === activeTab;
     });
 
+    // Reload both the page list AND the shared `notifications` badge prop so
+    // the sidebar count stays in sync after read/delete actions.
+    const reloadAll = () => router.reload({ only: ['notificationList', 'notifications'] });
+
     const markRead = (n: NotificationItem) => {
-        if (!n.is_read) router.post(`/notifications/${n.id}/read`, {}, { preserveScroll: true, onSuccess: () => router.reload({ only: ['notifications'] }) });
+        if (!n.is_read) router.post(`/notifications/${n.id}/read`, {}, { preserveScroll: true, onSuccess: reloadAll });
         if (n.url) router.visit(n.url);
     };
 
-    const markAllRead = () => router.post('/notifications/read-all', {}, { preserveScroll: true, onSuccess: () => router.reload({ only: ['notifications'] }) });
+    const markAllRead = () => router.post('/notifications/read-all', {}, { preserveScroll: true, onSuccess: reloadAll });
 
-    const deleteNotification = (id: number) => router.delete(`/notifications/${id}`, { preserveScroll: true, onSuccess: () => router.reload({ only: ['notifications'] }) });
+    const deleteNotification = (id: number) => router.delete(`/notifications/${id}`, { preserveScroll: true, onSuccess: reloadAll });
 
     const clearAll = async () => {
         const ok = await confirm({
             title: 'Delete all notifications?',
-            description: 'This cannot be undone.',
+            description: `Are you sure you want to delete all ${notificationList.total} notifications? This cannot be undone.`,
             confirmLabel: 'Delete all',
             tone: 'destructive',
         });
         if (!ok) return;
-        router.delete('/notifications', { preserveScroll: true, onSuccess: () => router.reload({ only: ['notifications'] }) });
+        router.delete('/notifications', { preserveScroll: true, onSuccess: reloadAll });
     };
 
-    const unreadCount = notifications.data.filter((n) => !n.is_read).length;
+    const unreadCount = notificationList.data.filter((n) => !n.is_read).length;
 
     return (
         <AdminLayout>
             <div className="space-y-6">
                 <PageHeader
                     title="Notifications"
-                    description={`${notifications.total} total · ${unreadCount} unread`}
+                    description={`${notificationList.total} total · ${unreadCount} unread`}
                 >
                     <div className="flex items-center gap-2">
                         {unreadCount > 0 && (
@@ -100,7 +106,7 @@ export default function NotificationsPage({ notifications }: Props) {
                                 Mark all read
                             </Button>
                         )}
-                        {notifications.total > 0 && (
+                        {notificationList.total > 0 && (
                             <Button variant="destructive" size="sm" onClick={clearAll}>
                                 <Trash2 className="mr-1 h-4 w-4" />
                                 Clear all
@@ -187,14 +193,14 @@ export default function NotificationsPage({ notifications }: Props) {
                 </div>
 
                 {/* Pagination */}
-                {notifications.last_page > 1 && (
+                {notificationList.last_page > 1 && (
                     <div className="flex items-center justify-center gap-2 pt-4">
-                        {Array.from({ length: notifications.last_page }, (_, i) => i + 1).map((page) => (
+                        {Array.from({ length: notificationList.last_page }, (_, i) => i + 1).map((page) => (
                             <Link
                                 key={page}
                                 href={`/notifications?page=${page}`}
                                 className="flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors"
-                                style={page === notifications.current_page
+                                style={page === notificationList.current_page
                                     ? { background: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 500 }
                                     : { color: 'var(--muted-foreground)', border: '1px solid var(--border)' }
                                 }

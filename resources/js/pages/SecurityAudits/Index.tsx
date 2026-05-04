@@ -51,10 +51,15 @@ interface Props {
     };
 }
 
-const ALLOWED_EXT = [
+// Text/config extensions go directly to Claude. Image extensions are routed
+// through the optional Gemini Vision preprocessing layer before Claude
+// (see AnalyzeSecurityConfigJob + GeminiVisionService).
+const TEXT_EXT = [
     'csv', 'txt', 'json', 'yaml', 'yml', 'ini', 'conf', 'config',
     'cfg', 'env', 'toml', 'xml', 'docx', 'xlsx',
 ];
+const IMAGE_EXT = ['png', 'jpg', 'jpeg', 'webp'];
+const ALLOWED_EXT = [...TEXT_EXT, ...IMAGE_EXT];
 
 function formatBytes(b: number): string {
     if (b < 1024) return `${b} B`;
@@ -147,7 +152,7 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
 
             <PageHeader
                 title="Security Configuration Auditor"
-                description="Upload a configuration file and let Claude analyse it against best-practice security baselines."
+                description="Upload a configuration file or screenshot of a configuration/security setting — Claude analyses it against best-practice security baselines."
             />
 
             <StatStrip
@@ -165,7 +170,7 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
             <Card className="mb-6">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Upload className="h-4 w-4" /> Upload Configuration File
+                        <Upload className="h-4 w-4" /> Upload configuration file or screenshot
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -199,10 +204,13 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
                             <div className="flex flex-col items-center gap-2">
                                 <Upload className="h-10 w-10 text-muted-foreground" />
                                 <p className="text-sm text-foreground">
-                                    Drop a file here, or <span className="text-primary underline">browse</span>
+                                    Drop a configuration file or screenshot here, or <span className="text-primary underline">browse</span>
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                    {ALLOWED_EXT.join(', ')} · max 10 MB
+                                    Configs: {TEXT_EXT.join(', ')}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                    Screenshots: {IMAGE_EXT.join(', ')} · max 10 MB
                                 </p>
                             </div>
                         )}

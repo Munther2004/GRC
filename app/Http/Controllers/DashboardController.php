@@ -40,7 +40,7 @@ class DashboardController extends Controller
             'pending_evidence' => $evidenceStats['pending'],
         ];
 
-        $recentRisks = $scopedRisks()->latest()->limit(5)->get()->map(fn ($r) => [
+        $recentRisks = $scopedRisks()->latest()->limit(10)->get()->map(fn ($r) => [
             'id' => $r->id,
             'title' => $r->title,
             'category' => $r->category,
@@ -52,7 +52,7 @@ class DashboardController extends Controller
             'status' => $r->status,
         ]);
 
-        $recentActivity = AuditLog::latest()->limit(8)->get()->map(fn ($l) => [
+        $recentActivity = AuditLog::latest()->limit(5)->get()->map(fn ($l) => [
             'id' => $l->id,
             'description' => $l->description,
             'user_name' => $l->user_name,

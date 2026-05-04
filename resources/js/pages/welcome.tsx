@@ -11,6 +11,7 @@ import {
     FileSearch,
     FolderOpen,
     LayoutDashboard,
+    Menu,
     Moon,
     Scale,
     Shield,
@@ -18,6 +19,7 @@ import {
     Sparkles,
     Sun,
     Users,
+    X,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppearance } from '@/hooks/use-appearance';
@@ -1115,12 +1117,23 @@ export default function Welcome() {
 
     const [sealDone, setSealDone] = useState(false);
     const [scrollY, setScrollY] = useState(0);
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
     useEffect(() => {
         const onScroll = () => setScrollY(window.scrollY);
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
+
+    // ESC closes mobile nav.
+    useEffect(() => {
+        if (!mobileNavOpen) return;
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setMobileNavOpen(false);
+        };
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [mobileNavOpen]);
 
     return (
         <>
@@ -1157,12 +1170,15 @@ export default function Welcome() {
                     }}
                 />
 
-                {/* Announcement bar */}
+                {/* Announcement bar — shortened on mobile to stay one line at 390px. */}
                 <div
                     className="relative z-30 flex h-9 items-center justify-center px-4 text-[11px]"
                     style={{ background: 'var(--c-fg)', color: 'var(--c-bg)' }}
                 >
-                    <span className="opacity-90">
+                    <span className="truncate opacity-90 sm:hidden">
+                        ISO 27001 · NIST · OWASP · CIS
+                    </span>
+                    <span className="hidden truncate opacity-90 sm:inline">
                         ISO 27001 · NIST 800-53 · OWASP ASVS · CIS — unified under one charter
                     </span>
                 </div>
@@ -1238,9 +1254,93 @@ export default function Welcome() {
                                 Get started
                                 <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.8} />
                             </a>
+                            {/* Mobile hamburger — only visible below md, mirrors admin shell pattern */}
+                            <button
+                                type="button"
+                                aria-label="Open navigation"
+                                aria-expanded={mobileNavOpen}
+                                onClick={() => setMobileNavOpen(true)}
+                                className="ml-1 inline-flex h-9 w-9 items-center justify-center rounded-full md:hidden"
+                                style={{ color: 'var(--c-fg)', border: '1px solid var(--c-border)' }}
+                            >
+                                <Menu className="h-4 w-4" strokeWidth={1.8} />
+                            </button>
                         </div>
                     </div>
                 </header>
+
+                {/* ─── Mobile nav drawer ─── */}
+                {mobileNavOpen && (
+                    <>
+                        <div
+                            className="fixed inset-0 z-40 md:hidden"
+                            style={{
+                                background: 'color-mix(in srgb, var(--c-fg) 40%, transparent)',
+                                backdropFilter: 'blur(2px)',
+                            }}
+                            onClick={() => setMobileNavOpen(false)}
+                            aria-hidden
+                        />
+                        <aside
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Site navigation"
+                            className="fixed inset-y-0 right-0 z-50 flex w-72 max-w-[85vw] flex-col md:hidden"
+                            style={{
+                                background: 'var(--c-bg)',
+                                borderLeft: '1px solid var(--c-border)',
+                            }}
+                        >
+                            <div
+                                className="flex h-16 shrink-0 items-center justify-between px-5"
+                                style={{ borderBottom: '1px solid var(--c-border)' }}
+                            >
+                                <span
+                                    className="text-[12px] uppercase"
+                                    style={{ color: 'var(--c-fg)', letterSpacing: '0.28em', fontWeight: 600 }}
+                                >
+                                    Menu
+                                </span>
+                                <button
+                                    type="button"
+                                    aria-label="Close navigation"
+                                    onClick={() => setMobileNavOpen(false)}
+                                    className="inline-flex h-8 w-8 items-center justify-center rounded-full"
+                                    style={{ color: 'var(--c-muted)' }}
+                                >
+                                    <X className="h-4 w-4" strokeWidth={1.8} />
+                                </button>
+                            </div>
+                            <nav className="flex flex-1 min-h-0 flex-col gap-1 overflow-y-auto px-3 py-4">
+                                {[
+                                    { l: 'Tenets',     h: '#tenets' },
+                                    { l: 'Platform',   h: '#features' },
+                                    { l: 'Frameworks', h: '#frameworks' },
+                                    { l: 'About',      h: '/about' },
+                                ].map((n) => (
+                                    <a
+                                        key={n.l}
+                                        href={n.h}
+                                        onClick={() => setMobileNavOpen(false)}
+                                        className="rounded-2xl px-3 py-3 text-sm transition-colors"
+                                        style={{ color: 'var(--c-fg)' }}
+                                    >
+                                        {n.l}
+                                    </a>
+                                ))}
+                            </nav>
+                            <div className="shrink-0 border-t px-3 py-4" style={{ borderColor: 'var(--c-border)' }}>
+                                <a
+                                    href="/login"
+                                    className="block w-full rounded-full px-4 py-2.5 text-center text-[12px] transition-colors"
+                                    style={{ color: 'var(--c-fg)', border: '1px solid var(--c-border)' }}
+                                >
+                                    Log in
+                                </a>
+                            </div>
+                        </aside>
+                    </>
+                )}
 
                 {/* ─── Hero ─── */}
                 <section className="relative z-10 mx-auto max-w-7xl px-6 pb-20 pt-12 lg:pb-24 lg:pt-20">

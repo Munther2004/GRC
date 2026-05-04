@@ -63,8 +63,9 @@ const roleColors: Record<string, string> = {
 };
 
 export default function UsersIndex() {
-    const { users, stats, filters, permissions } = usePage<Props>().props;
+    const { users, stats, filters, permissions, auth } = usePage<Props>().props;
     const confirm = useConfirm();
+    const currentUserId = auth?.user?.id;
 
     const [search, setSearch] = useState(filters.search ?? '');
     const [role, setRole] = useState(filters.role ?? 'all');
@@ -266,14 +267,16 @@ export default function UsersIndex() {
                                                                 <Pencil className="h-4 w-4" />
                                                             </Button>
                                                         </Link>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 text-red-500 hover:bg-red-50"
-                                                            onClick={() => deleteUser(u.id, u.name)}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
+                                                        {u.id !== currentUserId && (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                                                onClick={() => deleteUser(u.id, u.name)}
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>

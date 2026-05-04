@@ -835,12 +835,16 @@ export default function ExecutiveDashboard({
                                 </span>
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="min-w-0">
                             {trend.length < 2 ? (
-                                <p className="py-4 text-center text-sm text-muted-foreground/60">
-                                    Not enough snapshots yet. Trend data appears
-                                    after 2 scheduler runs.
-                                </p>
+                                <div className="py-4 text-center">
+                                    <p className="text-sm text-muted-foreground/80">
+                                        Not enough snapshots yet.
+                                    </p>
+                                    <p className="mt-1 text-xs text-muted-foreground/60">
+                                        Snapshots appear after the first few nightly scheduler runs.
+                                    </p>
+                                </div>
                             ) : (
                                 <ResponsiveContainer width="100%" height={160}>
                                     <LineChart

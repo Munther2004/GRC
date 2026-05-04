@@ -7,7 +7,10 @@ import {
     Tooltip,
     ResponsiveContainer,
     Legend,
+    DefaultLegendContent,
 } from 'recharts';
+import type { LegendPayload } from 'recharts/types/component/DefaultLegendContent';
+import type { Payload, NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type TrendDataPoint = {
@@ -23,11 +26,19 @@ type Props = {
 };
 
 const COLORS = {
-    critical: 'var(--destructive)',
-    high:     'var(--chart-5)',
-    medium:   'var(--primary)',
-    low:      'var(--chart-2)',
+    critical: 'var(--severity-critical)',
+    high:     'var(--severity-high)',
+    medium:   'var(--severity-medium)',
+    low:      'var(--severity-low)',
 };
+
+const SEVERITY_RANK: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
+const severityRankOf = (key: unknown): number =>
+    SEVERITY_RANK[typeof key === 'string' ? key.toLowerCase() : ''] ?? 99;
+const severityItemSorter = (item: Payload<ValueType, NameType>): number =>
+    severityRankOf(item.dataKey);
+const severityOrderedLegend = (payload?: ReadonlyArray<LegendPayload>): ReadonlyArray<LegendPayload> =>
+    payload ? [...payload].sort((a, b) => severityRankOf(a.dataKey) - severityRankOf(b.dataKey)) : [];
 
 export function RiskTrendChart({ trendData = [] }: Props) {
     const hasData = trendData.length > 0;
@@ -43,13 +54,13 @@ export function RiskTrendChart({ trendData = [] }: Props) {
     };
 
     return (
-        <Card>
+        <Card className="h-full">
             <CardHeader className="pb-3">
-                <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
+                <CardTitle className="text-base" style={{ fontWeight: 500 }}>
                     Risk trend
                 </CardTitle>
                 <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
-                    Risk levels over time — ISO/IEC 27005 scoring
+                    Levels over time · ISO/IEC 27005 scoring
                 </p>
             </CardHeader>
             <CardContent>
@@ -65,7 +76,7 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                         </div>
                     </div>
                 ) : (
-                    <div className="h-[280px] w-full">
+                    <div className="h-[280px] w-full min-w-0">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart
                                 data={trendData}
@@ -94,6 +105,7 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                                 <Tooltip
                                     contentStyle={tooltipStyle}
                                     labelStyle={{ color: 'var(--primary)', fontSize: '10px' }}
+                                    itemSorter={severityItemSorter}
                                 />
                                 <Legend
                                     iconType="circle"
@@ -104,11 +116,17 @@ export function RiskTrendChart({ trendData = [] }: Props) {
                                         letterSpacing: '0.05em',
                                         color: 'var(--muted-foreground)',
                                     }}
+                                    content={(props) => (
+                                        <DefaultLegendContent
+                                            {...props}
+                                            payload={severityOrderedLegend(props.payload)}
+                                        />
+                                    )}
                                 />
-                                <Area type="monotone" dataKey="low"      stackId="1" stroke={COLORS.low}      fill="url(#color-low)"      strokeWidth={1.5} />
-                                <Area type="monotone" dataKey="medium"   stackId="1" stroke={COLORS.medium}   fill="url(#color-medium)"   strokeWidth={1.5} />
-                                <Area type="monotone" dataKey="high"     stackId="1" stroke={COLORS.high}     fill="url(#color-high)"     strokeWidth={1.5} />
-                                <Area type="monotone" dataKey="critical" stackId="1" stroke={COLORS.critical} fill="url(#color-critical)" strokeWidth={1.5} />
+                                <Area type="monotone" dataKey="critical" name="Critical" stackId="1" stroke={COLORS.critical} fill="url(#color-critical)" strokeWidth={1.5} />
+                                <Area type="monotone" dataKey="high"     name="High"     stackId="1" stroke={COLORS.high}     fill="url(#color-high)"     strokeWidth={1.5} />
+                                <Area type="monotone" dataKey="medium"   name="Medium"   stackId="1" stroke={COLORS.medium}   fill="url(#color-medium)"   strokeWidth={1.5} />
+                                <Area type="monotone" dataKey="low"      name="Low"      stackId="1" stroke={COLORS.low}      fill="url(#color-low)"      strokeWidth={1.5} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>

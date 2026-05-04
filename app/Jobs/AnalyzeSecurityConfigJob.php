@@ -9,6 +9,7 @@ use App\Models\SecurityAudit;
 use App\Models\SecurityAuditFinding;
 use App\Services\AIService;
 use App\Services\EvidenceFileExtractor;
+use App\Services\GeminiVisionService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -24,7 +25,7 @@ class AnalyzeSecurityConfigJob implements ShouldQueue
 
     public function __construct(public int $auditId) {}
 
-    public function handle(AIService $ai, EvidenceFileExtractor $extractor): void
+    public function handle(AIService $ai, EvidenceFileExtractor $extractor, GeminiVisionService $vision): void
     {
         $audit = SecurityAudit::find($this->auditId);
         if (! $audit) {
@@ -39,6 +40,13 @@ class AnalyzeSecurityConfigJob implements ShouldQueue
             // Extract content using the right strategy for the file type
             $extracted = $this->readContent($audit, $extractor);
 
+            // Optional Gemini Vision preprocessing — image uploads only.
+            // Three gates must pass: extracted content is an image, the
+            // GEMINI_IMAGE_PREPROCESSING flag is on, and the API key is set.
+            // Any failure (missing key, 429, network, malformed JSON) returns
+            // null and Claude reviews the image on its own.
+            $geminiAnalysis = $this->preprocessWithGeminiIfImage($audit, $extracted, $vision);
+
             $frameworks = Framework::where('is_active', true)
                 ->get(['id', 'short_name', 'name'])
                 ->map(fn ($f) => ['short_name' => $f->short_name, 'name' => $f->name])
@@ -49,6 +57,8 @@ class AnalyzeSecurityConfigJob implements ShouldQueue
                 fileType: $audit->file_type,
                 fileName: $audit->file_name,
                 frameworkControls: $frameworks,
+                contentType: $extracted['content_type'],
+                geminiAnalysis: $geminiAnalysis,
             );
 
             if (! empty($result['error'])) {
@@ -96,6 +106,78 @@ class AnalyzeSecurityConfigJob implements ShouldQueue
                 'is_read' => false,
             ]);
         }
+    }
+
+    /**
+     * For PNG/JPEG/WEBP screenshots only, run the Gemini Vision preprocessing
+     * layer. Returns the success-shape array when Gemini ran, null otherwise.
+     *
+     * Logging mirrors the Evidence-review pipeline so dashboards/alerts can
+     * track Security-Audit Gemini usage independently.
+     *
+     * @param  array{content_type:string, content:string}  $extracted
+     */
+    private function preprocessWithGeminiIfImage(
+        SecurityAudit $audit,
+        array $extracted,
+        GeminiVisionService $vision,
+    ): ?array {
+        $candidateMimes = ['image/png', 'image/jpeg', 'image/webp'];
+        $isImage = in_array($extracted['content_type'], $candidateMimes, true);
+        if (! $isImage) {
+            return null;
+        }
+
+        if (! config('services.gemini.image_preprocessing') || empty(config('services.gemini.key'))) {
+            // Flag off or key missing — Claude-only path. Don't even spin up
+            // the service; just note it once for traceability.
+            Log::info('Security Audit: Gemini preprocessing skipped (disabled or unconfigured)', [
+                'audit_id' => $audit->id,
+                'file_type' => $extracted['content_type'],
+            ]);
+
+            return null;
+        }
+
+        Log::info('Security Audit: Gemini preprocessing started', [
+            'audit_id' => $audit->id,
+            'file_type' => $extracted['content_type'],
+        ]);
+
+        try {
+            $absolutePath = Storage::disk('public')->path($audit->file_path);
+            $candidate = $vision->analyzeImage($absolutePath, [
+                'evidence_id' => $audit->id, // reused as a generic source-id for the log line
+                'mime_type' => $extracted['content_type'],
+                'control_id' => null,
+            ]);
+        } catch (\Throwable $e) {
+            // GeminiVisionService is documented as never throwing, but defend
+            // anyway — Claude-only fallback is always the safe path.
+            Log::warning('Security Audit: Gemini preprocessing failed — Claude-only fallback', [
+                'audit_id' => $audit->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+
+        if (($candidate['enabled'] ?? false) !== true) {
+            Log::warning('Security Audit: Gemini preprocessing failed — Claude-only fallback', [
+                'audit_id' => $audit->id,
+                'reason' => $candidate['error'] ?? 'unknown',
+            ]);
+
+            return null;
+        }
+
+        Log::info('Security Audit: Gemini preprocessing succeeded', [
+            'audit_id' => $audit->id,
+            'gemini_confidence' => $candidate['confidence'] ?? null,
+            'document_type' => $candidate['document_or_screenshot_type'] ?? null,
+        ]);
+
+        return $candidate;
     }
 
     /**

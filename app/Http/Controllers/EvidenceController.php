@@ -9,6 +9,7 @@ use App\Models\Evidence;
 use App\Models\Framework;
 use App\Services\AIService;
 use App\Services\EvidenceFileExtractor;
+use App\Services\GeminiVisionService;
 use App\Services\RulesEngine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -248,9 +249,52 @@ class EvidenceController extends Controller
             'uploaded_by' => $evidence->user?->name ?? 'Unknown',
         ];
 
+        // ── Optional Gemini image preprocessing (advisory only, image-only) ──
+        // For PNG/JPEG/WEBP, when enabled and configured, we ask Gemini to
+        // extract OCR + visual summary + security observations. Claude still
+        // gets the original base64 image AND now also Gemini's analysis.
+        //
+        // Any failure (missing key, 429, network, malformed JSON) returns an
+        // `enabled: false` payload and we fall back to Claude-only review.
+        $geminiAnalysis = null;
+        $geminiCandidateMimes = ['image/png', 'image/jpeg', 'image/webp'];
+        $isImage = in_array($extracted['content_type'], $geminiCandidateMimes, true);
+
+        if ($isImage
+            && config('services.gemini.image_preprocessing')
+            && ! empty(config('services.gemini.key'))
+        ) {
+            try {
+                $absolutePath = Storage::disk('public')->path($evidence->file_path);
+                $vision = new GeminiVisionService;
+                $candidate = $vision->analyzeImage($absolutePath, [
+                    'evidence_id' => $evidence->id,
+                    'mime_type' => $extracted['content_type'],
+                    'control_id' => $control->control_id,
+                ]);
+
+                if (($candidate['enabled'] ?? false) === true) {
+                    $geminiAnalysis = $candidate;
+                }
+            } catch (\Throwable $e) {
+                // The service should not throw, but defensively swallow anyway
+                // — Claude-only fallback is the documented contract.
+                Log::warning('EvidenceController::aiReview: Gemini preprocessing threw, falling back to Claude-only', [
+                    'evidence_id' => $evidence->id,
+                    'error' => $e->getMessage(),
+                ]);
+                $geminiAnalysis = null;
+            }
+        }
+
         try {
             $ai = new AIService;
-            $result = $ai->reviewEvidence($evidenceData, $extracted['content'], $extracted['content_type']);
+            $result = $ai->reviewEvidence(
+                $evidenceData,
+                $extracted['content'],
+                $extracted['content_type'],
+                $geminiAnalysis,
+            );
         } catch (\Throwable $e) {
             Log::error('EvidenceController::aiReview failed', ['message' => $e->getMessage()]);
 

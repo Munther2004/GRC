@@ -86,7 +86,15 @@
       "mcp__playwright__browser_press_key",
       "Bash(php *)",
       "Bash(git fetch *)",
-      "Bash(gh pr *)"
+      "Bash(gh pr *)",
+      "Bash(node *)",
+      "Bash(curl *)",
+      "mcp__playwright__browser_hover",
+      "Bash(npx skills *)",
+      "Bash(npm install *)",
+      "Bash(git ls-remote *)",
+      "Bash(git check-ignore *)",
+      "Bash(git add *)"
     ]
   },
   "enableAllProjectMcpServers": true,

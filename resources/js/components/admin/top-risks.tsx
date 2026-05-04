@@ -18,18 +18,19 @@ type Props = { risks?: Risk[] };
 
 const levelColor = (level: string): string => {
     switch (level) {
-        case 'critical': return 'var(--destructive)';
-        case 'high':     return 'color-mix(in srgb, var(--destructive) 70%, var(--foreground))';
-        case 'medium':   return 'var(--primary)';
+        case 'critical': return 'var(--severity-critical)';
+        case 'high':     return 'var(--severity-high)';
+        case 'medium':   return 'var(--severity-medium)';
+        case 'low':      return 'var(--severity-low)';
         default:         return 'var(--muted-foreground)';
     }
 };
 
 const statusColor = (status: string): string => {
     switch (status) {
-        case 'open':         return 'var(--destructive)';
+        case 'open':         return 'var(--severity-critical)';
         case 'in_progress':  return 'var(--primary)';
-        case 'under_review': return 'color-mix(in srgb, var(--primary) 70%, var(--foreground))';
+        case 'under_review': return 'var(--severity-medium)';
         case 'closed':       return 'var(--muted-foreground)';
         default:             return 'var(--muted-foreground)';
     }
@@ -37,10 +38,10 @@ const statusColor = (status: string): string => {
 
 export function TopRisks({ risks = [] }: Props) {
     return (
-        <Card>
+        <Card className="h-full">
             <CardHeader className="flex-row items-start justify-between gap-4 pb-3">
                 <div>
-                    <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
+                    <CardTitle className="text-base" style={{ fontWeight: 500 }}>
                         Top risks
                     </CardTitle>
                     <p className="mt-1 text-xs" style={{ color: 'var(--muted-foreground)' }}>

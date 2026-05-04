@@ -149,7 +149,7 @@ export default function ReportsIndex({
                     <Card className="col-span-2">
                         <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Compliance by Framework</CardTitle></CardHeader>
                         <CardContent>
-                            <div className="h-48 w-full">
+                            <div className="h-48 w-full min-w-0">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={frameworkChartData} barSize={40}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -189,7 +189,7 @@ export default function ReportsIndex({
                     <Card>
                         <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Compliance Trend — Last 6 Months</CardTitle></CardHeader>
                         <CardContent>
-                            <div className="h-48 w-full">
+                            <div className="h-48 w-full min-w-0">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={monthlyTrend}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -209,7 +209,7 @@ export default function ReportsIndex({
                     <Card>
                         <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Risks by Level</CardTitle></CardHeader>
                         <CardContent>
-                            <div className="h-48 w-full">
+                            <div className="h-48 w-full min-w-0">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie data={riskLevelData} cx="50%" cy="50%" innerRadius={45} outerRadius={75} dataKey="value">
@@ -236,7 +236,7 @@ export default function ReportsIndex({
                     <Card>
                         <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Risks by Category</CardTitle></CardHeader>
                         <CardContent>
-                            <div className="h-64 w-full">
+                            <div className="h-64 w-full min-w-0">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={riskCategoryData} layout="vertical" barSize={10}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />

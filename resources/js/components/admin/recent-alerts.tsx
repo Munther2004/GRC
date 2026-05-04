@@ -20,8 +20,8 @@ function severity(action: string): 'critical' | 'warning' | 'info' {
 }
 
 const sevColor: Record<string, string> = {
-    critical: 'var(--destructive)',
-    warning:  'var(--border)',
+    critical: 'var(--severity-critical)',
+    warning:  'var(--severity-medium)',
     info:     'var(--primary)',
 };
 
@@ -29,9 +29,14 @@ export function RecentAlerts({ activity = [] }: Props) {
     return (
         <Card className="h-full">
             <CardHeader className="flex-row items-start justify-between gap-4 pb-3">
-                <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
-                    Recent activity
-                </CardTitle>
+                <div>
+                    <CardTitle className="text-base" style={{ fontWeight: 500 }}>
+                        Recent activity
+                    </CardTitle>
+                    <p className="mt-1 text-xs" style={{ color: 'var(--muted-foreground)' }}>
+                        Audit trail · most recent first
+                    </p>
+                </div>
                 <Link
                     href="/audit-logs"
                     className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-[11px] uppercase transition-colors"

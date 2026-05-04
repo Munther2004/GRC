@@ -12,7 +12,7 @@ import {
     X,
     Loader2,
 } from 'lucide-react';
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -160,6 +160,22 @@ export default function Questionnaire({
             },
         );
     };
+
+    // Keep latest saveAnswers reachable from a ref so the keyboard shortcut
+    // and floating button always see the most recent answers state.
+    const saveRef = useRef(saveAnswers);
+    saveRef.current = saveAnswers;
+
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                saveRef.current();
+            }
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
 
     const goToPage = (page: number) => {
         saveAnswers(`/assessments/${assessment.id}/questionnaire?page=${page}`);
@@ -859,6 +875,71 @@ export default function Questionnaire({
                             </Card>
                         );
                     })}
+                </div>
+
+                {/* Floating top-right control box — Prev / Save / Next, always reachable */}
+                <div
+                    className="fixed top-20 right-6 z-30 hidden flex-col gap-1.5 rounded-2xl border border-border p-2 backdrop-blur-md lg:flex"
+                    style={{
+                        background: 'color-mix(in srgb, var(--card) 92%, transparent)',
+                        boxShadow:
+                            '0 18px 40px -22px color-mix(in srgb, var(--foreground) 30%, transparent), 0 4px 10px -4px color-mix(in srgb, var(--foreground) 14%, transparent)',
+                    }}
+                >
+                    <div
+                        className="px-2 pt-1 text-[10px] uppercase"
+                        style={{ color: 'var(--muted-foreground)', letterSpacing: '0.22em' }}
+                    >
+                        Page {pagination.current_page} / {pagination.total_pages}
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9"
+                            disabled={pagination.current_page === 1 || saving}
+                            onClick={() => goToPage(pagination.current_page - 1)}
+                            title="Previous page"
+                            aria-label="Previous page"
+                        >
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            onClick={() => saveAnswers()}
+                            disabled={saving}
+                            className="h-9 gap-2 rounded-full px-4"
+                            title={saving ? 'Saving...' : 'Save (Ctrl+S)'}
+                        >
+                            <Save className="h-4 w-4" />
+                            {saving ? 'Saving...' : 'Save'}
+                        </Button>
+                        {pagination.current_page < pagination.total_pages ? (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-9 w-9"
+                                disabled={saving}
+                                onClick={() => goToPage(pagination.current_page + 1)}
+                                title="Next page"
+                                aria-label="Next page"
+                            >
+                                <ArrowRight className="h-4 w-4" />
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-9 w-9"
+                                disabled={saving}
+                                onClick={submitAssessment}
+                                title="Submit assessment"
+                                aria-label="Submit assessment"
+                                style={{ color: '#46bd5f' }}
+                            >
+                                <CheckCircle className="h-4 w-4" />
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Navigation */}

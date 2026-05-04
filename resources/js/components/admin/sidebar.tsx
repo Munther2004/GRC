@@ -180,7 +180,7 @@ export function AdminSidebar() {
                 </div>
 
 
-                <nav className={cn('flex flex-1 flex-col gap-5 overflow-y-auto py-4', collapsed ? 'lg:px-2' : 'px-3')}>
+                <nav className={cn('flex flex-1 min-h-0 flex-col gap-5 overflow-y-auto py-4', collapsed ? 'lg:px-2' : 'px-3')}>
                     {/* Main */}
                     <ul className="flex flex-col gap-0.5">
                         {mainNavigation
@@ -234,7 +234,7 @@ export function AdminSidebar() {
                 </nav>
 
                 {/* ── User footer ───────────────────────────────────────── */}
-                <div style={{ borderTop: '1px solid var(--sidebar-border)', padding: collapsed ? '8px' : '12px' }}>
+                <div className="shrink-0" style={{ borderTop: '1px solid var(--sidebar-border)', padding: collapsed ? '8px' : '12px' }}>
                     <div
                         className={cn(
                             'flex items-center rounded-2xl',

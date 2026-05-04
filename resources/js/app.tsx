@@ -15,6 +15,16 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 // Make route() available globally
 (window as any).route = route;
 
+// Initialise theme + preferences BEFORE React mounts so useSyncExternalStore
+// sees the persisted appearance on the very first render. Otherwise React
+// reads the module-default 'system' on initial render and the user's chosen
+// light/dark mode briefly resets after navigation (e.g. landing → admin).
+initializeThemePreset();
+initializeFont();
+initializePreferences();
+// Run last so the appearance-driven preset (light/dark) wins over the stored grc-theme preset.
+initializeTheme();
+
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     resolve: (name) =>
@@ -36,9 +46,3 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
-
-initializeThemePreset();
-initializeFont();
-initializePreferences();
-// Run last so the appearance-driven preset (light/dark) wins over the stored grc-theme preset.
-initializeTheme();

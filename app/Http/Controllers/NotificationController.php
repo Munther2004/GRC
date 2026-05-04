@@ -26,8 +26,13 @@ class NotificationController extends Controller
 
         $notifications = $query->orderBy('created_at', 'desc')->paginate(20);
 
+        // Pass paginated notifications under a distinct key so the shared
+        // 'notifications' badge prop (unread_count, etc.) from
+        // HandleInertiaRequests is not overwritten on this page. Without this
+        // rename the sidebar badge becomes stale and renders the previous
+        // visit's value (often shown as "99+") while the user is on /notifications.
         return Inertia::render('notifications/index', [
-            'notifications' => $notifications,
+            'notificationList' => $notifications,
         ]);
     }
 

@@ -165,7 +165,7 @@ export default function About() {
                             className="mb-8 text-3xl tracking-[-0.01em]"
                             style={{ color: 'var(--foreground)', fontWeight: 500 }}
                         >
-                            Four standards. <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>One ledger.</span>
+                            Four core standards. <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>Eight in the crosswalk atlas.</span>
                         </h2>
                         <div className="grid gap-5 md:grid-cols-2">
                             {frameworks.map(({ name, icon: Icon, desc }) => (

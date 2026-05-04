@@ -255,10 +255,19 @@ PROMPT;
      * @param  string  $fileContent  Plain text, or base64-encoded bytes for images/PDFs.
      * @param  string  $contentType  'text' | 'image/png' | 'image/jpeg' | 'image/webp' |
      *                               'image/gif' | 'application/pdf' | 'unsupported'
-     * @return array{verdict: string, confidence: string, strengths: string, gaps: string, recommendation: string}
+     * @param  array|null  $geminiAnalysis  Optional advisory output from GeminiVisionService.
+     *                                      Only the success shape (`enabled === true`) should be
+     *                                      passed in; null means Claude-only review. The Gemini
+     *                                      block is injected into the prompt as advisory context;
+     *                                      Claude remains the final reviewer.
+     * @return array{verdict: string, confidence: string, strengths: string, gaps: string, recommendation: string, is_relevant: bool}
      */
-    public function reviewEvidence(array $evidenceData, string $fileContent, string $contentType): array
-    {
+    public function reviewEvidence(
+        array $evidenceData,
+        string $fileContent,
+        string $contentType,
+        ?array $geminiAnalysis = null,
+    ): array {
         $default = [
             'verdict' => self::VERDICT_INSUFFICIENT,
             'confidence' => 'Low',
@@ -273,6 +282,8 @@ PROMPT;
 You are a GRC audit expert. Your task is to assess whether a piece of evidence adequately proves that a specific compliance control is implemented and operating effectively.
 
 You will receive the control ID, title, and description (the exact requirement that must be proven), the framework reference, evidence metadata, and the actual file content.
+
+For image evidence you MAY also receive an advisory "Gemini Vision Preprocessing" block containing OCR text, a visual summary, and security observations. Treat that block as an aid, not as ground truth — cross-reference it against what you can see directly in the image, and remain skeptical. A screenshot of the GRC application itself usually does NOT prove a real underlying policy or control exists unless the screenshot contains actual policy text, configuration values, signatures, or other concrete control evidence.
 
 Focus your entire assessment on whether this specific evidence proves the stated control is implemented. Evidence that is generic, vague, off-topic, or too brief to demonstrate control implementation should receive a lower verdict.
 
@@ -302,6 +313,10 @@ PROMPT;
                 'Uploaded By: '.($evidenceData['uploaded_by'] ?? 'Unknown'),
             ]);
 
+            // Build optional Gemini advisory block — only when we received a
+            // valid `enabled === true` payload from GeminiVisionService.
+            $geminiBlock = $this->buildGeminiAdvisoryBlock($geminiAnalysis);
+
             // Build message content — multimodal for images/PDFs, plain text otherwise
             if (str_starts_with($contentType, 'image/')) {
                 $userContent = [
@@ -310,7 +325,7 @@ PROMPT;
                         'media_type' => $contentType,
                         'data' => $fileContent,
                     ]],
-                    ['type' => 'text', 'text' => $meta."\n\nThe image above is the uploaded evidence file. Assess it thoroughly."],
+                    ['type' => 'text', 'text' => $meta.$geminiBlock."\n\nThe image above is the uploaded evidence file. Assess it thoroughly."],
                 ];
             } elseif ($contentType === 'application/pdf') {
                 $userContent = [
@@ -586,10 +601,50 @@ PROMPT;
         }
     }
 
-    public function analyzeSecurityConfig(string $content, string $fileType, string $fileName, array $frameworkControls): array
-    {
+    /**
+     * Analyze a security configuration file or screenshot.
+     *
+     * For text-based config files (.json, .yaml, .ini, .conf, ...) Claude
+     * receives the raw content as a plain text user message — existing
+     * behaviour, unchanged.
+     *
+     * For image screenshots (image/png, image/jpeg, image/webp) Claude
+     * receives a multimodal user message: the image as a vision content block
+     * plus an instruction text block. When `$geminiAnalysis` is provided
+     * (`enabled === true`), an advisory section is injected so Claude can
+     * cross-reference Gemini's OCR/observations — but Claude remains the
+     * final reviewer and is told explicitly to be skeptical of screenshots.
+     *
+     * Output JSON shape is identical for both code paths so the existing
+     * frontend, DB columns, and findings persistence stay compatible.
+     *
+     * @param  string  $contentType  'text' for config files, or 'image/png'|'image/jpeg'|'image/webp' for screenshots.
+     * @param  array|null  $geminiAnalysis  GeminiVisionService success-shape payload, or null.
+     */
+    public function analyzeSecurityConfig(
+        string $content,
+        string $fileType,
+        string $fileName,
+        array $frameworkControls,
+        string $contentType = 'text',
+        ?array $geminiAnalysis = null,
+    ): array {
         try {
             $frameworkControlsJson = json_encode($frameworkControls, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            $isImage = str_starts_with($contentType, 'image/');
+
+            // Screenshot-specific skepticism rules — only added when the
+            // upload is actually an image. Text-config behaviour is unchanged.
+            $screenshotGuidance = $isImage ? <<<'IMG'
+
+Analysis guidelines for screenshots/images of configuration panels:
+- A screenshot of a configuration panel does not prove this setting is currently active, was not changed after the screenshot, or applies to all relevant systems.
+- Screenshots are point-in-time evidence only. Flag this limitation in your analysis (raise it in the summary or in an info-severity finding when relevant).
+- Extracted text from OCR may contain errors. Cross-reference visible settings carefully against what you can see in the image.
+- Treat the Gemini Vision Preprocessing block (if present) as advisory only — it can mis-OCR digits, mask glyphs, or invent text. Verify against the actual image when in doubt.
+- Prefer the visible image as ground truth over the OCR text when they disagree.
+
+IMG : '';
 
             $systemPrompt = <<<PROMPT
 You are a senior information security auditor performing a configuration security review.
@@ -604,7 +659,7 @@ Analysis guidelines based on file type:
 - CSV/XLSX user lists: Check for shared accounts, generic naming (admin, test, user1), missing expiry dates, excessive admin accounts, inactive accounts, blank emails, backdoor accounts
 - Password/security policies: Check against ISO 27001 A.9.4.3 and NIST SP 800-63B — minimum length (should be 12+), complexity, rotation period, MFA, lockout policy, password history, dictionary words
 - Config files (INI/YAML/JSON/CONF/TXT): Check for hardcoded credentials/API keys/secrets, debug mode enabled, insecure protocols, binding to 0.0.0.0, SSL verification disabled, expose_php On, open CORS, FTP enabled, display_errors On
-
+{$screenshotGuidance}
 Respond ONLY with a valid JSON object, no markdown fences, no preamble:
 {
   "summary": "Executive summary in 2-3 sentences",
@@ -625,8 +680,26 @@ Respond ONLY with a valid JSON object, no markdown fences, no preamble:
 }
 PROMPT;
 
+            // Build the user message — multimodal for images, plain text for configs.
+            $geminiBlock = $this->buildGeminiAdvisoryBlock($geminiAnalysis);
+
+            if ($isImage) {
+                $userContent = [
+                    ['type' => 'image', 'source' => [
+                        'type' => 'base64',
+                        'media_type' => $contentType,
+                        'data' => $content,
+                    ]],
+                    ['type' => 'text', 'text' =>
+                        "The image above is the uploaded screenshot — analyze it as a security configuration screenshot.".$geminiBlock,
+                    ],
+                ];
+            } else {
+                $userContent = "Please analyze the following file content:\n\n{$content}";
+            }
+
             $text = $this->callClaudeApi(
-                messages: [['role' => 'user', 'content' => "Please analyze the following file content:\n\n{$content}"]],
+                messages: [['role' => 'user', 'content' => $userContent]],
                 model: self::MODEL_ANALYTICAL,
                 maxTokens: 4096,
                 system: $systemPrompt,
@@ -665,6 +738,44 @@ PROMPT;
     }
 
     // ── Private helpers ────────────────────────────────────────────────────────
+
+    /**
+     * Render the optional Gemini Vision Preprocessing advisory block for the
+     * evidence-review prompt. Returns an empty string when no usable analysis
+     * was provided so the existing Claude-only behaviour is unchanged.
+     *
+     * Claude is told explicitly that this block is advisory and may be wrong —
+     * the prompt instructs it to cross-reference rather than blindly trust.
+     */
+    private function buildGeminiAdvisoryBlock(?array $analysis): string
+    {
+        if (! is_array($analysis) || ($analysis['enabled'] ?? false) !== true) {
+            return '';
+        }
+
+        $observations = $analysis['security_observations'] ?? [];
+        if (! is_array($observations)) {
+            $observations = [];
+        }
+        $observationsText = empty($observations)
+            ? '(none)'
+            : '- '.implode("\n- ", array_map('strval', $observations));
+
+        $visualSummary = trim((string) ($analysis['visual_summary'] ?? ''));
+        $visibleText = trim((string) ($analysis['visible_text'] ?? ''));
+        $docType = trim((string) ($analysis['document_or_screenshot_type'] ?? 'unknown'));
+        $confidence = trim((string) ($analysis['confidence'] ?? 'medium'));
+        $limitations = trim((string) ($analysis['limitations'] ?? ''));
+
+        return "\n\n--- Gemini Vision Preprocessing (advisory only, not ground truth) ---\n"
+            ."Visual Summary: ".($visualSummary !== '' ? $visualSummary : '(none)')."\n"
+            ."Extracted Text (OCR): ".($visibleText !== '' ? $visibleText : '(none)')."\n"
+            ."Security Observations:\n".$observationsText."\n"
+            ."Document Type: ".$docType."\n"
+            ."Confidence: ".$confidence."\n"
+            ."Limitations: ".($limitations !== '' ? $limitations : '(none)')."\n"
+            ."--- End Gemini Preprocessing ---";
+    }
 
     /**
      * Strip markdown code fences that models sometimes emit despite instructions.

@@ -16,21 +16,28 @@ const toneColor: Record<string, string> = {
 }
 
 export function StatStrip({ stats, className }: { stats: Stat[]; className?: string }) {
+    // Tiny counts have a clean fixed layout. From 5 onwards we use auto-fit
+    // so cards wrap naturally and we don't leave a lone card stranded in
+    // a half-empty row (e.g. the old 5-col grid + 6 stats = 5 + 1 + 4 blank).
+    const useFixed = stats.length <= 4
     const cols =
         stats.length === 2 ? 'grid-cols-2' :
         stats.length === 3 ? 'grid-cols-3' :
         stats.length === 4 ? 'grid-cols-2 md:grid-cols-4' :
-        stats.length === 6 ? 'grid-cols-2 md:grid-cols-3' :
-        'grid-cols-2 md:grid-cols-3 lg:grid-cols-5'
+        ''
 
     return (
         <div
-            className={cn('grid overflow-hidden rounded-2xl', cols, className)}
+            className={cn('grid overflow-hidden rounded-2xl', useFixed && cols, className)}
             style={{
                 border: '1px solid var(--border)',
                 gap: '1px',
                 background: 'var(--border)',
                 boxShadow: '0 10px 30px -16px color-mix(in srgb, var(--foreground) 18%, transparent)',
+                ...(useFixed
+                    ? {}
+                    : { gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }
+                ),
             }}
         >
             {stats.map((s) => {

@@ -10,12 +10,14 @@ use App\Models\Control;
 use App\Models\ControlStatusHistory;
 use App\Models\Evidence;
 use App\Models\Framework;
+use App\Models\Notification;
 use App\Models\Risk;
 use App\Services\AIService;
 use App\Services\EvidenceScoringService;
 use App\Services\RulesEngine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -467,68 +469,176 @@ class AssessmentController extends Controller
     {
         $title = $assessment->title;
         $id = $assessment->id;
+        $frameworkId = $assessment->framework_id;
 
-        // Reset all control statuses linked to this assessment
-        $items = AssessmentItem::with('control')
-            ->where('assessment_id', $assessment->id)
-            ->get();
+        // 1. Flag the assessment so any in-flight queue job aborts before
+        //    creating risks (race condition: AI job started before deletion).
+        $assessment->update(['status' => 'deleting']);
 
-        $resetCount = 0;
-        foreach ($items as $item) {
-            $control = $item->control;
-            if (! $control) {
-                continue;
-            }
-
-            $oldStatus = $control->current_status;
-
-            $control->update([
-                'current_status' => null,
-                'last_remediated_at' => null,
+        // 2. Cancel any pending queue jobs that target this assessment.
+        //    The serialized payload contains the assessment id under "id"
+        //    (see ShouldQueue + SerializesModels). A LIKE-match on the id
+        //    plus the assessments class name keeps this safe across job types.
+        try {
+            DB::table('jobs')
+                ->where('payload', 'like', '%App\\\\Jobs\\\\GenerateAIRisksJob%')
+                ->where('payload', 'like', '%"id":'.$id.',%')
+                ->delete();
+        } catch (\Throwable $e) {
+            Log::warning('Failed to purge pending jobs for deleted assessment', [
+                'assessment_id' => $id,
+                'error' => $e->getMessage(),
             ]);
-
-            ControlStatusHistory::create([
-                'control_id' => $control->id,
-                'user_id' => null,
-                'old_status' => $oldStatus,
-                'new_status' => 'not_set',
-                'notes' => "Status reset — linked assessment #{$id} was deleted",
-            ]);
-
-            $resetCount++;
         }
 
-        // Delete AI-generated risks linked to this assessment
-        $risks = Risk::where('assessment_id', $assessment->id)
+        // 3. Delete AI-generated risks linked to this assessment + their
+        //    control_risk pivot rows.
+        $risks = Risk::where('assessment_id', $id)
             ->where('auto_generated', true)
             ->get();
 
-        $riskCount = $risks->count();
-        foreach ($risks as $risk) {
-            $risk->delete();
+        $riskIds = $risks->pluck('id')->all();
+        $riskCount = count($riskIds);
+
+        if ($riskIds) {
+            DB::table('control_risk')->whereIn('risk_id', $riskIds)->delete();
+            Risk::whereIn('id', $riskIds)->delete();
         }
 
-        // Delete evidence files and records linked to this assessment's items
-        $itemIds = AssessmentItem::where('assessment_id', $assessment->id)->pluck('id');
+        // 4. Delete evidence linked to this assessment (via assessment items).
+        $itemIds = AssessmentItem::where('assessment_id', $id)->pluck('id');
         $evidenceRecords = Evidence::whereIn('assessment_item_id', $itemIds)->get();
+
+        $evidenceCount = 0;
         foreach ($evidenceRecords as $ev) {
             if ($ev->file_path) {
                 Storage::disk('public')->delete($ev->file_path);
             }
             $ev->delete();
+            $evidenceCount++;
         }
 
-        // Delete assessment items then the assessment itself
-        AssessmentItem::where('assessment_id', $assessment->id)->delete();
+        Log::info("Deleted {$evidenceCount} evidence records linked to assessment #{$id}");
+
+        // 5. Re-sync or reset control statuses depending on whether the
+        //    framework still has another assessment to source truth from.
+        $latestRemaining = Assessment::where('framework_id', $frameworkId)
+            ->where('id', '!=', $id)
+            ->where('status', '!=', 'deleting')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $resyncedFromId = null;
+        $missingRiskFlagged = false;
+
+        if ($latestRemaining) {
+            $remainingItems = AssessmentItem::with('control')
+                ->where('assessment_id', $latestRemaining->id)
+                ->get();
+
+            $now = now();
+
+            foreach ($remainingItems as $item) {
+                $control = $item->control;
+                if (! $control) {
+                    continue;
+                }
+
+                $newStatus = match ($item->compliance_status) {
+                    'compliant', 'partially_compliant', 'non_compliant', 'not_applicable' => $item->compliance_status,
+                    default => null,
+                };
+
+                if ($newStatus === null) {
+                    continue;
+                }
+
+                $oldStatus = $control->current_status;
+
+                $updates = ['current_status' => $newStatus];
+                if (in_array($newStatus, ['compliant', 'partially_compliant'], true)) {
+                    $updates['last_remediated_at'] = $now;
+                }
+                $control->update($updates);
+
+                ControlStatusHistory::create([
+                    'control_id' => $control->id,
+                    'user_id' => null,
+                    'old_status' => $oldStatus,
+                    'new_status' => $newStatus,
+                    'notes' => "Status re-synced from assessment #{$latestRemaining->id} after assessment #{$id} was deleted",
+                ]);
+
+                if ($newStatus === 'non_compliant' && ! $missingRiskFlagged) {
+                    $hasRisk = Risk::where('source_control_id', $control->id)
+                        ->where('assessment_id', $latestRemaining->id)
+                        ->exists();
+                    if (! $hasRisk) {
+                        $missingRiskFlagged = true;
+                    }
+                }
+            }
+
+            $resyncedFromId = $latestRemaining->id;
+
+            if ($missingRiskFlagged && Auth::id()) {
+                Notification::create([
+                    'user_id' => Auth::id(),
+                    'type' => 'critical_risk',
+                    'title' => 'Review risk records',
+                    'message' => "Risk records may need to be reviewed after assessment #{$id} deletion",
+                    'url' => '/risks',
+                    'is_read' => false,
+                ]);
+            }
+        } else {
+            // No remaining assessment for this framework — reset every
+            // control linked to the framework to null.
+            $controls = Control::where('framework_id', $frameworkId)->get();
+
+            foreach ($controls as $control) {
+                $oldStatus = $control->current_status;
+
+                $control->update([
+                    'current_status' => null,
+                    'last_remediated_at' => null,
+                ]);
+
+                ControlStatusHistory::create([
+                    'control_id' => $control->id,
+                    'user_id' => null,
+                    'old_status' => $oldStatus,
+                    'new_status' => 'not_set',
+                    'notes' => 'Status reset — last assessment for this framework was deleted',
+                ]);
+            }
+        }
+
+        // 6. Delete notifications linked to this assessment by URL.
+        Notification::where('url', "/assessments/{$id}")
+            ->orWhere('url', 'like', "/assessments/{$id}/%")
+            ->delete();
+
+        // 7. Delete assessment items and the assessment record itself.
+        AssessmentItem::where('assessment_id', $id)->delete();
         $assessment->delete();
 
-        $auditNote = "Assessment '{$title}' deleted — {$resetCount} control status".
-            ($resetCount !== 1 ? 'es' : '')." reset, {$riskCount} risk".
-            ($riskCount !== 1 ? 's' : '').' removed';
+        // 8. Safety net: any AI-generated risks created between flagging
+        //    'deleting' and the job seeing the flag.
+        Risk::where('assessment_id', $id)->where('auto_generated', true)->delete();
+
+        $auditNote = $resyncedFromId
+            ? "Assessment '{$title}' deleted — controls re-synced from assessment #{$resyncedFromId}, {$riskCount} risk".
+                ($riskCount !== 1 ? 's' : '').' removed'
+            : "Assessment '{$title}' deleted — control statuses reset, {$riskCount} risk".
+                ($riskCount !== 1 ? 's' : '').' removed';
 
         AuditLog::record('deleted', 'Assessment', $id, $auditNote);
 
-        return redirect()->route('assessments.index')
-            ->with('success', "Assessment '{$title}' deleted and control statuses reset to Not Set.");
+        $message = $resyncedFromId
+            ? 'Assessment deleted. Controls re-synced from your most recent assessment.'
+            : 'Assessment deleted. Control statuses have been reset.';
+
+        return redirect()->route('assessments.index')->with('success', $message);
     }
 }

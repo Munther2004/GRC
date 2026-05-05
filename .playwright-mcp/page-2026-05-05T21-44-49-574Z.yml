@@ -1,0 +1,231 @@
+- generic [ref=e53]:
+  - complementary "Primary navigation" [ref=e54]:
+    - generic [ref=e55]:
+      - img [ref=e57]
+      - generic [ref=e59]: GRC · Charter
+      - button "Close navigation" [ref=e60] [cursor=pointer]:
+        - img [ref=e61]
+    - navigation [ref=e64]:
+      - list [ref=e65]:
+        - listitem [ref=e66]:
+          - link "Dashboard" [ref=e67] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e69]
+            - generic [ref=e74]: Dashboard
+        - listitem [ref=e75]:
+          - link "Executive Dashboard" [ref=e76] [cursor=pointer]:
+            - /url: /executive-dashboard
+            - img [ref=e78]
+            - generic [ref=e81]: Executive Dashboard
+        - listitem [ref=e82]:
+          - link "AI Assistant" [ref=e83] [cursor=pointer]:
+            - /url: /chatbot
+            - img [ref=e85]
+            - generic [ref=e87]: AI Assistant
+        - listitem [ref=e88]:
+          - link "Risk Register" [ref=e89] [cursor=pointer]:
+            - /url: /risks
+            - img [ref=e91]
+            - generic [ref=e93]: Risk Register
+        - listitem [ref=e94]:
+          - link "Assessments" [ref=e95] [cursor=pointer]:
+            - /url: /assessments
+            - img [ref=e97]
+            - generic [ref=e100]: Assessments
+        - listitem [ref=e101]:
+          - link "Evidence" [ref=e102] [cursor=pointer]:
+            - /url: /evidence
+            - img [ref=e104]
+            - generic [ref=e106]: Evidence
+        - listitem [ref=e107]:
+          - link "Gap Analysis" [ref=e108] [cursor=pointer]:
+            - /url: /gap-analysis
+            - img [ref=e110]
+            - generic [ref=e114]: Gap Analysis
+        - listitem [ref=e115]:
+          - link "Security Audit" [ref=e116] [cursor=pointer]:
+            - /url: /security-audits
+            - img [ref=e118]
+            - generic [ref=e120]: Security Audit
+        - listitem [ref=e121]:
+          - link "Crosswalk" [ref=e122] [cursor=pointer]:
+            - /url: /crosswalk
+            - img [ref=e124]
+            - generic [ref=e129]: Crosswalk
+        - listitem [ref=e130]:
+          - link "Controls Hub" [ref=e131] [cursor=pointer]:
+            - /url: /controls/hub
+            - img [ref=e133]
+            - generic [ref=e138]: Controls Hub
+        - listitem [ref=e139]:
+          - link "Remediation" [ref=e140] [cursor=pointer]:
+            - /url: /remediation-tasks
+            - img [ref=e142]
+            - generic [ref=e145]: Remediation
+        - listitem [ref=e146]:
+          - link "Reports" [ref=e147] [cursor=pointer]:
+            - /url: /reports
+            - img [ref=e149]
+            - generic [ref=e151]: Reports
+      - generic [ref=e152]:
+        - paragraph [ref=e153]: Review
+        - list [ref=e154]:
+          - listitem [ref=e155]:
+            - link "Approvals" [ref=e156] [cursor=pointer]:
+              - /url: /controls/approvals
+              - img [ref=e158]
+              - generic [ref=e161]: Approvals
+          - listitem [ref=e162]:
+            - link "Audit Logs" [ref=e163] [cursor=pointer]:
+              - /url: /audit-logs
+              - img [ref=e165]
+              - generic [ref=e168]: Audit Logs
+          - listitem [ref=e169]:
+            - link "Notifications" [ref=e170] [cursor=pointer]:
+              - /url: /notifications
+              - img [ref=e172]
+              - generic [ref=e175]: Notifications
+      - generic [ref=e176]:
+        - paragraph [ref=e177]: Administration
+        - list [ref=e178]:
+          - listitem [ref=e179]:
+            - link "Users" [ref=e180] [cursor=pointer]:
+              - /url: /admin/users
+              - img [ref=e182]
+              - generic [ref=e187]: Users
+          - listitem [ref=e188]:
+            - link "Risk Appetite" [ref=e189] [cursor=pointer]:
+              - /url: /risk-appetite
+              - img [ref=e191]
+              - generic [ref=e192]: Risk Appetite
+      - generic [ref=e193]:
+        - paragraph [ref=e194]: Platform
+        - list [ref=e195]:
+          - listitem [ref=e196]:
+            - link "Corporations" [ref=e197] [cursor=pointer]:
+              - /url: /admin/corporations
+              - img [ref=e199]
+              - generic [ref=e203]: Corporations
+          - listitem [ref=e204]:
+            - link "Frameworks" [ref=e205] [cursor=pointer]:
+              - /url: /admin/frameworks
+              - img [ref=e207]
+              - generic [ref=e209]: Frameworks
+          - listitem [ref=e210]:
+            - link "Controls Library" [ref=e211] [cursor=pointer]:
+              - /url: /admin/controls
+              - img [ref=e213]
+              - generic [ref=e216]: Controls Library
+    - generic [ref=e218]:
+      - generic [ref=e220]: SA
+      - generic [ref=e221]:
+        - paragraph [ref=e222]: Super Admin
+        - paragraph [ref=e223]: admin@grc.com
+      - button "Log out" [ref=e224] [cursor=pointer]:
+        - img [ref=e225]
+  - generic [ref=e228]:
+    - banner [ref=e229]:
+      - button "Open menu" [ref=e230] [cursor=pointer]:
+        - img [ref=e231]
+      - generic [ref=e233]:
+        - img [ref=e234]
+        - searchbox "Search…" [ref=e237]
+      - generic [ref=e238]: Super Admin
+      - button "Switch to dark mode" [ref=e239] [cursor=pointer]:
+        - img [ref=e242]
+      - button "Notifications" [ref=e249] [cursor=pointer]:
+        - img [ref=e250]
+    - main [ref=e253]:
+      - generic [ref=e254]:
+        - generic [ref=e255]:
+          - link [ref=e256] [cursor=pointer]:
+            - /url: /assessments
+            - button [ref=e257]:
+              - img
+          - generic [ref=e258]:
+            - heading "New Assessment" [level=1] [ref=e259]
+            - paragraph [ref=e260]: Create a compliance self-assessment
+        - generic [ref=e261]:
+          - generic [ref=e262]:
+            - generic [ref=e263]:
+              - generic [ref=e264]: Select Framework
+              - generic [ref=e265]: The questionnaire will be generated from this framework's controls
+            - generic [ref=e267]:
+              - button "ISO27001 ISO/IEC 27001:2022" [ref=e268] [cursor=pointer]:
+                - generic [ref=e269]:
+                  - img [ref=e271]
+                  - generic [ref=e273]:
+                    - paragraph [ref=e274]: ISO27001
+                    - paragraph [ref=e275]: ISO/IEC 27001:2022
+              - button "NIST800-53 NIST SP 800-53" [ref=e276] [cursor=pointer]:
+                - generic [ref=e277]:
+                  - img [ref=e279]
+                  - generic [ref=e281]:
+                    - paragraph [ref=e282]: NIST800-53
+                    - paragraph [ref=e283]: NIST SP 800-53
+              - button "OWASP-ASVS OWASP ASVS" [ref=e284] [cursor=pointer]:
+                - generic [ref=e285]:
+                  - img [ref=e287]
+                  - generic [ref=e289]:
+                    - paragraph [ref=e290]: OWASP-ASVS
+                    - paragraph [ref=e291]: OWASP ASVS
+              - button "CIS CIS Benchmarks" [ref=e292] [cursor=pointer]:
+                - generic [ref=e293]:
+                  - img [ref=e295]
+                  - generic [ref=e297]:
+                    - paragraph [ref=e298]: CIS
+                    - paragraph [ref=e299]: CIS Benchmarks
+              - button "ISO27001 ISO/IEC 27001:2022" [ref=e300] [cursor=pointer]:
+                - generic [ref=e301]:
+                  - img [ref=e303]
+                  - generic [ref=e305]:
+                    - paragraph [ref=e306]: ISO27001
+                    - paragraph [ref=e307]: ISO/IEC 27001:2022
+              - button "NIST800-53 NIST SP 800-53" [ref=e308] [cursor=pointer]:
+                - generic [ref=e309]:
+                  - img [ref=e311]
+                  - generic [ref=e313]:
+                    - paragraph [ref=e314]: NIST800-53
+                    - paragraph [ref=e315]: NIST SP 800-53
+              - button "OWASP-ASVS OWASP ASVS" [ref=e316] [cursor=pointer]:
+                - generic [ref=e317]:
+                  - img [ref=e319]
+                  - generic [ref=e321]:
+                    - paragraph [ref=e322]: OWASP-ASVS
+                    - paragraph [ref=e323]: OWASP ASVS
+              - button "CIS CIS Benchmarks" [ref=e324] [cursor=pointer]:
+                - generic [ref=e325]:
+                  - img [ref=e327]
+                  - generic [ref=e329]:
+                    - paragraph [ref=e330]: CIS
+                    - paragraph [ref=e331]: CIS Benchmarks
+          - generic [ref=e332]:
+            - generic [ref=e334]: Assessment Details
+            - generic [ref=e335]:
+              - generic [ref=e336]:
+                - text: Assessment Title *
+                - textbox "Assessment Title *" [ref=e337]:
+                  - /placeholder: e.g. ISO 27001 Annual Audit Q1 2026
+              - generic [ref=e338]:
+                - generic [ref=e339]:
+                  - text: Period *
+                  - textbox "Period *" [ref=e340]:
+                    - /placeholder: e.g. Q1 2026
+                - generic [ref=e341]:
+                  - text: Due Date
+                  - textbox "Due Date" [ref=e342]
+              - generic [ref=e343]:
+                - text: Scope *
+                - textbox "Scope *" [ref=e344]:
+                  - /placeholder: Describe the scope of this assessment, e.g. departments, systems, or processes covered...
+              - generic [ref=e345]:
+                - text: Description
+                - textbox "Description" [ref=e346]:
+                  - /placeholder: Optional additional notes...
+          - generic [ref=e347]:
+            - link "Cancel" [ref=e348] [cursor=pointer]:
+              - /url: /assessments
+              - button "Cancel" [ref=e349]
+            - button "Create & Start Questionnaire" [disabled]:
+              - img
+              - text: Create & Start Questionnaire

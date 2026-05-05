@@ -1,0 +1,271 @@
+- generic [active]:
+  - generic:
+    - generic:
+      - complementary:
+        - generic:
+          - generic:
+            - img
+          - generic: GRC · Charter
+          - button:
+            - img
+        - navigation:
+          - list:
+            - listitem:
+              - link:
+                - /url: /dashboard
+                - generic:
+                  - img
+                - generic: Dashboard
+            - listitem:
+              - link:
+                - /url: /executive-dashboard
+                - generic:
+                  - img
+                - generic: Executive Dashboard
+            - listitem:
+              - link:
+                - /url: /chatbot
+                - generic:
+                  - img
+                - generic: AI Assistant
+            - listitem:
+              - link:
+                - /url: /risks
+                - generic:
+                  - img
+                - generic: Risk Register
+            - listitem:
+              - link:
+                - /url: /assessments
+                - generic:
+                  - img
+                - generic: Assessments
+            - listitem:
+              - link:
+                - /url: /evidence
+                - generic:
+                  - img
+                - generic: Evidence
+            - listitem:
+              - link:
+                - /url: /gap-analysis
+                - generic:
+                  - img
+                - generic: Gap Analysis
+            - listitem:
+              - link:
+                - /url: /security-audits
+                - generic:
+                  - img
+                - generic: Security Audit
+            - listitem:
+              - link:
+                - /url: /crosswalk
+                - generic:
+                  - img
+                - generic: Crosswalk
+            - listitem:
+              - link:
+                - /url: /controls/hub
+                - generic:
+                  - img
+                - generic: Controls Hub
+            - listitem:
+              - link:
+                - /url: /remediation-tasks
+                - generic:
+                  - img
+                - generic: Remediation
+            - listitem:
+              - link:
+                - /url: /reports
+                - generic:
+                  - img
+                - generic: Reports
+          - generic:
+            - paragraph: Review
+            - list:
+              - listitem:
+                - link:
+                  - /url: /controls/approvals
+                  - generic:
+                    - img
+                  - generic: Approvals
+              - listitem:
+                - link:
+                  - /url: /audit-logs
+                  - generic:
+                    - img
+                  - generic: Audit Logs
+              - listitem:
+                - link:
+                  - /url: /notifications
+                  - generic:
+                    - img
+                  - generic: Notifications
+          - generic:
+            - paragraph: Administration
+            - list:
+              - listitem:
+                - link:
+                  - /url: /admin/users
+                  - generic:
+                    - img
+                  - generic: Users
+              - listitem:
+                - link:
+                  - /url: /risk-appetite
+                  - generic:
+                    - img
+                  - generic: Risk Appetite
+          - generic:
+            - paragraph: Platform
+            - list:
+              - listitem:
+                - link:
+                  - /url: /admin/corporations
+                  - generic:
+                    - img
+                  - generic: Corporations
+              - listitem:
+                - link:
+                  - /url: /admin/frameworks
+                  - generic:
+                    - img
+                  - generic: Frameworks
+              - listitem:
+                - link:
+                  - /url: /admin/controls
+                  - generic:
+                    - img
+                  - generic: Controls Library
+        - generic:
+          - generic:
+            - generic:
+              - generic: SA
+            - generic:
+              - paragraph: Super Admin
+              - paragraph: admin@grc.com
+            - button:
+              - img
+      - generic:
+        - banner:
+          - button:
+            - img
+          - generic:
+            - generic:
+              - img
+              - searchbox
+          - generic: Super Admin
+          - button:
+            - generic:
+              - generic:
+                - img
+          - generic:
+            - button:
+              - img
+        - main:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - heading [level=1]: Assessments
+                  - paragraph: Self-assessment questionnaires per framework
+                - generic:
+                  - link:
+                    - /url: /assessments/compare
+                    - button:
+                      - img
+                      - text: Compare
+                  - link:
+                    - /url: /assessments/create
+                    - button:
+                      - img
+                      - text: New Assessment
+            - generic:
+              - generic:
+                - generic:
+                  - paragraph: Total
+                - paragraph: "1"
+              - generic:
+                - generic:
+                  - paragraph: In Progress
+                - paragraph: "0"
+              - generic:
+                - generic:
+                  - paragraph: Completed
+                - paragraph: "1"
+              - generic:
+                - generic:
+                  - paragraph: Avg Compliance
+                - paragraph: 50%
+            - generic:
+              - generic:
+                - generic:
+                  - img
+                - textbox:
+                  - /placeholder: Search assessments...
+              - combobox:
+                - generic: All Statuses
+                - img
+              - combobox:
+                - generic: All Frameworks
+                - img
+              - button: Search
+            - generic:
+              - generic:
+                - generic: 1 assessment
+              - generic:
+                - generic:
+                  - table:
+                    - rowgroup:
+                      - row:
+                        - columnheader: Assessment
+                        - columnheader: Framework
+                        - columnheader: Period
+                        - columnheader: Self-Assessed
+                        - columnheader: Evidence Score
+                        - columnheader: Status
+                        - columnheader: Due Date
+                        - columnheader: Actions
+                    - rowgroup:
+                      - row:
+                        - cell:
+                          - paragraph: DELETE-TEST-FIXTURE
+                          - paragraph: Super Admin
+                        - cell:
+                          - generic: ISO27001
+                        - cell: Q1
+                        - cell:
+                          - generic:
+                            - generic: 50%
+                        - cell: Pending review
+                        - cell:
+                          - generic: completed
+                        - cell: —
+                        - cell:
+                          - generic:
+                            - link:
+                              - /url: /assessments/2
+                              - button:
+                                - img
+                            - button:
+                              - img
+  - dialog "Delete Assessment" [ref=e282]:
+    - paragraph [ref=e283]: Delete assessment confirmation dialog
+    - heading "Delete Assessment" [level=2] [ref=e285]:
+      - img [ref=e286]
+      - text: Delete Assessment
+    - generic [ref=e289]:
+      - generic [ref=e290]:
+        - paragraph [ref=e291]: DELETE-TEST-FIXTURE
+        - paragraph [ref=e292]: ISO27001 · 3 controls · Created 5/6/2026
+      - generic [ref=e293]:
+        - img [ref=e294]
+        - paragraph [ref=e296]: Deleting this assessment will reset all 3 control statuses to Not Set in the Controls Hub. This action cannot be undone.
+    - generic [ref=e297]:
+      - button "Cancel" [disabled]
+      - button "Delete Assessment" [disabled]
+    - button "Close" [ref=e300] [cursor=pointer]:
+      - img
+      - generic [ref=e301]: Close

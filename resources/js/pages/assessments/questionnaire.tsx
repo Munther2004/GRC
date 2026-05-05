@@ -16,6 +16,7 @@ import { useState, useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
 
@@ -96,6 +97,7 @@ export default function Questionnaire({
     progress,
     prefilledCount,
 }: Props) {
+    const confirm = useConfirm();
     const [answers, setAnswers] = useState<
         Record<number, { compliance_status: string; comments: string }>
     >(
@@ -163,23 +165,24 @@ export default function Questionnaire({
         saveAnswers(`/assessments/${assessment.id}/questionnaire?page=${page}`);
     };
 
-    const submitAssessment = () => {
-        if (
-            !confirm(
-                'Submit this assessment? The compliance score will be calculated and status set to completed.',
-            )
-        )
-            return;
+    const submitAssessment = async () => {
+        const ok = await confirm({
+            title: 'Submit this assessment?',
+            description: 'The compliance score will be calculated and the status set to completed.',
+            confirmLabel: 'Submit',
+        });
+        if (!ok) return;
         router.post(route('assessments.submit', assessment.id));
     };
 
-    const qaAutoFill = () => {
-        if (
-            !confirm(
-                '[QA] Auto-fill ALL controls with random statuses and submit? This will complete the assessment immediately.',
-            )
-        )
-            return;
+    const qaAutoFill = async () => {
+        const ok = await confirm({
+            title: '[QA] Auto-fill ALL controls?',
+            description: 'Random statuses will be applied and the assessment will be submitted immediately.',
+            confirmLabel: 'Auto-fill & submit',
+            tone: 'destructive',
+        });
+        if (!ok) return;
         router.post(route('assessments.auto-fill', assessment.id));
     };
 

@@ -82,7 +82,7 @@ export default function TeamMembers({ users, stats }: Props) {
                                     <Users className="h-6 w-6 text-slate-400" />
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-bold">
+                                    <p className="text-2xl font-medium">
                                         {stats.total_users}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
@@ -100,7 +100,7 @@ export default function TeamMembers({ users, stats }: Props) {
                                     <Users className="h-6 w-6 text-amber-400" />
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-bold">
+                                    <p className="text-2xl font-medium">
                                         {stats.admins}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
@@ -118,7 +118,7 @@ export default function TeamMembers({ users, stats }: Props) {
                                     <Users className="h-6 w-6 text-blue-400" />
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-bold">
+                                    <p className="text-2xl font-medium">
                                         {stats.users}
                                     </p>
                                     <p className="text-xs text-muted-foreground">

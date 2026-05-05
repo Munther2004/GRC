@@ -1210,7 +1210,7 @@ export default function ControlsHub({
                                     ✨
                                 </span>
                                 <div className="min-w-0">
-                                    <h2 className="text-sm font-bold text-foreground">
+                                    <h2 className="text-sm font-medium text-foreground">
                                         AI Remediation Plan
                                     </h2>
                                     <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -1234,7 +1234,7 @@ export default function ControlsHub({
                             <div className="flex items-center gap-3">
                                 <Badge
                                     variant="outline"
-                                    className={`text-xs font-semibold ${PRIORITY_STYLES[planModal.plan.priority] ?? PRIORITY_STYLES['High']}`}
+                                    className={`text-xs font-medium ${PRIORITY_STYLES[planModal.plan.priority] ?? PRIORITY_STYLES['High']}`}
                                 >
                                     {planModal.plan.priority} Priority
                                 </Badge>

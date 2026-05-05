@@ -138,7 +138,7 @@ export function AiReviewPanel({
         <div className="mt-3 space-y-3 border-t border-muted pt-3 dark:border-muted">
             <div className="flex flex-wrap items-center gap-2">
                 <span
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${vc.bg} ${vc.color}`}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${vc.bg} ${vc.color}`}
                 >
                     {review.verdict === 'Adequate' && (
                         <CheckCircle2 className="h-3.5 w-3.5" />
@@ -165,7 +165,7 @@ export function AiReviewPanel({
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 {review.strengths && (
                     <div>
-                        <p className="mb-1 text-xs font-semibold text-emerald-400">
+                        <p className="mb-1 text-xs font-medium text-emerald-400">
                             Strengths
                         </p>
                         <p className="text-xs leading-relaxed text-green-800 dark:text-green-300">
@@ -175,7 +175,7 @@ export function AiReviewPanel({
                 )}
                 {review.gaps && (
                     <div>
-                        <p className="mb-1 text-xs font-semibold text-amber-700 dark:text-amber-400">
+                        <p className="mb-1 text-xs font-medium text-amber-700 dark:text-amber-400">
                             Gaps
                         </p>
                         <p className="text-xs leading-relaxed text-amber-800 dark:text-amber-300">
@@ -216,7 +216,7 @@ export function AiReviewPanel({
                         </div>
                     ) : (
                         <div className="space-y-2">
-                            <p className="text-xs font-semibold text-red-400">
+                            <p className="text-xs font-medium text-red-400">
                                 Reject this evidence? This marks it as rejected
                                 and removes it from compliance counting.
                             </p>
@@ -402,7 +402,7 @@ export function EvidenceRow({
                     </div>
                     <div className="min-w-0 flex-1">
                         <div className="mb-1 flex flex-wrap items-center gap-2">
-                            <p className="text-sm font-semibold text-foreground">
+                            <p className="text-sm font-medium text-foreground">
                                 {ev.title}
                             </p>
                             {hasReview && (

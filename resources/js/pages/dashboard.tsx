@@ -21,7 +21,6 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts';
-import { ComplianceChart } from '@/components/admin/compliance-chart';
 import { RecentAlerts } from '@/components/admin/recent-alerts';
 import { RiskHeatmap } from '@/components/admin/risk-heatmap';
 import { RiskTrendChart } from '@/components/admin/risk-trend-chart';
@@ -244,7 +243,7 @@ function DashboardHero({ healthScore }: { healthScore: HealthScore }) {
                 }}
             />
 
-            <div className="relative flex flex-col gap-6 p-7 md:flex-row md:items-end md:justify-between md:p-9">
+            <div className="relative flex flex-col gap-6 p-6 md:flex-row md:items-end md:justify-between md:p-8">
                 <div className="space-y-3">
                     <p
                         className="text-[11px] uppercase"
@@ -417,23 +416,17 @@ function formatSnapshotDate(dateStr: string): string {
 function KriTrends({ snapshots }: { snapshots: KriSnapshot[] }) {
     if (snapshots.length < 2) {
         return (
-            <Card>
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-lg" style={{ fontWeight: 500 }}>
-                        KRI trends
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="py-10 text-center">
-                        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
-                            Not enough data yet
-                        </p>
-                        <p className="mt-1.5 text-xs" style={{ color: 'var(--muted-foreground)', opacity: 0.7 }}>
-                            Trends appear after the first few nightly snapshots.
-                        </p>
-                    </div>
-                </CardContent>
-            </Card>
+            <div
+                className="flex flex-wrap items-center gap-3 rounded-2xl px-5 py-3"
+                style={{ border: '1px solid var(--border)', background: 'var(--card)' }}
+            >
+                <span className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
+                    KRI trends
+                </span>
+                <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
+                    Trends appear after the first few nightly snapshots.
+                </span>
+            </div>
         );
     }
 
@@ -672,7 +665,7 @@ export default function AdminDashboard({
 
     return (
         <AdminLayout>
-            <div className="space-y-6">
+            <div className="space-y-4">
                 <DashboardHero healthScore={healthScore} />
 
                 {/* Notification strip */}
@@ -765,34 +758,24 @@ export default function AdminDashboard({
                     </div>
                 </div>
 
-                <div className="grid gap-4 lg:grid-cols-2">
-                    <div
-                        className="animate-in slide-in-from-bottom-4"
-                        style={{ animationDelay: '500ms' }}
-                    >
-                        <ComplianceChart score={stats.compliance_score} />
-                    </div>
-                    <div
-                        className="animate-in slide-in-from-bottom-4"
-                        style={{ animationDelay: '600ms' }}
-                    >
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="flex items-center gap-2 text-lg" style={{ fontWeight: 500 }}>
-                                    <Zap className="h-4 w-4" style={{ color: themeColors.primary }} strokeWidth={1.5} />
-                                    Rule adjustments
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-4xl tabular-nums" style={{ color: themeColors.foreground, fontWeight: 500, letterSpacing: '-0.02em' }}>
-                                    {ruleAdjustments}
-                                </p>
-                                <p className="mt-2 text-sm" style={{ color: themeColors.muted }}>
-                                    risk score{ruleAdjustments !== 1 ? 's' : ''} auto-adjusted by compliance rules in the last 30 days
-                                </p>
-                            </CardContent>
-                        </Card>
-                    </div>
+                <div
+                    className="animate-in slide-in-from-bottom-4 flex flex-wrap items-center gap-3 rounded-2xl px-5 py-3"
+                    style={{
+                        animationDelay: '500ms',
+                        border: '1px solid var(--border)',
+                        background: 'var(--card)',
+                    }}
+                >
+                    <Zap className="h-4 w-4 shrink-0" style={{ color: themeColors.primary }} strokeWidth={1.5} />
+                    <span className="text-[10px] uppercase" style={{ color: themeColors.muted, letterSpacing: '0.28em' }}>
+                        Rule adjustments
+                    </span>
+                    <span className="text-base tabular-nums" style={{ color: themeColors.foreground, fontWeight: 500, letterSpacing: '-0.01em' }}>
+                        {ruleAdjustments}
+                    </span>
+                    <span className="text-xs" style={{ color: themeColors.muted }}>
+                        risk score{ruleAdjustments !== 1 ? 's' : ''} auto-adjusted by compliance rules · last 30 days
+                    </span>
                 </div>
 
                 <TopRisks risks={recentRisks} />

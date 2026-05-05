@@ -19,6 +19,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { PageHeader } from '@/components/ui/page-header';
 import AdminLayout from '@/layouts/admin-layout';
 
@@ -110,6 +111,7 @@ function formatBytes(b: number): string {
 }
 
 export default function SecurityAuditShow({ audit, findings }: Props) {
+    const confirm = useConfirm();
     const [filter, setFilter] = useState<'all' | Finding['severity']>('all');
     const [expanded, setExpanded] = useState<Record<number, boolean>>({});
 
@@ -125,13 +127,22 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
         [filter, findings],
     );
 
-    const generateRisks = () => {
-        if (!confirm('Generate risks from critical, high, and medium findings?')) return;
+    const generateRisks = async () => {
+        const ok = await confirm({
+            title: 'Generate risks from findings?',
+            description: 'This creates risk records for all critical, high, and medium findings.',
+            confirmLabel: 'Generate',
+        });
+        if (!ok) return;
         router.post(`/security-audits/${audit.id}/generate-risks`);
     };
 
-    const saveAsEvidence = () => {
-        if (!confirm('Save this audit report as a piece of evidence?')) return;
+    const saveAsEvidence = async () => {
+        const ok = await confirm({
+            title: 'Save this audit report as evidence?',
+            confirmLabel: 'Save',
+        });
+        if (!ok) return;
         router.post(`/security-audits/${audit.id}/save-as-evidence`);
     };
 
@@ -267,7 +278,7 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
                                 {audit.compliance_score !== null ? (
                                     <div className="text-center">
                                         <p
-                                            className={`text-5xl font-bold tabular-nums ${
+                                            className={`text-5xl font-medium tabular-nums ${
                                                 audit.compliance_score >= 80
                                                     ? 'text-emerald-400'
                                                     : audit.compliance_score >= 60
@@ -373,7 +384,7 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <span
-                                                            className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${cfg.pill}`}
+                                                            className={`text-[9px] font-medium uppercase tracking-wider px-2 py-0.5 rounded ${cfg.pill}`}
                                                         >
                                                             {f.severity}
                                                         </span>
@@ -386,7 +397,7 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
                                                             </Badge>
                                                         )}
                                                     </div>
-                                                    <CardTitle className="text-base font-semibold">
+                                                    <CardTitle className="text-base font-medium">
                                                         {f.title}
                                                     </CardTitle>
                                                 </div>

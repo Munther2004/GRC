@@ -22,6 +22,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
@@ -111,6 +112,7 @@ export default function EvidenceIndex({
     const isAdmin = auth.user.role === 'super_admin' || auth.user.role === 'admin';
     const isAuditor = auth.user.role === 'auditor';
     const canReview = isAdmin || isAuditor;
+    const confirm = useConfirm();
 
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState(filters.status ?? 'all');
@@ -179,8 +181,13 @@ export default function EvidenceIndex({
             });
         }
     };
-    const destroy = (id: number, title: string) => {
-        if (!confirm(`Delete evidence "${title}"?`)) return;
+    const destroy = async (id: number, title: string) => {
+        const ok = await confirm({
+            title: `Delete evidence "${title}"?`,
+            confirmLabel: 'Delete',
+            tone: 'destructive',
+        });
+        if (!ok) return;
         router.delete(route('evidence.destroy', id));
     };
     const download = (id: number) =>

@@ -532,7 +532,7 @@ export default function RiskCreate({
                                                     <span className="font-medium">
                                                         Likelihood{' '}
                                                         <span
-                                                            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${levelColors[validationResult.recommended_likelihood]}`}
+                                                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${levelColors[validationResult.recommended_likelihood]}`}
                                                         >
                                                             {
                                                                 validationResult.recommended_likelihood
@@ -542,7 +542,7 @@ export default function RiskCreate({
                                                     <span className="font-medium">
                                                         Impact{' '}
                                                         <span
-                                                            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${levelColors[validationResult.recommended_impact]}`}
+                                                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${levelColors[validationResult.recommended_impact]}`}
                                                         >
                                                             {
                                                                 validationResult.recommended_impact

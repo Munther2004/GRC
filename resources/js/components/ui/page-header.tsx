@@ -15,7 +15,7 @@ export function PageHeader({ title, description, children, className }: PageHead
                 <div className="space-y-2">
                     <h1
                         className="text-3xl tracking-[-0.02em] sm:text-4xl"
-                        style={{ color: 'var(--foreground)', fontWeight: 500, lineHeight: 1.1 }}
+                        style={{ color: 'var(--foreground)', lineHeight: 1.1 }}
                     >
                         {title}
                     </h1>

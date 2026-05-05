@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -63,6 +64,7 @@ const roleColors: Record<string, string> = {
 
 export default function UsersIndex() {
     const { users, stats, filters, permissions } = usePage<Props>().props;
+    const confirm = useConfirm();
 
     const [search, setSearch] = useState(filters.search ?? '');
     const [role, setRole] = useState(filters.role ?? 'all');
@@ -79,8 +81,14 @@ export default function UsersIndex() {
         );
     };
 
-    const deleteUser = (id: number, name: string) => {
-        if (!confirm(`Delete user "${name}"? This cannot be undone.`)) return;
+    const deleteUser = async (id: number, name: string) => {
+        const ok = await confirm({
+            title: `Delete user "${name}"?`,
+            description: 'This cannot be undone.',
+            confirmLabel: 'Delete',
+            tone: 'destructive',
+        });
+        if (!ok) return;
         router.delete(route('admin.users.destroy', id));
     };
 
@@ -130,7 +138,7 @@ export default function UsersIndex() {
                             <CardContent className="flex items-center gap-3 p-4">
                                 <Icon className={`h-8 w-8 ${color}`} />
                                 <div>
-                                    <p className="text-2xl font-bold">{value}</p>
+                                    <p className="text-2xl font-medium">{value}</p>
                                     <p className="text-xs text-muted-foreground">{label}</p>
                                 </div>
                             </CardContent>
@@ -222,7 +230,7 @@ export default function UsersIndex() {
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent">
-                                                            <span className="text-xs font-semibold text-foreground">
+                                                            <span className="text-xs font-medium text-foreground">
                                                                 {u.name
                                                                     .split(' ')
                                                                     .map((n) => n[0])

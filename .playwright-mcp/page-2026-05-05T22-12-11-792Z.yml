@@ -1,0 +1,216 @@
+- generic [ref=e3]:
+  - complementary "Primary navigation" [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e7]
+      - generic [ref=e9]: GRC · Charter
+      - button "Close navigation" [ref=e10] [cursor=pointer]:
+        - img [ref=e11]
+    - navigation [ref=e14]:
+      - list [ref=e15]:
+        - listitem [ref=e16]:
+          - link "Dashboard" [ref=e17] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e19]
+            - generic [ref=e24]: Dashboard
+        - listitem [ref=e25]:
+          - link "Executive Dashboard" [ref=e26] [cursor=pointer]:
+            - /url: /executive-dashboard
+            - img [ref=e28]
+            - generic [ref=e31]: Executive Dashboard
+        - listitem [ref=e32]:
+          - link "AI Assistant" [ref=e33] [cursor=pointer]:
+            - /url: /chatbot
+            - img [ref=e35]
+            - generic [ref=e37]: AI Assistant
+        - listitem [ref=e38]:
+          - link "Risk Register" [ref=e39] [cursor=pointer]:
+            - /url: /risks
+            - img [ref=e41]
+            - generic [ref=e43]: Risk Register
+        - listitem [ref=e44]:
+          - link "Assessments" [ref=e45] [cursor=pointer]:
+            - /url: /assessments
+            - img [ref=e47]
+            - generic [ref=e50]: Assessments
+        - listitem [ref=e51]:
+          - link "Evidence" [ref=e52] [cursor=pointer]:
+            - /url: /evidence
+            - img [ref=e54]
+            - generic [ref=e56]: Evidence
+        - listitem [ref=e57]:
+          - link "Gap Analysis" [ref=e58] [cursor=pointer]:
+            - /url: /gap-analysis
+            - img [ref=e60]
+            - generic [ref=e64]: Gap Analysis
+        - listitem [ref=e65]:
+          - link "Security Audit" [ref=e66] [cursor=pointer]:
+            - /url: /security-audits
+            - img [ref=e68]
+            - generic [ref=e70]: Security Audit
+        - listitem [ref=e71]:
+          - link "Crosswalk" [ref=e72] [cursor=pointer]:
+            - /url: /crosswalk
+            - img [ref=e74]
+            - generic [ref=e79]: Crosswalk
+        - listitem [ref=e80]:
+          - link "Controls Hub" [ref=e81] [cursor=pointer]:
+            - /url: /controls/hub
+            - img [ref=e83]
+            - generic [ref=e88]: Controls Hub
+        - listitem [ref=e89]:
+          - link "Remediation" [ref=e90] [cursor=pointer]:
+            - /url: /remediation-tasks
+            - img [ref=e92]
+            - generic [ref=e95]: Remediation
+        - listitem [ref=e96]:
+          - link "Reports" [ref=e97] [cursor=pointer]:
+            - /url: /reports
+            - img [ref=e99]
+            - generic [ref=e101]: Reports
+      - generic [ref=e102]:
+        - paragraph [ref=e103]: Review
+        - list [ref=e104]:
+          - listitem [ref=e105]:
+            - link "Approvals" [ref=e106] [cursor=pointer]:
+              - /url: /controls/approvals
+              - img [ref=e108]
+              - generic [ref=e111]: Approvals
+          - listitem [ref=e112]:
+            - link "Audit Logs" [ref=e113] [cursor=pointer]:
+              - /url: /audit-logs
+              - img [ref=e115]
+              - generic [ref=e118]: Audit Logs
+          - listitem [ref=e119]:
+            - link "Notifications 1" [ref=e322] [cursor=pointer]:
+              - /url: /notifications
+              - img [ref=e122]
+              - generic [ref=e125]: Notifications
+              - generic [ref=e323]: "1"
+      - generic [ref=e126]:
+        - paragraph [ref=e127]: Administration
+        - list [ref=e128]:
+          - listitem [ref=e129]:
+            - link "Users" [ref=e130] [cursor=pointer]:
+              - /url: /admin/users
+              - img [ref=e132]
+              - generic [ref=e137]: Users
+          - listitem [ref=e138]:
+            - link "Risk Appetite" [ref=e139] [cursor=pointer]:
+              - /url: /risk-appetite
+              - img [ref=e141]
+              - generic [ref=e142]: Risk Appetite
+      - generic [ref=e143]:
+        - paragraph [ref=e144]: Platform
+        - list [ref=e145]:
+          - listitem [ref=e146]:
+            - link "Corporations" [ref=e147] [cursor=pointer]:
+              - /url: /admin/corporations
+              - img [ref=e149]
+              - generic [ref=e153]: Corporations
+          - listitem [ref=e154]:
+            - link "Frameworks" [ref=e155] [cursor=pointer]:
+              - /url: /admin/frameworks
+              - img [ref=e157]
+              - generic [ref=e159]: Frameworks
+          - listitem [ref=e160]:
+            - link "Controls Library" [ref=e161] [cursor=pointer]:
+              - /url: /admin/controls
+              - img [ref=e163]
+              - generic [ref=e166]: Controls Library
+    - generic [ref=e168]:
+      - generic [ref=e170]: SA
+      - generic [ref=e171]:
+        - paragraph [ref=e172]: Super Admin
+        - paragraph [ref=e173]: admin@grc.com
+      - button "Log out" [ref=e174] [cursor=pointer]:
+        - img [ref=e175]
+  - generic [ref=e178]:
+    - banner [ref=e179]:
+      - button "Open menu" [ref=e180] [cursor=pointer]:
+        - img [ref=e181]
+      - generic [ref=e183]:
+        - img [ref=e184]
+        - searchbox "Search…" [ref=e187]
+      - generic [ref=e188]: Super Admin
+      - button "Switch to dark mode" [ref=e189] [cursor=pointer]:
+        - img [ref=e192]
+      - button "Notifications" [ref=e199] [cursor=pointer]:
+        - img [ref=e200]
+        - generic [ref=e324]: "1"
+    - main [ref=e203]:
+      - generic [ref=e204]:
+        - generic [ref=e206]:
+          - generic [ref=e207]:
+            - heading "Assessments" [level=1] [ref=e208]
+            - paragraph [ref=e209]: Self-assessment questionnaires per framework
+          - generic [ref=e210]:
+            - link "Compare" [ref=e211] [cursor=pointer]:
+              - /url: /assessments/compare
+              - button "Compare" [ref=e212]:
+                - img
+                - text: Compare
+            - link "New Assessment" [ref=e213] [cursor=pointer]:
+              - /url: /assessments/create
+              - button "New Assessment" [ref=e214]:
+                - img
+                - text: New Assessment
+        - generic [ref=e216]:
+          - generic [ref=e217]:
+            - paragraph [ref=e220]: Total
+            - paragraph [ref=e221]: "1"
+          - generic [ref=e222]:
+            - paragraph [ref=e225]: In Progress
+            - paragraph [ref=e226]: "0"
+          - generic [ref=e227]:
+            - paragraph [ref=e230]: Completed
+            - paragraph [ref=e231]: "1"
+          - generic [ref=e232]:
+            - paragraph [ref=e235]: Avg Compliance
+            - paragraph [ref=e236]: 0%
+        - generic [ref=e237]:
+          - generic [ref=e238]:
+            - generic:
+              - img
+            - textbox "Search assessments..." [ref=e239]
+          - combobox [ref=e240] [cursor=pointer]:
+            - generic: All Statuses
+            - img
+          - combobox [ref=e241] [cursor=pointer]:
+            - generic: All Frameworks
+            - img
+          - button "Search" [ref=e242] [cursor=pointer]
+        - generic [ref=e243]:
+          - generic [ref=e245]: 1 assessment
+          - table [ref=e248]:
+            - rowgroup [ref=e249]:
+              - row "Assessment Framework Period Self-Assessed Evidence Score Status Due Date Actions" [ref=e250]:
+                - columnheader "Assessment" [ref=e251]
+                - columnheader "Framework" [ref=e252]
+                - columnheader "Period" [ref=e253]
+                - columnheader "Self-Assessed" [ref=e254]
+                - columnheader "Evidence Score" [ref=e255]
+                - columnheader "Status" [ref=e256]
+                - columnheader "Due Date" [ref=e257]
+                - columnheader "Actions" [ref=e258]
+            - rowgroup [ref=e259]:
+              - row "DELETE-TEST-KEEP Super Admin ISO27001 Q2 0% Pending review completed —" [ref=e281]:
+                - cell "DELETE-TEST-KEEP Super Admin" [ref=e282]:
+                  - paragraph [ref=e283]: DELETE-TEST-KEEP
+                  - paragraph [ref=e284]: Super Admin
+                - cell "ISO27001" [ref=e285]:
+                  - generic [ref=e286]: ISO27001
+                - cell "Q2" [ref=e287]
+                - cell "0%" [ref=e288]:
+                  - generic [ref=e291]: 0%
+                - cell "Pending review" [ref=e292]
+                - cell "completed" [ref=e293]:
+                  - generic [ref=e294]: completed
+                - cell "—" [ref=e295]
+                - cell [ref=e296]:
+                  - generic [ref=e297]:
+                    - link [ref=e298] [cursor=pointer]:
+                      - /url: /assessments/5
+                      - button [ref=e299]:
+                        - img
+                    - button [ref=e300] [cursor=pointer]:
+                      - img

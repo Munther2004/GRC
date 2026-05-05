@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { RouteName, RouteParams } from 'ziggy-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { FilterBar } from '@/components/ui/filter-bar';
 import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
@@ -118,6 +119,7 @@ function AppetiteDot({ band }: { band: AppetiteBand }) {
 export default function RisksIndex({ risks, stats, riskExposure, filters, frameworks, appetite }: Props) {
     const { auth } = usePage<SharedProps>().props;
     const canEdit = auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'user';
+    const confirm = useConfirm();
 
     const [search, setSearch]             = useState(filters.search ?? '');
     const [status, setStatus]             = useState(filters.status ?? 'all');
@@ -142,8 +144,14 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
 
     const toggleHasPlan = () => { const next = !hasPlan; setHasPlan(next); applyFilters({ has_plan: next ? '1' : '' }); };
     const toggleEscalatedOnly = () => { const next = !escalatedOnly; setEscalatedOnly(next); applyFilters({ escalated_only: next ? '1' : '' }); };
-    const deleteRisk = (id: number, title: string) => {
-        if (!confirm(`Delete risk "${title}"? This cannot be undone.`)) return;
+    const deleteRisk = async (id: number, title: string) => {
+        const ok = await confirm({
+            title: `Delete risk "${title}"?`,
+            description: 'This cannot be undone.',
+            confirmLabel: 'Delete',
+            tone: 'destructive',
+        });
+        if (!ok) return;
         router.delete(route('risks.destroy', id));
     };
 

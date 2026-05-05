@@ -165,15 +165,15 @@
     body {
         @apply bg-background text-foreground antialiased;
         font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
-        font-size: 14px;
-        line-height: 1.6;
+        font-size: 16px;
+        line-height: 1.5;
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     }
 
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
-        font-weight: 600;
-        line-height: 1.25;
+        font-weight: 500;
+        line-height: 1.2;
         letter-spacing: -0.02em;
         color: var(--foreground);
     }

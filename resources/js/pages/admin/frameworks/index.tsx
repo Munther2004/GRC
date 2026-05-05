@@ -9,6 +9,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
 
@@ -27,17 +28,18 @@ interface Props {
 }
 
 export default function FrameworksIndex({ frameworks }: Props) {
+    const confirm = useConfirm();
     const total = frameworks.length;
     const active = frameworks.filter((f) => f.is_active).length;
 
-    const toggle = (framework: Framework) => {
-        const action = framework.is_active ? 'deactivate' : 'activate';
-        if (
-            !confirm(
-                `${action.charAt(0).toUpperCase() + action.slice(1)} "${framework.name}"?`,
-            )
-        )
-            return;
+    const toggle = async (framework: Framework) => {
+        const action = framework.is_active ? 'Deactivate' : 'Activate';
+        const ok = await confirm({
+            title: `${action} "${framework.name}"?`,
+            confirmLabel: action,
+            tone: framework.is_active ? 'destructive' : 'default',
+        });
+        if (!ok) return;
         router.post(route('admin.frameworks.toggle', framework.id));
     };
 
@@ -83,7 +85,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                             <CardContent className="flex items-center gap-3 p-4">
                                 <Icon className={`h-8 w-8 ${color}`} />
                                 <div>
-                                    <p className="text-2xl font-bold">
+                                    <p className="text-2xl font-medium">
                                         {value}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
@@ -142,7 +144,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/20 dark:bg-primary/20">
-                                                            <span className="text-xs font-bold text-primary dark:text-primary">
+                                                            <span className="text-xs font-medium text-primary dark:text-primary">
                                                                 {framework.short_name.substring(
                                                                     0,
                                                                     4,
@@ -211,7 +213,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className={`h-8 w-8 ${framework.is_active ? 'text-destructive hover:bg-destructive/10' : 'text-primary hover:bg-primary/10'}`}
+                                                            className={`h-8 w-8 ${framework.is_active ? 'text-primary hover:bg-primary/10' : 'text-destructive hover:bg-destructive/10'}`}
                                                             onClick={() =>
                                                                 toggle(
                                                                     framework,

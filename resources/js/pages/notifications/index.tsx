@@ -2,6 +2,7 @@ import { Link, router } from '@inertiajs/react';
 import { AlertTriangle, Bell, Clock, ExternalLink, FileCheck, Shield, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { PageHeader } from '@/components/ui/page-header';
 import AdminLayout from '@/layouts/admin-layout';
 
@@ -55,6 +56,7 @@ const tabs: { key: FilterTab; label: string }[] = [
 ];
 
 export default function NotificationsPage({ notifications }: Props) {
+    const confirm = useConfirm();
     const [activeTab, setActiveTab] = useState<FilterTab>('all');
 
     const filtered = notifications.data.filter((n) => {
@@ -72,10 +74,15 @@ export default function NotificationsPage({ notifications }: Props) {
 
     const deleteNotification = (id: number) => router.delete(`/notifications/${id}`, { preserveScroll: true, onSuccess: () => router.reload({ only: ['notifications'] }) });
 
-    const clearAll = () => {
-        if (confirm('Delete all notifications? This cannot be undone.')) {
-            router.delete('/notifications', { preserveScroll: true, onSuccess: () => router.reload({ only: ['notifications'] }) });
-        }
+    const clearAll = async () => {
+        const ok = await confirm({
+            title: 'Delete all notifications?',
+            description: 'This cannot be undone.',
+            confirmLabel: 'Delete all',
+            tone: 'destructive',
+        });
+        if (!ok) return;
+        router.delete('/notifications', { preserveScroll: true, onSuccess: () => router.reload({ only: ['notifications'] }) });
     };
 
     const unreadCount = notifications.data.filter((n) => !n.is_read).length;

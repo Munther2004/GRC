@@ -709,7 +709,7 @@ export default function GapAnalysisIndex({
                                             setPlanModal(null);
                                             setSavedRisk(null);
                                         }}
-                                        className="w-full gap-2 py-2.5 text-sm font-semibold"
+                                        className="w-full gap-2 py-2.5 text-sm font-medium"
                                     >
                                         View Risk Record{' '}
                                         <ArrowRight className="h-4 w-4" />

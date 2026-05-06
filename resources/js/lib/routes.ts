@@ -102,6 +102,9 @@ export const route = (name: string, params?: any): string => {
         'notifications.read-all': '/notifications/read-all',
         'notifications.destroy': `/notifications/${id}`,
 
+        // Evidence Coverage Matrix
+        'evidence-coverage.index': '/evidence-coverage',
+
         //Evidence
         'evidence.index': '/evidence',
         'evidence.approve': `/evidence/${id}/approve`,

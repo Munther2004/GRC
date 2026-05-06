@@ -449,7 +449,7 @@ export default function RiskCreate({
                                     )}
                                     {loadingValidation
                                         ? 'Validating...'
-                                        : '✨ Validate Scores'}
+                                        : 'Validate Scores'}
                                 </Button>
                             </div>
 

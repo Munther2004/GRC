@@ -17,6 +17,7 @@ use App\Http\Controllers\CorporationRegistrationController;
 use App\Http\Controllers\CrosswalkController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EvidenceController;
+use App\Http\Controllers\EvidenceCoverageController;
 use App\Http\Controllers\ExecutiveDashboardController;
 use App\Http\Controllers\ExecutiveSummaryController;
 use App\Http\Controllers\GapAnalysisController;
@@ -179,6 +180,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/evidence/{evidence}/reject', [EvidenceController::class, 'reject'])->name('evidence.reject');
         Route::post('/evidence/{evidence}/ai-review', [EvidenceController::class, 'aiReview'])->name('evidence.ai-review');
         Route::post('/ai/review-evidence', [AdminAIController::class, 'reviewEvidence'])->name('ai.review-evidence');
+
+        Route::get('/evidence-coverage', [EvidenceCoverageController::class, 'index'])->name('evidence-coverage.index');
 
         // Audit logs are part of the review surface.
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');

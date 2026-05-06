@@ -9,6 +9,7 @@ import {
     ClipboardList,
     Clock,
     FileCheck,
+    FileSearch,
     FileText,
     FolderOpen,
     GitCompare,
@@ -60,9 +61,10 @@ const mainNavigation = [
 ]
 
 const reviewNavigation = [
-    { name: "Approvals",     href: "/controls/approvals", icon: Clock,      roles: REVIEW_ROLES, badgeKey: 'approvals' },
-    { name: "Audit Logs",    href: "/audit-logs",         icon: ScrollText, roles: REVIEW_ROLES },
-    { name: "Notifications", href: "/notifications",      icon: Bell,       roles: ALL_ROLES, badgeKey: 'notifications' },
+    { name: "Approvals",         href: "/controls/approvals", icon: Clock,      roles: REVIEW_ROLES, badgeKey: 'approvals' },
+    { name: "Evidence Coverage", href: "/evidence-coverage",  icon: FileSearch, roles: REVIEW_ROLES },
+    { name: "Audit Logs",        href: "/audit-logs",         icon: ScrollText, roles: REVIEW_ROLES },
+    { name: "Notifications",     href: "/notifications",      icon: Bell,       roles: ALL_ROLES, badgeKey: 'notifications' },
 ]
 
 // Items shown to corporation admins and super_admins.

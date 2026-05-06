@@ -1,6 +1,6 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Eye, Pencil, Plus, Search, Sliders, Sparkles, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { Eye, Loader2, Pencil, Plus, Search, Sliders, Sparkles, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import type { RouteName, RouteParams } from 'ziggy-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -83,6 +83,7 @@ interface Props {
     };
     frameworks: { id: number; short_name: string; name: string }[];
     appetite: RiskAppetiteConfig | null;
+    risks_generating: boolean;
 }
 
 const levelColors = (level: string): { color: string; bg: string } => ({
@@ -116,8 +117,23 @@ function AppetiteDot({ band }: { band: AppetiteBand }) {
     );
 }
 
-export default function RisksIndex({ risks, stats, riskExposure, filters, frameworks, appetite }: Props) {
+export default function RisksIndex({ risks, stats, riskExposure, filters, frameworks, appetite, risks_generating }: Props) {
     const { auth } = usePage<SharedProps>().props;
+
+    // Poll for AI-generated risks while a GenerateAIRisksJob is in flight.
+    // Stops the moment the server reports every non-compliant control has
+    // its auto_generated risk (or the 10-minute staleness cap kicks in).
+    useEffect(() => {
+        if (!risks_generating) return;
+        const tick = () => {
+            if (document.hidden) return;
+            router.reload({
+                only: ['risks', 'stats', 'riskExposure', 'risks_generating'],
+            });
+        };
+        const id = window.setInterval(tick, 8000);
+        return () => window.clearInterval(id);
+    }, [risks_generating]);
     const canEdit = auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'user';
     const confirm = useConfirm();
 
@@ -178,6 +194,13 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                     { label: 'Overdue',  value: stats.overdue,  tone: stats.overdue > 0 ? 'bad' : 'ok' },
                     { label: 'Exposure', value: `${exposure}%`, tone: exposure > 50 ? 'bad' : exposure >= 20 ? 'warn' : 'ok', hint: `avg ${riskExposure.avg_risk_score}/25` },
                 ]} />
+
+                {risks_generating && (
+                    <div className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        AI is analyzing controls — risks will appear here as they're generated.
+                    </div>
+                )}
 
                 <FilterBar>
                     <div className="relative min-w-45 flex-1">

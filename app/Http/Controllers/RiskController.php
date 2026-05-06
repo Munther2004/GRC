@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assessment;
 use App\Models\AuditLog;
 use App\Models\Control;
 use App\Models\Framework;
@@ -97,6 +98,7 @@ class RiskController extends Controller
             'filters' => $request->only(['search', 'status', 'level', 'category', 'has_plan', 'framework', 'escalated_only']),
             'frameworks' => $frameworks,
             'appetite' => $appetite,
+            'risks_generating' => Assessment::aiRiskGenerationInProgress($user),
         ]);
     }
 

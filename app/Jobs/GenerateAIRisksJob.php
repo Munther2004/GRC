@@ -16,12 +16,15 @@ class GenerateAIRisksJob implements ShouldQueue
 
     public function handle(): void
     {
-        // Re-fetch from DB — the assessment may have been deleted since dispatch
-        $assessment = Assessment::find($this->assessment->id);
-        if (! $assessment) {
-            Log::warning('GenerateAIRisksJob: assessment no longer exists, skipping', [
-                'assessment_id' => $this->assessment->id,
-            ]);
+        $assessmentId = $this->assessment->id;
+
+        // Re-fetch from DB — the assessment may have been deleted or marked
+        // for deletion since dispatch. Either case must short-circuit before
+        // we touch the AI service or create any risks.
+        $assessment = Assessment::find($assessmentId);
+
+        if (! $assessment || $assessment->status === 'deleting') {
+            Log::info("AI Risk Generator skipped — assessment {$assessmentId} is being deleted or no longer exists.");
 
             return;
         }

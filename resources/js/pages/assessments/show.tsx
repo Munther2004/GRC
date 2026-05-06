@@ -1,4 +1,4 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import {
     ArrowLeft,
@@ -14,7 +14,7 @@ import {
     RefreshCw,
     CheckCheck,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -67,6 +67,7 @@ interface Props {
     >;
     items: Item[];
     evidenceScore: EvidenceScore;
+    risks_generating: boolean;
 }
 
 interface KeyFinding {
@@ -138,6 +139,7 @@ export default function AssessmentShow({
     byCategory,
     items,
     evidenceScore,
+    risks_generating,
 }: Props) {
     const { auth } = usePage<SharedProps>().props;
     const canEdit = auth.user.role === 'super_admin' || auth.user.role === 'admin' || auth.user.role === 'user';
@@ -146,6 +148,21 @@ export default function AssessmentShow({
     const [loadingSummary, setLoading] = useState(false);
     const [summaryError, setSummaryError] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
+
+    // Poll for AI-generated risks while a GenerateAIRisksJob is in flight
+    // for THIS assessment. Stops the moment every non-compliant item has
+    // its auto_generated risk (or the 10-min staleness cap is hit).
+    useEffect(() => {
+        if (!risks_generating) return;
+        const tick = () => {
+            if (document.hidden) return;
+            router.reload({
+                only: ['risks_generating', 'breakdown', 'byCategory'],
+            });
+        };
+        const id = window.setInterval(tick, 8000);
+        return () => window.clearInterval(id);
+    }, [risks_generating]);
 
     const total =
         breakdown.compliant +
@@ -205,6 +222,12 @@ export default function AssessmentShow({
                                 <span className="text-sm" style={{ color: 'var(--muted-foreground)', opacity: 0.7 }}>
                                     by {assessment.user?.name}
                                 </span>
+                                {risks_generating && (
+                                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                                        <Loader2 className="h-3 w-3 animate-spin" />
+                                        AI generating risks…
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>

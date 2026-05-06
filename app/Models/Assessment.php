@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Assessment extends Model
 {
@@ -43,6 +44,44 @@ class Assessment extends Model
         return $this->due_date !== null
             && $this->due_date->isPast()
             && ! in_array($this->status, ['completed'], true);
+    }
+
+    /**
+     * True while GenerateAIRisksJob is plausibly still creating risks for an
+     * assessment in the user's tenant. Used by the Risk Register and the
+     * assessment show page to drive an 8s polling reload — the page stops
+     * polling the moment this returns false (every non-compliant item now
+     * has its auto_generated risk, OR the staleness cap kicked in).
+     *
+     * Pass $assessmentId to scope to a single assessment (show page);
+     * leave null to check across the whole tenant (Risk Register).
+     *
+     * Staleness cap: 10 minutes. Real runs take ~3m30s; cap protects against
+     * jobs that hang or fail forever on a specific control's AI response.
+     */
+    public static function aiRiskGenerationInProgress(User $user, ?int $assessmentId = null): bool
+    {
+        $base = $user->organisationScope(self::query())
+            ->where('status', 'completed')
+            ->where('updated_at', '>=', now()->subMinutes(10));
+
+        if ($assessmentId !== null) {
+            $base->where('id', $assessmentId);
+        }
+
+        return $base->whereExists(function ($q) {
+            $q->select(DB::raw(1))
+                ->from('assessment_items')
+                ->whereColumn('assessment_items.assessment_id', 'assessments.id')
+                ->whereIn('assessment_items.compliance_status', ['non_compliant', 'partially_compliant'])
+                ->whereNotExists(function ($r) {
+                    $r->select(DB::raw(1))
+                        ->from('risks')
+                        ->whereColumn('risks.source_control_id', 'assessment_items.control_id')
+                        ->whereColumn('risks.assessment_id', 'assessments.id')
+                        ->where('risks.auto_generated', true);
+                });
+        })->exists();
     }
 
     public function recalculateCompliance(): void

@@ -45,6 +45,18 @@ class AIRiskGenerator
             ->get();
 
         foreach ($items as $item) {
+            // Mid-run check: bail out if the assessment was flagged for deletion
+            // between dispatch and now, so we don't write risks the controller
+            // is in the middle of cleaning up.
+            $assessment->refresh();
+            if ($assessment->status === 'deleting') {
+                Log::info('AI Risk Generator aborted mid-run — assessment deleted.', [
+                    'assessment_id' => $assessment->id,
+                ]);
+
+                return;
+            }
+
             if (! $item->control) {
                 continue;
             }
@@ -124,41 +136,66 @@ PROMPT;
                 ? $data['treatment']
                 : 'mitigate';
 
-            // Only reference the assessment if it still exists in the DB
-            $assessmentId = Assessment::where('id', $assessment->id)->value('id');
-
-            // Owner of the AI-generated risk: prefer the assessment's owner so
-            // the risk lives inside the assessment's corporation. Fall back to
-            // a corp admin in that tenant, then any super_admin, then any user.
+            // The AI call above can take tens of seconds. While we were
+            // waiting, the user may have triggered destroy() on this
+            // assessment — which sets status='deleting' and then removes
+            // the row. Take a row lock and re-check before any write so we
+            // don't leave behind a risk linked to a corpse.
             $ownerId = $this->resolveOwnerId($assessment);
 
-            $risk = Risk::create([
-                'user_id' => $ownerId,
-                'corporation_id' => $assessment->corporation_id,
-                'title' => substr($data['title'], 0, 255),
-                'description' => $data['description'],
-                'category' => $control->category ?? 'Information Security',
-                'owner' => 'AI Generated',
-                'likelihood' => $likelihood,
-                'impact' => $impact,
-                'status' => 'open',
-                'treatment' => $treatment,
-                'treatment_plan' => null,
-                'mitigation_steps' => $data['mitigation_steps'] ?? null,
-                'auto_generated' => 1,
-                'source_control_id' => $control->id,
-                'assessment_id' => $assessmentId,
-            ]);
+            $created = DB::transaction(function () use (
+                $assessment, $control, $statusLabel, $data, $ownerId,
+                $likelihood, $impact, $treatment
+            ) {
+                $live = Assessment::where('id', $assessment->id)
+                    ->lockForUpdate()
+                    ->first();
 
-            DB::table('control_risk')->insert([
-                'control_id' => $control->id,
-                'risk_id' => $risk->id,
-                'auto_linked' => true,
-                'link_type' => 'ai',
-                'link_reason' => "Auto-generated from {$statusLabel} control {$control->control_id} in assessment '{$assessment->title}'",
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+                if (! $live || $live->status === 'deleting') {
+                    Log::info('AIRiskGenerator: aborting write — assessment gone or marked deleting', [
+                        'assessment_id' => $assessment->id,
+                        'control_id' => $control->id,
+                    ]);
+
+                    return null;
+                }
+
+                $risk = Risk::create([
+                    'user_id' => $ownerId,
+                    'corporation_id' => $live->corporation_id,
+                    'title' => substr($data['title'], 0, 255),
+                    'description' => $data['description'],
+                    'category' => $control->category ?? 'Information Security',
+                    'owner' => 'AI Generated',
+                    'likelihood' => $likelihood,
+                    'impact' => $impact,
+                    'status' => 'open',
+                    'treatment' => $treatment,
+                    'treatment_plan' => null,
+                    'mitigation_steps' => $data['mitigation_steps'] ?? null,
+                    'auto_generated' => 1,
+                    'source_control_id' => $control->id,
+                    'assessment_id' => $live->id,
+                ]);
+
+                DB::table('control_risk')->insert([
+                    'control_id' => $control->id,
+                    'risk_id' => $risk->id,
+                    'auto_linked' => true,
+                    'link_type' => 'ai',
+                    'link_reason' => "Auto-generated from {$statusLabel} control {$control->control_id} in assessment '{$live->title}'",
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                return $risk;
+            });
+
+            if ($created === null) {
+                return;
+            }
+
+            $risk = $created;
 
             $riskUrl = "/risks/{$risk->id}";
             Notification::firstOrCreate(

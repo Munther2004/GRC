@@ -52,6 +52,7 @@
             border-radius: 6px;
             padding: 16px;
             margin-bottom: 20px;
+            page-break-inside: avoid;
         }
         .score-value { font-size: 36px; font-weight: bold; color: #003c33; }
         .score-label { font-size: 10px; color: #212121; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 4px; }

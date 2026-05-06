@@ -23,23 +23,28 @@ if (isset($pdf)) {
         $muted = [0.46, 0.46, 0.54];   // #75758a
         $deep  = [0.0,  0.235, 0.2];   // #003c33
 
-        // Footer — every page
+        // Footer — every page. y=h-22 sits ~17mm from the page bottom edge,
+        // well inside the 96px (=72pt) bottom @page margin. With body content
+        // ending at y≈h-72pt, that leaves ~50pt (~17mm) of breathing room
+        // between the last body element and the footer baseline.
         $left  = 'Confidential · GRC Charter';
-        $pdf->text(48, $h - 32, $left, $font, 8, $muted);
+        $pdf->text(48, $h - 22, $left, $font, 8, $muted);
 
         $pageTxt = 'Page ' . $pageNumber . ' of ' . $pageCount;
         $pageW   = $fontMetrics->getTextWidth($pageTxt, $font, 8);
-        $pdf->text($w - 48 - $pageW, $h - 32, $pageTxt, $font, 8, $muted);
+        $pdf->text($w - 48 - $pageW, $h - 22, $pageTxt, $font, 8, $muted);
 
-        // Running header — pages 2+ when caller provides a report title
-        // @page top margin is 80px ≈ 60pt; text at y=28, rule at y=46 — both in margin, clear of content.
+        // Running header — pages 2+ when caller provides a report title.
+        // Brand text at y=20pt, hairline rule at y=36pt. With the @page top
+        // margin at 120px (=90pt), body content begins ~54pt below the rule —
+        // a comfortable, unmistakable visual separation.
         if ($pageNumber > 1 && !empty($reportTitle)) {
             $brand = 'GRC · CHARTER';
-            $pdf->text(48, 28, $brand, $font, 7.5, $deep);
+            $pdf->text(48, 20, $brand, $font, 7.5, $deep);
             $titleW = $fontMetrics->getTextWidth($reportTitle, $font, 7.5);
-            $pdf->text($w - 48 - $titleW, 28, $reportTitle, $font, 7.5, $muted);
-            // Hairline rule separating running header from page content (0.5pt tall filled rect)
-            $pdf->filled_rectangle(48, 46, $w - 96, 0.5, $muted);
+            $pdf->text($w - 48 - $titleW, 20, $reportTitle, $font, 7.5, $muted);
+            // Hairline rule separating running header from page content
+            $pdf->filled_rectangle(48, 36, $w - 96, 0.5, $muted);
         }
     });
 }

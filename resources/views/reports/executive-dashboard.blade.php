@@ -13,6 +13,9 @@
             border-radius: 8px;
             margin-bottom: 16px;
             overflow: hidden;
+            /* Never split the grade letter from its score breakdown across a
+               page break — the banner is the visual hook for page 1. */
+            page-break-inside: avoid;
         }
         .health-grade {
             width: 72px;

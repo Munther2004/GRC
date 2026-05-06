@@ -358,12 +358,18 @@ class AssessmentController extends Controller
     {
         $assessment->load(['user', 'framework']);
 
+        // SQL ORDER BY on `control_id` produces lexicographic order, which
+        // mis-orders dotted codes like A.5.10 before A.5.2. Pull the rows
+        // unsorted, then run a natural-order, case-insensitive sort in PHP so
+        // the PDF renders A.5.1 → A.5.2 → … → A.5.10 → A.5.11 as humans expect.
         $items = AssessmentItem::with('control')
             ->where('assessment_id', $assessment->id)
-            ->join('controls', 'assessment_items.control_id', '=', 'controls.id')
-            ->orderBy('controls.control_id')
-            ->select('assessment_items.*')
-            ->get();
+            ->get()
+            ->sortBy(
+                fn ($item) => (string) ($item->control->control_id ?? ''),
+                SORT_NATURAL | SORT_FLAG_CASE,
+            )
+            ->values();
 
         $breakdown = [
             'compliant' => $items->where('compliance_status', 'compliant')->count(),

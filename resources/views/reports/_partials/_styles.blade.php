@@ -4,12 +4,23 @@
      Type split: DejaVu Serif for display, DejaVu Sans for body — DomPDF ships both.
 --}}
 <style>
-    /* Page setup — fixed margin reserves space for the footer chrome and (on cover-equipped
-       reports) the running header. Footer text + page numbering are written by the
-       _page_chrome partial via <script type="text/php"> page_script(). */
+    /* Page setup. Two important DomPDF realities drive this layout:
+
+       1. DomPDF's `@page { margin: ... }` is not reliably honoured for body
+          content placement — repeated theads, in particular, can paint above
+          the declared top margin. We therefore use a small `@page` margin
+          (lateral only) and instead push body content down with a `body`
+          padding-top / padding-bottom big enough to clear the chrome painted
+          by `_page_chrome.blade.php` via `page_script()`.
+
+       2. The chrome itself is painted at absolute page coordinates by
+          page_script (NOT inside the @page margin box). Brand sits at
+          y=20pt, rule at y=36pt; footer at y=h-22pt. So the body needs
+          ≥ ~50pt of padding at the top and ≥ ~30pt at the bottom to clear
+          them with comfortable breathing room. */
     @page {
         size: A4 portrait;
-        margin: 80px 48px 56px 48px;
+        margin: 0 48px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,6 +31,13 @@
         color: #212121;
         background: #ffffff;
         line-height: 1.5;
+        /* Reserved space for the page_script-painted chrome. The chrome rule
+           sits at y=36pt; padding-top of 48pt gives ~12pt of clear air below
+           the rule (~4mm visual gap) before any body element starts. The
+           combined visible gap (rule → first heading text) is ~44pt total
+           with built-in section spacing — comfortable but not airy. */
+        padding-top: 48pt;
+        padding-bottom: 36pt;
     }
     .display {
         font-family: 'DejaVu Serif', Georgia, serif;
@@ -99,6 +117,14 @@
         margin-bottom: 14px;
         text-transform: uppercase;
         letter-spacing: 0.6px;
+        /* Keep the title attached to its first paragraph/table — never orphaned at
+           the bottom of a page. */
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+    /* Box headers behave the same way — they shouldn't end up alone at the
+       bottom of a page while the box body lands on the next one. */
+    .box-header {
         page-break-after: avoid;
     }
 
@@ -113,8 +139,17 @@
         border-collapse: collapse;
         font-size: 10px;
     }
+    /* NOTE on theads: thead defaults to `display: table-header-group`, which
+       makes DomPDF repeat the row at the top of every continuation page — but
+       DomPDF places that repeated row above the @page top margin, colliding
+       with the page_script-painted running header. We explicitly override to
+       `table-row-group` so the thead stays in normal flow and continuation
+       pages keep their reserved top margin clean. Trade-off: long tables
+       lose their column header on pages 2+, but readers still have the page-1
+       header for context, and that's preferable to unreadable chrome/content
+       overlap on every continuation page. */
     thead {
-        display: table-header-group; /* repeat headers across page breaks */
+        display: table-row-group;
     }
     thead tr {
         background: transparent;

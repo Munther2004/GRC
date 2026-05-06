@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AIController as AdminAIController;
 use App\Http\Controllers\Admin\ControlController as AdminControlController;
 use App\Http\Controllers\Admin\CorporationController as AdminCorporationController;
+use App\Http\Controllers\Admin\FileReputationCheckController as AdminFileReputationCheckController;
 use App\Http\Controllers\Admin\FrameworkController as AdminFrameworkController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AssessmentComparisonController;
@@ -206,6 +207,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // User management — super_admin or corp admin (controller scopes by tenant).
         Route::middleware('role:super_admin,admin')->group(function () {
             Route::resource('users', AdminUserController::class);
+        });
+
+        // File reputation checks — review surface (super_admin / admin / auditor).
+        // Controller enforces per-record tenant scope on top of the role gate.
+        Route::middleware('role:super_admin,admin,auditor')->group(function () {
+            Route::post('evidence/{evidence}/reputation-check', [AdminFileReputationCheckController::class, 'check'])
+                ->name('evidence.reputation-check');
+            Route::post('security-audits/{securityAudit}/reputation-check', [AdminFileReputationCheckController::class, 'checkSecurityAudit'])
+                ->name('security-audits.reputation-check');
         });
     });
 

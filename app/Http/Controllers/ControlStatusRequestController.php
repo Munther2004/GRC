@@ -112,6 +112,7 @@ class ControlStatusRequestController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $path = $file->store("evidence/control-{$control->id}", 'public');
+            $uploadSha256 = @hash_file('sha256', $file->getRealPath()) ?: null;
             $uploadedEvidence = Evidence::create([
                 'user_id' => Auth::id(),
                 'control_id' => $control->id,
@@ -121,6 +122,7 @@ class ControlStatusRequestController extends Controller
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'file_type' => $file->getMimeType(),
+                'upload_sha256' => $uploadSha256,
                 'status' => 'pending',
             ]);
 

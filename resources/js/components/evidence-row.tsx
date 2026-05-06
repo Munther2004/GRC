@@ -15,8 +15,12 @@ import {
     Ban,
 } from 'lucide-react';
 import { useState } from 'react';
+import { CheckReputationButton } from '@/components/admin/check-reputation-button';
+import { FileIntegrityBadge } from '@/components/admin/file-integrity-badge';
+import { FileReputationDetail } from '@/components/admin/file-reputation-detail';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import type { FileReputationCheck } from '@/types';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -50,6 +54,7 @@ export interface EvidenceItem {
     ai_reviewed_at: string | null;
     ai_review: AiReview | null;
     user: { name: string } | null;
+    latest_reputation_check: FileReputationCheck | null;
     control: {
         control_id: string;
         title: string;
@@ -287,6 +292,14 @@ function EvidenceActions({
     return (
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
             {canReview && (
+                <CheckReputationButton
+                    evidenceId={ev.id}
+                    hasFile={Boolean(ev.file_path)}
+                    existingCheck={ev.latest_reputation_check}
+                />
+            )}
+
+            {canReview && (
                 <Button
                     variant="ghost"
                     size="sm"
@@ -438,6 +451,19 @@ export function EvidenceRow({
                                 >
                                     {ev.ai_verdict}
                                 </span>
+                            )}
+                            {ev.latest_reputation_check && (
+                                <FileReputationDetail
+                                    reputationCheck={ev.latest_reputation_check}
+                                />
+                            )}
+                            {ev.latest_reputation_check?.integrity_status && (
+                                <FileIntegrityBadge
+                                    integrityStatus={
+                                        ev.latest_reputation_check
+                                            .integrity_status
+                                    }
+                                />
                             )}
                             <span className="font-mono text-xs text-muted-foreground">
                                 {formatSize(ev.file_type)}

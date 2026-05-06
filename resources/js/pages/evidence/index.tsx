@@ -133,6 +133,20 @@ export default function EvidenceIndex({
         return () => clearTimeout(t);
     }, [toast]);
 
+    // Auto-poll while any row has a pending reputation check, so the badge
+    // updates from "Checking…" to its final state without a manual refresh.
+    const hasPendingReputation = evidence.data.some(
+        (ev) => ev.latest_reputation_check?.status === 'pending',
+    );
+    useEffect(() => {
+        if (!hasPendingReputation) return;
+        const id = setInterval(
+            () => router.reload({ only: ['evidence'] }),
+            4000,
+        );
+        return () => clearInterval(id);
+    }, [hasPendingReputation]);
+
     const formatStatus = (s: string | null) => {
         if (!s || s === 'not_set') return 'Not Set';
         return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());

@@ -152,11 +152,6 @@ export default function AssessmentShow({
         breakdown.partially_compliant +
         breakdown.non_compliant +
         breakdown.not_applicable;
-    const nonCompliantItems = items.filter(
-        (i) =>
-            i.compliance_status === 'non_compliant' ||
-            i.compliance_status === 'partially_compliant',
-    );
 
     const generateSummary = async () => {
         setLoading(true);
@@ -438,56 +433,6 @@ export default function AssessmentShow({
                             </CardContent>
                         </Card>
 
-                        {/* Gap Analysis — Non-Compliant Controls */}
-                        {nonCompliantItems.length > 0 && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base" style={{ color: '#e5484d' }}>
-                                        Gap Analysis —{' '}
-                                        {nonCompliantItems.length} controls
-                                        require attention
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-2">
-                                    {nonCompliantItems.map((item) => (
-                                        <div
-                                            key={item.id}
-                                            className="rounded-2xl border p-3 text-sm"
-                                            style={item.compliance_status === 'non_compliant' ? { borderColor: 'rgba(229,72,77,0.4)', background: 'rgba(229,72,77,0.06)' } : { borderColor: 'rgba(245,185,41,0.4)', background: 'rgba(245,185,41,0.06)' }}
-                                        >
-                                            <div className="flex items-start justify-between gap-2">
-                                                <div>
-                                                    <span className="mr-2 rounded-full bg-card px-2 py-0.5 font-mono text-xs">
-                                                        {
-                                                            item.control
-                                                                .control_id
-                                                        }
-                                                    </span>
-                                                    <span style={{ fontWeight: 500 }}>
-                                                        {item.control.title}
-                                                    </span>
-                                                    {item.comments && (
-                                                        <p className="mt-1 text-xs" style={{ color: 'var(--foreground)', opacity: 0.8 }}>
-                                                            {item.comments}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                                <Badge
-                                                    variant="outline"
-                                                    className="shrink-0"
-                                                    style={item.compliance_status === 'non_compliant' ? { color: '#e5484d', borderColor: 'rgba(229,72,77,0.4)', background: 'rgba(229,72,77,0.1)' } : { color: '#f5b929', borderColor: 'rgba(245,185,41,0.4)', background: 'rgba(245,185,41,0.1)' }}
-                                                >
-                                                    {item.compliance_status ===
-                                                    'non_compliant'
-                                                        ? 'Non-Compliant'
-                                                        : 'Partial'}
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </CardContent>
-                            </Card>
-                        )}
                     </div>
 
                     {/* Right column */}

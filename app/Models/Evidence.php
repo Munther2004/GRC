@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
 
 class Evidence extends Model
@@ -10,7 +12,7 @@ class Evidence extends Model
     protected $fillable = [
         'user_id', 'assessment_item_id', 'control_id', 'control_status_request_id', 'title',
         'description', 'file_path', 'file_name',
-        'file_type', 'status', 'expiry_date',
+        'file_type', 'upload_sha256', 'status', 'expiry_date',
         'ai_review', 'ai_verdict', 'ai_confidence', 'ai_reviewed_at',
         'ai_strengths', 'ai_gaps', 'ai_recommendation', 'ai_is_relevant',
     ];
@@ -40,6 +42,16 @@ class Evidence extends Model
     public function statusRequest()
     {
         return $this->belongsTo(ControlStatusRequest::class, 'control_status_request_id');
+    }
+
+    public function reputationChecks(): MorphMany
+    {
+        return $this->morphMany(FileReputationCheck::class, 'checkable');
+    }
+
+    public function latestReputationCheck(): MorphOne
+    {
+        return $this->morphOne(FileReputationCheck::class, 'checkable')->latestOfMany();
     }
 
     public function getIsExpiredAttribute(): bool

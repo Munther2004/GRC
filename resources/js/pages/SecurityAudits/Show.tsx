@@ -16,18 +16,24 @@ import {
     ChevronUp,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { CheckReputationButton } from '@/components/admin/check-reputation-button';
+import { FileIntegrityBadge } from '@/components/admin/file-integrity-badge';
+import { FileReputationDetail } from '@/components/admin/file-reputation-detail';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useConfirm } from '@/components/ui/confirm-dialog';
 import { PageHeader } from '@/components/ui/page-header';
 import AdminLayout from '@/layouts/admin-layout';
+import type { FileReputationCheck } from '@/types';
 
 interface Audit {
     id: number;
     file_name: string;
     file_type: string;
     file_size: number;
+    file_path: string | null;
+    latest_reputation_check: FileReputationCheck | null;
     status: 'pending' | 'analyzing' | 'completed' | 'failed';
     summary: string | null;
     total_findings: number;
@@ -115,12 +121,14 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
     const [filter, setFilter] = useState<'all' | Finding['severity']>('all');
     const [expanded, setExpanded] = useState<Record<number, boolean>>({});
 
-    // Live polling while still being analyzed
+    // Live polling while still being analyzed (or while a reputation check is pending)
+    const reputationPending = audit.latest_reputation_check?.status === 'pending';
     useEffect(() => {
-        if (audit.status !== 'pending' && audit.status !== 'analyzing') return;
+        const auditPending = audit.status === 'pending' || audit.status === 'analyzing';
+        if (!auditPending && !reputationPending) return;
         const id = setInterval(() => router.reload({ only: ['audit', 'findings'] }), 4000);
         return () => clearInterval(id);
-    }, [audit.status]);
+    }, [audit.status, reputationPending]);
 
     const filtered = useMemo(
         () => (filter === 'all' ? findings : findings.filter((f) => f.severity === filter)),
@@ -169,6 +177,13 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
                 title={audit.file_name}
                 description={`${audit.file_type} · ${formatBytes(audit.file_size)} · uploaded by ${audit.user?.name ?? 'Unknown'}`}
             >
+                <CheckReputationButton
+                    evidenceId={audit.id}
+                    hasFile={Boolean(audit.file_path)}
+                    existingCheck={audit.latest_reputation_check}
+                    routeName="admin.security-audits.reputation-check"
+                    routeParamName="securityAudit"
+                />
                 {audit.status === 'completed' && (
                     <>
                         <Button onClick={exportPdf} variant="outline" size="sm">
@@ -184,6 +199,24 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
                     </>
                 )}
             </PageHeader>
+
+            {audit.latest_reputation_check && (
+                <div className="mb-6 flex flex-wrap items-center gap-2">
+                    <span className="text-xs text-muted-foreground">
+                        File reputation:
+                    </span>
+                    <FileReputationDetail
+                        reputationCheck={audit.latest_reputation_check}
+                    />
+                    {audit.latest_reputation_check.integrity_status && (
+                        <FileIntegrityBadge
+                            integrityStatus={
+                                audit.latest_reputation_check.integrity_status
+                            }
+                        />
+                    )}
+                </div>
+            )}
 
             {/* Status banners */}
             {(audit.status === 'pending' || audit.status === 'analyzing') && (

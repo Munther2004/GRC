@@ -79,6 +79,7 @@ class SecurityAuditController extends Controller
 
         $file = $request->file('file');
         $path = $file->store('security-audits', 'public');
+        $uploadSha256 = @hash_file('sha256', $file->getRealPath()) ?: null;
 
         $audit = SecurityAudit::create([
             'user_id' => Auth::id(),
@@ -86,6 +87,7 @@ class SecurityAuditController extends Controller
             'file_type' => $file->getClientMimeType(),
             'file_size' => $file->getSize(),
             'file_path' => $path,
+            'upload_sha256' => $uploadSha256,
             'status' => 'pending',
         ]);
 
@@ -104,7 +106,7 @@ class SecurityAuditController extends Controller
 
     public function show(SecurityAudit $securityAudit)
     {
-        $securityAudit->load(['user:id,name']);
+        $securityAudit->load(['user:id,name', 'latestReputationCheck']);
 
         $findings = $securityAudit->findings()
             ->with(['control:id,control_id,title', 'risk:id,title'])
@@ -117,7 +119,9 @@ class SecurityAuditController extends Controller
                 'file_name' => $securityAudit->file_name,
                 'file_type' => $securityAudit->file_type,
                 'file_size' => $securityAudit->file_size,
+                'file_path' => $securityAudit->file_path,
                 'status' => $securityAudit->status,
+                'latest_reputation_check' => $securityAudit->latestReputationCheck,
                 'summary' => $securityAudit->summary,
                 'total_findings' => $securityAudit->total_findings,
                 'critical_count' => $securityAudit->critical_count,
@@ -233,6 +237,7 @@ class SecurityAuditController extends Controller
         $fileName = 'security-audit-'.$securityAudit->id.'-'.now()->format('Ymd-His').'.pdf';
         $storagePath = "evidence/{$fileName}";
         Storage::disk('public')->put($storagePath, $pdf->output());
+        $uploadSha256 = @hash_file('sha256', Storage::disk('public')->path($storagePath)) ?: null;
 
         $evidence = Evidence::create([
             'user_id' => Auth::id(),
@@ -242,6 +247,7 @@ class SecurityAuditController extends Controller
             'file_path' => $storagePath,
             'file_name' => $fileName,
             'file_type' => 'application/pdf',
+            'upload_sha256' => $uploadSha256,
             'status' => 'pending',
         ]);
 

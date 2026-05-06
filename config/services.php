@@ -45,4 +45,11 @@ return [
         'image_preprocessing' => env('GEMINI_IMAGE_PREPROCESSING', false),
     ],
 
+    'virustotal' => [
+        'key' => env('VIRUSTOTAL_API_KEY'),
+        'enabled' => env('VIRUSTOTAL_ENABLED', false),
+        'upload_files' => env('VIRUSTOTAL_UPLOAD_FILES', false),
+        'timeout' => env('VIRUSTOTAL_TIMEOUT', 15),
+    ],
+
 ];

@@ -109,6 +109,10 @@ export const route = (name: string, params?: any): string => {
         'evidence.download': `/evidence/${id}/download`,
         'evidence.destroy': `/evidence/${id}`,
         'evidence.ai-review': `/evidence/${id}/ai-review`,
+
+        // Admin — File Reputation Checks (VirusTotal)
+        'admin.evidence.reputation-check': `/admin/evidence/${id}/reputation-check`,
+        'admin.security-audits.reputation-check': `/admin/security-audits/${id}/reputation-check`,
     };
 
     return routes[name] ?? `/${name.replace('.', '/')}`;

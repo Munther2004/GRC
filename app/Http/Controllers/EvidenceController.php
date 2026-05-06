@@ -26,6 +26,7 @@ class EvidenceController extends Controller
             'assessmentItem.assessment.framework',
             'assessmentItem.assessment.user',
             'control.framework',
+            'latestReputationCheck',
         ])
             ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
                 ->orWhere('file_name', 'like', "%{$request->search}%")

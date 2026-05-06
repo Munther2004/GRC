@@ -328,6 +328,7 @@ class AssessmentController extends Controller
 
         $file = $request->file('file');
         $path = $file->store("evidence/assessment-{$assessment->id}", 'public');
+        $uploadSha256 = @hash_file('sha256', $file->getRealPath()) ?: null;
 
         Evidence::create([
             'user_id' => Auth::id(),
@@ -338,6 +339,7 @@ class AssessmentController extends Controller
             'file_path' => $path,
             'file_name' => $file->getClientOriginalName(),
             'file_type' => $file->getMimeType(),
+            'upload_sha256' => $uploadSha256,
             'status' => 'pending',
             'expiry_date' => $request->expiry_date,
         ]);

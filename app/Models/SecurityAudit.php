@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class SecurityAudit extends Model
 {
@@ -14,6 +16,7 @@ class SecurityAudit extends Model
         'file_type',
         'file_size',
         'file_path',
+        'upload_sha256',
         'status',
         'findings',
         'summary',
@@ -53,6 +56,16 @@ class SecurityAudit extends Model
     public function findings(): HasMany
     {
         return $this->hasMany(SecurityAuditFinding::class);
+    }
+
+    public function reputationChecks(): MorphMany
+    {
+        return $this->morphMany(FileReputationCheck::class, 'checkable');
+    }
+
+    public function latestReputationCheck(): MorphOne
+    {
+        return $this->morphOne(FileReputationCheck::class, 'checkable')->latestOfMany();
     }
 
     public function isPending(): bool

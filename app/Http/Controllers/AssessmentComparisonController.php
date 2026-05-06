@@ -10,13 +10,15 @@ use App\Models\Evidence;
 use App\Services\AIService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AssessmentComparisonController extends Controller
 {
     public function index()
     {
-        $assessments = Assessment::with('framework')
+        $assessments = Auth::user()->organisationScope(Assessment::query())
+            ->with('framework')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn ($a) => [
@@ -97,8 +99,12 @@ class AssessmentComparisonController extends Controller
 
     private function buildComparison(int $aId, int $bId): array
     {
-        $assessmentA = Assessment::with('framework')->findOrFail($aId);
-        $assessmentB = Assessment::with('framework')->findOrFail($bId);
+        // Tenant-scope: a user in tenant A cannot fetch tenant B's assessments
+        // by passing their ids — cross-tenant id resolves to 404.
+        $scope = fn () => Auth::user()->organisationScope(Assessment::query());
+
+        $assessmentA = $scope()->with('framework')->findOrFail($aId);
+        $assessmentB = $scope()->with('framework')->findOrFail($bId);
 
         // Keyed by control_id (FK integer)
         $itemsA = AssessmentItem::where('assessment_id', $aId)

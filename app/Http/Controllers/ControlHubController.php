@@ -3,29 +3,95 @@
 namespace App\Http\Controllers;
 
 use App\Models\Control;
+use App\Models\ControlStatusHistory;
 use App\Models\Framework;
 use App\Services\GrcMetricsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ControlHubController extends Controller
 {
     public function index(Request $request)
     {
+        // Tenant context for scoping eager-loaded child relations.
+        // Controls themselves are shared platform data (CLAUDE.md), but the
+        // related risks / evidence / history / pending requests are tenant-owned
+        // and must be filtered to the actor's corporation.
+        $user = Auth::user();
+        $isSuper = $user->isSuperAdmin();
+        $corpId = $user->corporation_id;
+
+        // For non-super_admin without a corporation, hide all tenant-owned children.
+        $applyEvidenceScope = function ($q) use ($isSuper, $corpId) {
+            if ($isSuper) {
+                return $q;
+            }
+            if (! $corpId) {
+                return $q->whereRaw('1 = 0');
+            }
+            return $q->whereHas('user', fn ($u) => $u->where('corporation_id', $corpId));
+        };
+        // Risks are loaded via belongsToMany — organisationScope can't be used
+        // here because it requires Eloquent\Builder, not a relation. Apply the
+        // same boundary inline. Qualify the column since the pivot adds joins.
+        $applyRiskScope = function ($q) use ($isSuper, $corpId) {
+            if ($isSuper) {
+                return $q;
+            }
+            if (! $corpId) {
+                return $q->whereRaw('1 = 0');
+            }
+            return $q->where('risks.corporation_id', $corpId);
+        };
+        $applyHistoryScope = function ($q) use ($isSuper, $corpId) {
+            if ($isSuper) {
+                return $q;
+            }
+            // Allow rows authored by users in the actor's corp; system rows
+            // (user_id=null) are kept since they are produced by app logic, not
+            // a specific tenant. Cross-tenant user actions are filtered out.
+            return $q->where(function ($qq) use ($corpId) {
+                $qq->whereNull('user_id');
+                if ($corpId) {
+                    $qq->orWhereHas('user', fn ($u) => $u->where('corporation_id', $corpId));
+                }
+            });
+        };
+        $applyRequesterScope = function ($q) use ($isSuper, $corpId) {
+            if ($isSuper) {
+                return $q;
+            }
+            if (! $corpId) {
+                return $q->whereRaw('1 = 0');
+            }
+            return $q->whereHas('requester', fn ($r) => $r->where('corporation_id', $corpId));
+        };
+        $applyAssessmentScope = function ($q) use ($user) {
+            return $q->whereHas('assessment', function ($a) use ($user) {
+                $user->organisationScope($a);
+            });
+        };
+
         $query = Control::with([
             'framework',
-            'risks',
-            'statusHistory' => fn ($q) => $q->with('user')->limit(1),
-            'assessmentItems.evidence',
-            'directEvidence',
-            'statusRequests' => fn ($q) => $q->where('status', 'pending')->with('requester')->limit(1),
+            'risks' => fn ($q) => $applyRiskScope($q),
+            'statusHistory' => fn ($q) => $applyHistoryScope($q->with('user'))
+                ->orderBy('created_at', 'desc')
+                ->limit(1),
+            'assessmentItems' => fn ($q) => $applyAssessmentScope($q),
+            'assessmentItems.evidence' => fn ($q) => $applyEvidenceScope($q),
+            'directEvidence' => fn ($q) => $applyEvidenceScope($q),
+            'statusRequests' => fn ($q) => $applyRequesterScope($q->where('status', 'pending')->with('requester'))->limit(1),
         ])
             ->where('is_active', true)
-        // Hide controls with no status, no risks, and no evidence
-            ->where(function ($q) {
+        // Hide controls with no status, no own-tenant risks, and no own-tenant evidence.
+            ->where(function ($q) use ($user, $applyEvidenceScope, $applyAssessmentScope) {
                 $q->whereNotNull('current_status')
-                    ->orWhereHas('risks')
-                    ->orWhereHas('assessmentItems', fn ($aq) => $aq->whereHas('evidence'));
+                    ->orWhereHas('risks', fn ($rq) => $applyRiskScope($rq))
+                    ->orWhereHas('assessmentItems', function ($aq) use ($applyAssessmentScope, $applyEvidenceScope) {
+                        $applyAssessmentScope($aq)->whereHas('evidence', fn ($eq) => $applyEvidenceScope($eq));
+                    });
             })
             ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
                 ->orWhere('control_id', 'like', "%{$request->search}%")
@@ -71,8 +137,22 @@ class ControlHubController extends Controller
 
     public function history(Control $control)
     {
-        $entries = ControlStatusHistory::with('user')
-            ->where('control_id', $control->id)
+        // Tenant scope: actor sees system entries (user_id=null) plus history
+        // authored by users in their own corporation. super_admin sees all.
+        $user = Auth::user();
+        $entriesQuery = ControlStatusHistory::with('user')
+            ->where('control_id', $control->id);
+
+        if (! $user->isSuperAdmin()) {
+            $entriesQuery->where(function ($q) use ($user) {
+                $q->whereNull('user_id');
+                if ($user->corporation_id) {
+                    $q->orWhereHas('user', fn ($u) => $u->where('corporation_id', $user->corporation_id));
+                }
+            });
+        }
+
+        $entries = $entriesQuery
             ->latest()
             ->get()
             ->map(fn ($h) => [

@@ -41,9 +41,13 @@ Route::inertia('/team', 'team')->name('team');
 Route::get('/corporation/register', [CorporationRegistrationController::class, 'showRegistrationForm'])->name('corporations.register');
 Route::post('/corporation/register', [CorporationRegistrationController::class, 'register'])->name('corporations.store');
 Route::get('/corporation/{corporation}/pending', [CorporationRegistrationController::class, 'pending'])->name('corporations.registration-pending');
-Route::post('/corporation/{corporation}/verify-code', [CorporationRegistrationController::class, 'verifyCode'])->name('corporations.verify-code');
+Route::post('/corporation/{corporation}/verify-code', [CorporationRegistrationController::class, 'verifyCode'])
+    ->middleware('throttle:10,1')
+    ->name('corporations.verify-code');
 Route::get('/corporation/{corporation}/manager-signup', [CorporationRegistrationController::class, 'showManagerSignup'])->name('corporations.manager-signup');
-Route::post('/corporation/{corporation}/manager-signup', [CorporationRegistrationController::class, 'registerManager'])->name('corporations.manager-register');
+Route::post('/corporation/{corporation}/manager-signup', [CorporationRegistrationController::class, 'registerManager'])
+    ->middleware('throttle:5,1')
+    ->name('corporations.manager-register');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 

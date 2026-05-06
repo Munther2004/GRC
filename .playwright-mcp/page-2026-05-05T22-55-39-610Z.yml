@@ -1,0 +1,305 @@
+- generic [ref=e53]:
+  - complementary "Primary navigation" [ref=e54]:
+    - generic [ref=e55]:
+      - img [ref=e57]
+      - generic [ref=e59]: GRC · Charter
+      - button "Close navigation" [ref=e60] [cursor=pointer]:
+        - img [ref=e61]
+    - navigation [ref=e64]:
+      - list [ref=e65]:
+        - listitem [ref=e66]:
+          - link "Dashboard" [ref=e67] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e69]
+            - generic [ref=e74]: Dashboard
+        - listitem [ref=e75]:
+          - link "Executive Dashboard" [ref=e76] [cursor=pointer]:
+            - /url: /executive-dashboard
+            - img [ref=e78]
+            - generic [ref=e81]: Executive Dashboard
+        - listitem [ref=e82]:
+          - link "AI Assistant" [ref=e83] [cursor=pointer]:
+            - /url: /chatbot
+            - img [ref=e85]
+            - generic [ref=e87]: AI Assistant
+        - listitem [ref=e88]:
+          - link "Risk Register" [ref=e89] [cursor=pointer]:
+            - /url: /risks
+            - img [ref=e91]
+            - generic [ref=e93]: Risk Register
+        - listitem [ref=e94]:
+          - link "Assessments" [ref=e95] [cursor=pointer]:
+            - /url: /assessments
+            - img [ref=e97]
+            - generic [ref=e100]: Assessments
+        - listitem [ref=e101]:
+          - link "Evidence" [ref=e102] [cursor=pointer]:
+            - /url: /evidence
+            - img [ref=e104]
+            - generic [ref=e106]: Evidence
+        - listitem [ref=e107]:
+          - link "Gap Analysis" [ref=e108] [cursor=pointer]:
+            - /url: /gap-analysis
+            - img [ref=e110]
+            - generic [ref=e114]: Gap Analysis
+        - listitem [ref=e115]:
+          - link "Security Audit" [ref=e116] [cursor=pointer]:
+            - /url: /security-audits
+            - img [ref=e118]
+            - generic [ref=e120]: Security Audit
+        - listitem [ref=e121]:
+          - link "Crosswalk" [ref=e122] [cursor=pointer]:
+            - /url: /crosswalk
+            - img [ref=e124]
+            - generic [ref=e129]: Crosswalk
+        - listitem [ref=e130]:
+          - link "Controls Hub" [ref=e131] [cursor=pointer]:
+            - /url: /controls/hub
+            - img [ref=e133]
+            - generic [ref=e138]: Controls Hub
+        - listitem [ref=e139]:
+          - link "Remediation" [ref=e140] [cursor=pointer]:
+            - /url: /remediation-tasks
+            - img [ref=e142]
+            - generic [ref=e145]: Remediation
+        - listitem [ref=e146]:
+          - link "Reports" [ref=e147] [cursor=pointer]:
+            - /url: /reports
+            - img [ref=e149]
+            - generic [ref=e151]: Reports
+      - generic [ref=e152]:
+        - paragraph [ref=e153]: Review
+        - list [ref=e154]:
+          - listitem [ref=e155]:
+            - link "Notifications" [ref=e156] [cursor=pointer]:
+              - /url: /notifications
+              - img [ref=e158]
+              - generic [ref=e161]: Notifications
+    - generic [ref=e163]:
+      - generic [ref=e165]: TU
+      - generic [ref=e166]:
+        - paragraph [ref=e167]: Test User A
+        - paragraph [ref=e168]: usera@test.com
+      - button "Log out" [ref=e169] [cursor=pointer]:
+        - img [ref=e170]
+  - generic [ref=e173]:
+    - banner [ref=e174]:
+      - button "Open menu" [ref=e175] [cursor=pointer]:
+        - img [ref=e176]
+      - generic [ref=e178]:
+        - img [ref=e179]
+        - searchbox "Search…" [ref=e182]
+      - generic [ref=e183]: User
+      - button "Switch to dark mode" [ref=e184] [cursor=pointer]:
+        - img [ref=e187]
+      - button "Notifications" [ref=e194] [cursor=pointer]:
+        - img [ref=e195]
+    - main [ref=e198]:
+      - generic [ref=e199]:
+        - generic [ref=e201]:
+          - generic [ref=e202]:
+            - paragraph [ref=e203]: Overview · GRC Command Centre
+            - heading "Good to see you back." [level=1] [ref=e204]
+            - paragraph [ref=e205]: Live view of your risks, controls, and compliance posture.
+          - generic [ref=e207]:
+            - paragraph [ref=e208]: Health
+            - paragraph [ref=e209]: D
+            - paragraph [ref=e210]: 40/100
+        - generic [ref=e211]:
+          - link "New risk" [ref=e212] [cursor=pointer]:
+            - /url: /risks/create
+            - img [ref=e213]
+            - text: New risk
+          - link "Start assessment" [ref=e214] [cursor=pointer]:
+            - /url: /assessments/create
+            - img [ref=e215]
+            - text: Start assessment
+          - link "Upload evidence" [ref=e217] [cursor=pointer]:
+            - /url: /evidence/upload
+            - img [ref=e218]
+            - text: Upload evidence
+          - link "Reports" [ref=e221] [cursor=pointer]:
+            - /url: /reports
+            - img [ref=e222]
+            - text: Reports
+        - generic [ref=e225]:
+          - generic [ref=e226]:
+            - paragraph [ref=e229]: Risk Exposure
+            - generic [ref=e230]:
+              - paragraph [ref=e231]: 0%
+              - paragraph [ref=e233]: avg 0/25
+          - generic [ref=e234]:
+            - paragraph [ref=e237]: Compliance
+            - generic [ref=e238]:
+              - paragraph [ref=e239]: 0%
+              - paragraph [ref=e241]: self-assessed
+          - generic [ref=e242]:
+            - paragraph [ref=e245]: Evidence Approved
+            - generic [ref=e246]:
+              - paragraph [ref=e247]: 0%
+              - paragraph [ref=e249]: 2 pending
+          - generic [ref=e250]:
+            - paragraph [ref=e253]: Critical Risks
+            - generic [ref=e254]:
+              - paragraph [ref=e255]: "0"
+              - paragraph [ref=e256]: 0 open total
+          - generic [ref=e257]:
+            - paragraph [ref=e260]: Due in 7d
+            - generic [ref=e261]:
+              - paragraph [ref=e262]: "0"
+              - paragraph [ref=e263]: assessments
+        - generic [ref=e264]:
+          - generic [ref=e266]:
+            - generic [ref=e267]:
+              - generic [ref=e268]:
+                - generic [ref=e269]: Risk heat map
+                - paragraph [ref=e270]: 0 plotted·0 critical
+              - generic [ref=e271]: L × I
+            - generic [ref=e273]:
+              - generic [ref=e275]: Likelihood
+              - generic [ref=e276]:
+                - generic [ref=e277]:
+                  - generic [ref=e278]:
+                    - generic [ref=e279]: "5"
+                    - generic [ref=e280]:
+                      - button "No risks" [disabled] [ref=e281]
+                      - button "No risks" [disabled] [ref=e282]
+                      - button "No risks" [disabled] [ref=e283]
+                      - button "No risks" [disabled] [ref=e284]
+                      - button "No risks" [disabled] [ref=e285]
+                  - generic [ref=e286]:
+                    - generic [ref=e287]: "4"
+                    - generic [ref=e288]:
+                      - button "No risks" [disabled] [ref=e289]
+                      - button "No risks" [disabled] [ref=e290]
+                      - button "No risks" [disabled] [ref=e291]
+                      - button "No risks" [disabled] [ref=e292]
+                      - button "No risks" [disabled] [ref=e293]
+                  - generic [ref=e294]:
+                    - generic [ref=e295]: "3"
+                    - generic [ref=e296]:
+                      - button "No risks" [disabled] [ref=e297]
+                      - button "No risks" [disabled] [ref=e298]
+                      - button "No risks" [disabled] [ref=e299]
+                      - button "No risks" [disabled] [ref=e300]
+                      - button "No risks" [disabled] [ref=e301]
+                  - generic [ref=e302]:
+                    - generic [ref=e303]: "2"
+                    - generic [ref=e304]:
+                      - button "No risks" [disabled] [ref=e305]
+                      - button "No risks" [disabled] [ref=e306]
+                      - button "No risks" [disabled] [ref=e307]
+                      - button "No risks" [disabled] [ref=e308]
+                      - button "No risks" [disabled] [ref=e309]
+                  - generic [ref=e310]:
+                    - generic [ref=e311]: "1"
+                    - generic [ref=e312]:
+                      - button "No risks" [disabled] [ref=e313]
+                      - button "No risks" [disabled] [ref=e314]
+                      - button "No risks" [disabled] [ref=e315]
+                      - button "No risks" [disabled] [ref=e316]
+                      - button "No risks" [disabled] [ref=e317]
+                  - generic [ref=e319]:
+                    - generic [ref=e320]: "1"
+                    - generic [ref=e321]: "2"
+                    - generic [ref=e322]: "3"
+                    - generic [ref=e323]: "4"
+                    - generic [ref=e324]: "5"
+                  - paragraph [ref=e325]: Impact
+                - generic [ref=e327]:
+                  - generic [ref=e328]: Low
+                  - generic [ref=e330]: Critical
+          - generic [ref=e332]:
+            - generic [ref=e333]:
+              - generic [ref=e334]: Health breakdown
+              - paragraph [ref=e335]: Self-assessed · 100 pts total
+            - generic [ref=e336]:
+              - generic [ref=e338]:
+                - generic [ref=e339]: Compliance
+                - generic [ref=e340]:
+                  - text: "0"
+                  - generic [ref=e341]: /40
+              - generic [ref=e344]:
+                - generic [ref=e345]: Critical Risks
+                - generic [ref=e346]:
+                  - text: "20"
+                  - generic [ref=e347]: /20
+              - generic [ref=e351]:
+                - generic [ref=e352]: Evidence Quality
+                - generic [ref=e353]:
+                  - text: "0"
+                  - generic [ref=e354]: /20
+              - generic [ref=e357]:
+                - generic [ref=e358]: Overdue Items
+                - generic [ref=e359]:
+                  - text: "10"
+                  - generic [ref=e360]: /10
+              - generic [ref=e364]:
+                - generic [ref=e365]: Open Risks
+                - generic [ref=e366]:
+                  - text: "10"
+                  - generic [ref=e367]: /10
+        - generic [ref=e371]:
+          - generic [ref=e372]: KRI trends
+          - generic [ref=e373]: Trends appear after the first few nightly snapshots.
+        - generic [ref=e374]:
+          - generic [ref=e376]:
+            - generic [ref=e377]:
+              - generic [ref=e378]: Risk trend
+              - paragraph [ref=e379]: Risk levels over time — ISO/IEC 27005 scoring
+            - generic [ref=e382]:
+              - paragraph [ref=e383]: No trend data available yet
+              - paragraph [ref=e384]: Data will appear as risks are recorded over time
+          - generic [ref=e386]:
+            - generic [ref=e387]:
+              - generic [ref=e388]: Recent activity
+              - link "View all" [ref=e389] [cursor=pointer]:
+                - /url: /audit-logs
+                - text: View all
+                - img [ref=e390]
+            - generic [ref=e394]:
+              - generic [ref=e397]:
+                - paragraph [ref=e398]: Assessment 'DELETE-TEST-KEEP' deleted — control statuses reset, 0 risks removed
+                - paragraph [ref=e399]: Super Admin·25 minutes ago
+              - generic [ref=e402]:
+                - paragraph [ref=e403]: "Assessment 'DELETE-TEST-OLD' deleted — controls re-synced from assessment #5, 0 risks removed"
+                - paragraph [ref=e404]: Super Admin·43 minutes ago
+              - generic [ref=e407]:
+                - paragraph [ref=e408]: Assessment 'DELETE-TEST-FIXTURE' deleted — control statuses reset, 1 risk removed
+                - paragraph [ref=e409]: Super Admin·47 minutes ago
+              - generic [ref=e412]:
+                - paragraph [ref=e413]: Assessment 'DELETE-TEST-FIXTURE' deleted — control statuses reset, 0 risks removed
+                - paragraph [ref=e414]: Super Admin·1 hour ago
+              - generic [ref=e417]:
+                - paragraph [ref=e418]: Assessment '1' deleted — 93 control statuses reset, 0 risks removed
+                - paragraph [ref=e419]: Super Admin·5 days ago
+              - generic [ref=e422]:
+                - paragraph [ref=e423]: AI Executive Summary PDF generated
+                - paragraph [ref=e424]: Super Admin·1 week ago
+              - generic [ref=e427]:
+                - paragraph [ref=e428]: "[QA AUTO-FILL] Assessment '1' auto-filled and submitted with 67.3% compliance"
+                - paragraph [ref=e429]: Super Admin·1 week ago
+              - generic [ref=e432]:
+                - paragraph [ref=e433]: Assessment '1' created for framework ISO27001
+                - paragraph [ref=e434]: Super Admin·1 week ago
+        - generic [ref=e435]:
+          - img [ref=e436]
+          - generic [ref=e438]: Rule adjustments
+          - generic [ref=e439]: "0"
+          - generic [ref=e440]: risk scores auto-adjusted by compliance rules · last 30 days
+        - generic [ref=e441]:
+          - generic [ref=e442]:
+            - generic [ref=e443]:
+              - generic [ref=e444]: Top risks
+              - paragraph [ref=e445]: Ranked by ISO/IEC 27005 likelihood × impact
+            - link "View all" [ref=e446] [cursor=pointer]:
+              - /url: /risks
+              - text: View all
+              - img [ref=e447]
+          - generic [ref=e451]:
+            - paragraph [ref=e452]: No risks recorded yet
+            - link "Add first risk" [ref=e453] [cursor=pointer]:
+              - /url: /risks/create
+              - text: Add first risk
+              - img [ref=e454]
+        - paragraph [ref=e459]: Nightly checks · 02:00 · last run never

@@ -10,6 +10,7 @@ class SecurityAudit extends Model
 {
     protected $fillable = [
         'user_id',
+        'corporation_id',
         'file_name',
         'file_type',
         'file_size',

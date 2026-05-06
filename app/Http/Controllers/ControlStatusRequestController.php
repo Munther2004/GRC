@@ -15,6 +15,23 @@ use Inertia\Inertia;
 
 class ControlStatusRequestController extends Controller
 {
+    /**
+     * Abort 404 if the reviewer cannot see this request's tenant.
+     * The tenant boundary derives from the requester's corporation_id.
+     * 404 (not 403) so cross-tenant ids are indistinguishable from non-existent.
+     */
+    private function ensureCanAccess(ControlStatusRequest $statusRequest): void
+    {
+        $user = Auth::user();
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+        $requesterCorpId = $statusRequest->requester?->corporation_id;
+        if (! $user->corporation_id || $requesterCorpId !== $user->corporation_id) {
+            abort(404);
+        }
+    }
+
     // ── Approval Queue page (admin/auditor) ──────────────────────────────────
 
     public function index()
@@ -54,7 +71,8 @@ class ControlStatusRequestController extends Controller
                     'description' => $r->evidence->description,
                     'file_name' => $r->evidence->file_name,
                     'file_type' => $r->evidence->file_type ?? 'application/octet-stream',
-                    'file_path' => $r->evidence->file_path,
+                    // file_path intentionally omitted — sensitive storage path. Use
+                    // /evidence/{id}/download (auth-guarded) for the actual file.
                     'status' => $r->evidence->status,
                     'expiry_date' => $r->evidence->expiry_date,
                     'is_expired' => (bool) $r->evidence->is_expired,
@@ -190,6 +208,9 @@ class ControlStatusRequestController extends Controller
 
     public function approve(Request $request, ControlStatusRequest $statusRequest)
     {
+        $statusRequest->loadMissing('requester');
+        $this->ensureCanAccess($statusRequest);
+
         $request->validate(['notes' => 'nullable|string|max:2000']);
 
         if ($statusRequest->status !== 'pending') {
@@ -239,6 +260,9 @@ class ControlStatusRequestController extends Controller
 
     public function reject(Request $request, ControlStatusRequest $statusRequest)
     {
+        $statusRequest->loadMissing('requester');
+        $this->ensureCanAccess($statusRequest);
+
         $request->validate(['notes' => 'nullable|string|max:2000']);
 
         if ($statusRequest->status !== 'pending') {
@@ -291,6 +315,9 @@ class ControlStatusRequestController extends Controller
 
     public function reviewEvidence(Request $request, ControlStatusRequest $statusRequest)
     {
+        $statusRequest->loadMissing('requester');
+        $this->ensureCanAccess($statusRequest);
+
         $request->validate([
             'decision' => 'required|in:accept,reject',
             'notes' => 'nullable|string|max:2000',

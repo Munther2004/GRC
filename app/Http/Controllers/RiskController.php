@@ -18,6 +18,21 @@ use Inertia\Inertia;
 
 class RiskController extends Controller
 {
+    /**
+     * Abort 404 if the risk is not visible to the current user's tenant.
+     * 404 (not 403) so cross-tenant ids are indistinguishable from non-existent.
+     */
+    private function ensureCanAccess(Risk $risk): void
+    {
+        $user = Auth::user();
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+        if (! $user->corporation_id || $risk->corporation_id !== $user->corporation_id) {
+            abort(404);
+        }
+    }
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -88,7 +103,7 @@ class RiskController extends Controller
             ->orderBy('short_name')
             ->get(['id', 'short_name', 'name']);
 
-        $riskExposure = (new RiskMetricsService)->calculateRiskExposure();
+        $riskExposure = (new RiskMetricsService($user))->calculateRiskExposure();
 
         return Inertia::render('risks/index', [
             'risks' => $paginator,
@@ -146,6 +161,8 @@ class RiskController extends Controller
 
     public function show(Risk $risk)
     {
+        $this->ensureCanAccess($risk);
+
         $risk->load(['user', 'sourceControl.framework', 'treatmentPlans']);
 
         $linkedControls = $risk->controls()
@@ -207,6 +224,8 @@ class RiskController extends Controller
 
     public function edit(Risk $risk)
     {
+        $this->ensureCanAccess($risk);
+
         return Inertia::render('risks/edit', [
             'risk' => array_merge($risk->toArray(), [
                 'risk_score' => $risk->risk_score,
@@ -220,6 +239,8 @@ class RiskController extends Controller
 
     public function update(Request $request, Risk $risk)
     {
+        $this->ensureCanAccess($risk);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -252,6 +273,8 @@ class RiskController extends Controller
 
     public function destroy(Risk $risk)
     {
+        $this->ensureCanAccess($risk);
+
         $title = $risk->title;
         $id = $risk->id;
 
@@ -298,6 +321,8 @@ class RiskController extends Controller
 
     public function linkControl(Request $request, Risk $risk)
     {
+        $this->ensureCanAccess($risk);
+
         $request->validate(['control_id' => 'required|exists:controls,id']);
 
         $risk->controls()->syncWithoutDetaching([
@@ -316,6 +341,8 @@ class RiskController extends Controller
 
     public function unlinkControl(Request $request, Risk $risk)
     {
+        $this->ensureCanAccess($risk);
+
         $request->validate(['control_id' => 'required|exists:controls,id']);
 
         $risk->controls()->detach($request->control_id);

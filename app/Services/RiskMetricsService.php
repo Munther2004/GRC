@@ -6,10 +6,46 @@ use App\Models\Assessment;
 use App\Models\Control;
 use App\Models\Evidence;
 use App\Models\Risk;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class RiskMetricsService
 {
+    public function __construct(private ?User $user = null) {}
+
+    private function scopedRisks(): Builder
+    {
+        $q = Risk::query();
+        return $this->user ? $this->user->organisationScope($q) : $q;
+    }
+
+    private function scopedAssessments(): Builder
+    {
+        $q = Assessment::query();
+        return $this->user ? $this->user->organisationScope($q) : $q;
+    }
+
+    /**
+     * Evidence has no corporation_id today, so scope through the uploader
+     * (evidence.user_id → users.corporation_id). Mirrors EvidenceController.
+     */
+    private function scopedEvidence(): Builder
+    {
+        $q = Evidence::query();
+        if (! $this->user) {
+            return $q;
+        }
+        if ($this->user->isSuperAdmin()) {
+            return $q;
+        }
+        if (! $this->user->corporation_id) {
+            return $q->whereRaw('1 = 0');
+        }
+        $corpId = $this->user->corporation_id;
+        return $q->whereHas('user', fn ($qq) => $qq->where('corporation_id', $corpId));
+    }
+
     /**
      * Calculate the overall risk exposure index based on control compliance
      * and risk scores across the portfolio.
@@ -27,9 +63,9 @@ class RiskMetricsService
             ? round((($nonCompliant * 1.0 + $partialCompliant * 0.5) / $totalControls) * 100, 1)
             : 0;
 
-        $avgRiskScore = round(Risk::avg(DB::raw('likelihood * impact')) ?? 0, 1);
-        $totalRisks = Risk::count();
-        $criticalRisks = Risk::where('likelihood', '>=', 4)->where('impact', '>=', 4)->count();
+        $avgRiskScore = round((float) ($this->scopedRisks()->avg(DB::raw('likelihood * impact')) ?? 0), 1);
+        $totalRisks = $this->scopedRisks()->count();
+        $criticalRisks = $this->scopedRisks()->where('likelihood', '>=', 4)->where('impact', '>=', 4)->count();
 
         return [
             'risk_exposure' => $riskExposure,
@@ -52,14 +88,15 @@ class RiskMetricsService
     public function calculateHealthScore(): array
     {
         // Component 1 — compliance (40 pts)
-        $evidenceWeighted = Assessment::where('status', 'completed')
+        $evidenceWeighted = $this->scopedAssessments()
+            ->where('status', 'completed')
             ->whereNotNull('evidence_weighted_score')
             ->avg('evidence_weighted_score');
 
         if ($evidenceWeighted !== null) {
             $compliancePts = ($evidenceWeighted / 100) * 40;
         } else {
-            // Fall back to self-assessed
+            // Fall back to self-assessed (controls are shared platform data)
             $applicable = Control::where('is_active', true)->where('current_status', '!=', 'not_applicable');
             $total = (clone $applicable)->count();
             $compliant = (clone $applicable)->where('current_status', 'compliant')->count();
@@ -69,28 +106,30 @@ class RiskMetricsService
         }
 
         // Component 2 — critical risks (20 pts)
-        $criticalRisks = Risk::whereRaw('likelihood * impact >= 15')->count();
+        $criticalRisks = $this->scopedRisks()->whereRaw('likelihood * impact >= 15')->count();
         $criticalPts = max(0, 20 - ($criticalRisks * 5));
 
         // Component 3 — evidence approval rate (20 pts)
-        $totalEvidence = Evidence::count();
-        $approvedEvidence = Evidence::where('status', 'approved')->count();
+        $totalEvidence = $this->scopedEvidence()->count();
+        $approvedEvidence = $this->scopedEvidence()->where('status', 'approved')->count();
         $approvalRate = $totalEvidence > 0 ? ($approvedEvidence / $totalEvidence) * 100 : 100;
         $evidencePts = ($approvalRate / 100) * 20;
 
         // Component 4 — overdue items (10 pts)
-        $overdueAssessments = Assessment::where('status', '!=', 'completed')
+        $overdueAssessments = $this->scopedAssessments()
+            ->where('status', '!=', 'completed')
             ->whereNotNull('due_date')
             ->where('due_date', '<', now())
             ->count();
-        $overdueRisks = Risk::where('due_date', '<', now())
+        $overdueRisks = $this->scopedRisks()
+            ->where('due_date', '<', now())
             ->whereNotIn('status', ['closed'])
             ->count();
         $overdueItems = $overdueAssessments + $overdueRisks;
         $overduePts = max(0, 10 - ($overdueItems * 2));
 
         // Component 5 — open risks (10 pts)
-        $openRisks = Risk::whereIn('status', ['open', 'in_progress'])->count();
+        $openRisks = $this->scopedRisks()->whereIn('status', ['open', 'in_progress'])->count();
         $openRisksPts = max(0, 10 - ($openRisks * 0.5));
 
         $healthScore = round(

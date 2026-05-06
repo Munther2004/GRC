@@ -19,12 +19,44 @@ use Inertia\Response;
 class ComplianceChatbotController extends Controller
 {
     /**
-     * Build a fresh context snapshot from live database data.
-     * Sensitive fields (passwords, tokens, emails) are never included.
+     * Build a fresh context snapshot from live database data, scoped to the
+     * current user's tenant. Sensitive fields (passwords, tokens, emails) are
+     * never included.
+     *
+     * Tenant boundaries:
+     *   Risk / Assessment / SecurityAudit → corporation_id via organisationScope.
+     *   Evidence / AuditLog               → uploader/actor's corporation_id
+     *                                       (no corporation_id column today).
+     *   Control / KriSnapshot             → kept global by design — controls
+     *                                       are shared platform data and KRI
+     *                                       snapshots are platform-wide trend
+     *                                       points (single row per day).
      */
     private function buildContext(): array
     {
-        $topRisks = Risk::whereIn('status', ['open', 'in_progress'])
+        $user = Auth::user();
+        $corpId = $user->corporation_id;
+        $isSuper = $user->isSuperAdmin();
+
+        // Helper: apply uploader-corp filter to Evidence/AuditLog (tables that
+        // have a user_id but no corporation_id).
+        $applyActorScope = function ($query, string $userIdColumn = 'user_id') use ($isSuper, $corpId) {
+            if ($isSuper) {
+                return $query;
+            }
+            if (! $corpId) {
+                return $query->whereRaw('1 = 0');
+            }
+            return $query->whereExists(function ($q) use ($userIdColumn, $corpId, $query) {
+                $q->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from('users')
+                    ->whereColumn('users.id', $query->getModel()->getTable().'.'.$userIdColumn)
+                    ->where('users.corporation_id', $corpId);
+            });
+        };
+
+        $topRisks = $user->organisationScope(Risk::query())
+            ->whereIn('status', ['open', 'in_progress'])
             ->orderByRaw('likelihood * impact DESC')
             ->limit(5)
             ->get()
@@ -38,6 +70,7 @@ class ComplianceChatbotController extends Controller
                 'status' => $r->status,
             ]);
 
+        // Controls are shared platform data — these counts are intentionally global.
         $longNonCompliant = Control::where('current_status', 'non_compliant')
             ->where('is_active', true)
             ->where('updated_at', '<', now()->subDays(30))
@@ -49,7 +82,8 @@ class ComplianceChatbotController extends Controller
                 'days_non_compliant' => (int) now()->diffInDays($c->updated_at),
             ]);
 
-        $recentAuditLogs = AuditLog::latest()
+        $recentAuditLogs = $applyActorScope(AuditLog::query())
+            ->latest()
             ->limit(10)
             ->get(['action', 'model_type', 'model_id', 'description', 'created_at'])
             ->map(fn ($l) => [
@@ -61,7 +95,8 @@ class ComplianceChatbotController extends Controller
 
         $lastKri = KriSnapshot::latest('snapshot_date')->first();
 
-        $recentSecurityAudits = SecurityAudit::where('status', 'completed')
+        $recentSecurityAudits = $user->organisationScope(SecurityAudit::query())
+            ->where('status', 'completed')
             ->latest('analyzed_at')
             ->limit(5)
             ->get(['id', 'file_name', 'compliance_score', 'critical_count', 'high_count', 'total_findings', 'analyzed_at'])
@@ -77,41 +112,45 @@ class ComplianceChatbotController extends Controller
         return [
             'snapshot_taken_at' => now()->toDateTimeString(),
             'controls' => [
+                // Global by design (shared platform data).
                 'total' => Control::where('is_active', true)->count(),
                 'compliant' => Control::where('current_status', 'compliant')->where('is_active', true)->count(),
                 'non_compliant' => Control::where('current_status', 'non_compliant')->where('is_active', true)->count(),
                 'partially_compliant' => Control::where('current_status', 'partially_compliant')->where('is_active', true)->count(),
-                'compliance_percentage' => round(Assessment::avg('compliance_percentage') ?? 0, 1),
+                // Tenant-scoped: only this corp's assessments contribute to the average.
+                'compliance_percentage' => round((float) ($user->organisationScope(Assessment::query())->avg('compliance_percentage') ?? 0), 1),
             ],
             'risks' => [
-                'total_open' => Risk::whereIn('status', ['open', 'in_progress'])->count(),
-                'overdue' => Risk::where('due_date', '<', now())->whereNotIn('status', ['closed'])->count(),
+                'total_open' => $user->organisationScope(Risk::query())->whereIn('status', ['open', 'in_progress'])->count(),
+                'overdue' => $user->organisationScope(Risk::query())->where('due_date', '<', now())->whereNotIn('status', ['closed'])->count(),
                 'top_5_highest_severity' => $topRisks,
             ],
             'controls_non_compliant_over_30_days' => $longNonCompliant,
             'assessments' => [
-                'overdue' => Assessment::where('status', '!=', 'completed')
+                'overdue' => $user->organisationScope(Assessment::query())
+                    ->where('status', '!=', 'completed')
                     ->whereNotNull('due_date')
                     ->where('due_date', '<', now())
                     ->count(),
             ],
             'evidence' => [
-                'expiring_in_14_days' => Evidence::whereNotNull('expiry_date')
+                'expiring_in_14_days' => $applyActorScope(Evidence::query())
+                    ->whereNotNull('expiry_date')
                     ->whereBetween('expiry_date', [now()->toDateString(), now()->addDays(14)->toDateString()])
                     ->count(),
                 'ai_verdict_summary' => [
-                    'adequate' => Evidence::where('ai_verdict', 'Adequate')->count(),
-                    'partially_adequate' => Evidence::where('ai_verdict', 'Partially Adequate')->count(),
-                    'insufficient' => Evidence::where('ai_verdict', 'Insufficient')->count(),
-                    'not_yet_reviewed' => Evidence::whereNull('ai_verdict')->count(),
+                    'adequate' => $applyActorScope(Evidence::query())->where('ai_verdict', 'Adequate')->count(),
+                    'partially_adequate' => $applyActorScope(Evidence::query())->where('ai_verdict', 'Partially Adequate')->count(),
+                    'insufficient' => $applyActorScope(Evidence::query())->where('ai_verdict', 'Insufficient')->count(),
+                    'not_yet_reviewed' => $applyActorScope(Evidence::query())->whereNull('ai_verdict')->count(),
                 ],
             ],
             'recent_audit_logs' => $recentAuditLogs,
             'security_audits' => [
-                'total_completed' => SecurityAudit::where('status', 'completed')->count(),
-                'in_progress' => SecurityAudit::whereIn('status', ['pending', 'analyzing'])->count(),
-                'critical_findings_total' => (int) SecurityAudit::sum('critical_count'),
-                'high_findings_total' => (int) SecurityAudit::sum('high_count'),
+                'total_completed' => $user->organisationScope(SecurityAudit::query())->where('status', 'completed')->count(),
+                'in_progress' => $user->organisationScope(SecurityAudit::query())->whereIn('status', ['pending', 'analyzing'])->count(),
+                'critical_findings_total' => (int) $user->organisationScope(SecurityAudit::query())->sum('critical_count'),
+                'high_findings_total' => (int) $user->organisationScope(SecurityAudit::query())->sum('high_count'),
                 'recent' => $recentSecurityAudits,
             ],
             'last_kri_snapshot' => $lastKri ? [
@@ -128,7 +167,7 @@ class ComplianceChatbotController extends Controller
                 'total_controls' => $lastKri->total_controls,
                 'compliant_controls' => $lastKri->compliant_controls,
             ] : null,
-            'current_user_role' => Auth::user()->role,
+            'current_user_role' => $user->role,
         ];
     }
 

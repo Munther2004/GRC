@@ -9,6 +9,7 @@ use App\Models\Risk;
 use App\Services\GrcMetricsService;
 use App\Services\RiskMetricsService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ExecutiveDashboardController extends Controller
@@ -37,8 +38,11 @@ class ExecutiveDashboardController extends Controller
 
     private function buildData(): array
     {
-        $metrics = new RiskMetricsService;
-        $grc = new GrcMetricsService;
+        // Tenant-scope every aggregate through the metrics services. super_admin
+        // gets unscoped output (organisationScope returns the query unchanged).
+        $user = Auth::user();
+        $metrics = new RiskMetricsService($user);
+        $grc = new GrcMetricsService($user);
 
         // 1. Health Score
         $healthScore = $metrics->calculateHealthScore();
@@ -57,7 +61,8 @@ class ExecutiveDashboardController extends Controller
         // 3. Risk Summary (one SQL aggregate query + top-5 targeted query)
         $rc = $grc->riskCounts();
 
-        $topRisks = Risk::with('treatmentPlans')
+        $topRisks = $user->organisationScope(Risk::query())
+            ->with('treatmentPlans')
             ->orderByRaw('likelihood * impact DESC')
             ->limit(5)
             ->get()
@@ -95,7 +100,10 @@ class ExecutiveDashboardController extends Controller
 
         // 5. Assessment Summary (aggregate counts from service + latest record for display)
         $agg = $grc->assessmentSummary();
-        $latestAssessment = Assessment::with('framework')->latest()->first();
+        $latestAssessment = $user->organisationScope(Assessment::query())
+            ->with('framework')
+            ->latest()
+            ->first();
         $assessmentSummary = [
             'total' => $agg['total'],
             'completed' => $agg['completed'],

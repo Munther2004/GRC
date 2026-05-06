@@ -25,9 +25,27 @@ class SecurityAuditController extends Controller
         'info' => ['likelihood' => 1, 'impact' => 1],
     ];
 
+    /**
+     * Abort 404 if the current user cannot access the audit. 404 (not 403) so
+     * cross-tenant IDs are indistinguishable from non-existent.
+     */
+    private function ensureCanAccess(SecurityAudit $audit): void
+    {
+        $user = Auth::user();
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+        if (! $user->corporation_id || $audit->corporation_id !== $user->corporation_id) {
+            abort(404);
+        }
+    }
+
     public function index(Request $request)
     {
-        $audits = SecurityAudit::with('user:id,name')
+        $user = Auth::user();
+        $scoped = fn () => $user->organisationScope(SecurityAudit::query());
+
+        $audits = $scoped()->with('user:id,name')
             ->latest()
             ->paginate(20)
             ->through(fn ($a) => [
@@ -49,12 +67,12 @@ class SecurityAuditController extends Controller
             ]);
 
         $stats = [
-            'total' => SecurityAudit::count(),
-            'completed' => SecurityAudit::where('status', 'completed')->count(),
-            'in_progress' => SecurityAudit::whereIn('status', ['pending', 'analyzing'])->count(),
-            'failed' => SecurityAudit::where('status', 'failed')->count(),
-            'critical_findings' => SecurityAudit::sum('critical_count'),
-            'high_findings' => SecurityAudit::sum('high_count'),
+            'total' => $scoped()->count(),
+            'completed' => $scoped()->where('status', 'completed')->count(),
+            'in_progress' => $scoped()->whereIn('status', ['pending', 'analyzing'])->count(),
+            'failed' => $scoped()->where('status', 'failed')->count(),
+            'critical_findings' => (int) $scoped()->sum('critical_count'),
+            'high_findings' => (int) $scoped()->sum('high_count'),
         ];
 
         return Inertia::render('SecurityAudits/Index', [
@@ -79,6 +97,7 @@ class SecurityAuditController extends Controller
 
         $audit = SecurityAudit::create([
             'user_id' => Auth::id(),
+            'corporation_id' => Auth::user()->corporation_id,
             'file_name' => $file->getClientOriginalName(),
             'file_type' => $file->getClientMimeType(),
             'file_size' => $file->getSize(),
@@ -101,6 +120,8 @@ class SecurityAuditController extends Controller
 
     public function show(SecurityAudit $securityAudit)
     {
+        $this->ensureCanAccess($securityAudit);
+
         $securityAudit->load(['user:id,name']);
 
         $findings = $securityAudit->findings()
@@ -154,6 +175,8 @@ class SecurityAuditController extends Controller
 
     public function generateRisks(SecurityAudit $securityAudit)
     {
+        $this->ensureCanAccess($securityAudit);
+
         if (! $securityAudit->isCompleted()) {
             return back()->with('error', 'Audit must be completed before generating risks.');
         }
@@ -217,6 +240,8 @@ class SecurityAuditController extends Controller
 
     public function saveAsEvidence(Request $request, SecurityAudit $securityAudit)
     {
+        $this->ensureCanAccess($securityAudit);
+
         if (! $securityAudit->isCompleted()) {
             return back()->with('error', 'Audit must be completed before saving as evidence.');
         }
@@ -256,6 +281,8 @@ class SecurityAuditController extends Controller
 
     public function exportPdf(SecurityAudit $securityAudit)
     {
+        $this->ensureCanAccess($securityAudit);
+
         if (! $securityAudit->isCompleted()) {
             return back()->with('error', 'Audit must be completed before export.');
         }
@@ -274,6 +301,8 @@ class SecurityAuditController extends Controller
 
     public function destroy(SecurityAudit $securityAudit)
     {
+        $this->ensureCanAccess($securityAudit);
+
         $name = $securityAudit->file_name;
         $id = $securityAudit->id;
 

@@ -10,16 +10,66 @@ use App\Models\Framework;
 use App\Services\AIService;
 use App\Services\EvidenceFileExtractor;
 use App\Services\RulesEngine;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class EvidenceController extends Controller
 {
+    /**
+     * Tenant-scope an Evidence query by the uploader's corporation.
+     *
+     *  - super_admin → unscoped.
+     *  - corp users → only evidence whose uploader shares their corporation_id.
+     *  - users with no corporation_id → no rows.
+     *
+     * Evidence has no `corporation_id` column today, so we route through the
+     * uploader (`evidence.user_id` → `users.corporation_id`).
+     */
+    private function tenantScope(Builder $query): Builder
+    {
+        $user = Auth::user();
+
+        if ($user->isSuperAdmin()) {
+            return $query;
+        }
+
+        if (! $user->corporation_id) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $corpId = $user->corporation_id;
+
+        return $query->whereHas('user', fn ($q) => $q->where('corporation_id', $corpId));
+    }
+
+    /**
+     * Abort 404 if the current user cannot access the evidence record.
+     * 404 (not 403) so cross-tenant IDs are indistinguishable from non-existent.
+     */
+    private function ensureCanAccess(Evidence $evidence): void
+    {
+        $user = Auth::user();
+
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+
+        $uploaderCorpId = $evidence->user?->corporation_id;
+
+        if (! $user->corporation_id || $uploaderCorpId !== $user->corporation_id) {
+            abort(404);
+        }
+    }
+
     public function index(Request $request)
     {
-        $query = Evidence::with([
+        $base = $this->tenantScope(Evidence::query());
+
+        $query = (clone $base)->with([
             'user',
             'assessmentItem.control',
             'assessmentItem.assessment.framework',
@@ -41,17 +91,24 @@ class EvidenceController extends Controller
             ->paginate(20)
             ->withQueryString();
 
+        // Stats: keep tenant-scoped to match the listing.
         $stats = [
-            'total' => Evidence::count(),
-            'pending' => Evidence::where('status', 'pending')->count(),
-            'approved' => Evidence::where('status', 'approved')->count(),
-            'rejected' => Evidence::where('status', 'rejected')->count(),
+            'total' => $this->tenantScope(Evidence::query())->count(),
+            'pending' => $this->tenantScope(Evidence::query())->where('status', 'pending')->count(),
+            'approved' => $this->tenantScope(Evidence::query())->where('status', 'approved')->count(),
+            'rejected' => $this->tenantScope(Evidence::query())->where('status', 'rejected')->count(),
         ];
+
+        // Assessment filter list: only assessments visible to the current tenant.
+        $assessments = Auth::user()->organisationScope(Assessment::query())
+            ->where('status', 'completed')
+            ->orderBy('title')
+            ->get(['id', 'title']);
 
         return Inertia::render('evidence/index', [
             'evidence' => $query,
             'frameworks' => Framework::where('is_active', true)->get(['id', 'name', 'short_name']),
-            'assessments' => Assessment::where('status', 'completed')->orderBy('title')->get(['id', 'title']),
+            'assessments' => $assessments,
             'stats' => $stats,
             'filters' => $request->only(['search', 'status', 'framework_id', 'assessment_id']),
         ]);
@@ -59,6 +116,9 @@ class EvidenceController extends Controller
 
     public function approve(Evidence $evidence)
     {
+        $evidence->loadMissing('user');
+        $this->ensureCanAccess($evidence);
+
         $evidence->update(['status' => 'approved']);
 
         AuditLog::record(
@@ -75,6 +135,9 @@ class EvidenceController extends Controller
 
     public function reject(Evidence $evidence)
     {
+        $evidence->loadMissing('user');
+        $this->ensureCanAccess($evidence);
+
         $evidence->update(['status' => 'rejected']);
 
         AuditLog::record(
@@ -170,6 +233,9 @@ class EvidenceController extends Controller
 
     public function download(Evidence $evidence)
     {
+        $evidence->loadMissing('user');
+        $this->ensureCanAccess($evidence);
+
         if (! Storage::disk('public')->exists($evidence->file_path)) {
             abort(404, 'File not found.');
         }
@@ -179,6 +245,9 @@ class EvidenceController extends Controller
 
     public function destroy(Evidence $evidence)
     {
+        $evidence->loadMissing('user');
+        $this->ensureCanAccess($evidence);
+
         Storage::disk('public')->delete($evidence->file_path);
 
         $title = $evidence->title;
@@ -200,6 +269,8 @@ class EvidenceController extends Controller
             'assessmentItem.assessment.framework',
             'control',
         ]);
+
+        $this->ensureCanAccess($evidence);
 
         // Prefer direct control link; fall back to assessment item's control
         $control = $evidence->control ?? $evidence->assessmentItem?->control;

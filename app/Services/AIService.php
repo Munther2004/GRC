@@ -73,12 +73,20 @@ class AIService
                 $body['system'] = $system;
             }
 
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'x-api-key' => config('services.anthropic.key'),
-                    'anthropic-version' => self::API_VERSION,
-                    'Content-Type' => 'application/json',
-                ])->post(self::API_URL, $body);
+            // TLS verification: required in non-local environments. The local
+            // bypass exists because Laragon's bundled CA does not validate the
+            // Anthropic cert (CLAUDE.md). Production / staging always verify.
+            $http = Http::withHeaders([
+                'x-api-key' => config('services.anthropic.key'),
+                'anthropic-version' => self::API_VERSION,
+                'Content-Type' => 'application/json',
+            ]);
+
+            if (app()->environment('local')) {
+                $http = $http->withoutVerifying();
+            }
+
+            $response = $http->post(self::API_URL, $body);
 
             if ($response->failed()) {
                 Log::error('AIService: API error', [

@@ -14,6 +14,21 @@ use Inertia\Inertia;
 
 class RemediationTaskController extends Controller
 {
+    /**
+     * Abort 404 if the task is not visible to the current user's tenant.
+     * 404 (not 403) so cross-tenant ids are indistinguishable from non-existent.
+     */
+    private function ensureCanAccess(RemediationTask $task): void
+    {
+        $user = Auth::user();
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+        if (! $user->corporation_id || $task->corporation_id !== $user->corporation_id) {
+            abort(404);
+        }
+    }
+
     public function index(Request $request)
     {
         $today = now()->toDateString();
@@ -73,7 +88,8 @@ class RemediationTaskController extends Controller
                 'framework' => $c->framework->short_name,
             ]);
 
-        $assessments = Assessment::orderBy('created_at', 'desc')
+        $assessments = $user->organisationScope(Assessment::query())
+            ->orderBy('created_at', 'desc')
             ->get(['id', 'title'])
             ->map(fn ($a) => ['id' => $a->id, 'title' => $a->title]);
 
@@ -122,6 +138,8 @@ class RemediationTaskController extends Controller
 
     public function update(Request $request, RemediationTask $task)
     {
+        $this->ensureCanAccess($task);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -153,6 +171,8 @@ class RemediationTaskController extends Controller
 
     public function destroy(RemediationTask $task)
     {
+        $this->ensureCanAccess($task);
+
         $title = $task->title;
         $id = $task->id;
         $task->delete();
@@ -170,6 +190,8 @@ class RemediationTaskController extends Controller
 
     public function complete(RemediationTask $task)
     {
+        $this->ensureCanAccess($task);
+
         if (in_array($task->status, ['completed', 'cancelled'])) {
             return redirect()->route('remediation-tasks.index')
                 ->with('error', 'Task is already closed.');

@@ -114,7 +114,7 @@ class DashboardController extends Controller
             ];
         }
 
-        $metricsService = new RiskMetricsService;
+        $metricsService = new RiskMetricsService($user);
         $riskMetrics = $metricsService->calculateRiskExposure();
         $healthScore = $metricsService->calculateHealthScore();
 

@@ -89,7 +89,23 @@ class GrcMetricsService
 
     public function evidenceCounts(): array
     {
-        $row = DB::table('evidence')
+        // Tenant-scope through the uploader's corporation when a user is set.
+        // Evidence has no corporation_id column today — mirrors EvidenceController.
+        $base = DB::table('evidence');
+        if ($this->user && ! $this->user->isSuperAdmin()) {
+            if (! $this->user->corporation_id) {
+                $base->whereRaw('1 = 0');
+            } else {
+                $base->whereExists(function ($q) {
+                    $q->select(DB::raw(1))
+                        ->from('users')
+                        ->whereColumn('users.id', 'evidence.user_id')
+                        ->where('users.corporation_id', $this->user->corporation_id);
+                });
+            }
+        }
+
+        $row = $base
             ->selectRaw("
                 COUNT(*)                                             AS total,
                 SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved,
@@ -140,14 +156,29 @@ class GrcMetricsService
     public function evidenceExpiry(int $soonDays = 14): array
     {
         $now = now();
+        $applyScope = function ($q) {
+            if ($this->user && ! $this->user->isSuperAdmin()) {
+                if (! $this->user->corporation_id) {
+                    $q->whereRaw('1 = 0');
+                } else {
+                    $q->whereExists(function ($qq) {
+                        $qq->select(DB::raw(1))
+                            ->from('users')
+                            ->whereColumn('users.id', 'evidence.user_id')
+                            ->where('users.corporation_id', $this->user->corporation_id);
+                    });
+                }
+            }
+            return $q;
+        };
 
         return [
-            'expiring_soon' => DB::table('evidence')
+            'expiring_soon' => $applyScope(DB::table('evidence'))
                 ->whereNotNull('expiry_date')
                 ->where('expiry_date', '>=', $now)
                 ->where('expiry_date', '<=', $now->copy()->addDays($soonDays))
                 ->count(),
-            'expired' => DB::table('evidence')
+            'expired' => $applyScope(DB::table('evidence'))
                 ->whereNotNull('expiry_date')
                 ->where('expiry_date', '<', $now)
                 ->count(),

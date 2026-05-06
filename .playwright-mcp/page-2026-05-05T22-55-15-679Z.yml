@@ -1,0 +1,234 @@
+- generic [ref=e3]:
+  - complementary "Primary navigation" [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e7]
+      - generic [ref=e9]: GRC · Charter
+      - button "Close navigation" [ref=e10] [cursor=pointer]:
+        - img [ref=e11]
+    - navigation [ref=e14]:
+      - list [ref=e15]:
+        - listitem [ref=e16]:
+          - link "Dashboard" [ref=e17] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e19]
+            - generic [ref=e24]: Dashboard
+        - listitem [ref=e25]:
+          - link "Executive Dashboard" [ref=e26] [cursor=pointer]:
+            - /url: /executive-dashboard
+            - img [ref=e28]
+            - generic [ref=e31]: Executive Dashboard
+        - listitem [ref=e32]:
+          - link "AI Assistant" [ref=e33] [cursor=pointer]:
+            - /url: /chatbot
+            - img [ref=e35]
+            - generic [ref=e37]: AI Assistant
+        - listitem [ref=e38]:
+          - link "Risk Register" [ref=e39] [cursor=pointer]:
+            - /url: /risks
+            - img [ref=e41]
+            - generic [ref=e43]: Risk Register
+        - listitem [ref=e44]:
+          - link "Assessments" [ref=e45] [cursor=pointer]:
+            - /url: /assessments
+            - img [ref=e47]
+            - generic [ref=e50]: Assessments
+        - listitem [ref=e51]:
+          - link "Evidence" [ref=e52] [cursor=pointer]:
+            - /url: /evidence
+            - img [ref=e54]
+            - generic [ref=e56]: Evidence
+        - listitem [ref=e57]:
+          - link "Gap Analysis" [ref=e58] [cursor=pointer]:
+            - /url: /gap-analysis
+            - img [ref=e60]
+            - generic [ref=e64]: Gap Analysis
+        - listitem [ref=e65]:
+          - link "Security Audit" [ref=e66] [cursor=pointer]:
+            - /url: /security-audits
+            - img [ref=e68]
+            - generic [ref=e70]: Security Audit
+        - listitem [ref=e71]:
+          - link "Crosswalk" [ref=e72] [cursor=pointer]:
+            - /url: /crosswalk
+            - img [ref=e74]
+            - generic [ref=e79]: Crosswalk
+        - listitem [ref=e80]:
+          - link "Controls Hub" [ref=e81] [cursor=pointer]:
+            - /url: /controls/hub
+            - img [ref=e83]
+            - generic [ref=e88]: Controls Hub
+        - listitem [ref=e89]:
+          - link "Remediation" [ref=e90] [cursor=pointer]:
+            - /url: /remediation-tasks
+            - img [ref=e92]
+            - generic [ref=e95]: Remediation
+        - listitem [ref=e96]:
+          - link "Reports" [ref=e97] [cursor=pointer]:
+            - /url: /reports
+            - img [ref=e99]
+            - generic [ref=e101]: Reports
+      - generic [ref=e102]:
+        - paragraph [ref=e103]: Review
+        - list [ref=e104]:
+          - listitem [ref=e105]:
+            - link "Approvals" [ref=e106] [cursor=pointer]:
+              - /url: /controls/approvals
+              - img [ref=e108]
+              - generic [ref=e111]: Approvals
+          - listitem [ref=e112]:
+            - link "Audit Logs" [ref=e113] [cursor=pointer]:
+              - /url: /audit-logs
+              - img [ref=e115]
+              - generic [ref=e118]: Audit Logs
+          - listitem [ref=e119]:
+            - link "Notifications 1" [ref=e120] [cursor=pointer]:
+              - /url: /notifications
+              - img [ref=e122]
+              - generic [ref=e125]: Notifications
+              - generic [ref=e126]: "1"
+      - generic [ref=e127]:
+        - paragraph [ref=e128]: Administration
+        - list [ref=e129]:
+          - listitem [ref=e130]:
+            - link "Users" [ref=e131] [cursor=pointer]:
+              - /url: /admin/users
+              - img [ref=e133]
+              - generic [ref=e138]: Users
+          - listitem [ref=e139]:
+            - link "Risk Appetite" [ref=e140] [cursor=pointer]:
+              - /url: /risk-appetite
+              - img [ref=e142]
+              - generic [ref=e143]: Risk Appetite
+      - generic [ref=e144]:
+        - paragraph [ref=e145]: Platform
+        - list [ref=e146]:
+          - listitem [ref=e147]:
+            - link "Corporations" [ref=e148] [cursor=pointer]:
+              - /url: /admin/corporations
+              - img [ref=e150]
+              - generic [ref=e154]: Corporations
+          - listitem [ref=e155]:
+            - link "Frameworks" [ref=e156] [cursor=pointer]:
+              - /url: /admin/frameworks
+              - img [ref=e158]
+              - generic [ref=e160]: Frameworks
+          - listitem [ref=e161]:
+            - link "Controls Library" [ref=e162] [cursor=pointer]:
+              - /url: /admin/controls
+              - img [ref=e164]
+              - generic [ref=e167]: Controls Library
+    - generic [ref=e169]:
+      - generic [ref=e171]: SA
+      - generic [ref=e172]:
+        - paragraph [ref=e173]: Super Admin
+        - paragraph [ref=e174]: admin@grc.com
+      - button "Log out" [ref=e175] [cursor=pointer]:
+        - img [ref=e176]
+  - generic [ref=e179]:
+    - banner [ref=e180]:
+      - button "Open menu" [ref=e181] [cursor=pointer]:
+        - img [ref=e182]
+      - generic [ref=e184]:
+        - img [ref=e185]
+        - searchbox "Search…" [ref=e188]
+      - generic [ref=e189]: Super Admin
+      - button "Switch to dark mode" [ref=e190] [cursor=pointer]:
+        - img [ref=e193]
+      - button "Notifications" [ref=e200] [cursor=pointer]:
+        - img [ref=e201]
+        - generic [ref=e204]: "1"
+    - main [ref=e205]:
+      - generic [ref=e206]:
+        - generic [ref=e209]:
+          - heading "Evidence" [level=1] [ref=e210]
+          - paragraph [ref=e211]: All uploaded compliance evidence files
+        - generic [ref=e213]:
+          - generic [ref=e214]:
+            - paragraph [ref=e217]: Total Files
+            - paragraph [ref=e218]: "2"
+          - generic [ref=e219]:
+            - paragraph [ref=e222]: Pending
+            - paragraph [ref=e223]: "2"
+          - generic [ref=e224]:
+            - paragraph [ref=e227]: Approved
+            - paragraph [ref=e228]: "0"
+          - generic [ref=e229]:
+            - paragraph [ref=e232]: Rejected
+            - paragraph [ref=e233]: "0"
+        - generic [ref=e234]:
+          - generic [ref=e235]:
+            - img [ref=e236]
+            - textbox "Search evidence..." [ref=e239]
+          - combobox [ref=e240] [cursor=pointer]:
+            - generic: All Statuses
+            - img
+          - combobox [ref=e241] [cursor=pointer]:
+            - generic: All Frameworks
+            - img
+          - combobox [ref=e242] [cursor=pointer]:
+            - generic: All Assessments
+            - img
+          - button "Search" [ref=e243] [cursor=pointer]
+        - generic [ref=e244]:
+          - generic [ref=e245]:
+            - paragraph [ref=e246]: 2 files
+            - generic [ref=e247]:
+              - button "List View" [ref=e248] [cursor=pointer]:
+                - img
+                - text: List View
+              - button "Policy View" [ref=e249] [cursor=pointer]:
+                - img
+                - text: Policy View
+          - generic [ref=e252]:
+            - generic [ref=e254]:
+              - generic [ref=e255]:
+                - img [ref=e257]
+                - generic [ref=e260]:
+                  - generic [ref=e261]:
+                    - paragraph [ref=e262]: EVI-A
+                    - generic [ref=e263]: pending
+                    - generic [ref=e264]: PLAIN
+                  - generic [ref=e265]:
+                    - generic [ref=e266]: A.5.1
+                    - generic [ref=e267]: Policies for information security
+                    - generic [ref=e268]: ISO27001
+                  - paragraph [ref=e269]: "Assessment: EVI-IDOR-A · Uploaded by Test User A · 5/6/2026"
+                  - paragraph [ref=e270]: No Expiry
+              - generic [ref=e271]:
+                - button "AI Review" [ref=e272] [cursor=pointer]:
+                  - img
+                  - text: AI Review
+                - button "Download" [ref=e273] [cursor=pointer]:
+                  - img
+                - button "Approve" [ref=e274] [cursor=pointer]:
+                  - img
+                - button "Reject" [ref=e275] [cursor=pointer]:
+                  - img
+                - button "Delete" [ref=e276] [cursor=pointer]:
+                  - img
+            - generic [ref=e278]:
+              - generic [ref=e279]:
+                - img [ref=e281]
+                - generic [ref=e284]:
+                  - generic [ref=e285]:
+                    - paragraph [ref=e286]: EVI-B
+                    - generic [ref=e287]: pending
+                    - generic [ref=e288]: PLAIN
+                  - generic [ref=e289]:
+                    - generic [ref=e290]: A.5.1
+                    - generic [ref=e291]: Policies for information security
+                    - generic [ref=e292]: ISO27001
+                  - paragraph [ref=e293]: "Assessment: EVI-IDOR-B · Uploaded by Test User B · 5/6/2026"
+                  - paragraph [ref=e294]: No Expiry
+              - generic [ref=e295]:
+                - button "AI Review" [ref=e296] [cursor=pointer]:
+                  - img
+                  - text: AI Review
+                - button "Download" [ref=e297] [cursor=pointer]:
+                  - img
+                - button "Approve" [ref=e298] [cursor=pointer]:
+                  - img
+                - button "Reject" [ref=e299] [cursor=pointer]:
+                  - img
+                - button "Delete" [ref=e300] [cursor=pointer]:
+                  - img

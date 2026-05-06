@@ -12,6 +12,7 @@ use App\Models\Risk;
 use App\Services\AIRiskGenerator;
 use App\Services\AIService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -167,15 +168,23 @@ PROMPT;
             return response()->json(['error' => 'Control not found'], 404);
         }
 
-        $risk = Risk::where('auto_generated', 1)
+        $user = Auth::user();
+
+        // Tenant-scope: only consider this user's corporation's risks for this control.
+        $risk = $user->organisationScope(Risk::query())
+            ->where('auto_generated', 1)
             ->where('source_control_id', $control->id)
             ->first();
 
         if (! $risk) {
-            // Find the most recent completed assessment that flagged this control as non/partial
+            // Find the most recent completed assessment in this user's tenant that flagged
+            // this control as non/partial. Cross-tenant assessments must not seed risks here.
             $item = AssessmentItem::where('control_id', $control->id)
                 ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
-                ->whereHas('assessment', fn ($q) => $q->where('status', 'completed'))
+                ->whereHas('assessment', function ($q) use ($user) {
+                    $q->where('status', 'completed');
+                    $user->organisationScope($q);
+                })
                 ->with('assessment')
                 ->latest()
                 ->first();
@@ -186,7 +195,8 @@ PROMPT;
 
             (new AIRiskGenerator)->generateRiskForControl($control, $item->assessment, $item->compliance_status);
 
-            $risk = Risk::where('auto_generated', 1)
+            $risk = $user->organisationScope(Risk::query())
+                ->where('auto_generated', 1)
                 ->where('source_control_id', $control->id)
                 ->first();
 
@@ -205,7 +215,10 @@ PROMPT;
 
     public function generateAssessmentSummary(Request $request, $assessmentId)
     {
-        $assessment = Assessment::with(['framework', 'items.control'])
+        // Tenant-scope so a user in tenant A cannot summarize tenant B's assessment.
+        // 404 (not 403) so cross-tenant IDs are indistinguishable from non-existent.
+        $assessment = Auth::user()->organisationScope(Assessment::query())
+            ->with(['framework', 'items.control'])
             ->findOrFail($assessmentId);
 
         $items = $assessment->items;
@@ -313,11 +326,24 @@ PROMPT;
     {
         $request->validate(['evidence_id' => 'required|integer|exists:evidence,id']);
 
-        $evidence = Evidence::with([
+        $user = Auth::user();
+        $query = Evidence::with([
             'user',
             'assessmentItem.control',
             'assessmentItem.assessment.framework',
-        ])->findOrFail($request->evidence_id);
+        ]);
+
+        // Tenant-scope through the uploader's corporation. Mirrors the
+        // boundary used by EvidenceController::ensureCanAccess.
+        if (! $user->isSuperAdmin()) {
+            if (! $user->corporation_id) {
+                abort(404);
+            }
+            $corpId = $user->corporation_id;
+            $query->whereHas('user', fn ($q) => $q->where('corporation_id', $corpId));
+        }
+
+        $evidence = $query->findOrFail($request->evidence_id);
 
         $item = $evidence->assessmentItem;
         $control = $item?->control;

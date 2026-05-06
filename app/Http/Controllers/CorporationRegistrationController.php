@@ -92,19 +92,36 @@ class CorporationRegistrationController extends Controller
             'code' => 'required|string',
         ]);
 
-        if ($validated['code'] !== $corporation->registration_code) {
+        // Constant-time compare to avoid timing-leak hints for brute force.
+        if (! hash_equals((string) $corporation->registration_code, (string) $validated['code'])) {
             return back()->with('error', 'Invalid registration code.');
         }
 
-        // Redirect to corporate manager sign-up with corporation context
+        // Server-side proof that this session passed the code check.
+        // Bound to the corporation id, time-limited, and consumed by registerManager.
+        $request->session()->put('manager_signup', [
+            'corporation_id' => $corporation->id,
+            'verified_at' => now()->timestamp,
+        ]);
+
         return redirect()->route('corporations.manager-signup', $corporation->id);
     }
 
-    public function showManagerSignup(Corporation $corporation)
+    public function showManagerSignup(Request $request, Corporation $corporation)
     {
         if (!$corporation->isApproved()) {
             return redirect()->route('corporations.registration-pending', $corporation->id)
                 ->with('error', 'Corporation is not approved yet.');
+        }
+
+        if (! $this->hasFreshVerification($request, $corporation)) {
+            return redirect()->route('corporations.registration-pending', $corporation->id)
+                ->with('error', 'Please verify your registration code first.');
+        }
+
+        if ($corporation->manager_user_id) {
+            return redirect()->route('corporations.registration-pending', $corporation->id)
+                ->with('error', 'This corporation already has a manager account.');
         }
 
         return Inertia::render('corporations/manager-signup', [
@@ -116,6 +133,20 @@ class CorporationRegistrationController extends Controller
     {
         if (!$corporation->isApproved()) {
             return back()->with('error', 'Corporation is not approved yet.');
+        }
+
+        // Server-side gate: a verified verify-code session is required.
+        if (! $this->hasFreshVerification($request, $corporation)) {
+            return redirect()->route('corporations.registration-pending', $corporation->id)
+                ->with('error', 'Verification expired or missing. Please re-enter your registration code.');
+        }
+
+        // Refuse to overwrite an existing manager — prevents corporation takeover
+        // even if the registration code or a verified session is leaked.
+        if ($corporation->manager_user_id) {
+            $request->session()->forget('manager_signup');
+            return redirect()->route('corporations.registration-pending', $corporation->id)
+                ->with('error', 'This corporation already has a manager account.');
         }
 
         $validated = $request->validate([
@@ -141,10 +172,31 @@ class CorporationRegistrationController extends Controller
 
         AuditLog::record('created', 'User', $user->id, "Manager user '{$user->email}' created for corporation '{$corporation->name}'");
 
+        // Consume the verification flag on success.
+        $request->session()->forget('manager_signup');
+
         // Log the user in
         auth()->login($user);
 
         return redirect()->route('corporate.dashboard')
             ->with('success', 'Welcome! Your corporate account has been set up.');
+    }
+
+    /**
+     * Whether the current session has a fresh verify-code proof bound to this corp.
+     * Window is 30 minutes — long enough for the legitimate signup, short enough
+     * to bound replay if the session is hijacked.
+     */
+    private function hasFreshVerification(Request $request, Corporation $corporation): bool
+    {
+        $proof = $request->session()->get('manager_signup');
+        if (! is_array($proof)) {
+            return false;
+        }
+        if (($proof['corporation_id'] ?? null) !== $corporation->id) {
+            return false;
+        }
+        $verifiedAt = (int) ($proof['verified_at'] ?? 0);
+        return $verifiedAt > 0 && (now()->timestamp - $verifiedAt) <= 30 * 60;
     }
 }

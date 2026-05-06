@@ -234,6 +234,18 @@ class AssessmentController extends Controller
 
     public function autoFill(Assessment $assessment)
     {
+        // QA-only utility: must never run in production. 404 (not 403) so the
+        // route appears non-existent to attackers.
+        abort_if(app()->environment('production'), 404);
+
+        // Tenant ownership: a user in tenant A cannot auto-fill tenant B's assessment.
+        $user = Auth::user();
+        if (! $user->isSuperAdmin()) {
+            if (! $user->corporation_id || $assessment->corporation_id !== $user->corporation_id) {
+                abort(404);
+            }
+        }
+
         $statuses = ['compliant', 'compliant', 'compliant', 'partially_compliant', 'partially_compliant', 'non_compliant', 'not_applicable'];
         $comments = [
             'compliant' => ['Control fully implemented and verified.', 'Evidence reviewed and approved.', 'Process documented and operational.'],
@@ -321,6 +333,20 @@ class AssessmentController extends Controller
 
     public function uploadEvidence(Request $request, Assessment $assessment, AssessmentItem $item)
     {
+        // Tenant ownership: only allow uploading to assessments the user can see.
+        $user = Auth::user();
+        if (! $user->isSuperAdmin()) {
+            if (! $user->corporation_id || $assessment->corporation_id !== $user->corporation_id) {
+                abort(404);
+            }
+        }
+
+        // Parent/child consistency: the item must belong to this assessment.
+        // 404 (not 403) so cross-assessment IDs are indistinguishable from missing.
+        if ($item->assessment_id !== $assessment->id) {
+            abort(404);
+        }
+
         $request->validate([
             'file' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
             'title' => 'required|string|max:255',

@@ -73,7 +73,13 @@ class AIService
                 $body['system'] = $system;
             }
 
-            $response = Http::withoutVerifying()
+            $response = Http::when(
+                app()->environment('local', 'testing'),
+                // Laragon's local CA bundle does not chain to Anthropic's
+                // public cert. Skip verification only in local/testing —
+                // production must enforce TLS verification.
+                fn ($http) => $http->withoutVerifying(),
+            )
                 ->withHeaders([
                     'x-api-key' => config('services.anthropic.key'),
                     'anthropic-version' => self::API_VERSION,
@@ -690,8 +696,7 @@ PROMPT;
                         'media_type' => $contentType,
                         'data' => $content,
                     ]],
-                    ['type' => 'text', 'text' =>
-                        "The image above is the uploaded screenshot — analyze it as a security configuration screenshot.".$geminiBlock,
+                    ['type' => 'text', 'text' => 'The image above is the uploaded screenshot — analyze it as a security configuration screenshot.'.$geminiBlock,
                     ],
                 ];
             } else {
@@ -768,13 +773,13 @@ PROMPT;
         $limitations = trim((string) ($analysis['limitations'] ?? ''));
 
         return "\n\n--- Gemini Vision Preprocessing (advisory only, not ground truth) ---\n"
-            ."Visual Summary: ".($visualSummary !== '' ? $visualSummary : '(none)')."\n"
-            ."Extracted Text (OCR): ".($visibleText !== '' ? $visibleText : '(none)')."\n"
+            .'Visual Summary: '.($visualSummary !== '' ? $visualSummary : '(none)')."\n"
+            .'Extracted Text (OCR): '.($visibleText !== '' ? $visibleText : '(none)')."\n"
             ."Security Observations:\n".$observationsText."\n"
-            ."Document Type: ".$docType."\n"
-            ."Confidence: ".$confidence."\n"
-            ."Limitations: ".($limitations !== '' ? $limitations : '(none)')."\n"
-            ."--- End Gemini Preprocessing ---";
+            .'Document Type: '.$docType."\n"
+            .'Confidence: '.$confidence."\n"
+            .'Limitations: '.($limitations !== '' ? $limitations : '(none)')."\n"
+            .'--- End Gemini Preprocessing ---';
     }
 
     /**

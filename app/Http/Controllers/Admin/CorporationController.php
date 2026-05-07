@@ -45,10 +45,14 @@ class CorporationController extends Controller
         $corporation->load(['manager', 'users', 'registrations']);
 
         return Inertia::render('admin/corporations/show', [
-            'corporation' => $corporation,
+            // super_admin admin view legitimately needs the registration code
+            // and manager username; the model hides them globally so we
+            // explicitly opt this gated view back in. Manager password is
+            // never exposed — only a "passwordGenerated" boolean.
+            'corporation' => $corporation->makeVisible(['registration_code', 'manager_username']),
             'managerCredentials' => [
                 'username' => $corporation->manager_username,
-                'passwordGenerated' => !is_null($corporation->manager_password),
+                'passwordGenerated' => ! is_null($corporation->manager_password),
             ],
         ]);
     }
@@ -65,7 +69,7 @@ class CorporationController extends Controller
 
         // 2. Pull contact details from the registration request
         $registration = $corporation->registrations()->latest()->first();
-        $managerName  = $registration?->contact_name  ?? "{$corporation->name} Manager";
+        $managerName = $registration?->contact_name ?? "{$corporation->name} Manager";
         $managerEmail = $registration?->contact_email ?? $corporation->email;
 
         // 3. Check if a manager user already exists for this email
@@ -80,11 +84,11 @@ class CorporationController extends Controller
         $tempPassword = bin2hex(random_bytes(8));
 
         $manager = User::create([
-            'name'                   => $managerName,
-            'email'                  => $managerEmail,
-            'password'               => bcrypt($tempPassword),
-            'role'                   => User::ROLE_ADMIN,
-            'corporation_id'         => $corporation->id,
+            'name' => $managerName,
+            'email' => $managerEmail,
+            'password' => bcrypt($tempPassword),
+            'role' => User::ROLE_ADMIN,
+            'corporation_id' => $corporation->id,
             'is_corporation_manager' => true,
         ]);
         $manager->syncRoles([User::ROLE_ADMIN]);
@@ -122,7 +126,7 @@ class CorporationController extends Controller
 
     public function regenerateCode(Corporation $corporation)
     {
-        if (!$corporation->isApproved()) {
+        if (! $corporation->isApproved()) {
             return back()->with('error', 'Only approved corporations can have their code regenerated.');
         }
 

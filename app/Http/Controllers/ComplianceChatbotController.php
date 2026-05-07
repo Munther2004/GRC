@@ -9,6 +9,7 @@ use App\Models\Evidence;
 use App\Models\KriSnapshot;
 use App\Models\Risk;
 use App\Models\SecurityAudit;
+use App\Models\User;
 use App\Services\AIService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,12 +20,30 @@ use Inertia\Response;
 class ComplianceChatbotController extends Controller
 {
     /**
-     * Build a fresh context snapshot from live database data.
-     * Sensitive fields (passwords, tokens, emails) are never included.
+     * Roles allowed to see audit-log excerpts in chatbot context. Mirrors
+     * the audit-log review surface (super_admin / admin / auditor).
      */
-    private function buildContext(): array
+    private const AUDIT_LOG_ROLES = [
+        User::ROLE_SUPER_ADMIN,
+        User::ROLE_ADMIN,
+        User::ROLE_AUDITOR,
+    ];
+
+    /**
+     * Build a fresh context snapshot from live database data, scoped to
+     * the current user's tenant. Pre-fix this method ran every count and
+     * collection against the entire system, leaking other tenants' risk
+     * titles, audit log lines, and compliance metrics into the page prop
+     * and into the prompt sent to Anthropic.
+     */
+    private function buildContext(User $user): array
     {
-        $topRisks = Risk::whereIn('status', ['open', 'in_progress'])
+        $isReviewer = in_array($user->role, self::AUDIT_LOG_ROLES, true)
+            || $user->hasAnyRole(self::AUDIT_LOG_ROLES);
+
+        // Tenant-scoped Risk query.
+        $topRisks = $user->organisationScope(Risk::query())
+            ->whereIn('status', ['open', 'in_progress'])
             ->orderByRaw('likelihood * impact DESC')
             ->limit(5)
             ->get()
@@ -38,30 +57,95 @@ class ComplianceChatbotController extends Controller
                 'status' => $r->status,
             ]);
 
-        $longNonCompliant = Control::where('current_status', 'non_compliant')
+        // Long-non-compliant controls. Controls are global reference data,
+        // but a control's relevance to this tenant is decided by whether
+        // the tenant's most recent assessment flagged it. Restrict to
+        // controls that appear in this tenant's assessment_items.
+        $longNonCompliantQ = Control::where('current_status', 'non_compliant')
             ->where('is_active', true)
-            ->where('updated_at', '<', now()->subDays(30))
+            ->where('updated_at', '<', now()->subDays(30));
+
+        if (! $user->isSuperAdmin()) {
+            $corpId = $user->corporation_id;
+            $longNonCompliantQ->whereExists(function ($q) use ($corpId) {
+                $q->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from('assessment_items')
+                    ->join('assessments', 'assessments.id', '=', 'assessment_items.assessment_id')
+                    ->whereColumn('assessment_items.control_id', 'controls.id')
+                    ->where('assessments.corporation_id', $corpId);
+            });
+        }
+
+        $longNonCompliant = $longNonCompliantQ
             ->orderBy('updated_at')
             ->limit(20)
-            ->get(['control_id', 'title', 'updated_at'])
+            ->get(['id', 'control_id', 'title', 'updated_at'])
             ->map(fn ($c) => [
                 'name' => $c->control_id.': '.$c->title,
                 'days_non_compliant' => (int) now()->diffInDays($c->updated_at),
             ]);
 
-        $recentAuditLogs = AuditLog::latest()
-            ->limit(10)
-            ->get(['action', 'model_type', 'model_id', 'description', 'created_at'])
-            ->map(fn ($l) => [
-                'action' => $l->action,
-                'type' => $l->model_type,
-                'description' => $l->description,
-                'at' => $l->created_at->toDateTimeString(),
-            ]);
+        // Audit logs are sensitive — only reviewers see them. Non-reviewers
+        // get an empty list so the prompt never includes audit lines from
+        // their own tenant either (the audit-log review boundary applies
+        // to chatbot output as well).
+        $recentAuditLogs = $isReviewer
+            ? $this->scopedAuditLogs($user)
+            : collect();
 
-        $lastKri = KriSnapshot::latest('snapshot_date')->first();
+        // Risk count by tenant.
+        $totalOpenRisks = $user->organisationScope(Risk::query())
+            ->whereIn('status', ['open', 'in_progress'])
+            ->count();
 
-        $recentSecurityAudits = SecurityAudit::where('status', 'completed')
+        $overdueRisks = $user->organisationScope(Risk::query())
+            ->where('due_date', '<', now())
+            ->whereNotIn('status', ['closed'])
+            ->count();
+
+        $compliancePercentage = round(
+            $user->organisationScope(Assessment::query())->avg('compliance_percentage') ?? 0,
+            1,
+        );
+
+        $overdueAssessments = $user->organisationScope(Assessment::query())
+            ->where('status', '!=', 'completed')
+            ->whereNotNull('due_date')
+            ->where('due_date', '<', now())
+            ->count();
+
+        // Evidence: scope through parent assessment's tenant. Falls back
+        // to uploader's corp for evidence with no assessment context.
+        $applyEvidenceScope = function ($q) use ($user) {
+            if ($user->isSuperAdmin()) {
+                return $q;
+            }
+            $corpId = $user->corporation_id;
+
+            return $q->where(function ($outer) use ($corpId) {
+                $outer->whereHas('assessmentItem.assessment', fn ($a) => $a->where('corporation_id', $corpId))
+                    ->orWhere(function ($alt) use ($corpId) {
+                        $alt->whereDoesntHave('assessmentItem')
+                            ->whereHas('user', fn ($u) => $u->where('corporation_id', $corpId));
+                    });
+            });
+        };
+
+        $expiringEvidence = $applyEvidenceScope(Evidence::query())
+            ->whereNotNull('expiry_date')
+            ->whereBetween('expiry_date', [now()->toDateString(), now()->addDays(14)->toDateString()])
+            ->count();
+
+        $verdictCount = fn (?string $verdict) => $applyEvidenceScope(Evidence::query())
+            ->when($verdict !== null, fn ($q) => $q->where('ai_verdict', $verdict))
+            ->when($verdict === null, fn ($q) => $q->whereNull('ai_verdict'))
+            ->count();
+
+        // Security audits: corporation_id added in Phase 3 migration.
+        $auditScope = fn () => $user->organisationScope(SecurityAudit::query());
+
+        $recentSecurityAudits = $auditScope()
+            ->where('status', 'completed')
             ->latest('analyzed_at')
             ->limit(5)
             ->get(['id', 'file_name', 'compliance_score', 'critical_count', 'high_count', 'total_findings', 'analyzed_at'])
@@ -74,44 +158,47 @@ class ComplianceChatbotController extends Controller
                 'analyzed_at' => $a->analyzed_at?->toDateTimeString(),
             ]);
 
+        // KRI snapshots are platform-wide aggregates (no corporation_id).
+        // Only reviewers see them; everyone else gets null. This is a small
+        // scope reduction — KRI is a roll-up, not raw tenant data — but it
+        // still leaks platform-level posture if returned to every user.
+        $lastKri = $isReviewer ? KriSnapshot::latest('snapshot_date')->first() : null;
+
         return [
             'snapshot_taken_at' => now()->toDateTimeString(),
             'controls' => [
-                'total' => Control::where('is_active', true)->count(),
-                'compliant' => Control::where('current_status', 'compliant')->where('is_active', true)->count(),
-                'non_compliant' => Control::where('current_status', 'non_compliant')->where('is_active', true)->count(),
-                'partially_compliant' => Control::where('current_status', 'partially_compliant')->where('is_active', true)->count(),
-                'compliance_percentage' => round(Assessment::avg('compliance_percentage') ?? 0, 1),
+                // Counts of tenant-relevant controls (= controls assessed by
+                // this tenant) — for super_admin we keep the global numbers.
+                'total' => $this->scopedControlCount($user, fn ($q) => $q->where('controls.is_active', true)),
+                'compliant' => $this->scopedControlCount($user, fn ($q) => $q->where('controls.current_status', 'compliant')->where('controls.is_active', true)),
+                'non_compliant' => $this->scopedControlCount($user, fn ($q) => $q->where('controls.current_status', 'non_compliant')->where('controls.is_active', true)),
+                'partially_compliant' => $this->scopedControlCount($user, fn ($q) => $q->where('controls.current_status', 'partially_compliant')->where('controls.is_active', true)),
+                'compliance_percentage' => $compliancePercentage,
             ],
             'risks' => [
-                'total_open' => Risk::whereIn('status', ['open', 'in_progress'])->count(),
-                'overdue' => Risk::where('due_date', '<', now())->whereNotIn('status', ['closed'])->count(),
+                'total_open' => $totalOpenRisks,
+                'overdue' => $overdueRisks,
                 'top_5_highest_severity' => $topRisks,
             ],
             'controls_non_compliant_over_30_days' => $longNonCompliant,
             'assessments' => [
-                'overdue' => Assessment::where('status', '!=', 'completed')
-                    ->whereNotNull('due_date')
-                    ->where('due_date', '<', now())
-                    ->count(),
+                'overdue' => $overdueAssessments,
             ],
             'evidence' => [
-                'expiring_in_14_days' => Evidence::whereNotNull('expiry_date')
-                    ->whereBetween('expiry_date', [now()->toDateString(), now()->addDays(14)->toDateString()])
-                    ->count(),
+                'expiring_in_14_days' => $expiringEvidence,
                 'ai_verdict_summary' => [
-                    'adequate' => Evidence::where('ai_verdict', 'Adequate')->count(),
-                    'partially_adequate' => Evidence::where('ai_verdict', 'Partially Adequate')->count(),
-                    'insufficient' => Evidence::where('ai_verdict', 'Insufficient')->count(),
-                    'not_yet_reviewed' => Evidence::whereNull('ai_verdict')->count(),
+                    'adequate' => $verdictCount('Adequate'),
+                    'partially_adequate' => $verdictCount('Partially Adequate'),
+                    'insufficient' => $verdictCount('Insufficient'),
+                    'not_yet_reviewed' => $verdictCount(null),
                 ],
             ],
             'recent_audit_logs' => $recentAuditLogs,
             'security_audits' => [
-                'total_completed' => SecurityAudit::where('status', 'completed')->count(),
-                'in_progress' => SecurityAudit::whereIn('status', ['pending', 'analyzing'])->count(),
-                'critical_findings_total' => (int) SecurityAudit::sum('critical_count'),
-                'high_findings_total' => (int) SecurityAudit::sum('high_count'),
+                'total_completed' => $auditScope()->where('status', 'completed')->count(),
+                'in_progress' => $auditScope()->whereIn('status', ['pending', 'analyzing'])->count(),
+                'critical_findings_total' => (int) $auditScope()->sum('critical_count'),
+                'high_findings_total' => (int) $auditScope()->sum('high_count'),
                 'recent' => $recentSecurityAudits,
             ],
             'last_kri_snapshot' => $lastKri ? [
@@ -128,13 +215,73 @@ class ComplianceChatbotController extends Controller
                 'total_controls' => $lastKri->total_controls,
                 'compliant_controls' => $lastKri->compliant_controls,
             ] : null,
-            'current_user_role' => Auth::user()->role,
+            'current_user_role' => $user->role,
         ];
+    }
+
+    /**
+     * Audit-log selection scoped to the user's tenant. The audit_logs
+     * table currently has no corporation_id column, so we filter by the
+     * acting user's corporation when their user_id is recorded. super_admin
+     * sees everything.
+     */
+    private function scopedAuditLogs(User $user)
+    {
+        $q = AuditLog::query()->latest()->limit(10);
+
+        if (! $user->isSuperAdmin()) {
+            $corpId = $user->corporation_id;
+            // Only include audit log rows whose actor belongs to this
+            // tenant. Anonymous / system rows (user_id null) are excluded
+            // to avoid leaking platform-wide actions.
+            $q->whereExists(function ($sq) use ($corpId) {
+                $sq->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from('users')
+                    ->whereColumn('users.id', 'audit_logs.user_id')
+                    ->where('users.corporation_id', $corpId);
+            });
+        }
+
+        return $q
+            ->get(['action', 'model_type', 'model_id', 'description', 'created_at'])
+            ->map(fn ($l) => [
+                'action' => $l->action,
+                'type' => $l->model_type,
+                'description' => $l->description,
+                'at' => $l->created_at->toDateTimeString(),
+            ]);
+    }
+
+    /**
+     * Tenant-scoped control count: counts controls referenced by the
+     * caller's assessments. super_admin sees the full library counts.
+     */
+    private function scopedControlCount(User $user, callable $modifier): int
+    {
+        $q = Control::query();
+        $modifier($q);
+
+        if (! $user->isSuperAdmin()) {
+            $corpId = $user->corporation_id;
+            $q->whereExists(function ($sub) use ($corpId) {
+                $sub->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from('assessment_items')
+                    ->join('assessments', 'assessments.id', '=', 'assessment_items.assessment_id')
+                    ->whereColumn('assessment_items.control_id', 'controls.id')
+                    ->where('assessments.corporation_id', $corpId);
+            });
+        }
+
+        return $q->count();
     }
 
     public function index(): Response
     {
-        $context = $this->buildContext();
+        $user = Auth::user();
+        // Even on the GET-render path the context must be tenant-scoped:
+        // it ships in Inertia page props and would otherwise leak through
+        // the page payload regardless of what the React component renders.
+        $context = $this->buildContext($user);
 
         return Inertia::render('Chatbot/Index', [
             'context' => $context,
@@ -150,7 +297,8 @@ class ComplianceChatbotController extends Controller
             'history.*.content' => 'required|string|max:10000',
         ]);
 
-        $context = $this->buildContext();
+        $user = Auth::user();
+        $context = $this->buildContext($user);
 
         $ai = new AIService;
         $reply = $ai->complianceChatbot(

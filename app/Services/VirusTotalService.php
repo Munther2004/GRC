@@ -34,7 +34,7 @@ class VirusTotalService
     /**
      * Look up an existing VirusTotal report by SHA-256.
      *
-     * @return array<string, mixed>|null  data.attributes block, or null when VT has no record (404).
+     * @return array<string, mixed>|null data.attributes block, or null when VT has no record (404).
      */
     public function getFileReportByHash(string $sha256): ?array
     {
@@ -42,7 +42,10 @@ class VirusTotalService
 
         try {
             $response = Http::timeout($this->timeout())
-                ->withoutVerifying()
+                ->when(
+                    app()->environment('local', 'testing'),
+                    fn ($http) => $http->withoutVerifying(),
+                )
                 ->withHeaders(['x-apikey' => $apiKey])
                 ->get(self::API_BASE."/files/{$sha256}");
         } catch (\Throwable $e) {
@@ -97,7 +100,10 @@ class VirusTotalService
             }
 
             $response = Http::timeout($this->timeout())
-                ->withoutVerifying()
+                ->when(
+                    app()->environment('local', 'testing'),
+                    fn ($http) => $http->withoutVerifying(),
+                )
                 ->withHeaders(['x-apikey' => $apiKey])
                 ->attach('file', $contents, basename($absolutePath))
                 ->post(self::API_BASE.'/files');
@@ -145,7 +151,10 @@ class VirusTotalService
 
         try {
             $response = Http::timeout($this->timeout())
-                ->withoutVerifying()
+                ->when(
+                    app()->environment('local', 'testing'),
+                    fn ($http) => $http->withoutVerifying(),
+                )
                 ->withHeaders(['x-apikey' => $apiKey])
                 ->get(self::API_BASE."/analyses/{$analysisId}");
         } catch (\Throwable $e) {

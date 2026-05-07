@@ -21,19 +21,12 @@ class ControlStatusRequestController extends Controller
     {
         $user = Auth::user();
 
-        $base = ControlStatusRequest::with(['control.framework', 'requester', 'evidence'])
+        // Phase 3 added control_status_requests.corporation_id, so we can
+        // use the canonical organisationScope primitive instead of joining
+        // through the requester. Same effect, simpler index plan.
+        $base = $user->organisationScope(ControlStatusRequest::query())
+            ->with(['control.framework', 'requester', 'evidence'])
             ->where('status', 'pending');
-
-        // Tenant scope: super_admin sees all; otherwise restrict to requests
-        // raised by users in the reviewer's own corporation.
-        if (! $user->isSuperAdmin()) {
-            if (! $user->corporation_id) {
-                $base->whereRaw('1 = 0');
-            } else {
-                $corpId = $user->corporation_id;
-                $base->whereHas('requester', fn ($q) => $q->where('corporation_id', $corpId));
-            }
-        }
 
         $requests = $base
             ->latest()
@@ -54,7 +47,11 @@ class ControlStatusRequestController extends Controller
                     'description' => $r->evidence->description,
                     'file_name' => $r->evidence->file_name,
                     'file_type' => $r->evidence->file_type ?? 'application/octet-stream',
-                    'file_path' => $r->evidence->file_path,
+                    // file_path used to leak storage paths to all reviewers.
+                    // The UI calls evidence.download by id, so the path is
+                    // never needed in the prop. Keep a safe boolean for
+                    // "is there a file on disk" if/when a UI needs it.
+                    'has_file' => ! empty($r->evidence->file_path),
                     'status' => $r->evidence->status,
                     'expiry_date' => $r->evidence->expiry_date,
                     'is_expired' => (bool) $r->evidence->is_expired,
@@ -101,6 +98,9 @@ class ControlStatusRequestController extends Controller
         $statusRequest = ControlStatusRequest::create([
             'control_id' => $control->id,
             'requested_by' => Auth::id(),
+            // Tenant-stamp at creation. Reviewers' tenant scope checks
+            // depend on this field being populated.
+            'corporation_id' => Auth::user()?->corporation_id,
             'requested_status' => $request->input('new_status'),
             'current_status' => $control->current_status,
             'justification' => $request->input('justification'),
@@ -192,6 +192,8 @@ class ControlStatusRequestController extends Controller
 
     public function approve(Request $request, ControlStatusRequest $statusRequest)
     {
+        $this->authorizeStatusRequestAccess($statusRequest);
+
         $request->validate(['notes' => 'nullable|string|max:2000']);
 
         if ($statusRequest->status !== 'pending') {
@@ -241,6 +243,8 @@ class ControlStatusRequestController extends Controller
 
     public function reject(Request $request, ControlStatusRequest $statusRequest)
     {
+        $this->authorizeStatusRequestAccess($statusRequest);
+
         $request->validate(['notes' => 'nullable|string|max:2000']);
 
         if ($statusRequest->status !== 'pending') {
@@ -293,6 +297,8 @@ class ControlStatusRequestController extends Controller
 
     public function reviewEvidence(Request $request, ControlStatusRequest $statusRequest)
     {
+        $this->authorizeStatusRequestAccess($statusRequest);
+
         $request->validate([
             'decision' => 'required|in:accept,reject',
             'notes' => 'nullable|string|max:2000',
@@ -380,6 +386,32 @@ class ControlStatusRequestController extends Controller
     }
 
     // ── Helper ───────────────────────────────────────────────────────────────
+
+    /**
+     * Refuse the request unless the authenticated reviewer is in the
+     * status request's tenant. super_admin always passes. Backed by
+     * control_status_requests.corporation_id (Phase 3 migration), with a
+     * fallback to the requester's corporation for legacy rows.
+     */
+    private function authorizeStatusRequestAccess(ControlStatusRequest $statusRequest): void
+    {
+        $user = Auth::user();
+        if (! $user) {
+            abort(403);
+        }
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+
+        $reqCorpId = $statusRequest->corporation_id
+            ?? $statusRequest->requester?->corporation_id;
+
+        if ($reqCorpId === null
+            || (int) $reqCorpId !== (int) $user->corporation_id
+        ) {
+            abort(403);
+        }
+    }
 
     private function formatStatus(string $status): string
     {

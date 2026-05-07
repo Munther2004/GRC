@@ -28,6 +28,13 @@ class ApproveControlStatusRequest
             ? null
             : $statusRequest->requested_status;
 
+        // Tenant guard for the side-effect mutations below. Without this,
+        // approving one tenant's status request was deleting AI-risks and
+        // auto-closing remediation tasks across every other tenant that
+        // happened to reference the same global control.
+        $tenantId = $statusRequest->corporation_id
+            ?? $statusRequest->requester?->corporation_id;
+
         $control->update([
             'current_status' => $newStatus,
             'last_remediated_at' => now(),
@@ -53,8 +60,14 @@ class ApproveControlStatusRequest
         } elseif ($newStatus === 'compliant') {
             $engine->applyRule2ForControl($control, $oldStatus ?? '');
 
-            // Remove AI-generated risks linked to this control
-            $aiRisks = $control->risks()->where('auto_generated', true)->get();
+            // Remove AI-generated risks linked to this control — scoped to
+            // the approver's tenant. Risks belonging to other tenants stay
+            // intact even when the underlying control object is global.
+            $aiRiskQuery = $control->risks()->where('auto_generated', true);
+            if ($tenantId !== null) {
+                $aiRiskQuery->where('risks.corporation_id', $tenantId);
+            }
+            $aiRisks = $aiRiskQuery->get();
             $removedCount = $aiRisks->count();
             foreach ($aiRisks as $risk) {
                 $risk->controls()->detach();
@@ -68,10 +81,14 @@ class ApproveControlStatusRequest
                 );
             }
 
-            // Auto-close open / in-progress remediation tasks
-            $openTasks = RemediationTask::where('control_id', $control->id)
-                ->whereIn('status', ['open', 'in_progress'])
-                ->get();
+            // Auto-close open / in-progress remediation tasks — scoped to
+            // the approver's tenant.
+            $taskQuery = RemediationTask::where('control_id', $control->id)
+                ->whereIn('status', ['open', 'in_progress']);
+            if ($tenantId !== null) {
+                $taskQuery->where('corporation_id', $tenantId);
+            }
+            $openTasks = $taskQuery->get();
 
             foreach ($openTasks as $remTask) {
                 $remTask->update([

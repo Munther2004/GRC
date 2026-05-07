@@ -12,23 +12,23 @@ class CorporateDashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
+
         // Get corporation(s) managed by this user
         $managedCorporations = $user->managedCorporations()->get();
-        
+
         if ($managedCorporations->isEmpty()) {
             return redirect()->route('dashboard')->with('error', 'No corporations found.');
         }
-        
+
         // If user manages only one corporation, show that one
         $corporation = $managedCorporations->first();
-        
+
         $stats = [
             'total_users' => $corporation->users()->count(),
             'pending_approvals' => 0,
             'total_assessments' => 0,
         ];
-        
+
         return Inertia::render('corporate/dashboard', [
             'corporation' => $corporation->makeVisible('registration_code'),
             'stats' => $stats,
@@ -59,11 +59,11 @@ class CorporateDashboardController extends Controller
     public function companyDetails(Request $request)
     {
         $user = $request->user();
-        
+
         // Get managed corporation
         $corporation = $user->managedCorporations()->first();
-        
-        if (!$corporation) {
+
+        if (! $corporation) {
             return redirect()->route('corporate.dashboard')->with('error', 'No corporation found.');
         }
 
@@ -77,11 +77,11 @@ class CorporateDashboardController extends Controller
     public function teamMembers(Request $request)
     {
         $user = $request->user();
-        
+
         // Get managed corporation
         $corporation = $user->managedCorporations()->first();
-        
-        if (!$corporation) {
+
+        if (! $corporation) {
             return redirect()->route('corporate.dashboard')->with('error', 'No corporation found.');
         }
 

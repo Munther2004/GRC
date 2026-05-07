@@ -22,12 +22,29 @@ class Corporation extends Model
         'credentials_sent',
     ];
 
+    /**
+     * Sensitive attributes that must never be serialized into Inertia props
+     * or API responses. The corp-manager dashboard explicitly opts these
+     * back in via `makeVisible('registration_code')` after authorizing the
+     * viewer is the corporation's manager.
+     */
+    protected $hidden = [
+        'registration_code',
+        'manager_username',
+        'manager_password',
+    ];
+
     protected function casts(): array
     {
         return [
             'last_code_generated_at' => 'datetime',
             'approved_at' => 'datetime',
         ];
+    }
+
+    public function hasManager(): bool
+    {
+        return $this->manager_user_id !== null;
     }
 
     public function users()
@@ -52,20 +69,21 @@ class Corporation extends Model
             'registration_code' => $code,
             'last_code_generated_at' => now(),
         ]);
+
         return $code;
     }
 
     public function generateManagerCredentials(): array
     {
-        $username = 'mgr_' . strtolower(str_replace(' ', '_', $this->name)) . '_' . random_int(1000, 9999);
+        $username = 'mgr_'.strtolower(str_replace(' ', '_', $this->name)).'_'.random_int(1000, 9999);
         $tempPassword = bin2hex(random_bytes(8));
-        
+
         $this->update([
             'manager_username' => $username,
             'manager_password' => bcrypt($tempPassword),
             'credentials_sent' => false,
         ]);
-        
+
         return [
             'username' => $username,
             'password' => $tempPassword,
@@ -97,4 +115,3 @@ class Corporation extends Model
         ]);
     }
 }
-

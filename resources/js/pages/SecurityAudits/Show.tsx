@@ -32,7 +32,7 @@ interface Audit {
     file_name: string;
     file_type: string;
     file_size: number;
-    file_path: string | null;
+    has_file: boolean;
     latest_reputation_check: FileReputationCheck | null;
     status: 'pending' | 'analyzing' | 'completed' | 'failed';
     summary: string | null;
@@ -179,7 +179,7 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
             >
                 <CheckReputationButton
                     evidenceId={audit.id}
-                    hasFile={Boolean(audit.file_path)}
+                    hasFile={audit.has_file}
                     existingCheck={audit.latest_reputation_check}
                     routeName="admin.security-audits.reputation-check"
                     routeParamName="securityAudit"

@@ -12,6 +12,7 @@ use App\Models\Risk;
 use App\Services\AIRiskGenerator;
 use App\Services\AIService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -162,20 +163,39 @@ PROMPT;
             'plan_text' => 'required|string',
         ]);
 
+        $user = Auth::user();
+        if (! $user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        // Controls are global reference data, so any authenticated user
+        // can resolve a control by id. The tenant scope is applied to the
+        // risk and the assessment context that backs it.
         $control = Control::find($request->control_id);
         if (! $control) {
             return response()->json(['error' => 'Control not found'], 404);
         }
 
-        $risk = Risk::where('auto_generated', 1)
+        // Match an existing AI-generated risk for this control IN THE
+        // CALLER'S TENANT. Without organisationScope, this previously
+        // appended attacker-controlled remediation text to whichever
+        // tenant's risk happened to come first.
+        $risk = $user->organisationScope(Risk::query())
+            ->where('auto_generated', 1)
             ->where('source_control_id', $control->id)
             ->first();
 
         if (! $risk) {
-            // Find the most recent completed assessment that flagged this control as non/partial
+            // No risk yet — fall back to generating one from the caller's
+            // most recent completed assessment that flagged this control.
+            // organisationScope on AssessmentItem is applied via its parent
+            // Assessment's corporation_id.
             $item = AssessmentItem::where('control_id', $control->id)
                 ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
-                ->whereHas('assessment', fn ($q) => $q->where('status', 'completed'))
+                ->whereHas('assessment', function ($q) use ($user) {
+                    $q->where('status', 'completed');
+                    $user->organisationScope($q);
+                })
                 ->with('assessment')
                 ->latest()
                 ->first();
@@ -186,7 +206,8 @@ PROMPT;
 
             (new AIRiskGenerator)->generateRiskForControl($control, $item->assessment, $item->compliance_status);
 
-            $risk = Risk::where('auto_generated', 1)
+            $risk = $user->organisationScope(Risk::query())
+                ->where('auto_generated', 1)
                 ->where('source_control_id', $control->id)
                 ->first();
 
@@ -205,8 +226,22 @@ PROMPT;
 
     public function generateAssessmentSummary(Request $request, $assessmentId)
     {
-        $assessment = Assessment::with(['framework', 'items.control'])
-            ->findOrFail($assessmentId);
+        $user = Auth::user();
+        if (! $user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        // Tenant scope: refuse to summarize an assessment the caller
+        // cannot see. Previous code did Assessment::findOrFail() globally,
+        // letting any authenticated user request a summary of any tenant's
+        // assessment and ship that data to Claude.
+        $assessment = $user->organisationScope(
+            Assessment::with(['framework', 'items.control'])
+        )->whereKey($assessmentId)->first();
+
+        if (! $assessment) {
+            abort(404);
+        }
 
         $items = $assessment->items;
         $total = $items->count();
@@ -313,11 +348,23 @@ PROMPT;
     {
         $request->validate(['evidence_id' => 'required|integer|exists:evidence,id']);
 
+        $user = Auth::user();
+        if (! $user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
         $evidence = Evidence::with([
             'user',
             'assessmentItem.control',
             'assessmentItem.assessment.framework',
         ])->findOrFail($request->evidence_id);
+
+        // Tenant scope: evidence is owned indirectly through its
+        // assessmentItem -> assessment -> corporation_id. Refuse if the
+        // evidence's parent assessment is not in the caller's tenant.
+        if (! $this->evidenceVisibleToUser($evidence, $user)) {
+            abort(403);
+        }
 
         $item = $evidence->assessmentItem;
         $control = $item?->control;
@@ -434,5 +481,32 @@ PROMPT;
 
             return response()->json(['error' => 'Failed to review evidence'], 500);
         }
+    }
+
+    /**
+     * Decide whether the given user is allowed to act on the given evidence.
+     * super_admin sees everything. Otherwise the evidence's parent
+     * assessment (or, if none, parent control_id) must be in the caller's
+     * corporation. Returns false if no tenant linkage can be established.
+     */
+    private function evidenceVisibleToUser(Evidence $evidence, \App\Models\User $user): bool
+    {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        $assessment = $evidence->assessmentItem?->assessment;
+        if ($assessment !== null) {
+            return (int) $assessment->corporation_id === (int) $user->corporation_id;
+        }
+
+        // Evidence attached directly to a global Control with no assessment
+        // context: there is no tenant boundary on Control, so we conservatively
+        // require the uploader to be in the caller's tenant.
+        if ($evidence->user !== null && $evidence->user->corporation_id !== null) {
+            return (int) $evidence->user->corporation_id === (int) $user->corporation_id;
+        }
+
+        return false;
     }
 }

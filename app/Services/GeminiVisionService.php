@@ -100,10 +100,22 @@ class GeminiVisionService
 
         try {
             $response = Http::timeout(self::TIMEOUT_SECONDS)
-                ->withoutVerifying() // matches Laragon dev TLS handling used elsewhere
-                ->withHeaders(['Content-Type' => 'application/json'])
+                // TLS verification is enforced in production. In local/testing
+                // the Laragon CA bundle does not chain to public CAs, so we
+                // skip verification only there. Never disable verify in prod.
+                ->when(
+                    app()->environment('local', 'testing'),
+                    fn ($http) => $http->withoutVerifying(),
+                )
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    // Use header-based auth so the API key is never embedded
+                    // in the request URL (URLs end up in access logs / proxy
+                    // logs / error reports).
+                    'x-goog-api-key' => $apiKey,
+                ])
                 ->post(
-                    self::API_BASE."/{$model}:generateContent?key={$apiKey}",
+                    self::API_BASE."/{$model}:generateContent",
                     $this->buildRequestBody($apiMime, $base64),
                 );
         } catch (\Throwable $e) {
@@ -279,6 +291,7 @@ PROMPT;
             return $hint;
         }
         $ext = strtolower(pathinfo($absolutePath, PATHINFO_EXTENSION));
+
         return match ($ext) {
             'png' => 'image/png',
             'jpg', 'jpeg' => 'image/jpeg',

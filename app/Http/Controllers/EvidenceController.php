@@ -12,6 +12,7 @@ use App\Services\EvidenceFileExtractor;
 use App\Services\GeminiVisionService;
 use App\Services\RulesEngine;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -20,14 +21,37 @@ class EvidenceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Evidence::with([
+        $user = Auth::user();
+
+        // Tenant scope: a piece of evidence belongs to the caller's tenant
+        // when its parent assessment is in that tenant, OR (when there is no
+        // assessment context) when its uploader is in that tenant. Evidence
+        // has no corporation_id column today.
+        $applyTenantScope = function ($q) use ($user) {
+            if ($user && $user->isSuperAdmin()) {
+                return $q;
+            }
+            $corpId = $user?->corporation_id;
+
+            return $q->where(function ($outer) use ($corpId) {
+                $outer->whereHas('assessmentItem.assessment', fn ($a) => $a->where('corporation_id', $corpId))
+                    ->orWhere(function ($alt) use ($corpId) {
+                        // Direct-attached evidence (no assessment item): fall
+                        // back to uploader's corporation.
+                        $alt->whereDoesntHave('assessmentItem')
+                            ->whereHas('user', fn ($u) => $u->where('corporation_id', $corpId));
+                    });
+            });
+        };
+
+        $query = $applyTenantScope(Evidence::with([
             'user',
             'assessmentItem.control',
             'assessmentItem.assessment.framework',
             'assessmentItem.assessment.user',
             'control.framework',
             'latestReputationCheck',
-        ])
+        ]))
             ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
                 ->orWhere('file_name', 'like', "%{$request->search}%")
             )
@@ -43,17 +67,26 @@ class EvidenceController extends Controller
             ->paginate(20)
             ->withQueryString();
 
+        $statBase = fn () => $applyTenantScope(Evidence::query());
+
         $stats = [
-            'total' => Evidence::count(),
-            'pending' => Evidence::where('status', 'pending')->count(),
-            'approved' => Evidence::where('status', 'approved')->count(),
-            'rejected' => Evidence::where('status', 'rejected')->count(),
+            'total' => $statBase()->count(),
+            'pending' => $statBase()->where('status', 'pending')->count(),
+            'approved' => $statBase()->where('status', 'approved')->count(),
+            'rejected' => $statBase()->where('status', 'rejected')->count(),
         ];
+
+        // Assessment dropdown should only list assessments in the caller's
+        // tenant (it was previously global).
+        $assessmentsQuery = Assessment::where('status', 'completed')->orderBy('title');
+        if ($user && ! $user->isSuperAdmin()) {
+            $assessmentsQuery->where('corporation_id', $user->corporation_id);
+        }
 
         return Inertia::render('evidence/index', [
             'evidence' => $query,
             'frameworks' => Framework::where('is_active', true)->get(['id', 'name', 'short_name']),
-            'assessments' => Assessment::where('status', 'completed')->orderBy('title')->get(['id', 'title']),
+            'assessments' => $assessmentsQuery->get(['id', 'title']),
             'stats' => $stats,
             'filters' => $request->only(['search', 'status', 'framework_id', 'assessment_id']),
         ]);
@@ -61,6 +94,8 @@ class EvidenceController extends Controller
 
     public function approve(Evidence $evidence)
     {
+        $this->authorizeEvidenceAccess($evidence);
+
         $evidence->update(['status' => 'approved']);
 
         AuditLog::record(
@@ -77,6 +112,8 @@ class EvidenceController extends Controller
 
     public function reject(Evidence $evidence)
     {
+        $this->authorizeEvidenceAccess($evidence);
+
         $evidence->update(['status' => 'rejected']);
 
         AuditLog::record(
@@ -172,6 +209,8 @@ class EvidenceController extends Controller
 
     public function download(Evidence $evidence)
     {
+        $this->authorizeEvidenceAccess($evidence);
+
         if (! Storage::disk('public')->exists($evidence->file_path)) {
             abort(404, 'File not found.');
         }
@@ -181,6 +220,8 @@ class EvidenceController extends Controller
 
     public function destroy(Evidence $evidence)
     {
+        $this->authorizeEvidenceAccess($evidence);
+
         Storage::disk('public')->delete($evidence->file_path);
 
         $title = $evidence->title;
@@ -194,6 +235,8 @@ class EvidenceController extends Controller
 
     public function aiReview(Evidence $evidence)
     {
+        $this->authorizeEvidenceAccess($evidence);
+
         Log::info('aiReview called', ['evidence_id' => $evidence->id]);
 
         $evidence->load([
@@ -324,6 +367,42 @@ class EvidenceController extends Controller
         $this->recalculateLinkedAssessmentScore($evidence);
 
         return response()->json($result);
+    }
+
+    /**
+     * Refuse the request unless the authenticated user can act on this
+     * evidence record. Tenant boundary is the parent assessment's
+     * corporation, falling back to the uploader's corporation when there
+     * is no assessment context.
+     */
+    private function authorizeEvidenceAccess(Evidence $evidence): void
+    {
+        $user = Auth::user();
+        if (! $user) {
+            abort(403);
+        }
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+
+        $evidence->loadMissing(['assessmentItem.assessment', 'user']);
+        $assessmentCorpId = $evidence->assessmentItem?->assessment?->corporation_id;
+
+        if ($assessmentCorpId !== null) {
+            if ((int) $assessmentCorpId !== (int) $user->corporation_id) {
+                abort(403);
+            }
+
+            return;
+        }
+
+        // No parent assessment — fall back to uploader's corporation.
+        $uploaderCorpId = $evidence->user?->corporation_id;
+        if ($uploaderCorpId === null
+            || (int) $uploaderCorpId !== (int) $user->corporation_id
+        ) {
+            abort(403);
+        }
     }
 
     /**

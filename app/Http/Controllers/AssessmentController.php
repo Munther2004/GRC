@@ -124,6 +124,8 @@ class AssessmentController extends Controller
 
     public function show(Assessment $assessment)
     {
+        $this->authorizeAssessmentAccess($assessment);
+
         $assessment->load(['user', 'framework']);
 
         $items = AssessmentItem::with(['control', 'evidence'])
@@ -161,6 +163,8 @@ class AssessmentController extends Controller
 
     public function questionnaire(Assessment $assessment, Request $request)
     {
+        $this->authorizeAssessmentAccess($assessment);
+
         $assessment->load('framework');
 
         $page = max(1, (int) $request->get('page', 1));
@@ -207,6 +211,8 @@ class AssessmentController extends Controller
 
     public function saveAnswers(Request $request, Assessment $assessment)
     {
+        $this->authorizeAssessmentAccess($assessment);
+
         $validated = $request->validate([
             'answers' => 'required|array',
             'answers.*.id' => 'required|exists:assessment_items,id',
@@ -235,6 +241,24 @@ class AssessmentController extends Controller
 
     public function autoFill(Assessment $assessment)
     {
+        // QA utility — must never run in production. abort(404) hides the
+        // endpoint entirely from production attackers rather than 403 which
+        // confirms the route exists.
+        if (! app()->environment('local', 'testing', 'development')) {
+            abort(404);
+        }
+
+        // Even in dev, refuse to auto-fill an assessment the caller cannot see.
+        // Tenant scoping is the same primitive used everywhere else.
+        $user = Auth::user();
+        if (! $user
+            || ! $user->organisationScope(Assessment::query())
+                ->whereKey($assessment->id)
+                ->exists()
+        ) {
+            abort(403);
+        }
+
         $statuses = ['compliant', 'compliant', 'compliant', 'partially_compliant', 'partially_compliant', 'non_compliant', 'not_applicable'];
         $comments = [
             'compliant' => ['Control fully implemented and verified.', 'Evidence reviewed and approved.', 'Process documented and operational.'],
@@ -287,6 +311,8 @@ class AssessmentController extends Controller
 
     public function submit(Assessment $assessment)
     {
+        $this->authorizeAssessmentAccess($assessment);
+
         $assessment->recalculateCompliance();
         $assessment->recalculateEvidenceWeightedScore();
         $assessment->update(['status' => 'completed']);
@@ -322,6 +348,14 @@ class AssessmentController extends Controller
 
     public function uploadEvidence(Request $request, Assessment $assessment, AssessmentItem $item)
     {
+        $this->authorizeAssessmentAccess($assessment);
+
+        // Defense-in-depth: refuse if the item belongs to a different
+        // assessment than the one in the URL — IDs come from the path.
+        if ((int) $item->assessment_id !== (int) $assessment->id) {
+            abort(404);
+        }
+
         $request->validate([
             'file' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
             'title' => 'required|string|max:255',
@@ -359,6 +393,8 @@ class AssessmentController extends Controller
 
     public function exportPdf(Assessment $assessment)
     {
+        $this->authorizeAssessmentAccess($assessment);
+
         $assessment->load(['user', 'framework']);
 
         // SQL ORDER BY on `control_id` produces lexicographic order, which
@@ -476,6 +512,8 @@ class AssessmentController extends Controller
 
     public function destroy(Request $request, Assessment $assessment)
     {
+        $this->authorizeAssessmentAccess($assessment);
+
         $title = $assessment->title;
         $id = $assessment->id;
         $frameworkId = $assessment->framework_id;
@@ -654,5 +692,24 @@ class AssessmentController extends Controller
             : 'Assessment deleted. Control statuses have been reset.';
 
         return redirect()->route('assessments.index')->with('success', $message);
+    }
+
+    /**
+     * Refuse the request unless the authenticated user can see this
+     * assessment via tenant scope. super_admin sees everything; everyone
+     * else is bounded by their corporation_id.
+     */
+    private function authorizeAssessmentAccess(Assessment $assessment): void
+    {
+        $user = Auth::user();
+        if (! $user) {
+            abort(403);
+        }
+        $visible = $user->organisationScope(Assessment::query())
+            ->whereKey($assessment->id)
+            ->exists();
+        if (! $visible) {
+            abort(403);
+        }
     }
 }

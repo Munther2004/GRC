@@ -8,7 +8,6 @@ use App\Models\Evidence;
 use App\Models\Notification;
 use App\Models\Risk;
 use App\Models\SecurityAudit;
-use App\Models\SecurityAuditFinding;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,8 +26,19 @@ class SecurityAuditController extends Controller
 
     public function index(Request $request)
     {
-        $audits = SecurityAudit::with('user:id,name')
-            ->latest()
+        $user = Auth::user();
+
+        // security_audits.corporation_id was added in the Phase 3 migration.
+        // Use the canonical organisationScope primitive instead of joining
+        // through users — same effect, fewer indirection bugs, same column
+        // pattern as risks/assessments/remediation_tasks.
+        $base = $user
+            ? $user->organisationScope(SecurityAudit::query())
+            : SecurityAudit::query()->whereRaw('1 = 0');
+
+        $base = $base->with('user:id,name,corporation_id')->latest();
+
+        $audits = $base
             ->paginate(20)
             ->through(fn ($a) => [
                 'id' => $a->id,
@@ -48,13 +58,20 @@ class SecurityAuditController extends Controller
                 'user' => $a->user ? ['id' => $a->user->id, 'name' => $a->user->name] : null,
             ]);
 
+        // Stats use the same tenant scope as the list. Without scoping
+        // these, non-super_admin users would see global counts that include
+        // other corporations' audits.
+        $statsBase = fn () => $user
+            ? $user->organisationScope(SecurityAudit::query())
+            : SecurityAudit::query()->whereRaw('1 = 0');
+
         $stats = [
-            'total' => SecurityAudit::count(),
-            'completed' => SecurityAudit::where('status', 'completed')->count(),
-            'in_progress' => SecurityAudit::whereIn('status', ['pending', 'analyzing'])->count(),
-            'failed' => SecurityAudit::where('status', 'failed')->count(),
-            'critical_findings' => SecurityAudit::sum('critical_count'),
-            'high_findings' => SecurityAudit::sum('high_count'),
+            'total' => $statsBase()->count(),
+            'completed' => $statsBase()->where('status', 'completed')->count(),
+            'in_progress' => $statsBase()->whereIn('status', ['pending', 'analyzing'])->count(),
+            'failed' => $statsBase()->where('status', 'failed')->count(),
+            'critical_findings' => $statsBase()->sum('critical_count'),
+            'high_findings' => $statsBase()->sum('high_count'),
         ];
 
         return Inertia::render('SecurityAudits/Index', [
@@ -83,6 +100,9 @@ class SecurityAuditController extends Controller
 
         $audit = SecurityAudit::create([
             'user_id' => Auth::id(),
+            // Tenant-stamp the audit at creation. Backfill handles
+            // pre-migration rows; new uploads always carry it.
+            'corporation_id' => Auth::user()?->corporation_id,
             'file_name' => $file->getClientOriginalName(),
             'file_type' => $file->getClientMimeType(),
             'file_size' => $file->getSize(),
@@ -106,11 +126,13 @@ class SecurityAuditController extends Controller
 
     public function show(SecurityAudit $securityAudit)
     {
-        $securityAudit->load(['user:id,name', 'latestReputationCheck']);
+        $this->authorizeAuditAccess($securityAudit);
+
+        $securityAudit->load(['user:id,name,corporation_id', 'latestReputationCheck']);
 
         $findings = $securityAudit->findings()
             ->with(['control:id,control_id,title', 'risk:id,title'])
-            ->orderByRaw("FIELD(severity, 'critical','high','medium','low','info')")
+            ->orderByRaw($this->severityOrderRaw())
             ->get();
 
         return Inertia::render('SecurityAudits/Show', [
@@ -119,7 +141,10 @@ class SecurityAuditController extends Controller
                 'file_name' => $securityAudit->file_name,
                 'file_type' => $securityAudit->file_type,
                 'file_size' => $securityAudit->file_size,
-                'file_path' => $securityAudit->file_path,
+                // The raw storage path used to leak through this prop. The UI
+                // only needs to know whether a file exists (to decide whether
+                // a reputation-check button is enabled).
+                'has_file' => ! empty($securityAudit->file_path),
                 'status' => $securityAudit->status,
                 'latest_reputation_check' => $securityAudit->latestReputationCheck,
                 'summary' => $securityAudit->summary,
@@ -161,6 +186,8 @@ class SecurityAuditController extends Controller
 
     public function generateRisks(SecurityAudit $securityAudit)
     {
+        $this->authorizeAuditAccess($securityAudit);
+
         if (! $securityAudit->isCompleted()) {
             return back()->with('error', 'Audit must be completed before generating risks.');
         }
@@ -224,6 +251,8 @@ class SecurityAuditController extends Controller
 
     public function saveAsEvidence(Request $request, SecurityAudit $securityAudit)
     {
+        $this->authorizeAuditAccess($securityAudit);
+
         if (! $securityAudit->isCompleted()) {
             return back()->with('error', 'Audit must be completed before saving as evidence.');
         }
@@ -265,6 +294,8 @@ class SecurityAuditController extends Controller
 
     public function exportPdf(SecurityAudit $securityAudit)
     {
+        $this->authorizeAuditAccess($securityAudit);
+
         if (! $securityAudit->isCompleted()) {
             return back()->with('error', 'Audit must be completed before export.');
         }
@@ -283,6 +314,8 @@ class SecurityAuditController extends Controller
 
     public function destroy(SecurityAudit $securityAudit)
     {
+        $this->authorizeAuditAccess($securityAudit);
+
         $name = $securityAudit->file_name;
         $id = $securityAudit->id;
 
@@ -301,6 +334,56 @@ class SecurityAuditController extends Controller
 
         return redirect()->route('security-audits.index')
             ->with('success', 'Security audit deleted.');
+    }
+
+    /**
+     * Ensure the authenticated user is allowed to act on this audit.
+     * Now backed by security_audits.corporation_id (added in Phase 3).
+     * Falls back to the uploader's corporation only for legacy rows that
+     * the backfill could not populate (uploader had no corporation_id).
+     */
+    private function authorizeAuditAccess(SecurityAudit $audit): void
+    {
+        $user = Auth::user();
+        if (! $user) {
+            abort(403);
+        }
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+
+        $auditCorpId = $audit->corporation_id
+            ?? $audit->user?->corporation_id
+            ?? $audit->user()->value('corporation_id');
+
+        if ($auditCorpId === null
+            || (int) $auditCorpId !== (int) $user->corporation_id
+        ) {
+            abort(403);
+        }
+    }
+
+    /**
+     * Severity ordering expression. MySQL provides FIELD(); SQLite (used by
+     * the test suite) does not. Both produce the same logical ordering.
+     */
+    private function severityOrderRaw(): string
+    {
+        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        if ($driver === 'mysql' || $driver === 'mariadb') {
+            return "FIELD(severity, 'critical','high','medium','low','info')";
+        }
+
+        // Portable equivalent for SQLite/Postgres: synthesize the same order
+        // with a CASE expression. Matches the FIELD() ordinal exactly.
+        return "CASE severity
+                    WHEN 'critical' THEN 1
+                    WHEN 'high' THEN 2
+                    WHEN 'medium' THEN 3
+                    WHEN 'low' THEN 4
+                    WHEN 'info' THEN 5
+                    ELSE 6
+                END";
     }
 
     private function buildPdf(SecurityAudit $securityAudit)

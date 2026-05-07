@@ -148,6 +148,8 @@ class RiskController extends Controller
 
     public function show(Risk $risk)
     {
+        $this->authorizeRiskAccess($risk);
+
         $risk->load(['user', 'sourceControl.framework', 'treatmentPlans']);
 
         $linkedControls = $risk->controls()
@@ -209,6 +211,8 @@ class RiskController extends Controller
 
     public function edit(Risk $risk)
     {
+        $this->authorizeRiskAccess($risk);
+
         return Inertia::render('risks/edit', [
             'risk' => array_merge($risk->toArray(), [
                 'risk_score' => $risk->risk_score,
@@ -222,6 +226,8 @@ class RiskController extends Controller
 
     public function update(Request $request, Risk $risk)
     {
+        $this->authorizeRiskAccess($risk);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -254,6 +260,8 @@ class RiskController extends Controller
 
     public function destroy(Risk $risk)
     {
+        $this->authorizeRiskAccess($risk);
+
         $title = $risk->title;
         $id = $risk->id;
 
@@ -300,6 +308,8 @@ class RiskController extends Controller
 
     public function linkControl(Request $request, Risk $risk)
     {
+        $this->authorizeRiskAccess($risk);
+
         $request->validate(['control_id' => 'required|exists:controls,id']);
 
         $risk->controls()->syncWithoutDetaching([
@@ -318,6 +328,8 @@ class RiskController extends Controller
 
     public function unlinkControl(Request $request, Risk $risk)
     {
+        $this->authorizeRiskAccess($risk);
+
         $request->validate(['control_id' => 'required|exists:controls,id']);
 
         $risk->controls()->detach($request->control_id);
@@ -333,6 +345,25 @@ class RiskController extends Controller
     }
 
     // ─── Helpers ────────────────────────────────────────────────────────────────
+
+    /**
+     * Refuse the request if the authenticated user cannot see this risk.
+     * super_admin sees everything; everyone else is bounded by their
+     * corporation_id via User::organisationScope.
+     */
+    private function authorizeRiskAccess(Risk $risk): void
+    {
+        $user = Auth::user();
+        if (! $user) {
+            abort(403);
+        }
+        $visible = $user->organisationScope(Risk::query())
+            ->whereKey($risk->id)
+            ->exists();
+        if (! $visible) {
+            abort(403);
+        }
+    }
 
     private function getCategories(): array
     {

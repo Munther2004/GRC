@@ -39,7 +39,7 @@ class RemediationTaskController extends Controller
                 END ASC
             ")
             ->orderByRaw('due_date IS NULL, due_date ASC')
-            ->orderByRaw("FIELD(priority, 'critical','high','medium','low')")
+            ->orderByRaw($this->priorityOrderRaw())
             ->paginate(25)
             ->withQueryString();
 
@@ -73,7 +73,11 @@ class RemediationTaskController extends Controller
                 'framework' => $c->framework->short_name,
             ]);
 
-        $assessments = Assessment::orderBy('created_at', 'desc')
+        // The dropdown previously returned every assessment globally. Scope
+        // to the caller's tenant so users can only attach a remediation task
+        // to one of their own assessments.
+        $assessments = $user->organisationScope(Assessment::query())
+            ->orderBy('created_at', 'desc')
             ->get(['id', 'title'])
             ->map(fn ($a) => ['id' => $a->id, 'title' => $a->title]);
 
@@ -122,6 +126,8 @@ class RemediationTaskController extends Controller
 
     public function update(Request $request, RemediationTask $task)
     {
+        $this->authorizeTaskAccess($task);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -153,6 +159,8 @@ class RemediationTaskController extends Controller
 
     public function destroy(RemediationTask $task)
     {
+        $this->authorizeTaskAccess($task);
+
         $title = $task->title;
         $id = $task->id;
         $task->delete();
@@ -170,6 +178,8 @@ class RemediationTaskController extends Controller
 
     public function complete(RemediationTask $task)
     {
+        $this->authorizeTaskAccess($task);
+
         if (in_array($task->status, ['completed', 'cancelled'])) {
             return redirect()->route('remediation-tasks.index')
                 ->with('error', 'Task is already closed.');
@@ -192,6 +202,45 @@ class RemediationTaskController extends Controller
     }
 
     // ── Helper ────────────────────────────────────────────────────────────────
+
+    /**
+     * Refuse the request unless the caller can see this task via tenant
+     * scope. remediation_tasks already has corporation_id, so this is a
+     * direct existence check rather than a join.
+     */
+    /**
+     * Priority ordering expression. MySQL has FIELD(); SQLite (test runner)
+     * doesn't. CASE produces the same logical ordinal on both.
+     */
+    private function priorityOrderRaw(): string
+    {
+        $driver = DB::connection()->getDriverName();
+        if ($driver === 'mysql' || $driver === 'mariadb') {
+            return "FIELD(priority, 'critical','high','medium','low')";
+        }
+
+        return "CASE priority
+                    WHEN 'critical' THEN 1
+                    WHEN 'high' THEN 2
+                    WHEN 'medium' THEN 3
+                    WHEN 'low' THEN 4
+                    ELSE 5
+                END";
+    }
+
+    private function authorizeTaskAccess(RemediationTask $task): void
+    {
+        $user = Auth::user();
+        if (! $user) {
+            abort(403);
+        }
+        $visible = $user->organisationScope(RemediationTask::query())
+            ->whereKey($task->id)
+            ->exists();
+        if (! $visible) {
+            abort(403);
+        }
+    }
 
     private function mapTask(RemediationTask $task): array
     {

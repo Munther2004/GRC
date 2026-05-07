@@ -330,17 +330,19 @@ export default function Questionnaire({
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button
-                            onClick={qaAutoFill}
-                            variant="outline"
-                            className="gap-2"
-                            style={{ borderColor: '#f76b15', color: '#f76b15' }}
-                            disabled={saving}
-                            title="QA: randomly fills all controls and submits the assessment"
-                        >
-                            <FlaskConical className="h-4 w-4" />
-                            QA Auto-Fill
-                        </Button>
+                        {import.meta.env.DEV && (
+                            <Button
+                                onClick={qaAutoFill}
+                                variant="outline"
+                                className="gap-2"
+                                style={{ borderColor: '#f76b15', color: '#f76b15' }}
+                                disabled={saving}
+                                title="QA: randomly fills all controls and submits the assessment"
+                            >
+                                <FlaskConical className="h-4 w-4" />
+                                QA Auto-Fill
+                            </Button>
+                        )}
                         <Button
                             onClick={submitAssessment}
                             className="gap-2"

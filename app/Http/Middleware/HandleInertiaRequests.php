@@ -57,8 +57,10 @@ class HandleInertiaRequests extends Middleware
                 $pendingApprovals = in_array($user->role, $reviewerRoles, true)
                     ? Cache::remember("badge:pending_approvals:{$cacheTag}", 60, function () use ($isSuper, $corpId) {
                         $q = ControlStatusRequest::where('status', 'pending');
+                        // Phase 3 added control_status_requests.corporation_id;
+                        // use the column directly instead of joining users.
                         if (! $isSuper) {
-                            $q->whereHas('requester', fn ($qq) => $qq->where('corporation_id', $corpId));
+                            $q->where('corporation_id', $corpId);
                         }
 
                         return $q->count();
@@ -83,13 +85,13 @@ class HandleInertiaRequests extends Middleware
                     30,
                     function () use ($isSuper, $user) {
                         $q = SecurityAudit::whereIn('status', ['pending', 'analyzing']);
-                        // SecurityAudit has no corporation_id column today; scope by
-                        // the uploading user's corporation via the existing user relation.
+                        // security_audits.corporation_id was added in Phase 3
+                        // of the security remediation. Use the column directly.
                         if (! $isSuper) {
                             if (! $user->corporation_id) {
                                 $q->whereRaw('1 = 0');
                             } else {
-                                $q->whereHas('user', fn ($qq) => $qq->where('corporation_id', $user->corporation_id));
+                                $q->where('corporation_id', $user->corporation_id);
                             }
                         }
 

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ControlStatusRequest extends Model
 {
     protected $fillable = [
-        'control_id', 'requested_by', 'requested_status', 'current_status',
+        'control_id', 'requested_by', 'corporation_id', 'requested_status', 'current_status',
         'justification', 'status', 'reviewed_by', 'reviewed_at', 'notes',
     ];
 

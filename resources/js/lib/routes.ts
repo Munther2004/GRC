@@ -5,6 +5,9 @@ export const route = (name: string, params?: any): string => {
             : params;
 
     const routes: Record<string, string> = {
+        // Public
+        home: '/',
+
         // Dashboard
         dashboard: '/dashboard',
 

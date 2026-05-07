@@ -2325,12 +2325,12 @@ export function getTheme(name: string): Theme {
 export function applyTheme(theme: Theme): void {
     if (typeof document === 'undefined') return;
     const root = document.documentElement;
-    
+
     // Apply all CSS variables
     for (const [key, value] of Object.entries(theme.vars)) {
         root.style.setProperty(key, value);
     }
-    
+
     // Also apply to :root in a style element for better CSS specificity
     let styleElement = document.getElementById('grc-theme-style');
     if (!styleElement) {
@@ -2338,14 +2338,39 @@ export function applyTheme(theme: Theme): void {
         styleElement.id = 'grc-theme-style';
         document.head.appendChild(styleElement);
     }
-    
+
     // Build CSS variable declarations
     const cssVars = Object.entries(theme.vars)
         .map(([key, value]) => `${key}: ${value};`)
         .join('\n    ');
-    
+
     styleElement.textContent = `:root { ${cssVars} }`;
     root.setAttribute('data-theme', theme.name);
+
+    // Toggle the `dark` class so theme-aware assets (e.g. AppLogoIcon's
+    // dark/light swap) follow the actually-applied palette rather than the
+    // OS-level prefers-color-scheme.
+    if (isThemeDark(theme)) {
+        root.classList.add('dark');
+    } else {
+        root.classList.remove('dark');
+    }
+}
+
+function isThemeDark(theme: Theme): boolean {
+    const bg = theme.vars['--background'];
+    if (!bg) return theme.category === 'dark';
+    const m = bg.trim().match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (!m) return theme.category === 'dark';
+    const hex = m[1].length === 3
+        ? m[1].split('').map((c) => c + c).join('')
+        : m[1];
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    // Rec.601 luminance — anything below mid-grey counts as a dark surface.
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+    return luminance < 128;
 }
 
 export function applyThemeByName(name: string): void {

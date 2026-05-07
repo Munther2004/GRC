@@ -22,6 +22,7 @@ import {
     X,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import AppLogoIcon from '@/components/app-logo-icon';
 import { useAppearance } from '@/hooks/use-appearance';
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -492,7 +493,7 @@ function ComplianceOrrery() {
                     <circle r="22" fill="none" stroke="#B0E4CC" strokeWidth="0.5" opacity="0.6" />
                     <text
                         x="0" y="6" textAnchor="middle"
-                        fontSize="14" fontFamily="Cinzel, serif" fill="#091413"
+                        fontSize="14" fontFamily="Cinzel, serif" fill="var(--c-fg)"
                         letterSpacing="4" style={{ fontWeight: 600 }}
                     >
                         GRC
@@ -1170,19 +1171,6 @@ export default function Welcome() {
                     }}
                 />
 
-                {/* Announcement bar — shortened on mobile to stay one line at 390px. */}
-                <div
-                    className="relative z-30 flex h-9 items-center justify-center px-4 text-[11px]"
-                    style={{ background: 'var(--c-fg)', color: 'var(--c-bg)' }}
-                >
-                    <span className="truncate opacity-90 sm:hidden">
-                        ISO 27001 · NIST · OWASP · CIS
-                    </span>
-                    <span className="hidden truncate opacity-90 sm:inline">
-                        ISO 27001 · NIST 800-53 · OWASP ASVS · CIS — unified under one charter
-                    </span>
-                </div>
-
                 {/* ─── Nav ─── */}
                 <header
                     className="sticky top-0 z-30"
@@ -1195,12 +1183,7 @@ export default function Welcome() {
                 >
                     <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
                         <a href="/" className="flex items-center gap-3">
-                            <span
-                                className="flex h-8 w-8 items-center justify-center rounded-lg"
-                                style={{ background: 'var(--c-fg)', color: 'var(--c-bg)' }}
-                            >
-                                <Shield className="h-4 w-4" strokeWidth={1.8} />
-                            </span>
+                            <AppLogoIcon className="size-14" />
                             <span
                                 className="text-[12px] uppercase"
                                 style={{ color: 'var(--c-fg)', letterSpacing: '0.28em', fontWeight: 600 }}
@@ -1361,7 +1344,7 @@ export default function Welcome() {
                                     className="inline-block h-1.5 w-1.5 rounded-full"
                                     style={{ background: 'var(--c-accent)', animation: 'welcome-pulse 2s ease-in-out infinite' }}
                                 />
-                                Anno Securitatis · Twenty Twenty-Six
+                                Risk · Controls · Evidence — one ledger
                             </div>
 
                             <HeroTitle start={sealDone} />
@@ -1513,12 +1496,12 @@ export default function Welcome() {
                                 className="text-4xl tracking-[-0.02em] lg:text-5xl"
                                 style={{ color: 'var(--c-fg)', fontWeight: 500, lineHeight: 1.05 }}
                             >
-                                Eight standards.{' '}
+                                Five standards.{' '}
                                 <span style={{ color: 'var(--c-accent)', fontStyle: 'italic' }}>One orbit.</span>
                             </h2>
                             <p className="mt-6 max-w-md text-lg" style={{ color: 'var(--c-muted)' }}>
-                                ISO 27001, NIST 800-53, OWASP ASVS, and CIS Benchmarks share the platform's spine —
-                                with crosswalk paths to SOC 2, PCI DSS, GDPR, and HIPAA layered above.
+                                ISO 27001, ISO 27005, NIST 800-53, OWASP ASVS, and CIS Benchmarks share
+                                the platform's spine — one library, one yardstick, one ledger.
                             </p>
                             <div className="mt-8 flex items-center gap-3 text-xs" style={{ color: 'var(--c-muted)' }}>
                                 <ActivitySquare className="h-4 w-4" style={{ color: 'var(--c-accent)' }} />
@@ -1749,9 +1732,6 @@ export default function Welcome() {
                             }}
                         />
                         <div className="relative">
-                            <p className="mb-5 text-[11px] uppercase tracking-[0.5em]" style={{ color: 'var(--c-accent)' }}>
-                                Anno Domini · Twenty Twenty-Six
-                            </p>
                             <h2
                                 className="mx-auto max-w-3xl text-4xl tracking-[-0.02em] sm:text-5xl lg:text-6xl"
                                 style={{ color: 'var(--c-fg)', fontWeight: 500, lineHeight: 1.05 }}
@@ -1798,12 +1778,7 @@ export default function Welcome() {
                     <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-3">
                         <div className="md:col-span-2">
                             <div className="mb-3 flex items-center gap-3">
-                                <span
-                                    className="flex h-7 w-7 items-center justify-center rounded-lg"
-                                    style={{ background: 'var(--c-fg)', color: 'var(--c-bg)' }}
-                                >
-                                    <Shield className="h-3.5 w-3.5" strokeWidth={1.8} />
-                                </span>
+                                <AppLogoIcon className="size-16" />
                                 <span
                                     className="text-xs uppercase"
                                     style={{ color: 'var(--c-fg)', letterSpacing: '0.28em', fontWeight: 600 }}

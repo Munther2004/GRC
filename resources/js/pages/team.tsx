@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Code2, Shield, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Code2, ShieldCheck } from 'lucide-react';
+import AppLogoIcon from '@/components/app-logo-icon';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 const members = [
@@ -47,12 +48,7 @@ export default function Team() {
                 >
                     <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
                         <Link href="/" className="flex items-center gap-3">
-                            <span
-                                className="flex h-8 w-8 items-center justify-center rounded-lg"
-                                style={{ background: 'var(--foreground)', color: 'var(--background)' }}
-                            >
-                                <Shield className="h-4 w-4" strokeWidth={1.8} />
-                            </span>
+                            <AppLogoIcon className="size-20" />
                             <span className="text-[12px] uppercase" style={{ color: 'var(--foreground)', letterSpacing: '0.28em', fontWeight: 600 }}>
                                 GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Charter</span>
                             </span>

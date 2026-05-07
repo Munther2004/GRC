@@ -88,15 +88,31 @@
                     root.style.setProperty(k, v);
                 }
                 root.setAttribute('data-theme', name);
+                // Toggle the `dark` class so theme-aware assets (e.g. logo
+                // dark/light swap) follow the actually-applied theme rather
+                // than the OS-level prefers-color-scheme.
+                var bg = vars['--background'] || '#091413';
+                var hex = bg.replace('#', '');
+                if (hex.length === 3) hex = hex.split('').map(function (c) { return c + c; }).join('');
+                var r = parseInt(hex.slice(0, 2), 16);
+                var g = parseInt(hex.slice(2, 4), 16);
+                var b = parseInt(hex.slice(4, 6), 16);
+                var luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+                if (luminance < 128) {
+                    root.classList.add('dark');
+                } else {
+                    root.classList.remove('dark');
+                }
                 // Set fallback bg immediately so there's no flash
-                document.documentElement.style.backgroundColor = vars['--background'] || '#091413';
+                document.documentElement.style.backgroundColor = bg;
             })();
         </script>
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="icon" type="image/png" href="/logo-light.png" media="(prefers-color-scheme: light)">
+        <link rel="icon" type="image/png" href="/logo-dark.png" media="(prefers-color-scheme: dark)">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         <link rel="preconnect" href="https://fonts.googleapis.com">

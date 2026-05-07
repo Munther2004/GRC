@@ -159,12 +159,11 @@ export function AdminSidebar() {
                     )}
                     style={{ borderBottom: '1px solid var(--sidebar-border)' }}
                 >
-                    <div
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-                        style={{ background: 'var(--sidebar-foreground)', color: 'var(--sidebar)' }}
-                    >
-                        <Shield className="h-3.5 w-3.5" strokeWidth={1.8} />
-                    </div>
+                    <img
+                        src="/logo-dark.png"
+                        alt="GRC logo"
+                        className="h-14 w-14 shrink-0 object-contain"
+                    />
                     {!collapsed && (
                         <span className="flex-1 truncate text-[12px] uppercase" style={{ color: 'var(--sidebar-foreground)', letterSpacing: '0.28em', fontWeight: 600 }}>
                             GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Charter</span>

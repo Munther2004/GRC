@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Shield } from 'lucide-react';
+import AppLogoIcon from '@/components/app-logo-icon';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
@@ -43,12 +43,7 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
             >
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
                     <Link href={home()} className="flex items-center gap-3">
-                        <span
-                            className="flex h-8 w-8 items-center justify-center rounded-lg"
-                            style={{ background: 'var(--foreground)', color: 'var(--background)' }}
-                        >
-                            <Shield className="h-4 w-4" strokeWidth={1.8} />
-                        </span>
+                        <AppLogoIcon className="size-14" />
                         <span
                             className="text-[12px] uppercase"
                             style={{ color: 'var(--foreground)', letterSpacing: '0.28em', fontWeight: 600 }}
@@ -67,18 +62,10 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
                     <div className="flex flex-col gap-8">
                         {/* Wordmark + heading */}
                         <div className="flex flex-col items-center gap-5 text-center">
-                            <div
-                                className="flex h-12 w-12 items-center justify-center rounded-2xl"
-                                style={{
-                                    background: 'color-mix(in srgb, var(--primary) 8%, transparent)',
-                                    border: '1px solid color-mix(in srgb, var(--primary) 24%, transparent)',
-                                }}
-                            >
-                                <Shield className="h-5 w-5" style={{ color: 'var(--primary)' }} strokeWidth={1.6} />
-                            </div>
+                            <AppLogoIcon className="size-32" />
 
                             <span
-                                className="text-[10px] uppercase"
+                                className="-mt-4 text-[10px] uppercase"
                                 style={{ color: 'var(--primary)', letterSpacing: '0.4em' }}
                             >
                                 The Charter

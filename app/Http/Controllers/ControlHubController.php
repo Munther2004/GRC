@@ -3,15 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Control;
+use App\Models\ControlStatusHistory;
 use App\Models\Framework;
 use App\Services\GrcMetricsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ControlHubController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $tenantId = $user->isSuperAdmin() ? null : $user->corporation_id;
+
+        // Resolve effective control status from the per-tenant pivot when the
+        // viewer is tenant-scoped, otherwise read the legacy global field.
+        $statusExpr = $tenantId !== null
+            ? 'COALESCE(ccs.current_status, controls.current_status)'
+            : 'controls.current_status';
+
         $query = Control::with([
             'framework',
             'risks',
@@ -19,40 +30,52 @@ class ControlHubController extends Controller
             'assessmentItems.evidence',
             'directEvidence',
             'statusRequests' => fn ($q) => $q->where('status', 'pending')->with('requester')->limit(1),
+            'corporationStatuses' => fn ($q) => $tenantId !== null
+                ? $q->where('corporation_id', $tenantId)
+                : $q,
         ])
-            ->where('is_active', true)
+            ->select('controls.*')
+            ->where('controls.is_active', true);
+
+        if ($tenantId !== null) {
+            $query->leftJoin('corporation_control_statuses as ccs', function ($join) use ($tenantId) {
+                $join->on('ccs.control_id', '=', 'controls.id')
+                    ->where('ccs.corporation_id', '=', $tenantId);
+            });
+        }
+
         // Hide controls with no status, no risks, and no evidence
-            ->where(function ($q) {
-                $q->whereNotNull('current_status')
-                    ->orWhereHas('risks')
-                    ->orWhereHas('assessmentItems', fn ($aq) => $aq->whereHas('evidence'));
-            })
-            ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
-                ->orWhere('control_id', 'like', "%{$request->search}%")
-                ->orWhere('description', 'like', "%{$request->search}%")
-            )
-            ->when($request->status && $request->status !== 'all', function ($q) use ($request) {
+        $query->where(function ($q) use ($statusExpr) {
+            $q->whereRaw("{$statusExpr} IS NOT NULL")
+                ->orWhereHas('risks')
+                ->orWhereHas('assessmentItems', fn ($aq) => $aq->whereHas('evidence'));
+        })
+            ->when($request->search, fn ($q) => $q->where(function ($qq) use ($request) {
+                $qq->where('controls.title', 'like', "%{$request->search}%")
+                    ->orWhere('controls.control_id', 'like', "%{$request->search}%")
+                    ->orWhere('controls.description', 'like', "%{$request->search}%");
+            }))
+            ->when($request->status && $request->status !== 'all', function ($q) use ($request, $statusExpr) {
                 if ($request->status === 'not_set') {
-                    $q->whereNull('current_status');
+                    $q->whereRaw("{$statusExpr} IS NULL");
                 } else {
-                    $q->where('current_status', $request->status);
+                    $q->whereRaw("{$statusExpr} = ?", [$request->status]);
                 }
             })
-            ->when($request->framework && $request->framework !== 'all', fn ($q) => $q->where('framework_id', $request->framework)
+            ->when($request->framework && $request->framework !== 'all', fn ($q) => $q->where('controls.framework_id', $request->framework)
             )
-            ->orderBy('framework_id')
-            ->orderBy('control_id')
-            ->paginate(20)
-            ->withQueryString();
+            ->orderBy('controls.framework_id')
+            ->orderBy('controls.control_id');
 
-        $query->through(fn ($control) => $this->mapControl($control));
+        $page = $query->paginate(20)->withQueryString();
+        $page->through(fn ($control) => $this->mapControl($control, $tenantId));
 
         $frameworks = Framework::where('is_active', true)
             ->orderBy('short_name')
             ->get(['id', 'short_name', 'name']);
 
-        // Summary stats (unfiltered) — one SQL aggregate query via service
-        $cs = (new GrcMetricsService)->complianceSummary();
+        // Summary stats (unfiltered) — service resolves the per-tenant pivot
+        $cs = (new GrcMetricsService($user))->complianceSummary();
         $total = $cs['total_active'];
         $compliant = $cs['compliant'];
         $partiallyCompliant = $cs['partial'];
@@ -62,7 +85,7 @@ class ControlHubController extends Controller
         $compliancePct = (int) $cs['overall_pct'];
 
         return Inertia::render('controls/hub', [
-            'controls' => $query,
+            'controls' => $page,
             'frameworks' => $frameworks,
             'filters' => $request->only(['search', 'status', 'framework']),
             'stats' => compact('total', 'compliant', 'partiallyCompliant', 'nonCompliant', 'notApplicable', 'notSet', 'compliancePct'),
@@ -89,7 +112,7 @@ class ControlHubController extends Controller
 
     // ── Helpers ─────────────────────────────────────────────────────────────────
 
-    private function mapControl(Control $control): array
+    private function mapControl(Control $control, ?int $tenantId = null): array
     {
         $evidenceStatus = $this->getEvidenceStatus($control);
 
@@ -114,15 +137,26 @@ class ControlHubController extends Controller
         $latestHistory = $control->statusHistory->first();
         $pendingRequest = $control->statusRequests->first();
 
+        $tenantStatus = $control->corporationStatuses->first();
+        $effectiveStatus = $tenantId !== null
+            ? ($tenantStatus?->current_status ?? $control->current_status)
+            : $control->current_status;
+        $effectiveLastRemediated = $tenantId !== null
+            ? ($tenantStatus?->last_remediated_at ?? $control->last_remediated_at)
+            : $control->last_remediated_at;
+        $effectiveRemediationNotes = $tenantId !== null
+            ? ($tenantStatus?->remediation_notes ?? $control->remediation_notes)
+            : $control->remediation_notes;
+
         return [
             'id' => $control->id,
             'control_id' => $control->control_id,
             'title' => $control->title,
             'description' => $control->description,
             'category' => $control->category,
-            'current_status' => $control->current_status,
-            'last_remediated_at' => $control->last_remediated_at?->toDateTimeString(),
-            'remediation_notes' => $control->remediation_notes,
+            'current_status' => $effectiveStatus,
+            'last_remediated_at' => $effectiveLastRemediated?->toDateTimeString(),
+            'remediation_notes' => $effectiveRemediationNotes,
             'framework' => [
                 'id' => $control->framework->id,
                 'short_name' => $control->framework->short_name,

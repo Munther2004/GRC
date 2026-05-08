@@ -72,8 +72,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/executive-dashboard/pdf', [ExecutiveDashboardController::class, 'export'])->name('executive-dashboard.pdf');
     Route::get('/chatbot', [ComplianceChatbotController::class, 'index'])->name('chatbot.index');
     Route::post('/chatbot/chat', [ComplianceChatbotController::class, 'chat'])->name('chatbot.chat');
-    Route::get('/kri-snapshots', fn () => KriSnapshot::latest('snapshot_date')->limit(12)->get()->sortBy('snapshot_date')->values()
-    )->name('kri-snapshots.index');
+    Route::get('/kri-snapshots', function () {
+        $user = auth()->user();
+        $query = KriSnapshot::query();
+        if (! $user->isSuperAdmin()) {
+            $query->where('corporation_id', $user->corporation_id);
+        }
+
+        return $query->latest('snapshot_date')->limit(12)->get()->sortBy('snapshot_date')->values();
+    })->name('kri-snapshots.index');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');
     Route::get('/reports/executive-summary', [ExecutiveSummaryController::class, 'generate'])->name('reports.executive-summary');

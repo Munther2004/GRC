@@ -13,12 +13,11 @@ class TakeKriSnapshotJob implements ShouldQueue
 
     public function handle(): void
     {
-        $snapshot = KriSnapshot::takeSnapshot();
+        $count = KriSnapshot::takeSnapshots();
 
-        Log::info('KRI snapshot taken', [
-            'snapshot_date' => $snapshot->snapshot_date->toDateString(),
-            'compliance_percentage' => $snapshot->compliance_percentage,
-            'total_risks' => $snapshot->total_risks,
+        Log::info('KRI snapshots taken', [
+            'date' => now()->toDateString(),
+            'corporations' => $count,
         ]);
     }
 }

@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Models\KriSnapshot;
 use App\Models\Risk;
 use App\Models\RiskAppetite;
+use App\Models\User;
 use App\Services\GrcMetricsService;
 use App\Services\RiskMetricsService;
 use Illuminate\Support\Facades\Auth;
@@ -52,7 +53,17 @@ class DashboardController extends Controller
             'status' => $r->status,
         ]);
 
-        $recentActivity = AuditLog::latest()->limit(5)->get()->map(fn ($l) => [
+        // Audit log has no corporation_id of its own — scope through the
+        // actor's tenant by joining on user_id. super_admin sees the full feed.
+        $tenantUserIds = $user->isSuperAdmin()
+            ? null
+            : User::where('corporation_id', $user->corporation_id)->pluck('id');
+
+        $recentActivityQuery = AuditLog::query();
+        if ($tenantUserIds !== null) {
+            $recentActivityQuery->whereIn('user_id', $tenantUserIds);
+        }
+        $recentActivity = $recentActivityQuery->latest()->limit(5)->get()->map(fn ($l) => [
             'id' => $l->id,
             'description' => $l->description,
             'user_name' => $l->user_name,
@@ -62,7 +73,7 @@ class DashboardController extends Controller
 
         // Risk trend - group by month, using canonical thresholds
         $t = Risk::levelThresholds();
-        $trendData = Risk::selectRaw("DATE_FORMAT(created_at, '%b') as month,
+        $trendData = $scopedRisks()->selectRaw("DATE_FORMAT(created_at, '%b') as month,
         SUM(CASE WHEN likelihood * impact >= {$t['critical']} THEN 1 ELSE 0 END) as critical,
         SUM(CASE WHEN likelihood * impact >= {$t['high']}     AND likelihood * impact < {$t['critical']} THEN 1 ELSE 0 END) as high,
         SUM(CASE WHEN likelihood * impact >= {$t['medium']}   AND likelihood * impact < {$t['high']}     THEN 1 ELSE 0 END) as medium,
@@ -114,7 +125,7 @@ class DashboardController extends Controller
             ];
         }
 
-        $metricsService = new RiskMetricsService;
+        $metricsService = new RiskMetricsService($user);
         $riskMetrics = $metricsService->calculateRiskExposure();
         $healthScore = $metricsService->calculateHealthScore();
 
@@ -143,12 +154,23 @@ class DashboardController extends Controller
             'evidence_weighted_compliance' => $assessmentSummary['evidence_weighted_avg'],
         ];
 
-        $ruleAdjustments = AuditLog::where(function ($q) {
+        $ruleAdjustmentsQuery = AuditLog::where(function ($q) {
             $q->where('description', 'like', 'Rule 1:%')
                 ->orWhere('description', 'like', 'Rule 2:%');
-        })->where('created_at', '>=', now()->subDays(30))->count();
+        })->where('created_at', '>=', now()->subDays(30));
+        if ($tenantUserIds !== null) {
+            $ruleAdjustmentsQuery->whereIn('user_id', $tenantUserIds);
+        }
+        $ruleAdjustments = $ruleAdjustmentsQuery->count();
 
-        $kriSnapshots = KriSnapshot::latest('snapshot_date')
+        // KRI snapshots are stored per-tenant (`corporation_id` column).
+        // super_admin sees the platform-wide latest snapshots without scoping;
+        // tenant users get only their corporation's series.
+        $kriSnapshotQuery = KriSnapshot::query();
+        if (! $user->isSuperAdmin()) {
+            $kriSnapshotQuery->where('corporation_id', $user->corporation_id);
+        }
+        $kriSnapshots = $kriSnapshotQuery->latest('snapshot_date')
             ->limit(12)
             ->get()
             ->sortBy('snapshot_date')

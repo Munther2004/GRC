@@ -6,30 +6,105 @@ use App\Models\Assessment;
 use App\Models\Control;
 use App\Models\Evidence;
 use App\Models\Risk;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class RiskMetricsService
 {
+    public function __construct(private ?User $user = null) {}
+
+    private function scopeRisks()
+    {
+        return $this->user
+            ? $this->user->organisationScope(Risk::query())
+            : Risk::query();
+    }
+
+    private function scopeAssessments()
+    {
+        return $this->user
+            ? $this->user->organisationScope(Assessment::query())
+            : Assessment::query();
+    }
+
+    private function scopeEvidence()
+    {
+        // Evidence has no corporation_id column. Scope through the
+        // uploading user's corporation when the actor is tenant-bound.
+        $q = Evidence::query();
+        if (! $this->user || $this->user->isSuperAdmin()) {
+            return $q;
+        }
+        $corpId = $this->user->corporation_id;
+
+        return $q->whereExists(function ($sub) use ($corpId) {
+            $sub->select(DB::raw(1))
+                ->from('users')
+                ->whereColumn('users.id', 'evidence.user_id')
+                ->where('users.corporation_id', $corpId);
+        });
+    }
+
+    /**
+     * Aggregate control statuses, resolving each row's effective status from
+     * the per-tenant pivot when the user is tenant-scoped, otherwise reading
+     * the legacy global controls.current_status.
+     *
+     * @param  array<string,string>  $expressions  alias => raw SQL using {status} placeholder
+     */
+    private function controlStatusAggregate(array $expressions, bool $onlyActive = false): object
+    {
+        $tenantId = $this->user && ! $this->user->isSuperAdmin()
+            ? $this->user->corporation_id
+            : null;
+
+        $statusExpr = $tenantId !== null
+            ? 'COALESCE(ccs.current_status, controls.current_status)'
+            : 'controls.current_status';
+
+        $query = DB::table('controls');
+        if ($onlyActive) {
+            $query->where('controls.is_active', true);
+        }
+        if ($tenantId !== null) {
+            $query->leftJoin('corporation_control_statuses as ccs', function ($join) use ($tenantId) {
+                $join->on('ccs.control_id', '=', 'controls.id')
+                    ->where('ccs.corporation_id', '=', $tenantId);
+            });
+        }
+
+        $select = [];
+        foreach ($expressions as $alias => $expr) {
+            $clause = str_replace('{status}', $statusExpr, $expr);
+            $select[] = "COUNT(CASE WHEN {$clause} THEN 1 END) AS {$alias}";
+        }
+
+        return $query->selectRaw(implode(', ', $select))->first();
+    }
+
     /**
      * Calculate the overall risk exposure index based on control compliance
      * and risk scores across the portfolio.
      */
     public function calculateRiskExposure(): array
     {
-        $totalControls = Control::whereNotNull('current_status')
-            ->where('current_status', '!=', 'not_applicable')
-            ->count();
+        $row = $this->controlStatusAggregate([
+            'applicable' => "{status} IS NOT NULL AND {status} != 'not_applicable'",
+            'non_compliant' => "{status} = 'non_compliant'",
+            'partial' => "{status} = 'partially_compliant'",
+        ]);
 
-        $nonCompliant = Control::where('current_status', 'non_compliant')->count();
-        $partialCompliant = Control::where('current_status', 'partially_compliant')->count();
+        $totalControls = (int) ($row->applicable ?? 0);
+        $nonCompliant = (int) ($row->non_compliant ?? 0);
+        $partialCompliant = (int) ($row->partial ?? 0);
 
         $riskExposure = $totalControls > 0
             ? round((($nonCompliant * 1.0 + $partialCompliant * 0.5) / $totalControls) * 100, 1)
             : 0;
 
-        $avgRiskScore = round(Risk::avg(DB::raw('likelihood * impact')) ?? 0, 1);
-        $totalRisks = Risk::count();
-        $criticalRisks = Risk::where('likelihood', '>=', 4)->where('impact', '>=', 4)->count();
+        $avgRiskScore = round($this->scopeRisks()->avg(DB::raw('likelihood * impact')) ?? 0, 1);
+        $totalRisks = $this->scopeRisks()->count();
+        $criticalRisks = $this->scopeRisks()->where('likelihood', '>=', 4)->where('impact', '>=', 4)->count();
 
         return [
             'risk_exposure' => $riskExposure,
@@ -52,45 +127,52 @@ class RiskMetricsService
     public function calculateHealthScore(): array
     {
         // Component 1 — compliance (40 pts)
-        $evidenceWeighted = Assessment::where('status', 'completed')
+        $evidenceWeighted = $this->scopeAssessments()
+            ->where('status', 'completed')
             ->whereNotNull('evidence_weighted_score')
             ->avg('evidence_weighted_score');
 
         if ($evidenceWeighted !== null) {
             $compliancePts = ($evidenceWeighted / 100) * 40;
         } else {
-            // Fall back to self-assessed
-            $applicable = Control::where('is_active', true)->where('current_status', '!=', 'not_applicable');
-            $total = (clone $applicable)->count();
-            $compliant = (clone $applicable)->where('current_status', 'compliant')->count();
-            $partial = (clone $applicable)->where('current_status', 'partially_compliant')->count();
+            // Fall back to self-assessed (per-tenant via the status pivot)
+            $row = $this->controlStatusAggregate([
+                'applicable' => "{status} IS NOT NULL AND {status} != 'not_applicable'",
+                'compliant' => "{status} = 'compliant'",
+                'partial' => "{status} = 'partially_compliant'",
+            ], onlyActive: true);
+            $total = (int) ($row->applicable ?? 0);
+            $compliant = (int) ($row->compliant ?? 0);
+            $partial = (int) ($row->partial ?? 0);
             $selfAssessed = $total > 0 ? (($compliant + ($partial * 0.5)) / $total) * 100 : 0;
             $compliancePts = ($selfAssessed / 100) * 40;
         }
 
         // Component 2 — critical risks (20 pts)
-        $criticalRisks = Risk::whereRaw('likelihood * impact >= 15')->count();
+        $criticalRisks = $this->scopeRisks()->whereRaw('likelihood * impact >= 15')->count();
         $criticalPts = max(0, 20 - ($criticalRisks * 5));
 
         // Component 3 — evidence approval rate (20 pts)
-        $totalEvidence = Evidence::count();
-        $approvedEvidence = Evidence::where('status', 'approved')->count();
+        $totalEvidence = $this->scopeEvidence()->count();
+        $approvedEvidence = $this->scopeEvidence()->where('status', 'approved')->count();
         $approvalRate = $totalEvidence > 0 ? ($approvedEvidence / $totalEvidence) * 100 : 100;
         $evidencePts = ($approvalRate / 100) * 20;
 
         // Component 4 — overdue items (10 pts)
-        $overdueAssessments = Assessment::where('status', '!=', 'completed')
+        $overdueAssessments = $this->scopeAssessments()
+            ->where('status', '!=', 'completed')
             ->whereNotNull('due_date')
             ->where('due_date', '<', now())
             ->count();
-        $overdueRisks = Risk::where('due_date', '<', now())
+        $overdueRisks = $this->scopeRisks()
+            ->where('due_date', '<', now())
             ->whereNotIn('status', ['closed'])
             ->count();
         $overdueItems = $overdueAssessments + $overdueRisks;
         $overduePts = max(0, 10 - ($overdueItems * 2));
 
         // Component 5 — open risks (10 pts)
-        $openRisks = Risk::whereIn('status', ['open', 'in_progress'])->count();
+        $openRisks = $this->scopeRisks()->whereIn('status', ['open', 'in_progress'])->count();
         $openRisksPts = max(0, 10 - ($openRisks * 0.5));
 
         $healthScore = round(

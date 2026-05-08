@@ -83,15 +83,19 @@ class AssessmentController extends Controller
             'compliance_percentage' => 0,
         ]);
 
-        // Pre-create assessment items, pre-filling from Controls Hub current_status if set
+        // Pre-create assessment items, pre-filling from Controls Hub
+        // current_status if set. Status now lives per-tenant — pull the
+        // current corporation's view, falling back to the global default.
         $controls = Control::where('framework_id', $validated['framework_id'])
             ->where('is_active', true)
             ->get();
 
         $prefilledCount = 0;
+        $tenantId = Auth::user()->corporation_id;
 
         foreach ($controls as $control) {
-            $prefilledStatus = match ($control->current_status) {
+            $effectiveStatus = $control->statusForCorporation($tenantId);
+            $prefilledStatus = match ($effectiveStatus) {
                 'compliant' => 'compliant',
                 'partially_compliant' => 'partially_compliant',
                 'non_compliant' => 'non_compliant',
@@ -99,7 +103,7 @@ class AssessmentController extends Controller
                 default => 'not_applicable',
             };
 
-            if ($control->current_status !== null) {
+            if ($effectiveStatus !== null) {
                 $prefilledCount++;
             }
 
@@ -187,8 +191,32 @@ class AssessmentController extends Controller
             ->where('compliance_status', '!=', 'not_applicable')
             ->count();
 
+        // Per-tenant: count controls that have an effective status for this
+        // assessment's corporation. Fall back to the global default when no
+        // tenant override exists.
+        $assessmentCorpId = $assessment->corporation_id;
         $prefilledCount = Control::where('framework_id', $assessment->framework_id)
-            ->whereNotNull('current_status')
+            ->where(function ($q) use ($assessmentCorpId) {
+                if ($assessmentCorpId !== null) {
+                    $q->whereExists(function ($sub) use ($assessmentCorpId) {
+                        $sub->select(\Illuminate\Support\Facades\DB::raw(1))
+                            ->from('corporation_control_statuses as ccs')
+                            ->whereColumn('ccs.control_id', 'controls.id')
+                            ->where('ccs.corporation_id', $assessmentCorpId)
+                            ->whereNotNull('ccs.current_status');
+                    })->orWhere(function ($qq) use ($assessmentCorpId) {
+                        $qq->whereNotNull('current_status')
+                            ->whereNotExists(function ($sub) use ($assessmentCorpId) {
+                                $sub->select(\Illuminate\Support\Facades\DB::raw(1))
+                                    ->from('corporation_control_statuses as ccs2')
+                                    ->whereColumn('ccs2.control_id', 'controls.id')
+                                    ->where('ccs2.corporation_id', $assessmentCorpId);
+                            });
+                    });
+                } else {
+                    $q->whereNotNull('current_status');
+                }
+            })
             ->count();
 
         return Inertia::render('assessments/questionnaire', [
@@ -440,8 +468,10 @@ class AssessmentController extends Controller
     }
 
     /**
-     * Sync every assessment item's compliance_status back to the controls table.
-     * Idempotent: skips creating a history record if one for this assessment already exists.
+     * Sync every assessment item's compliance_status back to the per-tenant
+     * control-status pivot. Idempotent — skips a history record if one for
+     * this assessment already exists. Falls back to the legacy global field
+     * when the assessment has no corporation context.
      */
     private function syncControlStatuses(Assessment $assessment): void
     {
@@ -449,13 +479,13 @@ class AssessmentController extends Controller
             ->where('assessment_id', $assessment->id)
             ->get();
 
-        // Fetch in one query which controls already have a history entry for this assessment
         $alreadySyncedControlIds = ControlStatusHistory::where('notes', "Synced from assessment #{$assessment->id}")
             ->pluck('control_id')
             ->flip()
             ->all();
 
         $now = now();
+        $tenantId = $assessment->corporation_id;
 
         foreach ($items as $item) {
             $control = $item->control;
@@ -464,15 +494,24 @@ class AssessmentController extends Controller
             }
 
             $newStatus = $item->compliance_status;
-            $oldStatus = $control->current_status;
+            $oldStatus = $control->statusForCorporation($tenantId);
 
-            $updates = ['current_status' => $newStatus];
-            if (in_array($newStatus, ['compliant', 'partially_compliant'])) {
-                $updates['last_remediated_at'] = $now;
+            if ($tenantId !== null) {
+                \App\Models\CorporationControlStatus::updateOrCreate(
+                    ['corporation_id' => $tenantId, 'control_id' => $control->id],
+                    [
+                        'current_status' => $newStatus,
+                        'last_remediated_at' => in_array($newStatus, ['compliant', 'partially_compliant']) ? $now : null,
+                    ]
+                );
+            } else {
+                $updates = ['current_status' => $newStatus];
+                if (in_array($newStatus, ['compliant', 'partially_compliant'])) {
+                    $updates['last_remediated_at'] = $now;
+                }
+                $control->update($updates);
             }
-            $control->update($updates);
 
-            // Idempotency: skip history record if already created for this assessment
             if (! isset($alreadySyncedControlIds[$control->id])) {
                 ControlStatusHistory::create([
                     'control_id' => $control->id,
@@ -567,10 +606,14 @@ class AssessmentController extends Controller
         Log::info("Deleted {$evidenceCount} evidence records linked to assessment #{$id}");
 
         // 5. Re-sync or reset control statuses based on the most recent
-        //    remaining assessment for the same framework.
+        //    remaining assessment for the same framework — scoped to the
+        //    deleted assessment's corporation, otherwise we'd touch other
+        //    tenants' status pivot rows.
+        $deletedCorpId = $assessment->corporation_id;
         $latestRemaining = Assessment::where('framework_id', $frameworkId)
             ->where('id', '!=', $assessment->id)
             ->where('status', '!=', 'deleting')
+            ->when($deletedCorpId !== null, fn ($q) => $q->where('corporation_id', $deletedCorpId))
             ->orderBy('created_at', 'desc')
             ->first();
 
@@ -593,13 +636,23 @@ class AssessmentController extends Controller
                 }
 
                 $newStatus = $rItem->compliance_status;
-                $oldStatus = $control->current_status;
+                $oldStatus = $control->statusForCorporation($deletedCorpId);
 
-                $updates = ['current_status' => $newStatus];
-                if (in_array($newStatus, ['compliant', 'partially_compliant'], true)) {
-                    $updates['last_remediated_at'] = $now;
+                if ($deletedCorpId !== null) {
+                    \App\Models\CorporationControlStatus::updateOrCreate(
+                        ['corporation_id' => $deletedCorpId, 'control_id' => $control->id],
+                        [
+                            'current_status' => $newStatus,
+                            'last_remediated_at' => in_array($newStatus, ['compliant', 'partially_compliant'], true) ? $now : null,
+                        ]
+                    );
+                } else {
+                    $updates = ['current_status' => $newStatus];
+                    if (in_array($newStatus, ['compliant', 'partially_compliant'], true)) {
+                        $updates['last_remediated_at'] = $now;
+                    }
+                    $control->update($updates);
                 }
-                $control->update($updates);
 
                 ControlStatusHistory::create([
                     'control_id' => $control->id,
@@ -633,16 +686,24 @@ class AssessmentController extends Controller
                 $resetCount++;
             }
         } else {
-            // No remaining assessment — clear every active control on this framework.
+            // No remaining assessment for this tenant — clear THIS tenant's
+            // pivot rows for the framework, leaving other tenants' state alone.
             $controls = Control::where('framework_id', $frameworkId)->get();
 
             foreach ($controls as $control) {
-                $oldStatus = $control->current_status;
+                $oldStatus = $control->statusForCorporation($deletedCorpId);
 
-                $control->update([
-                    'current_status' => null,
-                    'last_remediated_at' => null,
-                ]);
+                if ($deletedCorpId !== null) {
+                    \App\Models\CorporationControlStatus::where('corporation_id', $deletedCorpId)
+                        ->where('control_id', $control->id)
+                        ->delete();
+                } else {
+                    // Legacy global wipe (super_admin/no-tenant context only)
+                    $control->update([
+                        'current_status' => null,
+                        'last_remediated_at' => null,
+                    ]);
+                }
 
                 ControlStatusHistory::create([
                     'control_id' => $control->id,

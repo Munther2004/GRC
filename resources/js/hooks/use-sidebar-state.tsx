@@ -7,7 +7,8 @@
  * Desktop: persisted to localStorage["grc-sidebar-collapsed"].
  * Mobile : ephemeral, never persisted.
  */
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState  } from 'react';
+import type {ReactNode} from 'react';
 
 const STORAGE_KEY = 'grc-sidebar-collapsed';
 

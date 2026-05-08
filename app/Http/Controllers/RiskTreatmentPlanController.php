@@ -6,11 +6,14 @@ use App\Models\AuditLog;
 use App\Models\Risk;
 use App\Models\RiskTreatmentPlan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RiskTreatmentPlanController extends Controller
 {
     public function store(Request $request, Risk $risk)
     {
+        $this->authorizeRiskAccess($risk);
+
         $validated = $request->validate([
             'strategy' => 'required|in:mitigate,accept,transfer,avoid',
             'description' => 'required|string',
@@ -36,6 +39,7 @@ class RiskTreatmentPlanController extends Controller
 
     public function update(Request $request, Risk $risk, RiskTreatmentPlan $plan)
     {
+        $this->authorizeRiskAccess($risk);
         abort_if($plan->risk_id !== $risk->id, 403);
 
         $validated = $request->validate([
@@ -73,6 +77,7 @@ class RiskTreatmentPlanController extends Controller
 
     public function destroy(Risk $risk, RiskTreatmentPlan $plan)
     {
+        $this->authorizeRiskAccess($risk);
         abort_if($plan->risk_id !== $risk->id, 403);
 
         $plan->delete();
@@ -85,5 +90,20 @@ class RiskTreatmentPlanController extends Controller
         );
 
         return back()->with('success', 'Treatment plan deleted.');
+    }
+
+    /**
+     * super_admin can touch any risk; everyone else is confined to their
+     * corporation. Stops cross-tenant treatment-plan tampering by id-guessing.
+     */
+    private function authorizeRiskAccess(Risk $risk): void
+    {
+        $user = Auth::user();
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+        if ($risk->corporation_id !== $user->corporation_id) {
+            abort(403);
+        }
     }
 }

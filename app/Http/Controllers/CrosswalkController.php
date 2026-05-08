@@ -6,12 +6,16 @@ use App\Models\Control;
 use App\Models\ControlCrosswalk;
 use App\Models\Framework;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CrosswalkController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $tenantId = $user && ! $user->isSuperAdmin() ? $user->corporation_id : null;
+
         $frameworks = Framework::where('is_active', true)
             ->orderBy('short_name')
             ->get(['id', 'short_name', 'name']);
@@ -56,7 +60,7 @@ class CrosswalkController extends Controller
                     'control_id' => $entry->mappedControl->control_id,
                     'title' => $entry->mappedControl->title,
                     'framework' => $entry->mappedControl->framework->short_name,
-                    'current_status' => $entry->mappedControl->current_status,
+                    'current_status' => $entry->mappedControl->statusForCorporation($tenantId),
                 ],
             ];
             $mappingsByControl[$mid][] = [
@@ -69,7 +73,7 @@ class CrosswalkController extends Controller
                     'control_id' => $entry->primaryControl->control_id,
                     'title' => $entry->primaryControl->title,
                     'framework' => $entry->primaryControl->framework->short_name,
-                    'current_status' => $entry->primaryControl->current_status,
+                    'current_status' => $entry->primaryControl->statusForCorporation($tenantId),
                 ],
             ];
         }
@@ -81,7 +85,7 @@ class CrosswalkController extends Controller
             'category' => $c->category,
             'framework' => $c->framework->short_name,
             'framework_id' => $c->framework_id,
-            'current_status' => $c->current_status,
+            'current_status' => $c->statusForCorporation($tenantId),
             'mappings' => $mappingsByControl[$c->id] ?? [],
         ])->groupBy('framework')->toArray();
 

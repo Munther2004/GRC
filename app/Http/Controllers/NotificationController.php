@@ -56,6 +56,7 @@ class NotificationController extends Controller
 
     public function markRead(Notification $notification)
     {
+        $this->authorizeAccess($notification);
         $notification->update(['is_read' => true]);
 
         return back();
@@ -63,6 +64,7 @@ class NotificationController extends Controller
 
     public function markAsRead(Notification $notification): JsonResponse
     {
+        $this->authorizeAccess($notification);
         $notification->update(['is_read' => true]);
 
         return response()->json(['success' => true]);
@@ -89,6 +91,7 @@ class NotificationController extends Controller
 
     public function destroy(Notification $notification)
     {
+        $this->authorizeAccess($notification);
         $notification->delete();
 
         return back();
@@ -96,8 +99,23 @@ class NotificationController extends Controller
 
     public function destroyAll()
     {
-        Notification::query()->delete();
+        Notification::where(function ($q) {
+            $q->whereNull('user_id')
+                ->orWhere('user_id', auth()->id());
+        })->delete();
 
         return back();
+    }
+
+    /**
+     * A notification is visible to its addressee or to any user when broadcast
+     * (user_id IS NULL). Anything else is somebody else's row.
+     */
+    private function authorizeAccess(Notification $notification): void
+    {
+        $userId = auth()->id();
+        if ($notification->user_id !== null && $notification->user_id !== $userId) {
+            abort(403);
+        }
     }
 }

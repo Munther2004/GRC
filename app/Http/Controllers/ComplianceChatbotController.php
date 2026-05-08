@@ -158,11 +158,17 @@ class ComplianceChatbotController extends Controller
                 'analyzed_at' => $a->analyzed_at?->toDateTimeString(),
             ]);
 
-        // KRI snapshots are platform-wide aggregates (no corporation_id).
-        // Only reviewers see them; everyone else gets null. This is a small
-        // scope reduction — KRI is a roll-up, not raw tenant data — but it
-        // still leaks platform-level posture if returned to every user.
-        $lastKri = $isReviewer ? KriSnapshot::latest('snapshot_date')->first() : null;
+        // KRI snapshots are now stored per-tenant. super_admin sees the
+        // platform-wide latest row; tenant reviewers see their corporation's
+        // snapshot; everyone else gets null.
+        $lastKri = null;
+        if ($isReviewer) {
+            $kriQuery = KriSnapshot::latest('snapshot_date');
+            if (! $user->isSuperAdmin()) {
+                $kriQuery->where('corporation_id', $user->corporation_id);
+            }
+            $lastKri = $kriQuery->first();
+        }
 
         return [
             'snapshot_taken_at' => now()->toDateTimeString(),
@@ -170,9 +176,9 @@ class ComplianceChatbotController extends Controller
                 // Counts of tenant-relevant controls (= controls assessed by
                 // this tenant) — for super_admin we keep the global numbers.
                 'total' => $this->scopedControlCount($user, fn ($q) => $q->where('controls.is_active', true)),
-                'compliant' => $this->scopedControlCount($user, fn ($q) => $q->where('controls.current_status', 'compliant')->where('controls.is_active', true)),
-                'non_compliant' => $this->scopedControlCount($user, fn ($q) => $q->where('controls.current_status', 'non_compliant')->where('controls.is_active', true)),
-                'partially_compliant' => $this->scopedControlCount($user, fn ($q) => $q->where('controls.current_status', 'partially_compliant')->where('controls.is_active', true)),
+                'compliant' => $this->scopedControlCount($user, fn ($q) => $this->whereEffectiveStatus($q, $user, 'compliant')->where('controls.is_active', true)),
+                'non_compliant' => $this->scopedControlCount($user, fn ($q) => $this->whereEffectiveStatus($q, $user, 'non_compliant')->where('controls.is_active', true)),
+                'partially_compliant' => $this->scopedControlCount($user, fn ($q) => $this->whereEffectiveStatus($q, $user, 'partially_compliant')->where('controls.is_active', true)),
                 'compliance_percentage' => $compliancePercentage,
             ],
             'risks' => [
@@ -273,6 +279,37 @@ class ComplianceChatbotController extends Controller
         }
 
         return $q->count();
+    }
+
+    /**
+     * Filter controls by effective status, using the per-tenant pivot for
+     * tenant-scoped users and the legacy global field for super_admin.
+     */
+    private function whereEffectiveStatus($query, User $user, string $status)
+    {
+        if ($user->isSuperAdmin()) {
+            return $query->where('controls.current_status', $status);
+        }
+
+        $corpId = $user->corporation_id;
+
+        return $query->where(function ($q) use ($corpId, $status) {
+            $q->whereExists(function ($sub) use ($corpId, $status) {
+                $sub->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from('corporation_control_statuses as ccs')
+                    ->whereColumn('ccs.control_id', 'controls.id')
+                    ->where('ccs.corporation_id', $corpId)
+                    ->where('ccs.current_status', $status);
+            })->orWhere(function ($qq) use ($corpId, $status) {
+                $qq->where('controls.current_status', $status)
+                    ->whereNotExists(function ($sub) use ($corpId) {
+                        $sub->select(\Illuminate\Support\Facades\DB::raw(1))
+                            ->from('corporation_control_statuses as ccs2')
+                            ->whereColumn('ccs2.control_id', 'controls.id')
+                            ->where('ccs2.corporation_id', $corpId);
+                    });
+            });
+        });
     }
 
     public function index(): Response

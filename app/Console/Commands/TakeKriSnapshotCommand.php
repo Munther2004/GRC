@@ -21,30 +21,11 @@ class TakeKriSnapshotCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info('Taking KRI snapshot'.($date ? " for {$date}" : ' for today').'...');
+        $this->info('Taking per-corporation KRI snapshots'.($date ? " for {$date}" : ' for today').'...');
 
-        $snapshot = KriSnapshot::takeSnapshot($date);
+        $count = KriSnapshot::takeSnapshots($date);
 
-        $this->table(
-            ['Metric', 'Value'],
-            [
-                ['Snapshot Date',          $snapshot->snapshot_date->toDateString()],
-                ['Compliance %',           $snapshot->compliance_percentage.'%'],
-                ['Open Critical Risks',    $snapshot->open_risks_critical],
-                ['Open High Risks',        $snapshot->open_risks_high],
-                ['Open Medium Risks',      $snapshot->open_risks_medium],
-                ['Open Low Risks',         $snapshot->open_risks_low],
-                ['Overdue Risks',          $snapshot->overdue_risks],
-                ['Overdue Assessments',    $snapshot->overdue_assessments],
-                ['Evidence Approval Rate', $snapshot->evidence_approval_rate.'%'],
-                ['AI-Generated Risks',     $snapshot->ai_generated_risks],
-                ['Total Risks',            $snapshot->total_risks],
-                ['Total Controls',         $snapshot->total_controls],
-                ['Compliant Controls',     $snapshot->compliant_controls],
-            ]
-        );
-
-        $this->info('Snapshot saved successfully.');
+        $this->info("Saved {$count} corporation snapshot(s).");
 
         return self::SUCCESS;
     }

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
 use App\Models\Control;
+use App\Models\User;
 use App\Services\AIService;
 use App\Services\GrcMetricsService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ExecutiveSummaryController extends Controller
@@ -15,7 +17,8 @@ class ExecutiveSummaryController extends Controller
     {
         // ── 1. Gather data ────────────────────────────────────────────────────
 
-        $grc = new GrcMetricsService;
+        $user = Auth::user();
+        $grc = new GrcMetricsService($user);
 
         // Compliance (one SQL aggregate query)
         $cs = $grc->complianceSummary();
@@ -48,7 +51,8 @@ class ExecutiveSummaryController extends Controller
         ];
 
         // Top 5 highest-scoring risks (risk_level is an accessor, not a DB column)
-        $topRisks = \App\Models\Risk::orderByRaw('likelihood * impact DESC')
+        $topRisks = $user->organisationScope(\App\Models\Risk::query())
+            ->orderByRaw('likelihood * impact DESC')
             ->limit(5)
             ->get(['title', 'category', 'likelihood', 'impact', 'status'])
             ->map(fn ($r) => [
@@ -68,8 +72,16 @@ class ExecutiveSummaryController extends Controller
             'rejected' => $ev['rejected'],
         ];
 
-        // Recent activity count (last 7 days)
-        $recentActivityCount = AuditLog::where('created_at', '>=', now()->subDays(7))->count();
+        // Recent activity count (last 7 days) — scoped through users in the
+        // actor's corporation. super_admin sees the platform-wide count.
+        $recentActivityQuery = AuditLog::where('created_at', '>=', now()->subDays(7));
+        if (! $user->isSuperAdmin()) {
+            $recentActivityQuery->whereIn(
+                'user_id',
+                User::where('corporation_id', $user->corporation_id)->pluck('id')
+            );
+        }
+        $recentActivityCount = $recentActivityQuery->count();
 
         // Assessments (from aggregate query computed above)
         $assessmentStats = [
@@ -89,10 +101,36 @@ class ExecutiveSummaryController extends Controller
                 'assessments_count' => $fw['assessments_count'],
             ])->toArray();
 
-        // Most non-compliant control categories (top 5) — targeted query, no full load
-        $nonCompliantCategories = Control::where('current_status', 'non_compliant')
-            ->where('is_active', true)
-            ->whereNotNull('category')
+        // Most non-compliant control categories (top 5) — uses the per-tenant
+        // status pivot when the actor is tenant-scoped, otherwise falls back
+        // to the legacy global field.
+        $tenantId = $user->isSuperAdmin() ? null : $user->corporation_id;
+        $nonCompliantQuery = Control::where('is_active', true)
+            ->whereNotNull('category');
+
+        if ($tenantId !== null) {
+            $nonCompliantQuery->where(function ($q) use ($tenantId) {
+                $q->whereExists(function ($sub) use ($tenantId) {
+                    $sub->select(\Illuminate\Support\Facades\DB::raw(1))
+                        ->from('corporation_control_statuses as ccs')
+                        ->whereColumn('ccs.control_id', 'controls.id')
+                        ->where('ccs.corporation_id', $tenantId)
+                        ->where('ccs.current_status', 'non_compliant');
+                })->orWhere(function ($qq) use ($tenantId) {
+                    $qq->where('current_status', 'non_compliant')
+                        ->whereNotExists(function ($sub) use ($tenantId) {
+                            $sub->select(\Illuminate\Support\Facades\DB::raw(1))
+                                ->from('corporation_control_statuses as ccs2')
+                                ->whereColumn('ccs2.control_id', 'controls.id')
+                                ->where('ccs2.corporation_id', $tenantId);
+                        });
+                });
+            });
+        } else {
+            $nonCompliantQuery->where('current_status', 'non_compliant');
+        }
+
+        $nonCompliantCategories = $nonCompliantQuery
             ->get()
             ->groupBy('category')
             ->map(fn ($g) => $g->count())

@@ -27,16 +27,32 @@ class GrcMetricsService
 
     public function complianceSummary(): array
     {
-        $row = DB::table('controls')
-            ->where('is_active', true)
-            ->selectRaw("
-                COUNT(*)                                                                               AS total_active,
-                COUNT(CASE WHEN current_status NOT IN ('not_applicable') AND current_status IS NOT NULL THEN 1 END) AS applicable,
-                COUNT(CASE WHEN current_status = 'compliant'            THEN 1 END) AS compliant,
-                COUNT(CASE WHEN current_status = 'partially_compliant'  THEN 1 END) AS partial,
-                COUNT(CASE WHEN current_status = 'non_compliant'        THEN 1 END) AS non_compliant,
-                COUNT(CASE WHEN current_status = 'not_applicable'       THEN 1 END) AS not_applicable,
-                COUNT(CASE WHEN current_status IS NULL                  THEN 1 END) AS not_set
+        $tenantId = $this->user && ! $this->user->isSuperAdmin()
+            ? $this->user->corporation_id
+            : null;
+
+        $statusExpr = $tenantId !== null
+            ? 'COALESCE(ccs.current_status, controls.current_status)'
+            : 'controls.current_status';
+
+        $query = DB::table('controls')
+            ->where('controls.is_active', true);
+
+        if ($tenantId !== null) {
+            $query->leftJoin('corporation_control_statuses as ccs', function ($join) use ($tenantId) {
+                $join->on('ccs.control_id', '=', 'controls.id')
+                    ->where('ccs.corporation_id', '=', $tenantId);
+            });
+        }
+
+        $row = $query->selectRaw("
+                COUNT(*)                                                                                               AS total_active,
+                COUNT(CASE WHEN {$statusExpr} NOT IN ('not_applicable') AND {$statusExpr} IS NOT NULL THEN 1 END)      AS applicable,
+                COUNT(CASE WHEN {$statusExpr} = 'compliant'            THEN 1 END)                                     AS compliant,
+                COUNT(CASE WHEN {$statusExpr} = 'partially_compliant'  THEN 1 END)                                     AS partial,
+                COUNT(CASE WHEN {$statusExpr} = 'non_compliant'        THEN 1 END)                                     AS non_compliant,
+                COUNT(CASE WHEN {$statusExpr} = 'not_applicable'       THEN 1 END)                                     AS not_applicable,
+                COUNT(CASE WHEN {$statusExpr} IS NULL                  THEN 1 END)                                     AS not_set
             ")
             ->first();
 
@@ -177,20 +193,36 @@ class GrcMetricsService
 
     public function frameworkCompliance(): \Illuminate\Support\Collection
     {
-        return DB::table('controls')
+        $tenantId = $this->user && ! $this->user->isSuperAdmin()
+            ? $this->user->corporation_id
+            : null;
+
+        $statusExpr = $tenantId !== null
+            ? 'COALESCE(ccs.current_status, controls.current_status)'
+            : 'controls.current_status';
+
+        $query = DB::table('controls')
             ->join('frameworks', 'frameworks.id', '=', 'controls.framework_id')
             ->where('controls.is_active', true)
-            ->where('frameworks.is_active', true)
-            ->selectRaw("
+            ->where('frameworks.is_active', true);
+
+        if ($tenantId !== null) {
+            $query->leftJoin('corporation_control_statuses as ccs', function ($join) use ($tenantId) {
+                $join->on('ccs.control_id', '=', 'controls.id')
+                    ->where('ccs.corporation_id', '=', $tenantId);
+            });
+        }
+
+        return $query->selectRaw("
                 frameworks.id,
                 frameworks.short_name                                                               AS name,
                 frameworks.name                                                                     AS full_name,
                 COUNT(*)                                                                            AS total_controls,
-                SUM(CASE WHEN controls.current_status = 'compliant'           THEN 1 ELSE 0 END)   AS compliant,
-                SUM(CASE WHEN controls.current_status = 'partially_compliant' THEN 1 ELSE 0 END)   AS partial,
-                SUM(CASE WHEN controls.current_status = 'non_compliant'       THEN 1 ELSE 0 END)   AS non_compliant,
-                SUM(CASE WHEN controls.current_status NOT IN ('not_applicable')
-                              AND controls.current_status IS NOT NULL          THEN 1 ELSE 0 END)   AS applicable
+                SUM(CASE WHEN {$statusExpr} = 'compliant'           THEN 1 ELSE 0 END)              AS compliant,
+                SUM(CASE WHEN {$statusExpr} = 'partially_compliant' THEN 1 ELSE 0 END)              AS partial,
+                SUM(CASE WHEN {$statusExpr} = 'non_compliant'       THEN 1 ELSE 0 END)              AS non_compliant,
+                SUM(CASE WHEN {$statusExpr} NOT IN ('not_applicable')
+                              AND {$statusExpr} IS NOT NULL          THEN 1 ELSE 0 END)             AS applicable
             ")
             ->groupBy('frameworks.id', 'frameworks.short_name', 'frameworks.name')
             ->orderBy('frameworks.short_name')

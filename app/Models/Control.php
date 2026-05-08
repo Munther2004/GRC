@@ -58,4 +58,26 @@ class Control extends Model
     {
         return $this->hasMany(RemediationTask::class)->latest();
     }
+
+    public function corporationStatuses()
+    {
+        return $this->hasMany(CorporationControlStatus::class);
+    }
+
+    /**
+     * Resolve a control's status for a single corporation. Falls back to the
+     * legacy global controls.current_status when the tenant has no override.
+     * Returns null when neither is set.
+     */
+    public function statusForCorporation(?int $corporationId): ?string
+    {
+        if ($corporationId === null) {
+            return $this->current_status;
+        }
+        $row = $this->corporationStatuses()
+            ->where('corporation_id', $corporationId)
+            ->first();
+
+        return $row?->current_status ?? $this->current_status;
+    }
 }

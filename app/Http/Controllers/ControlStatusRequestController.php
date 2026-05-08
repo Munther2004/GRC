@@ -95,14 +95,17 @@ class ControlStatusRequestController extends Controller
             ], 422);
         }
 
+        $tenantId = Auth::user()?->corporation_id;
         $statusRequest = ControlStatusRequest::create([
             'control_id' => $control->id,
             'requested_by' => Auth::id(),
             // Tenant-stamp at creation. Reviewers' tenant scope checks
             // depend on this field being populated.
-            'corporation_id' => Auth::user()?->corporation_id,
+            'corporation_id' => $tenantId,
             'requested_status' => $request->input('new_status'),
-            'current_status' => $control->current_status,
+            // Snapshot the requester's tenant-scoped view of the control's
+            // current status, not the global field.
+            'current_status' => $control->statusForCorporation($tenantId),
             'justification' => $request->input('justification'),
             'status' => 'pending',
         ]);

@@ -6,6 +6,7 @@ use App\Models\Assessment;
 use App\Models\AssessmentItem;
 use App\Models\Control;
 use App\Models\ControlStatusHistory;
+use App\Models\CorporationControlStatus;
 use Illuminate\Console\Command;
 
 class SyncControlsFromAssessments extends Command
@@ -16,18 +17,23 @@ class SyncControlsFromAssessments extends Command
 
     public function handle(): int
     {
-        $this->info('Syncing control statuses from completed assessments...');
+        $this->info('Syncing per-corporation control statuses from completed assessments...');
 
-        // For each control, get the most recent assessment item from a completed assessment.
-        // We use a subquery to find the latest assessment per control.
+        // Pull (control_id, corporation_id) -> latest completed-assessment item.
+        // Status is now per-tenant, so the grouping key is composite.
         $latestItems = AssessmentItem::query()
             ->join('assessments', 'assessment_items.assessment_id', '=', 'assessments.id')
             ->where('assessments.status', 'completed')
             ->orderBy('assessments.updated_at', 'desc')
-            ->select('assessment_items.*', 'assessments.id as assessment_db_id', 'assessments.updated_at as assessment_updated_at')
+            ->select(
+                'assessment_items.*',
+                'assessments.id as assessment_db_id',
+                'assessments.corporation_id as assessment_corp_id',
+                'assessments.updated_at as assessment_updated_at',
+            )
             ->get()
-            ->groupBy('control_id')
-            ->map(fn ($group) => $group->first()); // first = most recent (ordered desc above)
+            ->groupBy(fn ($i) => $i->control_id.':'.($i->assessment_corp_id ?? 'null'))
+            ->map(fn ($group) => $group->first());
 
         if ($latestItems->isEmpty()) {
             $this->warn('No completed assessments found. Nothing to sync.');
@@ -37,10 +43,11 @@ class SyncControlsFromAssessments extends Command
 
         $updated = 0;
         $skipped = 0;
-        $controls = Control::whereIn('id', $latestItems->keys())->get()->keyBy('id');
+        $controlIds = $latestItems->pluck('control_id')->unique();
+        $controls = Control::whereIn('id', $controlIds)->get()->keyBy('id');
 
-        foreach ($latestItems as $controlId => $item) {
-            $control = $controls->get($controlId);
+        foreach ($latestItems as $item) {
+            $control = $controls->get($item->control_id);
             if (! $control) {
                 $skipped++;
 
@@ -49,9 +56,9 @@ class SyncControlsFromAssessments extends Command
 
             $newStatus = $item->compliance_status;
             $assessmentId = $item->assessment_db_id;
-            $oldStatus = $control->current_status;
+            $tenantId = $item->assessment_corp_id;
+            $oldStatus = $control->statusForCorporation($tenantId);
 
-            // Idempotency: skip if history for this assessment already exists for this control
             $alreadySynced = ControlStatusHistory::where('control_id', $control->id)
                 ->where('notes', "Synced from assessment #{$assessmentId}")
                 ->exists();
@@ -62,11 +69,25 @@ class SyncControlsFromAssessments extends Command
                 continue;
             }
 
-            $updates = ['current_status' => $newStatus];
-            if (in_array($newStatus, ['compliant', 'partially_compliant'])) {
-                $updates['last_remediated_at'] = now();
+            if ($tenantId !== null) {
+                CorporationControlStatus::updateOrCreate(
+                    ['corporation_id' => $tenantId, 'control_id' => $control->id],
+                    [
+                        'current_status' => $newStatus,
+                        'last_remediated_at' => in_array($newStatus, ['compliant', 'partially_compliant'])
+                            ? now()
+                            : null,
+                    ]
+                );
+            } else {
+                // Legacy: assessment with no tenant — keep updating the global
+                // controls row so super_admin-only platform data still moves.
+                $updates = ['current_status' => $newStatus];
+                if (in_array($newStatus, ['compliant', 'partially_compliant'])) {
+                    $updates['last_remediated_at'] = now();
+                }
+                $control->update($updates);
             }
-            $control->update($updates);
 
             ControlStatusHistory::create([
                 'control_id' => $control->id,

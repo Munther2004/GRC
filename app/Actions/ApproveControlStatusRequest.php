@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Models\AuditLog;
 use App\Models\ControlStatusHistory;
 use App\Models\ControlStatusRequest;
+use App\Models\CorporationControlStatus;
 use App\Models\Notification;
 use App\Models\RemediationTask;
 use App\Services\RulesEngine;
@@ -23,7 +24,6 @@ class ApproveControlStatusRequest
     public function execute(ControlStatusRequest $statusRequest, string $reviewerNotes = ''): void
     {
         $control = $statusRequest->control;
-        $oldStatus = $control->current_status;
         $newStatus = $statusRequest->requested_status === 'not_set'
             ? null
             : $statusRequest->requested_status;
@@ -35,11 +35,30 @@ class ApproveControlStatusRequest
         $tenantId = $statusRequest->corporation_id
             ?? $statusRequest->requester?->corporation_id;
 
-        $control->update([
-            'current_status' => $newStatus,
-            'last_remediated_at' => now(),
-            'remediation_notes' => $statusRequest->justification ?? $control->remediation_notes,
-        ]);
+        // Status now lives in the per-tenant pivot, not on the global control
+        // row. Reads merge the tenant override with the legacy default.
+        $oldStatus = $control->statusForCorporation($tenantId);
+
+        if ($tenantId !== null) {
+            CorporationControlStatus::updateOrCreate(
+                ['corporation_id' => $tenantId, 'control_id' => $control->id],
+                [
+                    'current_status' => $newStatus,
+                    'last_remediated_at' => now(),
+                    'remediation_notes' => $statusRequest->justification
+                        ?? $control->statusForCorporation($tenantId),
+                ]
+            );
+        } else {
+            // Legacy fallback: a status request with no corporation context
+            // (super_admin acting outside any tenant) still updates the
+            // global control row so seed-style platform changes still apply.
+            $control->update([
+                'current_status' => $newStatus,
+                'last_remediated_at' => now(),
+                'remediation_notes' => $statusRequest->justification ?? $control->remediation_notes,
+            ]);
+        }
 
         ControlStatusHistory::create([
             'control_id' => $control->id,

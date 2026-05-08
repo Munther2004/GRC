@@ -198,6 +198,10 @@ class SecurityAuditController extends Controller
             ->whereNull('risk_id')
             ->get();
 
+        // Stamp the new risk with the audit-uploader's corporation. Without
+        // this, organisationScope() filters the new risk to nobody.
+        $tenantId = $securityAudit->user?->corporation_id;
+
         foreach ($eligible as $finding) {
             $scores = self::SEVERITY_TO_LIKELIHOOD_IMPACT[$finding->severity];
 
@@ -212,6 +216,7 @@ class SecurityAuditController extends Controller
 
             $risk = Risk::create([
                 'user_id' => Auth::id(),
+                'corporation_id' => $tenantId,
                 'title' => "[Security Audit] {$finding->title}",
                 'description' => $description,
                 'category' => 'Technical',

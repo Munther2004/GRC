@@ -154,10 +154,22 @@ class EvidenceController extends Controller
                 $revertTo = $historyBefore?->new_status === 'not_set'
                     ? null
                     : $historyBefore?->new_status;
-                $currentStatus = $control->current_status;
+
+                // Status now lives on the per-tenant pivot. Resolve the
+                // tenant from the evidence (corporation_id is set on Evidence)
+                // and update only that tenant's row.
+                $tenantId = $evidence->corporation_id ?? auth()->user()?->corporation_id;
+                $currentStatus = $control->statusForCorporation($tenantId);
 
                 if ($revertTo !== $currentStatus) {
-                    $control->update(['current_status' => $revertTo]);
+                    if ($tenantId !== null) {
+                        \App\Models\CorporationControlStatus::updateOrCreate(
+                            ['corporation_id' => $tenantId, 'control_id' => $control->id],
+                            ['current_status' => $revertTo]
+                        );
+                    } else {
+                        $control->update(['current_status' => $revertTo]);
+                    }
 
                     ControlStatusHistory::create([
                         'control_id' => $control->id,

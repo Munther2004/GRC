@@ -9,6 +9,7 @@ use App\Models\Risk;
 use App\Services\GrcMetricsService;
 use App\Services\RiskMetricsService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ExecutiveDashboardController extends Controller
@@ -37,7 +38,8 @@ class ExecutiveDashboardController extends Controller
 
     private function buildData(): array
     {
-        $metrics = new RiskMetricsService;
+        $user = Auth::user();
+        $metrics = new RiskMetricsService($user);
         $grc = new GrcMetricsService;
 
         // 1. Health Score
@@ -107,8 +109,12 @@ class ExecutiveDashboardController extends Controller
             'latest_framework' => $latestAssessment?->framework?->short_name,
         ];
 
-        // 6. Compliance Trend (last 6 KRI snapshots)
-        $trend = KriSnapshot::latest('snapshot_date')
+        // 6. Compliance Trend (last 6 KRI snapshots) — scoped per tenant
+        $trendQuery = KriSnapshot::query();
+        if (! $user->isSuperAdmin()) {
+            $trendQuery->where('corporation_id', $user->corporation_id);
+        }
+        $trend = $trendQuery->latest('snapshot_date')
             ->limit(6)
             ->get()
             ->sortBy('snapshot_date')

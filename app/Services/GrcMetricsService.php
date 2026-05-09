@@ -16,12 +16,14 @@ class GrcMetricsService
     private function scopedRisks(): Builder
     {
         $q = Risk::query();
+
         return $this->user ? $this->user->organisationScope($q) : $q;
     }
 
     private function scopedAssessments(): Builder
     {
         $q = \App\Models\Assessment::query();
+
         return $this->user ? $this->user->organisationScope($q) : $q;
     }
 

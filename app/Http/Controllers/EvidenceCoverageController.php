@@ -86,6 +86,7 @@ class EvidenceCoverageController extends Controller
             $corpId = $actor?->corporation_id;
             if ($corpId === null) {
                 $q->whereRaw('1 = 0'); // not in any tenant → no rows
+
                 return;
             }
 

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::register
-* @see app/Http/Controllers/CorporationRegistrationController.php:15
+* @see app/Http/Controllers/CorporationRegistrationController.php:26
 * @route '/corporation/register'
 */
 export const register = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ register.definition = {
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::register
-* @see app/Http/Controllers/CorporationRegistrationController.php:15
+* @see app/Http/Controllers/CorporationRegistrationController.php:26
 * @route '/corporation/register'
 */
 register.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ register.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::register
-* @see app/Http/Controllers/CorporationRegistrationController.php:15
+* @see app/Http/Controllers/CorporationRegistrationController.php:26
 * @route '/corporation/register'
 */
 register.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ register.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::register
-* @see app/Http/Controllers/CorporationRegistrationController.php:15
+* @see app/Http/Controllers/CorporationRegistrationController.php:26
 * @route '/corporation/register'
 */
 register.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ register.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::register
-* @see app/Http/Controllers/CorporationRegistrationController.php:15
+* @see app/Http/Controllers/CorporationRegistrationController.php:26
 * @route '/corporation/register'
 */
 const registerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const registerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> =
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::register
-* @see app/Http/Controllers/CorporationRegistrationController.php:15
+* @see app/Http/Controllers/CorporationRegistrationController.php:26
 * @route '/corporation/register'
 */
 registerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ registerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::register
-* @see app/Http/Controllers/CorporationRegistrationController.php:15
+* @see app/Http/Controllers/CorporationRegistrationController.php:26
 * @route '/corporation/register'
 */
 registerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ register.form = registerForm
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::store
-* @see app/Http/Controllers/CorporationRegistrationController.php:31
+* @see app/Http/Controllers/CorporationRegistrationController.php:42
 * @route '/corporation/register'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -97,7 +97,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::store
-* @see app/Http/Controllers/CorporationRegistrationController.php:31
+* @see app/Http/Controllers/CorporationRegistrationController.php:42
 * @route '/corporation/register'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::store
-* @see app/Http/Controllers/CorporationRegistrationController.php:31
+* @see app/Http/Controllers/CorporationRegistrationController.php:42
 * @route '/corporation/register'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -116,7 +116,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::store
-* @see app/Http/Controllers/CorporationRegistrationController.php:31
+* @see app/Http/Controllers/CorporationRegistrationController.php:42
 * @route '/corporation/register'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -126,7 +126,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::store
-* @see app/Http/Controllers/CorporationRegistrationController.php:31
+* @see app/Http/Controllers/CorporationRegistrationController.php:42
 * @route '/corporation/register'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -138,7 +138,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::registrationPending
-* @see app/Http/Controllers/CorporationRegistrationController.php:78
+* @see app/Http/Controllers/CorporationRegistrationController.php:85
 * @route '/corporation/{corporation}/pending'
 */
 export const registrationPending = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -153,7 +153,7 @@ registrationPending.definition = {
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::registrationPending
-* @see app/Http/Controllers/CorporationRegistrationController.php:78
+* @see app/Http/Controllers/CorporationRegistrationController.php:85
 * @route '/corporation/{corporation}/pending'
 */
 registrationPending.url = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -186,7 +186,7 @@ registrationPending.url = (args: { corporation: number | { id: number } } | [cor
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::registrationPending
-* @see app/Http/Controllers/CorporationRegistrationController.php:78
+* @see app/Http/Controllers/CorporationRegistrationController.php:85
 * @route '/corporation/{corporation}/pending'
 */
 registrationPending.get = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -196,7 +196,7 @@ registrationPending.get = (args: { corporation: number | { id: number } } | [cor
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::registrationPending
-* @see app/Http/Controllers/CorporationRegistrationController.php:78
+* @see app/Http/Controllers/CorporationRegistrationController.php:85
 * @route '/corporation/{corporation}/pending'
 */
 registrationPending.head = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -206,7 +206,7 @@ registrationPending.head = (args: { corporation: number | { id: number } } | [co
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::registrationPending
-* @see app/Http/Controllers/CorporationRegistrationController.php:78
+* @see app/Http/Controllers/CorporationRegistrationController.php:85
 * @route '/corporation/{corporation}/pending'
 */
 const registrationPendingForm = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -216,7 +216,7 @@ const registrationPendingForm = (args: { corporation: number | { id: number } } 
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::registrationPending
-* @see app/Http/Controllers/CorporationRegistrationController.php:78
+* @see app/Http/Controllers/CorporationRegistrationController.php:85
 * @route '/corporation/{corporation}/pending'
 */
 registrationPendingForm.get = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -226,7 +226,7 @@ registrationPendingForm.get = (args: { corporation: number | { id: number } } | 
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::registrationPending
-* @see app/Http/Controllers/CorporationRegistrationController.php:78
+* @see app/Http/Controllers/CorporationRegistrationController.php:85
 * @route '/corporation/{corporation}/pending'
 */
 registrationPendingForm.head = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -243,7 +243,7 @@ registrationPending.form = registrationPendingForm
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::verifyCode
-* @see app/Http/Controllers/CorporationRegistrationController.php:85
+* @see app/Http/Controllers/CorporationRegistrationController.php:102
 * @route '/corporation/{corporation}/verify-code'
 */
 export const verifyCode = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -258,7 +258,7 @@ verifyCode.definition = {
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::verifyCode
-* @see app/Http/Controllers/CorporationRegistrationController.php:85
+* @see app/Http/Controllers/CorporationRegistrationController.php:102
 * @route '/corporation/{corporation}/verify-code'
 */
 verifyCode.url = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -291,7 +291,7 @@ verifyCode.url = (args: { corporation: number | { id: number } } | [corporation:
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::verifyCode
-* @see app/Http/Controllers/CorporationRegistrationController.php:85
+* @see app/Http/Controllers/CorporationRegistrationController.php:102
 * @route '/corporation/{corporation}/verify-code'
 */
 verifyCode.post = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -301,7 +301,7 @@ verifyCode.post = (args: { corporation: number | { id: number } } | [corporation
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::verifyCode
-* @see app/Http/Controllers/CorporationRegistrationController.php:85
+* @see app/Http/Controllers/CorporationRegistrationController.php:102
 * @route '/corporation/{corporation}/verify-code'
 */
 const verifyCodeForm = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -311,7 +311,7 @@ const verifyCodeForm = (args: { corporation: number | { id: number } } | [corpor
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::verifyCode
-* @see app/Http/Controllers/CorporationRegistrationController.php:85
+* @see app/Http/Controllers/CorporationRegistrationController.php:102
 * @route '/corporation/{corporation}/verify-code'
 */
 verifyCodeForm.post = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -323,7 +323,7 @@ verifyCode.form = verifyCodeForm
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerSignup
-* @see app/Http/Controllers/CorporationRegistrationController.php:103
+* @see app/Http/Controllers/CorporationRegistrationController.php:138
 * @route '/corporation/{corporation}/manager-signup'
 */
 export const managerSignup = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -338,7 +338,7 @@ managerSignup.definition = {
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerSignup
-* @see app/Http/Controllers/CorporationRegistrationController.php:103
+* @see app/Http/Controllers/CorporationRegistrationController.php:138
 * @route '/corporation/{corporation}/manager-signup'
 */
 managerSignup.url = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -371,7 +371,7 @@ managerSignup.url = (args: { corporation: number | { id: number } } | [corporati
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerSignup
-* @see app/Http/Controllers/CorporationRegistrationController.php:103
+* @see app/Http/Controllers/CorporationRegistrationController.php:138
 * @route '/corporation/{corporation}/manager-signup'
 */
 managerSignup.get = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -381,7 +381,7 @@ managerSignup.get = (args: { corporation: number | { id: number } } | [corporati
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerSignup
-* @see app/Http/Controllers/CorporationRegistrationController.php:103
+* @see app/Http/Controllers/CorporationRegistrationController.php:138
 * @route '/corporation/{corporation}/manager-signup'
 */
 managerSignup.head = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -391,7 +391,7 @@ managerSignup.head = (args: { corporation: number | { id: number } } | [corporat
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerSignup
-* @see app/Http/Controllers/CorporationRegistrationController.php:103
+* @see app/Http/Controllers/CorporationRegistrationController.php:138
 * @route '/corporation/{corporation}/manager-signup'
 */
 const managerSignupForm = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -401,7 +401,7 @@ const managerSignupForm = (args: { corporation: number | { id: number } } | [cor
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerSignup
-* @see app/Http/Controllers/CorporationRegistrationController.php:103
+* @see app/Http/Controllers/CorporationRegistrationController.php:138
 * @route '/corporation/{corporation}/manager-signup'
 */
 managerSignupForm.get = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -411,7 +411,7 @@ managerSignupForm.get = (args: { corporation: number | { id: number } } | [corpo
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerSignup
-* @see app/Http/Controllers/CorporationRegistrationController.php:103
+* @see app/Http/Controllers/CorporationRegistrationController.php:138
 * @route '/corporation/{corporation}/manager-signup'
 */
 managerSignupForm.head = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -428,7 +428,7 @@ managerSignup.form = managerSignupForm
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerRegister
-* @see app/Http/Controllers/CorporationRegistrationController.php:115
+* @see app/Http/Controllers/CorporationRegistrationController.php:164
 * @route '/corporation/{corporation}/manager-signup'
 */
 export const managerRegister = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -443,7 +443,7 @@ managerRegister.definition = {
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerRegister
-* @see app/Http/Controllers/CorporationRegistrationController.php:115
+* @see app/Http/Controllers/CorporationRegistrationController.php:164
 * @route '/corporation/{corporation}/manager-signup'
 */
 managerRegister.url = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -476,7 +476,7 @@ managerRegister.url = (args: { corporation: number | { id: number } } | [corpora
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerRegister
-* @see app/Http/Controllers/CorporationRegistrationController.php:115
+* @see app/Http/Controllers/CorporationRegistrationController.php:164
 * @route '/corporation/{corporation}/manager-signup'
 */
 managerRegister.post = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -486,7 +486,7 @@ managerRegister.post = (args: { corporation: number | { id: number } } | [corpor
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerRegister
-* @see app/Http/Controllers/CorporationRegistrationController.php:115
+* @see app/Http/Controllers/CorporationRegistrationController.php:164
 * @route '/corporation/{corporation}/manager-signup'
 */
 const managerRegisterForm = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -496,7 +496,7 @@ const managerRegisterForm = (args: { corporation: number | { id: number } } | [c
 
 /**
 * @see \App\Http\Controllers\CorporationRegistrationController::managerRegister
-* @see app/Http/Controllers/CorporationRegistrationController.php:115
+* @see app/Http/Controllers/CorporationRegistrationController.php:164
 * @route '/corporation/{corporation}/manager-signup'
 */
 managerRegisterForm.post = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

@@ -22,6 +22,7 @@ import {
     ShieldAlert,
     Sliders,
     Sparkles,
+    UserPlus,
     Users,
     X,
 } from "lucide-react"
@@ -70,6 +71,7 @@ const reviewNavigation = [
 // Items shown to corporation admins and super_admins.
 const adminNavigation = [
     { name: "Users",            href: "/admin/users",           icon: Users,    roles: ['super_admin','admin'] as const },
+    { name: "Invite Employees", href: "/admin/invites",         icon: UserPlus, roles: ['super_admin','admin'] as const },
     { name: "Risk Appetite",    href: "/risk-appetite",         icon: Sliders,  roles: ['super_admin','admin'] as const },
 ]
 

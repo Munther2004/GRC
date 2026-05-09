@@ -106,7 +106,7 @@ class FortifyServiceProvider extends ServiceProvider
             $user = User::where('email', $login)->first();
 
             // If not found by email, try to find by corporation manager username
-            if (!$user) {
+            if (! $user) {
                 $corporation = Corporation::where('manager_username', $login)->first();
                 if ($corporation && $corporation->manager_user_id) {
                     $user = $corporation->manager()->first();

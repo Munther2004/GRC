@@ -462,7 +462,7 @@ team.form = teamForm
 
 /**
 * @see \App\Http\Controllers\DashboardController::dashboard
-* @see app/Http/Controllers/DashboardController.php:18
+* @see app/Http/Controllers/DashboardController.php:19
 * @route '/dashboard'
 */
 export const dashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -477,7 +477,7 @@ dashboard.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::dashboard
-* @see app/Http/Controllers/DashboardController.php:18
+* @see app/Http/Controllers/DashboardController.php:19
 * @route '/dashboard'
 */
 dashboard.url = (options?: RouteQueryOptions) => {
@@ -486,7 +486,7 @@ dashboard.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::dashboard
-* @see app/Http/Controllers/DashboardController.php:18
+* @see app/Http/Controllers/DashboardController.php:19
 * @route '/dashboard'
 */
 dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -496,7 +496,7 @@ dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\DashboardController::dashboard
-* @see app/Http/Controllers/DashboardController.php:18
+* @see app/Http/Controllers/DashboardController.php:19
 * @route '/dashboard'
 */
 dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -506,7 +506,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\DashboardController::dashboard
-* @see app/Http/Controllers/DashboardController.php:18
+* @see app/Http/Controllers/DashboardController.php:19
 * @route '/dashboard'
 */
 const dashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -516,7 +516,7 @@ const dashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> 
 
 /**
 * @see \App\Http\Controllers\DashboardController::dashboard
-* @see app/Http/Controllers/DashboardController.php:18
+* @see app/Http/Controllers/DashboardController.php:19
 * @route '/dashboard'
 */
 dashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -526,7 +526,7 @@ dashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> =>
 
 /**
 * @see \App\Http\Controllers\DashboardController::dashboard
-* @see app/Http/Controllers/DashboardController.php:18
+* @see app/Http/Controllers/DashboardController.php:19
 * @route '/dashboard'
 */
 dashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -543,7 +543,7 @@ dashboard.form = dashboardForm
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::executiveDashboard
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 export const executiveDashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -558,7 +558,7 @@ executiveDashboard.definition = {
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::executiveDashboard
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 executiveDashboard.url = (options?: RouteQueryOptions) => {
@@ -567,7 +567,7 @@ executiveDashboard.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::executiveDashboard
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 executiveDashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -577,7 +577,7 @@ executiveDashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> =
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::executiveDashboard
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 executiveDashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -587,7 +587,7 @@ executiveDashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'>
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::executiveDashboard
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 const executiveDashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -597,7 +597,7 @@ const executiveDashboardForm = (options?: RouteQueryOptions): RouteFormDefinitio
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::executiveDashboard
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 executiveDashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -607,7 +607,7 @@ executiveDashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::executiveDashboard
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 executiveDashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

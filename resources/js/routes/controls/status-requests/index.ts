@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::approve
-* @see app/Http/Controllers/ControlStatusRequestController.php:191
+* @see app/Http/Controllers/ControlStatusRequestController.php:196
 * @route '/controls/status-requests/{statusRequest}/approve'
 */
 export const approve = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ approve.definition = {
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::approve
-* @see app/Http/Controllers/ControlStatusRequestController.php:191
+* @see app/Http/Controllers/ControlStatusRequestController.php:196
 * @route '/controls/status-requests/{statusRequest}/approve'
 */
 approve.url = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ approve.url = (args: { statusRequest: number | { id: number } } | [statusRequest
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::approve
-* @see app/Http/Controllers/ControlStatusRequestController.php:191
+* @see app/Http/Controllers/ControlStatusRequestController.php:196
 * @route '/controls/status-requests/{statusRequest}/approve'
 */
 approve.post = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ approve.post = (args: { statusRequest: number | { id: number } } | [statusReques
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::approve
-* @see app/Http/Controllers/ControlStatusRequestController.php:191
+* @see app/Http/Controllers/ControlStatusRequestController.php:196
 * @route '/controls/status-requests/{statusRequest}/approve'
 */
 const approveForm = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const approveForm = (args: { statusRequest: number | { id: number } } | [statusR
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::approve
-* @see app/Http/Controllers/ControlStatusRequestController.php:191
+* @see app/Http/Controllers/ControlStatusRequestController.php:196
 * @route '/controls/status-requests/{statusRequest}/approve'
 */
 approveForm.post = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -81,7 +81,7 @@ approve.form = approveForm
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::reject
-* @see app/Http/Controllers/ControlStatusRequestController.php:240
+* @see app/Http/Controllers/ControlStatusRequestController.php:247
 * @route '/controls/status-requests/{statusRequest}/reject'
 */
 export const reject = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -96,7 +96,7 @@ reject.definition = {
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::reject
-* @see app/Http/Controllers/ControlStatusRequestController.php:240
+* @see app/Http/Controllers/ControlStatusRequestController.php:247
 * @route '/controls/status-requests/{statusRequest}/reject'
 */
 reject.url = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -129,7 +129,7 @@ reject.url = (args: { statusRequest: number | { id: number } } | [statusRequest:
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::reject
-* @see app/Http/Controllers/ControlStatusRequestController.php:240
+* @see app/Http/Controllers/ControlStatusRequestController.php:247
 * @route '/controls/status-requests/{statusRequest}/reject'
 */
 reject.post = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -139,7 +139,7 @@ reject.post = (args: { statusRequest: number | { id: number } } | [statusRequest
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::reject
-* @see app/Http/Controllers/ControlStatusRequestController.php:240
+* @see app/Http/Controllers/ControlStatusRequestController.php:247
 * @route '/controls/status-requests/{statusRequest}/reject'
 */
 const rejectForm = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -149,7 +149,7 @@ const rejectForm = (args: { statusRequest: number | { id: number } } | [statusRe
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::reject
-* @see app/Http/Controllers/ControlStatusRequestController.php:240
+* @see app/Http/Controllers/ControlStatusRequestController.php:247
 * @route '/controls/status-requests/{statusRequest}/reject'
 */
 rejectForm.post = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -161,7 +161,7 @@ reject.form = rejectForm
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::reviewEvidence
-* @see app/Http/Controllers/ControlStatusRequestController.php:292
+* @see app/Http/Controllers/ControlStatusRequestController.php:301
 * @route '/controls/status-requests/{statusRequest}/review-evidence'
 */
 export const reviewEvidence = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -176,7 +176,7 @@ reviewEvidence.definition = {
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::reviewEvidence
-* @see app/Http/Controllers/ControlStatusRequestController.php:292
+* @see app/Http/Controllers/ControlStatusRequestController.php:301
 * @route '/controls/status-requests/{statusRequest}/review-evidence'
 */
 reviewEvidence.url = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -209,7 +209,7 @@ reviewEvidence.url = (args: { statusRequest: number | { id: number } } | [status
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::reviewEvidence
-* @see app/Http/Controllers/ControlStatusRequestController.php:292
+* @see app/Http/Controllers/ControlStatusRequestController.php:301
 * @route '/controls/status-requests/{statusRequest}/review-evidence'
 */
 reviewEvidence.post = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -219,7 +219,7 @@ reviewEvidence.post = (args: { statusRequest: number | { id: number } } | [statu
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::reviewEvidence
-* @see app/Http/Controllers/ControlStatusRequestController.php:292
+* @see app/Http/Controllers/ControlStatusRequestController.php:301
 * @route '/controls/status-requests/{statusRequest}/review-evidence'
 */
 const reviewEvidenceForm = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -229,7 +229,7 @@ const reviewEvidenceForm = (args: { statusRequest: number | { id: number } } | [
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::reviewEvidence
-* @see app/Http/Controllers/ControlStatusRequestController.php:292
+* @see app/Http/Controllers/ControlStatusRequestController.php:301
 * @route '/controls/status-requests/{statusRequest}/review-evidence'
 */
 reviewEvidenceForm.post = (args: { statusRequest: number | { id: number } } | [statusRequest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

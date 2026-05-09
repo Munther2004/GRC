@@ -10,17 +10,17 @@ return new class extends Migration
     {
         Schema::table('risks', function (Blueprint $table) {
             $table->foreignId('corporation_id')->nullable()->after('user_id')
-                  ->constrained('corporations')->onDelete('cascade');
+                ->constrained('corporations')->onDelete('cascade');
         });
 
         Schema::table('assessments', function (Blueprint $table) {
             $table->foreignId('corporation_id')->nullable()->after('user_id')
-                  ->constrained('corporations')->onDelete('cascade');
+                ->constrained('corporations')->onDelete('cascade');
         });
 
         Schema::table('remediation_tasks', function (Blueprint $table) {
             $table->foreignId('corporation_id')->nullable()->after('created_by')
-                  ->constrained('corporations')->onDelete('cascade');
+                ->constrained('corporations')->onDelete('cascade');
         });
     }
 

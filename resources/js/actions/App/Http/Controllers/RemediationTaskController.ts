@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::store
-* @see app/Http/Controllers/RemediationTaskController.php:89
+* @see app/Http/Controllers/RemediationTaskController.php:93
 * @route '/remediation-tasks'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -97,7 +97,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::store
-* @see app/Http/Controllers/RemediationTaskController.php:89
+* @see app/Http/Controllers/RemediationTaskController.php:93
 * @route '/remediation-tasks'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::store
-* @see app/Http/Controllers/RemediationTaskController.php:89
+* @see app/Http/Controllers/RemediationTaskController.php:93
 * @route '/remediation-tasks'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -116,7 +116,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::store
-* @see app/Http/Controllers/RemediationTaskController.php:89
+* @see app/Http/Controllers/RemediationTaskController.php:93
 * @route '/remediation-tasks'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -126,7 +126,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::store
-* @see app/Http/Controllers/RemediationTaskController.php:89
+* @see app/Http/Controllers/RemediationTaskController.php:93
 * @route '/remediation-tasks'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -138,7 +138,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::update
-* @see app/Http/Controllers/RemediationTaskController.php:123
+* @see app/Http/Controllers/RemediationTaskController.php:127
 * @route '/remediation-tasks/{task}'
 */
 export const update = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -153,7 +153,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::update
-* @see app/Http/Controllers/RemediationTaskController.php:123
+* @see app/Http/Controllers/RemediationTaskController.php:127
 * @route '/remediation-tasks/{task}'
 */
 update.url = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -186,7 +186,7 @@ update.url = (args: { task: number | { id: number } } | [task: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::update
-* @see app/Http/Controllers/RemediationTaskController.php:123
+* @see app/Http/Controllers/RemediationTaskController.php:127
 * @route '/remediation-tasks/{task}'
 */
 update.put = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -196,7 +196,7 @@ update.put = (args: { task: number | { id: number } } | [task: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::update
-* @see app/Http/Controllers/RemediationTaskController.php:123
+* @see app/Http/Controllers/RemediationTaskController.php:127
 * @route '/remediation-tasks/{task}'
 */
 const updateForm = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -211,7 +211,7 @@ const updateForm = (args: { task: number | { id: number } } | [task: number | { 
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::update
-* @see app/Http/Controllers/RemediationTaskController.php:123
+* @see app/Http/Controllers/RemediationTaskController.php:127
 * @route '/remediation-tasks/{task}'
 */
 updateForm.put = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -228,7 +228,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::destroy
-* @see app/Http/Controllers/RemediationTaskController.php:154
+* @see app/Http/Controllers/RemediationTaskController.php:160
 * @route '/remediation-tasks/{task}'
 */
 export const destroy = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -243,7 +243,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::destroy
-* @see app/Http/Controllers/RemediationTaskController.php:154
+* @see app/Http/Controllers/RemediationTaskController.php:160
 * @route '/remediation-tasks/{task}'
 */
 destroy.url = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -276,7 +276,7 @@ destroy.url = (args: { task: number | { id: number } } | [task: number | { id: n
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::destroy
-* @see app/Http/Controllers/RemediationTaskController.php:154
+* @see app/Http/Controllers/RemediationTaskController.php:160
 * @route '/remediation-tasks/{task}'
 */
 destroy.delete = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -286,7 +286,7 @@ destroy.delete = (args: { task: number | { id: number } } | [task: number | { id
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::destroy
-* @see app/Http/Controllers/RemediationTaskController.php:154
+* @see app/Http/Controllers/RemediationTaskController.php:160
 * @route '/remediation-tasks/{task}'
 */
 const destroyForm = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -301,7 +301,7 @@ const destroyForm = (args: { task: number | { id: number } } | [task: number | {
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::destroy
-* @see app/Http/Controllers/RemediationTaskController.php:154
+* @see app/Http/Controllers/RemediationTaskController.php:160
 * @route '/remediation-tasks/{task}'
 */
 destroyForm.delete = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -318,7 +318,7 @@ destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::complete
-* @see app/Http/Controllers/RemediationTaskController.php:171
+* @see app/Http/Controllers/RemediationTaskController.php:179
 * @route '/remediation-tasks/{task}/complete'
 */
 export const complete = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -333,7 +333,7 @@ complete.definition = {
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::complete
-* @see app/Http/Controllers/RemediationTaskController.php:171
+* @see app/Http/Controllers/RemediationTaskController.php:179
 * @route '/remediation-tasks/{task}/complete'
 */
 complete.url = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -366,7 +366,7 @@ complete.url = (args: { task: number | { id: number } } | [task: number | { id: 
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::complete
-* @see app/Http/Controllers/RemediationTaskController.php:171
+* @see app/Http/Controllers/RemediationTaskController.php:179
 * @route '/remediation-tasks/{task}/complete'
 */
 complete.post = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -376,7 +376,7 @@ complete.post = (args: { task: number | { id: number } } | [task: number | { id:
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::complete
-* @see app/Http/Controllers/RemediationTaskController.php:171
+* @see app/Http/Controllers/RemediationTaskController.php:179
 * @route '/remediation-tasks/{task}/complete'
 */
 const completeForm = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -386,7 +386,7 @@ const completeForm = (args: { task: number | { id: number } } | [task: number | 
 
 /**
 * @see \App\Http\Controllers\RemediationTaskController::complete
-* @see app/Http/Controllers/RemediationTaskController.php:171
+* @see app/Http/Controllers/RemediationTaskController.php:179
 * @route '/remediation-tasks/{task}/complete'
 */
 completeForm.post = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

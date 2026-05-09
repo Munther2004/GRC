@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::generate
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 export const generate = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ generate.definition = {
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::generate
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 generate.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ generate.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::generate
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 generate.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ generate.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::generate
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 generate.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ generate.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::generate
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 const generateForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const generateForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> =
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::generate
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 generateForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ generateForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::generate
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 generateForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

@@ -45,6 +45,16 @@ export const route = (name: string, params?: any): string => {
         'admin.users.update': `/admin/users/${id}`,
         'admin.users.destroy': `/admin/users/${id}`,
 
+        // Admin — Invites
+        'admin.invites.index': '/admin/invites',
+        'admin.invites.shareable': '/admin/invites/shareable',
+        'admin.invites.email': '/admin/invites/email',
+        'admin.invites.destroy': `/admin/invites/${id}`,
+
+        // Public invite acceptance
+        'invite.show': `/invite/${id}`,
+        'invite.register': `/invite/${id}/register`,
+
         // Admin — Frameworks
         'admin.frameworks.index': '/admin/frameworks',
         'admin.frameworks.edit': `/admin/frameworks/${id}/edit`,

@@ -11,11 +11,14 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles;
+    use HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
     public const ROLE_SUPER_ADMIN = 'super_admin';
+
     public const ROLE_ADMIN = 'admin';
+
     public const ROLE_AUDITOR = 'auditor';
+
     public const ROLE_USER = 'user';
 
     public const VALID_ROLES = [

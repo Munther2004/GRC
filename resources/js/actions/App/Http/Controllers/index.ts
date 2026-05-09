@@ -1,4 +1,5 @@
 import CorporationRegistrationController from './CorporationRegistrationController'
+import InviteAcceptController from './InviteAcceptController'
 import CorporateDashboardController from './CorporateDashboardController'
 import NotificationController from './NotificationController'
 import DashboardController from './DashboardController'
@@ -18,12 +19,15 @@ import Admin from './Admin'
 import AssessmentController from './AssessmentController'
 import AssessmentComparisonController from './AssessmentComparisonController'
 import EvidenceController from './EvidenceController'
+import EvidenceCoverageController from './EvidenceCoverageController'
 import AuditLogController from './AuditLogController'
+import CorporationInviteController from './CorporationInviteController'
 import RiskAppetiteController from './RiskAppetiteController'
 import Settings from './Settings'
 
 const Controllers = {
     CorporationRegistrationController: Object.assign(CorporationRegistrationController, CorporationRegistrationController),
+    InviteAcceptController: Object.assign(InviteAcceptController, InviteAcceptController),
     CorporateDashboardController: Object.assign(CorporateDashboardController, CorporateDashboardController),
     NotificationController: Object.assign(NotificationController, NotificationController),
     DashboardController: Object.assign(DashboardController, DashboardController),
@@ -43,7 +47,9 @@ const Controllers = {
     AssessmentController: Object.assign(AssessmentController, AssessmentController),
     AssessmentComparisonController: Object.assign(AssessmentComparisonController, AssessmentComparisonController),
     EvidenceController: Object.assign(EvidenceController, EvidenceController),
+    EvidenceCoverageController: Object.assign(EvidenceCoverageController, EvidenceCoverageController),
     AuditLogController: Object.assign(AuditLogController, AuditLogController),
+    CorporationInviteController: Object.assign(CorporationInviteController, CorporationInviteController),
     RiskAppetiteController: Object.assign(RiskAppetiteController, RiskAppetiteController),
     Settings: Object.assign(Settings, Settings),
 }

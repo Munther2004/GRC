@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ControlHubController::index
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\ControlHubController::index
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ControlHubController::index
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ControlHubController::index
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ControlHubController::index
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\ControlHubController::index
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ControlHubController::index
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 export const history = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ history.definition = {
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 history.url = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -130,7 +130,7 @@ history.url = (args: { control: number | { id: number } } | [control: number | {
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 history.get = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -140,7 +140,7 @@ history.get = (args: { control: number | { id: number } } | [control: number | {
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 history.head = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -150,7 +150,7 @@ history.head = (args: { control: number | { id: number } } | [control: number | 
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 const historyForm = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -160,7 +160,7 @@ const historyForm = (args: { control: number | { id: number } } | [control: numb
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 historyForm.get = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -170,7 +170,7 @@ historyForm.get = (args: { control: number | { id: number } } | [control: number
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 historyForm.head = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

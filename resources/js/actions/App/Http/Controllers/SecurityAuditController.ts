@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\SecurityAuditController::index
-* @see app/Http/Controllers/SecurityAuditController.php:28
+* @see app/Http/Controllers/SecurityAuditController.php:27
 * @route '/security-audits'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::index
-* @see app/Http/Controllers/SecurityAuditController.php:28
+* @see app/Http/Controllers/SecurityAuditController.php:27
 * @route '/security-audits'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::index
-* @see app/Http/Controllers/SecurityAuditController.php:28
+* @see app/Http/Controllers/SecurityAuditController.php:27
 * @route '/security-audits'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::index
-* @see app/Http/Controllers/SecurityAuditController.php:28
+* @see app/Http/Controllers/SecurityAuditController.php:27
 * @route '/security-audits'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::index
-* @see app/Http/Controllers/SecurityAuditController.php:28
+* @see app/Http/Controllers/SecurityAuditController.php:27
 * @route '/security-audits'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::index
-* @see app/Http/Controllers/SecurityAuditController.php:28
+* @see app/Http/Controllers/SecurityAuditController.php:27
 * @route '/security-audits'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::index
-* @see app/Http/Controllers/SecurityAuditController.php:28
+* @see app/Http/Controllers/SecurityAuditController.php:27
 * @route '/security-audits'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::show
-* @see app/Http/Controllers/SecurityAuditController.php:102
+* @see app/Http/Controllers/SecurityAuditController.php:127
 * @route '/security-audits/{securityAudit}'
 */
 export const show = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::show
-* @see app/Http/Controllers/SecurityAuditController.php:102
+* @see app/Http/Controllers/SecurityAuditController.php:127
 * @route '/security-audits/{securityAudit}'
 */
 show.url = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -130,7 +130,7 @@ show.url = (args: { securityAudit: number | { id: number } } | [securityAudit: n
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::show
-* @see app/Http/Controllers/SecurityAuditController.php:102
+* @see app/Http/Controllers/SecurityAuditController.php:127
 * @route '/security-audits/{securityAudit}'
 */
 show.get = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -140,7 +140,7 @@ show.get = (args: { securityAudit: number | { id: number } } | [securityAudit: n
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::show
-* @see app/Http/Controllers/SecurityAuditController.php:102
+* @see app/Http/Controllers/SecurityAuditController.php:127
 * @route '/security-audits/{securityAudit}'
 */
 show.head = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -150,7 +150,7 @@ show.head = (args: { securityAudit: number | { id: number } } | [securityAudit: 
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::show
-* @see app/Http/Controllers/SecurityAuditController.php:102
+* @see app/Http/Controllers/SecurityAuditController.php:127
 * @route '/security-audits/{securityAudit}'
 */
 const showForm = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -160,7 +160,7 @@ const showForm = (args: { securityAudit: number | { id: number } } | [securityAu
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::show
-* @see app/Http/Controllers/SecurityAuditController.php:102
+* @see app/Http/Controllers/SecurityAuditController.php:127
 * @route '/security-audits/{securityAudit}'
 */
 showForm.get = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -170,7 +170,7 @@ showForm.get = (args: { securityAudit: number | { id: number } } | [securityAudi
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::show
-* @see app/Http/Controllers/SecurityAuditController.php:102
+* @see app/Http/Controllers/SecurityAuditController.php:127
 * @route '/security-audits/{securityAudit}'
 */
 showForm.head = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -187,7 +187,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::exportPdf
-* @see app/Http/Controllers/SecurityAuditController.php:257
+* @see app/Http/Controllers/SecurityAuditController.php:300
 * @route '/security-audits/{securityAudit}/export-pdf'
 */
 export const exportPdf = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -202,7 +202,7 @@ exportPdf.definition = {
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::exportPdf
-* @see app/Http/Controllers/SecurityAuditController.php:257
+* @see app/Http/Controllers/SecurityAuditController.php:300
 * @route '/security-audits/{securityAudit}/export-pdf'
 */
 exportPdf.url = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -235,7 +235,7 @@ exportPdf.url = (args: { securityAudit: number | { id: number } } | [securityAud
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::exportPdf
-* @see app/Http/Controllers/SecurityAuditController.php:257
+* @see app/Http/Controllers/SecurityAuditController.php:300
 * @route '/security-audits/{securityAudit}/export-pdf'
 */
 exportPdf.get = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -245,7 +245,7 @@ exportPdf.get = (args: { securityAudit: number | { id: number } } | [securityAud
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::exportPdf
-* @see app/Http/Controllers/SecurityAuditController.php:257
+* @see app/Http/Controllers/SecurityAuditController.php:300
 * @route '/security-audits/{securityAudit}/export-pdf'
 */
 exportPdf.head = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -255,7 +255,7 @@ exportPdf.head = (args: { securityAudit: number | { id: number } } | [securityAu
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::exportPdf
-* @see app/Http/Controllers/SecurityAuditController.php:257
+* @see app/Http/Controllers/SecurityAuditController.php:300
 * @route '/security-audits/{securityAudit}/export-pdf'
 */
 const exportPdfForm = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -265,7 +265,7 @@ const exportPdfForm = (args: { securityAudit: number | { id: number } } | [secur
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::exportPdf
-* @see app/Http/Controllers/SecurityAuditController.php:257
+* @see app/Http/Controllers/SecurityAuditController.php:300
 * @route '/security-audits/{securityAudit}/export-pdf'
 */
 exportPdfForm.get = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -275,7 +275,7 @@ exportPdfForm.get = (args: { securityAudit: number | { id: number } } | [securit
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::exportPdf
-* @see app/Http/Controllers/SecurityAuditController.php:257
+* @see app/Http/Controllers/SecurityAuditController.php:300
 * @route '/security-audits/{securityAudit}/export-pdf'
 */
 exportPdfForm.head = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -292,7 +292,7 @@ exportPdf.form = exportPdfForm
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::upload
-* @see app/Http/Controllers/SecurityAuditController.php:66
+* @see app/Http/Controllers/SecurityAuditController.php:83
 * @route '/security-audits'
 */
 export const upload = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -307,7 +307,7 @@ upload.definition = {
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::upload
-* @see app/Http/Controllers/SecurityAuditController.php:66
+* @see app/Http/Controllers/SecurityAuditController.php:83
 * @route '/security-audits'
 */
 upload.url = (options?: RouteQueryOptions) => {
@@ -316,7 +316,7 @@ upload.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::upload
-* @see app/Http/Controllers/SecurityAuditController.php:66
+* @see app/Http/Controllers/SecurityAuditController.php:83
 * @route '/security-audits'
 */
 upload.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -326,7 +326,7 @@ upload.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::upload
-* @see app/Http/Controllers/SecurityAuditController.php:66
+* @see app/Http/Controllers/SecurityAuditController.php:83
 * @route '/security-audits'
 */
 const uploadForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -336,7 +336,7 @@ const uploadForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> =>
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::upload
-* @see app/Http/Controllers/SecurityAuditController.php:66
+* @see app/Http/Controllers/SecurityAuditController.php:83
 * @route '/security-audits'
 */
 uploadForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -348,7 +348,7 @@ upload.form = uploadForm
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::generateRisks
-* @see app/Http/Controllers/SecurityAuditController.php:155
+* @see app/Http/Controllers/SecurityAuditController.php:187
 * @route '/security-audits/{securityAudit}/generate-risks'
 */
 export const generateRisks = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -363,7 +363,7 @@ generateRisks.definition = {
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::generateRisks
-* @see app/Http/Controllers/SecurityAuditController.php:155
+* @see app/Http/Controllers/SecurityAuditController.php:187
 * @route '/security-audits/{securityAudit}/generate-risks'
 */
 generateRisks.url = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -396,7 +396,7 @@ generateRisks.url = (args: { securityAudit: number | { id: number } } | [securit
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::generateRisks
-* @see app/Http/Controllers/SecurityAuditController.php:155
+* @see app/Http/Controllers/SecurityAuditController.php:187
 * @route '/security-audits/{securityAudit}/generate-risks'
 */
 generateRisks.post = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -406,7 +406,7 @@ generateRisks.post = (args: { securityAudit: number | { id: number } } | [securi
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::generateRisks
-* @see app/Http/Controllers/SecurityAuditController.php:155
+* @see app/Http/Controllers/SecurityAuditController.php:187
 * @route '/security-audits/{securityAudit}/generate-risks'
 */
 const generateRisksForm = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -416,7 +416,7 @@ const generateRisksForm = (args: { securityAudit: number | { id: number } } | [s
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::generateRisks
-* @see app/Http/Controllers/SecurityAuditController.php:155
+* @see app/Http/Controllers/SecurityAuditController.php:187
 * @route '/security-audits/{securityAudit}/generate-risks'
 */
 generateRisksForm.post = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -428,7 +428,7 @@ generateRisks.form = generateRisksForm
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::saveAsEvidence
-* @see app/Http/Controllers/SecurityAuditController.php:218
+* @see app/Http/Controllers/SecurityAuditController.php:257
 * @route '/security-audits/{securityAudit}/save-as-evidence'
 */
 export const saveAsEvidence = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -443,7 +443,7 @@ saveAsEvidence.definition = {
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::saveAsEvidence
-* @see app/Http/Controllers/SecurityAuditController.php:218
+* @see app/Http/Controllers/SecurityAuditController.php:257
 * @route '/security-audits/{securityAudit}/save-as-evidence'
 */
 saveAsEvidence.url = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -476,7 +476,7 @@ saveAsEvidence.url = (args: { securityAudit: number | { id: number } } | [securi
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::saveAsEvidence
-* @see app/Http/Controllers/SecurityAuditController.php:218
+* @see app/Http/Controllers/SecurityAuditController.php:257
 * @route '/security-audits/{securityAudit}/save-as-evidence'
 */
 saveAsEvidence.post = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -486,7 +486,7 @@ saveAsEvidence.post = (args: { securityAudit: number | { id: number } } | [secur
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::saveAsEvidence
-* @see app/Http/Controllers/SecurityAuditController.php:218
+* @see app/Http/Controllers/SecurityAuditController.php:257
 * @route '/security-audits/{securityAudit}/save-as-evidence'
 */
 const saveAsEvidenceForm = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -496,7 +496,7 @@ const saveAsEvidenceForm = (args: { securityAudit: number | { id: number } } | [
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::saveAsEvidence
-* @see app/Http/Controllers/SecurityAuditController.php:218
+* @see app/Http/Controllers/SecurityAuditController.php:257
 * @route '/security-audits/{securityAudit}/save-as-evidence'
 */
 saveAsEvidenceForm.post = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -508,7 +508,7 @@ saveAsEvidence.form = saveAsEvidenceForm
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::destroy
-* @see app/Http/Controllers/SecurityAuditController.php:275
+* @see app/Http/Controllers/SecurityAuditController.php:320
 * @route '/security-audits/{securityAudit}'
 */
 export const destroy = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -523,7 +523,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::destroy
-* @see app/Http/Controllers/SecurityAuditController.php:275
+* @see app/Http/Controllers/SecurityAuditController.php:320
 * @route '/security-audits/{securityAudit}'
 */
 destroy.url = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -556,7 +556,7 @@ destroy.url = (args: { securityAudit: number | { id: number } } | [securityAudit
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::destroy
-* @see app/Http/Controllers/SecurityAuditController.php:275
+* @see app/Http/Controllers/SecurityAuditController.php:320
 * @route '/security-audits/{securityAudit}'
 */
 destroy.delete = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -566,7 +566,7 @@ destroy.delete = (args: { securityAudit: number | { id: number } } | [securityAu
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::destroy
-* @see app/Http/Controllers/SecurityAuditController.php:275
+* @see app/Http/Controllers/SecurityAuditController.php:320
 * @route '/security-audits/{securityAudit}'
 */
 const destroyForm = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -581,7 +581,7 @@ const destroyForm = (args: { securityAudit: number | { id: number } } | [securit
 
 /**
 * @see \App\Http\Controllers\SecurityAuditController::destroy
-* @see app/Http/Controllers/SecurityAuditController.php:275
+* @see app/Http/Controllers/SecurityAuditController.php:320
 * @route '/security-audits/{securityAudit}'
 */
 destroyForm.delete = (args: { securityAudit: number | { id: number } } | [securityAudit: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

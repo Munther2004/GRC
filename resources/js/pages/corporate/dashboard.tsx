@@ -221,12 +221,20 @@ export default function CorporateDashboard({ corporation, stats, users }: Props)
                                         +{users.length - 3} more member(s)
                                     </p>
                                 )}
-                                <Link href={route('corporate.team')}>
-                                    <Button className="w-full gap-2">
-                                        <Users className="h-4 w-4" />
-                                        View All Team Members
-                                    </Button>
-                                </Link>
+                                <div className="grid gap-2">
+                                    <Link href={route('corporate.team')}>
+                                        <Button className="w-full gap-2">
+                                            <Users className="h-4 w-4" />
+                                            View All Team Members
+                                        </Button>
+                                    </Link>
+                                    <Link href={route('admin.invites.index')}>
+                                        <Button variant="outline" className="w-full gap-2">
+                                            <Users className="h-4 w-4" />
+                                            Invite Employees
+                                        </Button>
+                                    </Link>
+                                </div>
                             </>
                         )}
                     </CardContent>

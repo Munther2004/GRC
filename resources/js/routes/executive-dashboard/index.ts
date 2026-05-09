@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::pdf
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 export const pdf = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ pdf.definition = {
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::pdf
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 pdf.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ pdf.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::pdf
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 pdf.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ pdf.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::pdf
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 pdf.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ pdf.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::pdf
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 const pdfForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const pdfForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::pdf
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 pdfForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ pdfForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::pdf
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 pdfForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

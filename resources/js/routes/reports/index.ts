@@ -163,7 +163,7 @@ exportPdf.form = exportPdfForm
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::executiveSummary
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 export const executiveSummary = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -178,7 +178,7 @@ executiveSummary.definition = {
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::executiveSummary
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 executiveSummary.url = (options?: RouteQueryOptions) => {
@@ -187,7 +187,7 @@ executiveSummary.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::executiveSummary
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 executiveSummary.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -197,7 +197,7 @@ executiveSummary.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::executiveSummary
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 executiveSummary.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -207,7 +207,7 @@ executiveSummary.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::executiveSummary
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 const executiveSummaryForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -217,7 +217,7 @@ const executiveSummaryForm = (options?: RouteQueryOptions): RouteFormDefinition<
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::executiveSummary
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 executiveSummaryForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -227,7 +227,7 @@ executiveSummaryForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'g
 
 /**
 * @see \App\Http\Controllers\ExecutiveSummaryController::executiveSummary
-* @see app/Http/Controllers/ExecutiveSummaryController.php:14
+* @see app/Http/Controllers/ExecutiveSummaryController.php:16
 * @route '/reports/executive-summary'
 */
 executiveSummaryForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

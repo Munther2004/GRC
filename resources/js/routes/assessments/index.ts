@@ -164,7 +164,7 @@ create.form = createForm
 
 /**
 * @see \App\Http\Controllers\AssessmentController::exportPdf
-* @see app/Http/Controllers/AssessmentController.php:357
+* @see app/Http/Controllers/AssessmentController.php:422
 * @route '/assessments/{assessment}/export-pdf'
 */
 export const exportPdf = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -179,7 +179,7 @@ exportPdf.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::exportPdf
-* @see app/Http/Controllers/AssessmentController.php:357
+* @see app/Http/Controllers/AssessmentController.php:422
 * @route '/assessments/{assessment}/export-pdf'
 */
 exportPdf.url = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -212,7 +212,7 @@ exportPdf.url = (args: { assessment: number | { id: number } } | [assessment: nu
 
 /**
 * @see \App\Http\Controllers\AssessmentController::exportPdf
-* @see app/Http/Controllers/AssessmentController.php:357
+* @see app/Http/Controllers/AssessmentController.php:422
 * @route '/assessments/{assessment}/export-pdf'
 */
 exportPdf.get = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -222,7 +222,7 @@ exportPdf.get = (args: { assessment: number | { id: number } } | [assessment: nu
 
 /**
 * @see \App\Http\Controllers\AssessmentController::exportPdf
-* @see app/Http/Controllers/AssessmentController.php:357
+* @see app/Http/Controllers/AssessmentController.php:422
 * @route '/assessments/{assessment}/export-pdf'
 */
 exportPdf.head = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -232,7 +232,7 @@ exportPdf.head = (args: { assessment: number | { id: number } } | [assessment: n
 
 /**
 * @see \App\Http\Controllers\AssessmentController::exportPdf
-* @see app/Http/Controllers/AssessmentController.php:357
+* @see app/Http/Controllers/AssessmentController.php:422
 * @route '/assessments/{assessment}/export-pdf'
 */
 const exportPdfForm = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -242,7 +242,7 @@ const exportPdfForm = (args: { assessment: number | { id: number } } | [assessme
 
 /**
 * @see \App\Http\Controllers\AssessmentController::exportPdf
-* @see app/Http/Controllers/AssessmentController.php:357
+* @see app/Http/Controllers/AssessmentController.php:422
 * @route '/assessments/{assessment}/export-pdf'
 */
 exportPdfForm.get = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -252,7 +252,7 @@ exportPdfForm.get = (args: { assessment: number | { id: number } } | [assessment
 
 /**
 * @see \App\Http\Controllers\AssessmentController::exportPdf
-* @see app/Http/Controllers/AssessmentController.php:357
+* @see app/Http/Controllers/AssessmentController.php:422
 * @route '/assessments/{assessment}/export-pdf'
 */
 exportPdfForm.head = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -325,7 +325,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\AssessmentController::destroy
-* @see app/Http/Controllers/AssessmentController.php:468
+* @see app/Http/Controllers/AssessmentController.php:552
 * @route '/assessments/{assessment}'
 */
 export const destroy = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -340,7 +340,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::destroy
-* @see app/Http/Controllers/AssessmentController.php:468
+* @see app/Http/Controllers/AssessmentController.php:552
 * @route '/assessments/{assessment}'
 */
 destroy.url = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -373,7 +373,7 @@ destroy.url = (args: { assessment: number | { id: number } } | [assessment: numb
 
 /**
 * @see \App\Http\Controllers\AssessmentController::destroy
-* @see app/Http/Controllers/AssessmentController.php:468
+* @see app/Http/Controllers/AssessmentController.php:552
 * @route '/assessments/{assessment}'
 */
 destroy.delete = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -383,7 +383,7 @@ destroy.delete = (args: { assessment: number | { id: number } } | [assessment: n
 
 /**
 * @see \App\Http\Controllers\AssessmentController::destroy
-* @see app/Http/Controllers/AssessmentController.php:468
+* @see app/Http/Controllers/AssessmentController.php:552
 * @route '/assessments/{assessment}'
 */
 const destroyForm = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -398,7 +398,7 @@ const destroyForm = (args: { assessment: number | { id: number } } | [assessment
 
 /**
 * @see \App\Http\Controllers\AssessmentController::destroy
-* @see app/Http/Controllers/AssessmentController.php:468
+* @see app/Http/Controllers/AssessmentController.php:552
 * @route '/assessments/{assessment}'
 */
 destroyForm.delete = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -415,7 +415,7 @@ destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\AssessmentController::questionnaire
-* @see app/Http/Controllers/AssessmentController.php:161
+* @see app/Http/Controllers/AssessmentController.php:168
 * @route '/assessments/{assessment}/questionnaire'
 */
 export const questionnaire = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -430,7 +430,7 @@ questionnaire.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::questionnaire
-* @see app/Http/Controllers/AssessmentController.php:161
+* @see app/Http/Controllers/AssessmentController.php:168
 * @route '/assessments/{assessment}/questionnaire'
 */
 questionnaire.url = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -463,7 +463,7 @@ questionnaire.url = (args: { assessment: number | { id: number } } | [assessment
 
 /**
 * @see \App\Http\Controllers\AssessmentController::questionnaire
-* @see app/Http/Controllers/AssessmentController.php:161
+* @see app/Http/Controllers/AssessmentController.php:168
 * @route '/assessments/{assessment}/questionnaire'
 */
 questionnaire.get = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -473,7 +473,7 @@ questionnaire.get = (args: { assessment: number | { id: number } } | [assessment
 
 /**
 * @see \App\Http\Controllers\AssessmentController::questionnaire
-* @see app/Http/Controllers/AssessmentController.php:161
+* @see app/Http/Controllers/AssessmentController.php:168
 * @route '/assessments/{assessment}/questionnaire'
 */
 questionnaire.head = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -483,7 +483,7 @@ questionnaire.head = (args: { assessment: number | { id: number } } | [assessmen
 
 /**
 * @see \App\Http\Controllers\AssessmentController::questionnaire
-* @see app/Http/Controllers/AssessmentController.php:161
+* @see app/Http/Controllers/AssessmentController.php:168
 * @route '/assessments/{assessment}/questionnaire'
 */
 const questionnaireForm = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -493,7 +493,7 @@ const questionnaireForm = (args: { assessment: number | { id: number } } | [asse
 
 /**
 * @see \App\Http\Controllers\AssessmentController::questionnaire
-* @see app/Http/Controllers/AssessmentController.php:161
+* @see app/Http/Controllers/AssessmentController.php:168
 * @route '/assessments/{assessment}/questionnaire'
 */
 questionnaireForm.get = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -503,7 +503,7 @@ questionnaireForm.get = (args: { assessment: number | { id: number } } | [assess
 
 /**
 * @see \App\Http\Controllers\AssessmentController::questionnaire
-* @see app/Http/Controllers/AssessmentController.php:161
+* @see app/Http/Controllers/AssessmentController.php:168
 * @route '/assessments/{assessment}/questionnaire'
 */
 questionnaireForm.head = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -520,7 +520,7 @@ questionnaire.form = questionnaireForm
 
 /**
 * @see \App\Http\Controllers\AssessmentController::saveAnswers
-* @see app/Http/Controllers/AssessmentController.php:207
+* @see app/Http/Controllers/AssessmentController.php:240
 * @route '/assessments/{assessment}/save-answers'
 */
 export const saveAnswers = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -535,7 +535,7 @@ saveAnswers.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::saveAnswers
-* @see app/Http/Controllers/AssessmentController.php:207
+* @see app/Http/Controllers/AssessmentController.php:240
 * @route '/assessments/{assessment}/save-answers'
 */
 saveAnswers.url = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -568,7 +568,7 @@ saveAnswers.url = (args: { assessment: number | { id: number } } | [assessment: 
 
 /**
 * @see \App\Http\Controllers\AssessmentController::saveAnswers
-* @see app/Http/Controllers/AssessmentController.php:207
+* @see app/Http/Controllers/AssessmentController.php:240
 * @route '/assessments/{assessment}/save-answers'
 */
 saveAnswers.post = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -578,7 +578,7 @@ saveAnswers.post = (args: { assessment: number | { id: number } } | [assessment:
 
 /**
 * @see \App\Http\Controllers\AssessmentController::saveAnswers
-* @see app/Http/Controllers/AssessmentController.php:207
+* @see app/Http/Controllers/AssessmentController.php:240
 * @route '/assessments/{assessment}/save-answers'
 */
 const saveAnswersForm = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -588,7 +588,7 @@ const saveAnswersForm = (args: { assessment: number | { id: number } } | [assess
 
 /**
 * @see \App\Http\Controllers\AssessmentController::saveAnswers
-* @see app/Http/Controllers/AssessmentController.php:207
+* @see app/Http/Controllers/AssessmentController.php:240
 * @route '/assessments/{assessment}/save-answers'
 */
 saveAnswersForm.post = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -600,7 +600,7 @@ saveAnswers.form = saveAnswersForm
 
 /**
 * @see \App\Http\Controllers\AssessmentController::submit
-* @see app/Http/Controllers/AssessmentController.php:287
+* @see app/Http/Controllers/AssessmentController.php:340
 * @route '/assessments/{assessment}/submit'
 */
 export const submit = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -615,7 +615,7 @@ submit.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::submit
-* @see app/Http/Controllers/AssessmentController.php:287
+* @see app/Http/Controllers/AssessmentController.php:340
 * @route '/assessments/{assessment}/submit'
 */
 submit.url = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -648,7 +648,7 @@ submit.url = (args: { assessment: number | { id: number } } | [assessment: numbe
 
 /**
 * @see \App\Http\Controllers\AssessmentController::submit
-* @see app/Http/Controllers/AssessmentController.php:287
+* @see app/Http/Controllers/AssessmentController.php:340
 * @route '/assessments/{assessment}/submit'
 */
 submit.post = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -658,7 +658,7 @@ submit.post = (args: { assessment: number | { id: number } } | [assessment: numb
 
 /**
 * @see \App\Http\Controllers\AssessmentController::submit
-* @see app/Http/Controllers/AssessmentController.php:287
+* @see app/Http/Controllers/AssessmentController.php:340
 * @route '/assessments/{assessment}/submit'
 */
 const submitForm = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -668,7 +668,7 @@ const submitForm = (args: { assessment: number | { id: number } } | [assessment:
 
 /**
 * @see \App\Http\Controllers\AssessmentController::submit
-* @see app/Http/Controllers/AssessmentController.php:287
+* @see app/Http/Controllers/AssessmentController.php:340
 * @route '/assessments/{assessment}/submit'
 */
 submitForm.post = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -680,7 +680,7 @@ submit.form = submitForm
 
 /**
 * @see \App\Http\Controllers\AssessmentController::autoFill
-* @see app/Http/Controllers/AssessmentController.php:235
+* @see app/Http/Controllers/AssessmentController.php:270
 * @route '/assessments/{assessment}/auto-fill'
 */
 export const autoFill = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -695,7 +695,7 @@ autoFill.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::autoFill
-* @see app/Http/Controllers/AssessmentController.php:235
+* @see app/Http/Controllers/AssessmentController.php:270
 * @route '/assessments/{assessment}/auto-fill'
 */
 autoFill.url = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -728,7 +728,7 @@ autoFill.url = (args: { assessment: number | { id: number } } | [assessment: num
 
 /**
 * @see \App\Http\Controllers\AssessmentController::autoFill
-* @see app/Http/Controllers/AssessmentController.php:235
+* @see app/Http/Controllers/AssessmentController.php:270
 * @route '/assessments/{assessment}/auto-fill'
 */
 autoFill.post = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -738,7 +738,7 @@ autoFill.post = (args: { assessment: number | { id: number } } | [assessment: nu
 
 /**
 * @see \App\Http\Controllers\AssessmentController::autoFill
-* @see app/Http/Controllers/AssessmentController.php:235
+* @see app/Http/Controllers/AssessmentController.php:270
 * @route '/assessments/{assessment}/auto-fill'
 */
 const autoFillForm = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -748,7 +748,7 @@ const autoFillForm = (args: { assessment: number | { id: number } } | [assessmen
 
 /**
 * @see \App\Http\Controllers\AssessmentController::autoFill
-* @see app/Http/Controllers/AssessmentController.php:235
+* @see app/Http/Controllers/AssessmentController.php:270
 * @route '/assessments/{assessment}/auto-fill'
 */
 autoFillForm.post = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -760,7 +760,7 @@ autoFill.form = autoFillForm
 
 /**
 * @see \App\Http\Controllers\AssessmentController::uploadEvidence
-* @see app/Http/Controllers/AssessmentController.php:322
+* @see app/Http/Controllers/AssessmentController.php:377
 * @route '/assessments/{assessment}/items/{item}/evidence'
 */
 export const uploadEvidence = (args: { assessment: number | { id: number }, item: number | { id: number } } | [assessment: number | { id: number }, item: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -775,7 +775,7 @@ uploadEvidence.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::uploadEvidence
-* @see app/Http/Controllers/AssessmentController.php:322
+* @see app/Http/Controllers/AssessmentController.php:377
 * @route '/assessments/{assessment}/items/{item}/evidence'
 */
 uploadEvidence.url = (args: { assessment: number | { id: number }, item: number | { id: number } } | [assessment: number | { id: number }, item: number | { id: number } ], options?: RouteQueryOptions) => {
@@ -805,7 +805,7 @@ uploadEvidence.url = (args: { assessment: number | { id: number }, item: number 
 
 /**
 * @see \App\Http\Controllers\AssessmentController::uploadEvidence
-* @see app/Http/Controllers/AssessmentController.php:322
+* @see app/Http/Controllers/AssessmentController.php:377
 * @route '/assessments/{assessment}/items/{item}/evidence'
 */
 uploadEvidence.post = (args: { assessment: number | { id: number }, item: number | { id: number } } | [assessment: number | { id: number }, item: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -815,7 +815,7 @@ uploadEvidence.post = (args: { assessment: number | { id: number }, item: number
 
 /**
 * @see \App\Http\Controllers\AssessmentController::uploadEvidence
-* @see app/Http/Controllers/AssessmentController.php:322
+* @see app/Http/Controllers/AssessmentController.php:377
 * @route '/assessments/{assessment}/items/{item}/evidence'
 */
 const uploadEvidenceForm = (args: { assessment: number | { id: number }, item: number | { id: number } } | [assessment: number | { id: number }, item: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -825,7 +825,7 @@ const uploadEvidenceForm = (args: { assessment: number | { id: number }, item: n
 
 /**
 * @see \App\Http\Controllers\AssessmentController::uploadEvidence
-* @see app/Http/Controllers/AssessmentController.php:322
+* @see app/Http/Controllers/AssessmentController.php:377
 * @route '/assessments/{assessment}/items/{item}/evidence'
 */
 uploadEvidenceForm.post = (args: { assessment: number | { id: number }, item: number | { id: number } } | [assessment: number | { id: number }, item: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -837,7 +837,7 @@ uploadEvidence.form = uploadEvidenceForm
 
 /**
 * @see \App\Http\Controllers\AssessmentController::explainControl
-* @see app/Http/Controllers/AssessmentController.php:443
+* @see app/Http/Controllers/AssessmentController.php:527
 * @route '/assessments/explain-control'
 */
 export const explainControl = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -852,7 +852,7 @@ explainControl.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::explainControl
-* @see app/Http/Controllers/AssessmentController.php:443
+* @see app/Http/Controllers/AssessmentController.php:527
 * @route '/assessments/explain-control'
 */
 explainControl.url = (options?: RouteQueryOptions) => {
@@ -861,7 +861,7 @@ explainControl.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::explainControl
-* @see app/Http/Controllers/AssessmentController.php:443
+* @see app/Http/Controllers/AssessmentController.php:527
 * @route '/assessments/explain-control'
 */
 explainControl.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -871,7 +871,7 @@ explainControl.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\AssessmentController::explainControl
-* @see app/Http/Controllers/AssessmentController.php:443
+* @see app/Http/Controllers/AssessmentController.php:527
 * @route '/assessments/explain-control'
 */
 const explainControlForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -881,7 +881,7 @@ const explainControlForm = (options?: RouteQueryOptions): RouteFormDefinition<'p
 
 /**
 * @see \App\Http\Controllers\AssessmentController::explainControl
-* @see app/Http/Controllers/AssessmentController.php:443
+* @see app/Http/Controllers/AssessmentController.php:527
 * @route '/assessments/explain-control'
 */
 explainControlForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -974,7 +974,7 @@ compare.form = compareForm
 
 /**
 * @see \App\Http\Controllers\AssessmentController::show
-* @see app/Http/Controllers/AssessmentController.php:125
+* @see app/Http/Controllers/AssessmentController.php:129
 * @route '/assessments/{assessment}'
 */
 export const show = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -989,7 +989,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::show
-* @see app/Http/Controllers/AssessmentController.php:125
+* @see app/Http/Controllers/AssessmentController.php:129
 * @route '/assessments/{assessment}'
 */
 show.url = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -1022,7 +1022,7 @@ show.url = (args: { assessment: number | { id: number } } | [assessment: number 
 
 /**
 * @see \App\Http\Controllers\AssessmentController::show
-* @see app/Http/Controllers/AssessmentController.php:125
+* @see app/Http/Controllers/AssessmentController.php:129
 * @route '/assessments/{assessment}'
 */
 show.get = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1032,7 +1032,7 @@ show.get = (args: { assessment: number | { id: number } } | [assessment: number 
 
 /**
 * @see \App\Http\Controllers\AssessmentController::show
-* @see app/Http/Controllers/AssessmentController.php:125
+* @see app/Http/Controllers/AssessmentController.php:129
 * @route '/assessments/{assessment}'
 */
 show.head = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -1042,7 +1042,7 @@ show.head = (args: { assessment: number | { id: number } } | [assessment: number
 
 /**
 * @see \App\Http\Controllers\AssessmentController::show
-* @see app/Http/Controllers/AssessmentController.php:125
+* @see app/Http/Controllers/AssessmentController.php:129
 * @route '/assessments/{assessment}'
 */
 const showForm = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1052,7 +1052,7 @@ const showForm = (args: { assessment: number | { id: number } } | [assessment: n
 
 /**
 * @see \App\Http\Controllers\AssessmentController::show
-* @see app/Http/Controllers/AssessmentController.php:125
+* @see app/Http/Controllers/AssessmentController.php:129
 * @route '/assessments/{assessment}'
 */
 showForm.get = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1062,7 +1062,7 @@ showForm.get = (args: { assessment: number | { id: number } } | [assessment: num
 
 /**
 * @see \App\Http\Controllers\AssessmentController::show
-* @see app/Http/Controllers/AssessmentController.php:125
+* @see app/Http/Controllers/AssessmentController.php:129
 * @route '/assessments/{assessment}'
 */
 showForm.head = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

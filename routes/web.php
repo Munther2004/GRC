@@ -13,6 +13,7 @@ use App\Http\Controllers\ComplianceChatbotController;
 use App\Http\Controllers\ControlHubController;
 use App\Http\Controllers\ControlStatusRequestController;
 use App\Http\Controllers\CorporateDashboardController;
+use App\Http\Controllers\CorporationInviteController;
 use App\Http\Controllers\CorporationRegistrationController;
 use App\Http\Controllers\CrosswalkController;
 use App\Http\Controllers\DashboardController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\EvidenceCoverageController;
 use App\Http\Controllers\ExecutiveDashboardController;
 use App\Http\Controllers\ExecutiveSummaryController;
 use App\Http\Controllers\GapAnalysisController;
+use App\Http\Controllers\InviteAcceptController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RemediationTaskController;
 use App\Http\Controllers\ReportController;
@@ -46,6 +48,10 @@ Route::get('/corporation/{corporation}/pending', [CorporationRegistrationControl
 Route::post('/corporation/{corporation}/verify-code', [CorporationRegistrationController::class, 'verifyCode'])->name('corporations.verify-code');
 Route::get('/corporation/{corporation}/manager-signup', [CorporationRegistrationController::class, 'showManagerSignup'])->name('corporations.manager-signup');
 Route::post('/corporation/{corporation}/manager-signup', [CorporationRegistrationController::class, 'registerManager'])->name('corporations.manager-register');
+
+// ── Public invite acceptance ─────────────────────────────────────────────────
+Route::get('/invite/{token}', [InviteAcceptController::class, 'show'])->name('invite.show');
+Route::post('/invite/{token}/register', [InviteAcceptController::class, 'register'])->name('invite.register');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -217,6 +223,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // User management — super_admin or corp admin (controller scopes by tenant).
         Route::middleware('role:super_admin,admin')->group(function () {
             Route::resource('users', AdminUserController::class);
+
+            // Corporation invites — admins generate links / send email invites
+            // to onboard employees into their own corporation. Super_admin can
+            // act on any corporation via ?corporation_id=.
+            Route::get('invites', [CorporationInviteController::class, 'index'])->name('invites.index');
+            Route::post('invites/shareable', [CorporationInviteController::class, 'storeShareable'])->name('invites.shareable');
+            Route::post('invites/email', [CorporationInviteController::class, 'storeEmail'])->name('invites.email');
+            Route::delete('invites/{invite}', [CorporationInviteController::class, 'destroy'])->name('invites.destroy');
         });
 
         // File reputation checks — review surface (super_admin / admin / auditor).

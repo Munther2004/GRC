@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 import statusRequests from './status-requests'
 /**
 * @see \App\Http\Controllers\ControlHubController::hub
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 export const hub = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -17,7 +17,7 @@ hub.definition = {
 
 /**
 * @see \App\Http\Controllers\ControlHubController::hub
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 hub.url = (options?: RouteQueryOptions) => {
@@ -26,7 +26,7 @@ hub.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ControlHubController::hub
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 hub.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -36,7 +36,7 @@ hub.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ControlHubController::hub
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 hub.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -46,7 +46,7 @@ hub.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ControlHubController::hub
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 const hubForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -56,7 +56,7 @@ const hubForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ControlHubController::hub
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 hubForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -66,7 +66,7 @@ hubForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ControlHubController::hub
-* @see app/Http/Controllers/ControlHubController.php:13
+* @see app/Http/Controllers/ControlHubController.php:15
 * @route '/controls/hub'
 */
 hubForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -83,7 +83,7 @@ hub.form = hubForm
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 export const history = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -98,7 +98,7 @@ history.definition = {
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 history.url = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -131,7 +131,7 @@ history.url = (args: { control: number | { id: number } } | [control: number | {
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 history.get = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -141,7 +141,7 @@ history.get = (args: { control: number | { id: number } } | [control: number | {
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 history.head = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -151,7 +151,7 @@ history.head = (args: { control: number | { id: number } } | [control: number | 
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 const historyForm = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -161,7 +161,7 @@ const historyForm = (args: { control: number | { id: number } } | [control: numb
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 historyForm.get = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -171,7 +171,7 @@ historyForm.get = (args: { control: number | { id: number } } | [control: number
 
 /**
 * @see \App\Http\Controllers\ControlHubController::history
-* @see app/Http/Controllers/ControlHubController.php:72
+* @see app/Http/Controllers/ControlHubController.php:95
 * @route '/controls/{control}/history'
 */
 historyForm.head = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -188,7 +188,7 @@ history.form = historyForm
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::requestStatus
-* @see app/Http/Controllers/ControlStatusRequestController.php:84
+* @see app/Http/Controllers/ControlStatusRequestController.php:81
 * @route '/controls/{control}/request-status'
 */
 export const requestStatus = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -203,7 +203,7 @@ requestStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::requestStatus
-* @see app/Http/Controllers/ControlStatusRequestController.php:84
+* @see app/Http/Controllers/ControlStatusRequestController.php:81
 * @route '/controls/{control}/request-status'
 */
 requestStatus.url = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -236,7 +236,7 @@ requestStatus.url = (args: { control: number | { id: number } } | [control: numb
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::requestStatus
-* @see app/Http/Controllers/ControlStatusRequestController.php:84
+* @see app/Http/Controllers/ControlStatusRequestController.php:81
 * @route '/controls/{control}/request-status'
 */
 requestStatus.post = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -246,7 +246,7 @@ requestStatus.post = (args: { control: number | { id: number } } | [control: num
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::requestStatus
-* @see app/Http/Controllers/ControlStatusRequestController.php:84
+* @see app/Http/Controllers/ControlStatusRequestController.php:81
 * @route '/controls/{control}/request-status'
 */
 const requestStatusForm = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -256,7 +256,7 @@ const requestStatusForm = (args: { control: number | { id: number } } | [control
 
 /**
 * @see \App\Http\Controllers\ControlStatusRequestController::requestStatus
-* @see app/Http/Controllers/ControlStatusRequestController.php:84
+* @see app/Http/Controllers/ControlStatusRequestController.php:81
 * @route '/controls/{control}/request-status'
 */
 requestStatusForm.post = (args: { control: number | { id: number } } | [control: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

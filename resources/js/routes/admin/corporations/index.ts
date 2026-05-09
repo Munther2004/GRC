@@ -187,7 +187,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::destroy
-* @see app/Http/Controllers/Admin/CorporationController.php:136
+* @see app/Http/Controllers/Admin/CorporationController.php:140
 * @route '/admin/corporations/{corporation}'
 */
 export const destroy = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -202,7 +202,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::destroy
-* @see app/Http/Controllers/Admin/CorporationController.php:136
+* @see app/Http/Controllers/Admin/CorporationController.php:140
 * @route '/admin/corporations/{corporation}'
 */
 destroy.url = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -235,7 +235,7 @@ destroy.url = (args: { corporation: number | { id: number } } | [corporation: nu
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::destroy
-* @see app/Http/Controllers/Admin/CorporationController.php:136
+* @see app/Http/Controllers/Admin/CorporationController.php:140
 * @route '/admin/corporations/{corporation}'
 */
 destroy.delete = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -245,7 +245,7 @@ destroy.delete = (args: { corporation: number | { id: number } } | [corporation:
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::destroy
-* @see app/Http/Controllers/Admin/CorporationController.php:136
+* @see app/Http/Controllers/Admin/CorporationController.php:140
 * @route '/admin/corporations/{corporation}'
 */
 const destroyForm = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -260,7 +260,7 @@ const destroyForm = (args: { corporation: number | { id: number } } | [corporati
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::destroy
-* @see app/Http/Controllers/Admin/CorporationController.php:136
+* @see app/Http/Controllers/Admin/CorporationController.php:140
 * @route '/admin/corporations/{corporation}'
 */
 destroyForm.delete = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -277,7 +277,7 @@ destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::approve
-* @see app/Http/Controllers/Admin/CorporationController.php:56
+* @see app/Http/Controllers/Admin/CorporationController.php:60
 * @route '/admin/corporations/{corporation}/approve'
 */
 export const approve = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -292,7 +292,7 @@ approve.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::approve
-* @see app/Http/Controllers/Admin/CorporationController.php:56
+* @see app/Http/Controllers/Admin/CorporationController.php:60
 * @route '/admin/corporations/{corporation}/approve'
 */
 approve.url = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -325,7 +325,7 @@ approve.url = (args: { corporation: number | { id: number } } | [corporation: nu
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::approve
-* @see app/Http/Controllers/Admin/CorporationController.php:56
+* @see app/Http/Controllers/Admin/CorporationController.php:60
 * @route '/admin/corporations/{corporation}/approve'
 */
 approve.post = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -335,7 +335,7 @@ approve.post = (args: { corporation: number | { id: number } } | [corporation: n
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::approve
-* @see app/Http/Controllers/Admin/CorporationController.php:56
+* @see app/Http/Controllers/Admin/CorporationController.php:60
 * @route '/admin/corporations/{corporation}/approve'
 */
 const approveForm = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -345,7 +345,7 @@ const approveForm = (args: { corporation: number | { id: number } } | [corporati
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::approve
-* @see app/Http/Controllers/Admin/CorporationController.php:56
+* @see app/Http/Controllers/Admin/CorporationController.php:60
 * @route '/admin/corporations/{corporation}/approve'
 */
 approveForm.post = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -357,7 +357,7 @@ approve.form = approveForm
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::reject
-* @see app/Http/Controllers/Admin/CorporationController.php:110
+* @see app/Http/Controllers/Admin/CorporationController.php:114
 * @route '/admin/corporations/{corporation}/reject'
 */
 export const reject = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -372,7 +372,7 @@ reject.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::reject
-* @see app/Http/Controllers/Admin/CorporationController.php:110
+* @see app/Http/Controllers/Admin/CorporationController.php:114
 * @route '/admin/corporations/{corporation}/reject'
 */
 reject.url = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -405,7 +405,7 @@ reject.url = (args: { corporation: number | { id: number } } | [corporation: num
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::reject
-* @see app/Http/Controllers/Admin/CorporationController.php:110
+* @see app/Http/Controllers/Admin/CorporationController.php:114
 * @route '/admin/corporations/{corporation}/reject'
 */
 reject.post = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -415,7 +415,7 @@ reject.post = (args: { corporation: number | { id: number } } | [corporation: nu
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::reject
-* @see app/Http/Controllers/Admin/CorporationController.php:110
+* @see app/Http/Controllers/Admin/CorporationController.php:114
 * @route '/admin/corporations/{corporation}/reject'
 */
 const rejectForm = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -425,7 +425,7 @@ const rejectForm = (args: { corporation: number | { id: number } } | [corporatio
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::reject
-* @see app/Http/Controllers/Admin/CorporationController.php:110
+* @see app/Http/Controllers/Admin/CorporationController.php:114
 * @route '/admin/corporations/{corporation}/reject'
 */
 rejectForm.post = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -437,7 +437,7 @@ reject.form = rejectForm
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::regenerateCode
-* @see app/Http/Controllers/Admin/CorporationController.php:123
+* @see app/Http/Controllers/Admin/CorporationController.php:127
 * @route '/admin/corporations/{corporation}/regenerate-code'
 */
 export const regenerateCode = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -452,7 +452,7 @@ regenerateCode.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::regenerateCode
-* @see app/Http/Controllers/Admin/CorporationController.php:123
+* @see app/Http/Controllers/Admin/CorporationController.php:127
 * @route '/admin/corporations/{corporation}/regenerate-code'
 */
 regenerateCode.url = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -485,7 +485,7 @@ regenerateCode.url = (args: { corporation: number | { id: number } } | [corporat
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::regenerateCode
-* @see app/Http/Controllers/Admin/CorporationController.php:123
+* @see app/Http/Controllers/Admin/CorporationController.php:127
 * @route '/admin/corporations/{corporation}/regenerate-code'
 */
 regenerateCode.post = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -495,7 +495,7 @@ regenerateCode.post = (args: { corporation: number | { id: number } } | [corpora
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::regenerateCode
-* @see app/Http/Controllers/Admin/CorporationController.php:123
+* @see app/Http/Controllers/Admin/CorporationController.php:127
 * @route '/admin/corporations/{corporation}/regenerate-code'
 */
 const regenerateCodeForm = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -505,7 +505,7 @@ const regenerateCodeForm = (args: { corporation: number | { id: number } } | [co
 
 /**
 * @see \App\Http\Controllers\Admin\CorporationController::regenerateCode
-* @see app/Http/Controllers/Admin/CorporationController.php:123
+* @see app/Http/Controllers/Admin/CorporationController.php:127
 * @route '/admin/corporations/{corporation}/regenerate-code'
 */
 regenerateCodeForm.post = (args: { corporation: number | { id: number } } | [corporation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

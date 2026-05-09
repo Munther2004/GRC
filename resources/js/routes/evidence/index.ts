@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\EvidenceController::index
-* @see app/Http/Controllers/EvidenceController.php:20
+* @see app/Http/Controllers/EvidenceController.php:22
 * @route '/evidence'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\EvidenceController::index
-* @see app/Http/Controllers/EvidenceController.php:20
+* @see app/Http/Controllers/EvidenceController.php:22
 * @route '/evidence'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\EvidenceController::index
-* @see app/Http/Controllers/EvidenceController.php:20
+* @see app/Http/Controllers/EvidenceController.php:22
 * @route '/evidence'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EvidenceController::index
-* @see app/Http/Controllers/EvidenceController.php:20
+* @see app/Http/Controllers/EvidenceController.php:22
 * @route '/evidence'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\EvidenceController::index
-* @see app/Http/Controllers/EvidenceController.php:20
+* @see app/Http/Controllers/EvidenceController.php:22
 * @route '/evidence'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\EvidenceController::index
-* @see app/Http/Controllers/EvidenceController.php:20
+* @see app/Http/Controllers/EvidenceController.php:22
 * @route '/evidence'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\EvidenceController::index
-* @see app/Http/Controllers/EvidenceController.php:20
+* @see app/Http/Controllers/EvidenceController.php:22
 * @route '/evidence'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\EvidenceController::download
-* @see app/Http/Controllers/EvidenceController.php:171
+* @see app/Http/Controllers/EvidenceController.php:222
 * @route '/evidence/{evidence}/download'
 */
 export const download = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ download.definition = {
 
 /**
 * @see \App\Http\Controllers\EvidenceController::download
-* @see app/Http/Controllers/EvidenceController.php:171
+* @see app/Http/Controllers/EvidenceController.php:222
 * @route '/evidence/{evidence}/download'
 */
 download.url = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -130,7 +130,7 @@ download.url = (args: { evidence: number | { id: number } } | [evidence: number 
 
 /**
 * @see \App\Http\Controllers\EvidenceController::download
-* @see app/Http/Controllers/EvidenceController.php:171
+* @see app/Http/Controllers/EvidenceController.php:222
 * @route '/evidence/{evidence}/download'
 */
 download.get = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -140,7 +140,7 @@ download.get = (args: { evidence: number | { id: number } } | [evidence: number 
 
 /**
 * @see \App\Http\Controllers\EvidenceController::download
-* @see app/Http/Controllers/EvidenceController.php:171
+* @see app/Http/Controllers/EvidenceController.php:222
 * @route '/evidence/{evidence}/download'
 */
 download.head = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -150,7 +150,7 @@ download.head = (args: { evidence: number | { id: number } } | [evidence: number
 
 /**
 * @see \App\Http\Controllers\EvidenceController::download
-* @see app/Http/Controllers/EvidenceController.php:171
+* @see app/Http/Controllers/EvidenceController.php:222
 * @route '/evidence/{evidence}/download'
 */
 const downloadForm = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -160,7 +160,7 @@ const downloadForm = (args: { evidence: number | { id: number } } | [evidence: n
 
 /**
 * @see \App\Http\Controllers\EvidenceController::download
-* @see app/Http/Controllers/EvidenceController.php:171
+* @see app/Http/Controllers/EvidenceController.php:222
 * @route '/evidence/{evidence}/download'
 */
 downloadForm.get = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -170,7 +170,7 @@ downloadForm.get = (args: { evidence: number | { id: number } } | [evidence: num
 
 /**
 * @see \App\Http\Controllers\EvidenceController::download
-* @see app/Http/Controllers/EvidenceController.php:171
+* @see app/Http/Controllers/EvidenceController.php:222
 * @route '/evidence/{evidence}/download'
 */
 downloadForm.head = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -187,7 +187,7 @@ download.form = downloadForm
 
 /**
 * @see \App\Http\Controllers\EvidenceController::approve
-* @see app/Http/Controllers/EvidenceController.php:60
+* @see app/Http/Controllers/EvidenceController.php:95
 * @route '/evidence/{evidence}/approve'
 */
 export const approve = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -202,7 +202,7 @@ approve.definition = {
 
 /**
 * @see \App\Http\Controllers\EvidenceController::approve
-* @see app/Http/Controllers/EvidenceController.php:60
+* @see app/Http/Controllers/EvidenceController.php:95
 * @route '/evidence/{evidence}/approve'
 */
 approve.url = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -235,7 +235,7 @@ approve.url = (args: { evidence: number | { id: number } } | [evidence: number |
 
 /**
 * @see \App\Http\Controllers\EvidenceController::approve
-* @see app/Http/Controllers/EvidenceController.php:60
+* @see app/Http/Controllers/EvidenceController.php:95
 * @route '/evidence/{evidence}/approve'
 */
 approve.post = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -245,7 +245,7 @@ approve.post = (args: { evidence: number | { id: number } } | [evidence: number 
 
 /**
 * @see \App\Http\Controllers\EvidenceController::approve
-* @see app/Http/Controllers/EvidenceController.php:60
+* @see app/Http/Controllers/EvidenceController.php:95
 * @route '/evidence/{evidence}/approve'
 */
 const approveForm = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -255,7 +255,7 @@ const approveForm = (args: { evidence: number | { id: number } } | [evidence: nu
 
 /**
 * @see \App\Http\Controllers\EvidenceController::approve
-* @see app/Http/Controllers/EvidenceController.php:60
+* @see app/Http/Controllers/EvidenceController.php:95
 * @route '/evidence/{evidence}/approve'
 */
 approveForm.post = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -267,7 +267,7 @@ approve.form = approveForm
 
 /**
 * @see \App\Http\Controllers\EvidenceController::reject
-* @see app/Http/Controllers/EvidenceController.php:76
+* @see app/Http/Controllers/EvidenceController.php:113
 * @route '/evidence/{evidence}/reject'
 */
 export const reject = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -282,7 +282,7 @@ reject.definition = {
 
 /**
 * @see \App\Http\Controllers\EvidenceController::reject
-* @see app/Http/Controllers/EvidenceController.php:76
+* @see app/Http/Controllers/EvidenceController.php:113
 * @route '/evidence/{evidence}/reject'
 */
 reject.url = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -315,7 +315,7 @@ reject.url = (args: { evidence: number | { id: number } } | [evidence: number | 
 
 /**
 * @see \App\Http\Controllers\EvidenceController::reject
-* @see app/Http/Controllers/EvidenceController.php:76
+* @see app/Http/Controllers/EvidenceController.php:113
 * @route '/evidence/{evidence}/reject'
 */
 reject.post = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -325,7 +325,7 @@ reject.post = (args: { evidence: number | { id: number } } | [evidence: number |
 
 /**
 * @see \App\Http\Controllers\EvidenceController::reject
-* @see app/Http/Controllers/EvidenceController.php:76
+* @see app/Http/Controllers/EvidenceController.php:113
 * @route '/evidence/{evidence}/reject'
 */
 const rejectForm = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -335,7 +335,7 @@ const rejectForm = (args: { evidence: number | { id: number } } | [evidence: num
 
 /**
 * @see \App\Http\Controllers\EvidenceController::reject
-* @see app/Http/Controllers/EvidenceController.php:76
+* @see app/Http/Controllers/EvidenceController.php:113
 * @route '/evidence/{evidence}/reject'
 */
 rejectForm.post = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -347,7 +347,7 @@ reject.form = rejectForm
 
 /**
 * @see \App\Http\Controllers\EvidenceController::aiReview
-* @see app/Http/Controllers/EvidenceController.php:193
+* @see app/Http/Controllers/EvidenceController.php:248
 * @route '/evidence/{evidence}/ai-review'
 */
 export const aiReview = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -362,7 +362,7 @@ aiReview.definition = {
 
 /**
 * @see \App\Http\Controllers\EvidenceController::aiReview
-* @see app/Http/Controllers/EvidenceController.php:193
+* @see app/Http/Controllers/EvidenceController.php:248
 * @route '/evidence/{evidence}/ai-review'
 */
 aiReview.url = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -395,7 +395,7 @@ aiReview.url = (args: { evidence: number | { id: number } } | [evidence: number 
 
 /**
 * @see \App\Http\Controllers\EvidenceController::aiReview
-* @see app/Http/Controllers/EvidenceController.php:193
+* @see app/Http/Controllers/EvidenceController.php:248
 * @route '/evidence/{evidence}/ai-review'
 */
 aiReview.post = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -405,7 +405,7 @@ aiReview.post = (args: { evidence: number | { id: number } } | [evidence: number
 
 /**
 * @see \App\Http\Controllers\EvidenceController::aiReview
-* @see app/Http/Controllers/EvidenceController.php:193
+* @see app/Http/Controllers/EvidenceController.php:248
 * @route '/evidence/{evidence}/ai-review'
 */
 const aiReviewForm = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -415,7 +415,7 @@ const aiReviewForm = (args: { evidence: number | { id: number } } | [evidence: n
 
 /**
 * @see \App\Http\Controllers\EvidenceController::aiReview
-* @see app/Http/Controllers/EvidenceController.php:193
+* @see app/Http/Controllers/EvidenceController.php:248
 * @route '/evidence/{evidence}/ai-review'
 */
 aiReviewForm.post = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -427,7 +427,7 @@ aiReview.form = aiReviewForm
 
 /**
 * @see \App\Http\Controllers\EvidenceController::destroy
-* @see app/Http/Controllers/EvidenceController.php:180
+* @see app/Http/Controllers/EvidenceController.php:233
 * @route '/evidence/{evidence}'
 */
 export const destroy = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -442,7 +442,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\EvidenceController::destroy
-* @see app/Http/Controllers/EvidenceController.php:180
+* @see app/Http/Controllers/EvidenceController.php:233
 * @route '/evidence/{evidence}'
 */
 destroy.url = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -475,7 +475,7 @@ destroy.url = (args: { evidence: number | { id: number } } | [evidence: number |
 
 /**
 * @see \App\Http\Controllers\EvidenceController::destroy
-* @see app/Http/Controllers/EvidenceController.php:180
+* @see app/Http/Controllers/EvidenceController.php:233
 * @route '/evidence/{evidence}'
 */
 destroy.delete = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -485,7 +485,7 @@ destroy.delete = (args: { evidence: number | { id: number } } | [evidence: numbe
 
 /**
 * @see \App\Http\Controllers\EvidenceController::destroy
-* @see app/Http/Controllers/EvidenceController.php:180
+* @see app/Http/Controllers/EvidenceController.php:233
 * @route '/evidence/{evidence}'
 */
 const destroyForm = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -500,7 +500,7 @@ const destroyForm = (args: { evidence: number | { id: number } } | [evidence: nu
 
 /**
 * @see \App\Http\Controllers\EvidenceController::destroy
-* @see app/Http/Controllers/EvidenceController.php:180
+* @see app/Http/Controllers/EvidenceController.php:233
 * @route '/evidence/{evidence}'
 */
 destroyForm.delete = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

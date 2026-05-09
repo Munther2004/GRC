@@ -33,12 +33,12 @@ class CorporationApproved extends Mailable implements ShouldQueue
         return new Content(
             view: 'emails.corporation-approved',
             with: [
-                'corporation'      => $this->corporation,
-                'managerEmail'     => $this->managerEmail,
-                'managerPassword'  => $this->managerPassword,
+                'corporation' => $this->corporation,
+                'managerEmail' => $this->managerEmail,
+                'managerPassword' => $this->managerPassword,
                 'registrationCode' => $this->registrationCode,
-                'loginUrl'         => route('login'),
-                'registerUrl'      => url('/register'),
+                'loginUrl' => route('login'),
+                'registerUrl' => url('/register'),
             ],
         );
     }

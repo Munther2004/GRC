@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::index
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::index
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::index
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::index
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::index
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::index
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::index
-* @see app/Http/Controllers/ExecutiveDashboardController.php:16
+* @see app/Http/Controllers/ExecutiveDashboardController.php:17
 * @route '/executive-dashboard'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::exportMethod
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 export const exportMethod = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ exportMethod.definition = {
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::exportMethod
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 exportMethod.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ exportMethod.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::exportMethod
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +116,7 @@ exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::exportMethod
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +126,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::exportMethod
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +136,7 @@ const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::exportMethod
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -146,7 +146,7 @@ exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'>
 
 /**
 * @see \App\Http\Controllers\ExecutiveDashboardController::exportMethod
-* @see app/Http/Controllers/ExecutiveDashboardController.php:21
+* @see app/Http/Controllers/ExecutiveDashboardController.php:22
 * @route '/executive-dashboard/pdf'
 */
 exportMethodForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::store
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:12
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:13
 * @route '/risks/{risk}/treatment-plans'
 */
 export const store = (args: { risk: number | { id: number } } | [risk: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::store
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:12
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:13
 * @route '/risks/{risk}/treatment-plans'
 */
 store.url = (args: { risk: number | { id: number } } | [risk: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { risk: number | { id: number } } | [risk: number | { id: num
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::store
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:12
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:13
 * @route '/risks/{risk}/treatment-plans'
 */
 store.post = (args: { risk: number | { id: number } } | [risk: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { risk: number | { id: number } } | [risk: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::store
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:12
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:13
 * @route '/risks/{risk}/treatment-plans'
 */
 const storeForm = (args: { risk: number | { id: number } } | [risk: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const storeForm = (args: { risk: number | { id: number } } | [risk: number | { i
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::store
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:12
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:13
 * @route '/risks/{risk}/treatment-plans'
 */
 storeForm.post = (args: { risk: number | { id: number } } | [risk: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -81,7 +81,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::update
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:37
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:40
 * @route '/risks/{risk}/treatment-plans/{plan}'
 */
 export const update = (args: { risk: number | { id: number }, plan: number | { id: number } } | [risk: number | { id: number }, plan: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -96,7 +96,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::update
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:37
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:40
 * @route '/risks/{risk}/treatment-plans/{plan}'
 */
 update.url = (args: { risk: number | { id: number }, plan: number | { id: number } } | [risk: number | { id: number }, plan: number | { id: number } ], options?: RouteQueryOptions) => {
@@ -126,7 +126,7 @@ update.url = (args: { risk: number | { id: number }, plan: number | { id: number
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::update
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:37
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:40
 * @route '/risks/{risk}/treatment-plans/{plan}'
 */
 update.put = (args: { risk: number | { id: number }, plan: number | { id: number } } | [risk: number | { id: number }, plan: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -136,7 +136,7 @@ update.put = (args: { risk: number | { id: number }, plan: number | { id: number
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::update
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:37
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:40
 * @route '/risks/{risk}/treatment-plans/{plan}'
 */
 const updateForm = (args: { risk: number | { id: number }, plan: number | { id: number } } | [risk: number | { id: number }, plan: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -151,7 +151,7 @@ const updateForm = (args: { risk: number | { id: number }, plan: number | { id: 
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::update
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:37
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:40
 * @route '/risks/{risk}/treatment-plans/{plan}'
 */
 updateForm.put = (args: { risk: number | { id: number }, plan: number | { id: number } } | [risk: number | { id: number }, plan: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -168,7 +168,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::destroy
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:74
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:78
 * @route '/risks/{risk}/treatment-plans/{plan}'
 */
 export const destroy = (args: { risk: number | { id: number }, plan: number | { id: number } } | [risk: number | { id: number }, plan: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -183,7 +183,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::destroy
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:74
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:78
 * @route '/risks/{risk}/treatment-plans/{plan}'
 */
 destroy.url = (args: { risk: number | { id: number }, plan: number | { id: number } } | [risk: number | { id: number }, plan: number | { id: number } ], options?: RouteQueryOptions) => {
@@ -213,7 +213,7 @@ destroy.url = (args: { risk: number | { id: number }, plan: number | { id: numbe
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::destroy
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:74
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:78
 * @route '/risks/{risk}/treatment-plans/{plan}'
 */
 destroy.delete = (args: { risk: number | { id: number }, plan: number | { id: number } } | [risk: number | { id: number }, plan: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -223,7 +223,7 @@ destroy.delete = (args: { risk: number | { id: number }, plan: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::destroy
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:74
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:78
 * @route '/risks/{risk}/treatment-plans/{plan}'
 */
 const destroyForm = (args: { risk: number | { id: number }, plan: number | { id: number } } | [risk: number | { id: number }, plan: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -238,7 +238,7 @@ const destroyForm = (args: { risk: number | { id: number }, plan: number | { id:
 
 /**
 * @see \App\Http\Controllers\RiskTreatmentPlanController::destroy
-* @see app/Http/Controllers/RiskTreatmentPlanController.php:74
+* @see app/Http/Controllers/RiskTreatmentPlanController.php:78
 * @route '/risks/{risk}/treatment-plans/{plan}'
 */
 destroyForm.delete = (args: { risk: number | { id: number }, plan: number | { id: number } } | [risk: number | { id: number }, plan: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

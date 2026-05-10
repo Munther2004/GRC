@@ -11,20 +11,49 @@ use Illuminate\Support\Facades\DB;
 
 class RiskMetricsService
 {
-    public function __construct(private ?User $user = null) {}
+    public function __construct(private ?User $user = null, private ?int $corporationFilter = null) {}
+
+    /**
+     * Effective corporation_id used by all internal aggregates:
+     *   - non-super_admin → user's own corporation_id
+     *   - super_admin     → optional drill-down corporation_id (or null = all)
+     */
+    private function effectiveCorporationId(): ?int
+    {
+        if (! $this->user) {
+            return null;
+        }
+        if ($this->user->isSuperAdmin()) {
+            return $this->corporationFilter;
+        }
+
+        return $this->user->corporation_id;
+    }
 
     private function scopeRisks()
     {
-        return $this->user
-            ? $this->user->organisationScope(Risk::query())
-            : Risk::query();
+        $q = Risk::query();
+        $corpId = $this->effectiveCorporationId();
+        if ($corpId !== null) {
+            $q->where('risks.corporation_id', $corpId);
+        } elseif ($this->user && ! $this->user->isSuperAdmin()) {
+            $q->whereRaw('1 = 0');
+        }
+
+        return $q;
     }
 
     private function scopeAssessments()
     {
-        return $this->user
-            ? $this->user->organisationScope(Assessment::query())
-            : Assessment::query();
+        $q = Assessment::query();
+        $corpId = $this->effectiveCorporationId();
+        if ($corpId !== null) {
+            $q->where('assessments.corporation_id', $corpId);
+        } elseif ($this->user && ! $this->user->isSuperAdmin()) {
+            $q->whereRaw('1 = 0');
+        }
+
+        return $q;
     }
 
     private function scopeEvidence()
@@ -32,10 +61,15 @@ class RiskMetricsService
         // Evidence has no corporation_id column. Scope through the
         // uploading user's corporation when the actor is tenant-bound.
         $q = Evidence::query();
-        if (! $this->user || $this->user->isSuperAdmin()) {
+        $corpId = $this->effectiveCorporationId();
+        if ($corpId === null) {
+            // super_admin without a drill-down filter sees all evidence.
+            if ($this->user && ! $this->user->isSuperAdmin()) {
+                $q->whereRaw('1 = 0');
+            }
+
             return $q;
         }
-        $corpId = $this->user->corporation_id;
 
         return $q->whereExists(function ($sub) use ($corpId) {
             $sub->select(DB::raw(1))
@@ -54,9 +88,7 @@ class RiskMetricsService
      */
     private function controlStatusAggregate(array $expressions, bool $onlyActive = false): object
     {
-        $tenantId = $this->user && ! $this->user->isSuperAdmin()
-            ? $this->user->corporation_id
-            : null;
+        $tenantId = $this->effectiveCorporationId();
 
         $statusExpr = $tenantId !== null
             ? 'COALESCE(ccs.current_status, controls.current_status)'

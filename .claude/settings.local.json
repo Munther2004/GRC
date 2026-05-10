@@ -97,7 +97,10 @@
       "Bash(git add *)",
       "Bash(vendor/bin/pest --parallel)",
       "Bash(composer lint *)",
-      "Bash(nc -vz smtp.resend.com 587)"
+      "Bash(nc -vz smtp.resend.com 587)",
+      "Bash(kill %1 %2)",
+      "Bash(pkill -f \"php artisan serve --port=8765\")",
+      "Bash(pkill -f \"vite --port=5188\")"
     ]
   },
   "enableAllProjectMcpServers": true,

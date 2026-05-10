@@ -43,6 +43,8 @@ class EvidenceCoverageController extends Controller
     public function index(Request $request)
     {
         $actor = Auth::user();
+        $corpFilter = $actor->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+        $effectiveCorpId = $actor->isSuperAdmin() ? $corpFilter : $actor->corporation_id;
         $perPage = 20;
 
         // ── Tenant-scoped assessment universe ───────────────────────────────
@@ -53,7 +55,7 @@ class EvidenceCoverageController extends Controller
         //   - the list of assessments shown in the filter dropdown
         //   - the set of assessment ids used to scope the controls query
         $tenantAssessments = $actor
-            ->organisationScope(Assessment::query())
+            ->visibilityScope(Assessment::query(), 'user_id', $corpFilter)
             ->orderBy('title')
             ->get(['id', 'title', 'framework_id']);
 
@@ -78,19 +80,20 @@ class EvidenceCoverageController extends Controller
         // No type hint on $q — Laravel passes a Relation instance (HasMany /
         // MorphMany) when invoking eager-load closures, not a Builder. Both
         // expose ->whereHas(), so duck-type it.
-        $tenantFilter = function ($q) use ($actor) {
-            if ($actor && method_exists($actor, 'isSuperAdmin') && $actor->isSuperAdmin()) {
-                return;
-            }
-
-            $corpId = $actor?->corporation_id;
-            if ($corpId === null) {
-                $q->whereRaw('1 = 0'); // not in any tenant → no rows
+        $tenantFilter = function ($q) use ($actor, $effectiveCorpId) {
+            if ($effectiveCorpId === null) {
+                if ($actor && ! $actor->isSuperAdmin()) {
+                    $q->whereRaw('1 = 0'); // tenant user without corporation → no rows
+                }
 
                 return;
             }
 
-            $q->whereHas('user', fn ($uq) => $uq->where('corporation_id', $corpId));
+            $q->whereHas('user', fn ($uq) => $uq->where('corporation_id', $effectiveCorpId));
+            // The operational `user` role only sees evidence they uploaded.
+            if ($actor && $actor->isUser()) {
+                $q->where('evidence.user_id', $actor->id);
+            }
         };
 
         // The eager-loaded assessmentItems are also constrained to the same

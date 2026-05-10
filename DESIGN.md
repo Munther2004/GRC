@@ -213,7 +213,7 @@ components:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-dark}"
     typography: "{typography.micro}"
-  # ── GRC Charter implementation extensions ────────────────────────────────
+  # ── GRC Trustifyjo implementation extensions ────────────────────────────────
   theme-toggle:
     shape: pill
     rounded: "{rounded.full}"
@@ -562,9 +562,9 @@ Primary CTAs and pills meet comfortable touch sizing through 12px-24px padding a
 
 ---
 
-## GRC Charter Implementation
+## GRC Trustifyjo Implementation
 
-The GRC Charter is the GRC Management System's adoption of this design system. It keeps the Cohere editorial discipline (white canvas, deep enterprise green bands, pill CTAs, monumental display headlines, restrained type) and extends it with a paired dark mode, a 3D layered depth language, a visible theme toggle, and a small set of composite components specific to a security/compliance product surface. Deep green-black product bands, agent-console mockups, and trust-logo strips are still the load-bearing surface treatments — the additions sit on top, not in place of them.
+The GRC Trustifyjo is the GRC Management System's adoption of this design system. It keeps the Cohere editorial discipline (white canvas, deep enterprise green bands, pill CTAs, monumental display headlines, restrained type) and extends it with a paired dark mode, a 3D layered depth language, a visible theme toggle, and a small set of composite components specific to a security/compliance product surface. Deep green-black product bands, agent-console mockups, and trust-logo strips are still the load-bearing surface treatments — the additions sit on top, not in place of them.
 
 ### Theming
 
@@ -581,7 +581,7 @@ A pill switch with a sun/moon glyph. Persists to `localStorage["appearance"]` (`
 
 ### Depth & 3D language
 
-The Cohere base system is intentionally flat. The GRC Charter adds a **layered, theme-aware depth grammar** that's used selectively — never as a generic decoration. The vocabulary:
+The Cohere base system is intentionally flat. The GRC Trustifyjo adds a **layered, theme-aware depth grammar** that's used selectively — never as a generic decoration. The vocabulary:
 
 | Token | Treatment | Use |
 |---|---|---|

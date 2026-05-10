@@ -25,6 +25,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from 'recharts';
+import { CorporationFilter } from '@/components/corporation-filter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AdminLayout from '@/layouts/admin-layout';
@@ -328,6 +329,7 @@ export default function ExecutiveDashboard({
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2 print:hidden">
+                        <CorporationFilter />
                         <Button
                             variant="outline"
                             size="sm"

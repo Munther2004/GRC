@@ -11,6 +11,7 @@ import {
     ArrowRight,
 } from 'lucide-react';
 import { useState } from 'react';
+import { CorporationFilter } from '@/components/corporation-filter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -215,7 +216,9 @@ export default function GapAnalysisIndex({
                 <PageHeader
                     title="Gap Analysis"
                     description="Non-compliant and partially compliant controls across all completed assessments"
-                />
+                >
+                    <CorporationFilter />
+                </PageHeader>
 
                 <StatStrip
                     stats={[

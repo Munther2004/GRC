@@ -19,7 +19,8 @@ class RemediationTaskController extends Controller
         $today = now()->toDateString();
 
         $user = Auth::user();
-        $scoped = fn () => $user->organisationScope(RemediationTask::query());
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+        $scoped = fn () => $user->visibilityScope(RemediationTask::query(), 'created_by', $corpFilter);
 
         $query = $scoped()->with(['control.framework', 'assessment', 'createdBy'])
             ->when($request->status && $request->status !== 'all', fn ($q) => $q->where('status', $request->status)
@@ -76,7 +77,7 @@ class RemediationTaskController extends Controller
         // The dropdown previously returned every assessment globally. Scope
         // to the caller's tenant so users can only attach a remediation task
         // to one of their own assessments.
-        $assessments = $user->organisationScope(Assessment::query())
+        $assessments = $user->visibilityScope(Assessment::query(), 'user_id', $corpFilter)
             ->orderBy('created_at', 'desc')
             ->get(['id', 'title'])
             ->map(fn ($a) => ['id' => $a->id, 'title' => $a->title]);
@@ -234,7 +235,7 @@ class RemediationTaskController extends Controller
         if (! $user) {
             abort(403);
         }
-        $visible = $user->organisationScope(RemediationTask::query())
+        $visible = $user->visibilityScope(RemediationTask::query(), 'created_by')
             ->whereKey($task->id)
             ->exists();
         if (! $visible) {

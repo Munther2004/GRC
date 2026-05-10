@@ -143,6 +143,65 @@ class User extends Authenticatable
         return $query->whereRaw('1 = 0');
     }
 
+    /**
+     * Scope a query to rows that this user is allowed to see in list views.
+     *
+     *   - super_admin → unscoped (sees all corporations). When the optional
+     *     `$superAdminCorporationFilter` is supplied, restrict to that
+     *     corporation so the platform owner can drill into one tenant.
+     *   - admin / auditor → scoped to their corporation_id (sees data tied to
+     *     every employee of their corporation).
+     *   - user → scoped to their corporation_id AND $ownerColumn = $this->id
+     *            (operational writers see only the rows they personally created).
+     *   - non-super_admin without a corporation_id → no rows.
+     *
+     * The query must select from a table that has a `corporation_id` column
+     * (the same constraint as `organisationScope`) plus, when the caller is a
+     * `user`, a column named $ownerColumn (default `user_id`) that points at
+     * the row's creator.
+     */
+    public function visibilityScope(Builder $query, string $ownerColumn = 'user_id', ?int $superAdminCorporationFilter = null): Builder
+    {
+        if ($this->isSuperAdmin()) {
+            if ($superAdminCorporationFilter !== null) {
+                $table = $query->getModel()->getTable();
+                $query->where("{$table}.corporation_id", $superAdminCorporationFilter);
+            }
+
+            return $query;
+        }
+
+        if (! $this->corporation_id) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $table = $query->getModel()->getTable();
+        $query->where("{$table}.corporation_id", $this->corporation_id);
+
+        if ($this->isUser()) {
+            $query->where("{$table}.{$ownerColumn}", $this->id);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Resolve the corporation_id filter that should apply for this request.
+     *
+     * Returns the request's `corporation_id` query param when the caller is a
+     * super_admin and a positive value was supplied. Returns `null` otherwise
+     * (meaning: no extra filter; non-super_admins are scoped to their own
+     * corporation by `visibilityScope` itself).
+     */
+    public function resolveCorporationFilter(?int $requested): ?int
+    {
+        if (! $this->isSuperAdmin()) {
+            return null;
+        }
+
+        return $requested && $requested > 0 ? $requested : null;
+    }
+
     public function risks()
     {
         return $this->hasMany(Risk::class);

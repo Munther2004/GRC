@@ -118,7 +118,7 @@ export default function CorporationRegister({ industries }: Props) {
                                 className="text-[12px] uppercase"
                                 style={{ color: 'var(--foreground)', letterSpacing: '0.28em', fontWeight: 600 }}
                             >
-                                GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Charter</span>
+                                GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Trustifyjo</span>
                             </span>
                         </Link>
 
@@ -437,7 +437,7 @@ export default function CorporationRegister({ industries }: Props) {
                         <div className="flex items-center gap-2">
                             <AppLogoIcon className="size-16" />
                             <span className="text-xs uppercase" style={{ color: 'var(--foreground)', letterSpacing: '0.28em', fontWeight: 600 }}>
-                                GRC <span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}>· Charter</span>
+                                GRC <span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}>· Trustifyjo</span>
                             </span>
                         </div>
                         <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>

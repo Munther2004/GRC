@@ -10,13 +10,16 @@ use App\Models\Evidence;
 use App\Services\AIService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AssessmentComparisonController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $assessments = Assessment::with('framework')
+        $user = Auth::user();
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+        $assessments = $user->visibilityScope(Assessment::with('framework'), 'user_id', $corpFilter)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn ($a) => [
@@ -97,8 +100,11 @@ class AssessmentComparisonController extends Controller
 
     private function buildComparison(int $aId, int $bId): array
     {
-        $assessmentA = Assessment::with('framework')->findOrFail($aId);
-        $assessmentB = Assessment::with('framework')->findOrFail($bId);
+        $user = Auth::user();
+        $assessmentA = $user->visibilityScope(Assessment::with('framework'))
+            ->whereKey($aId)->firstOrFail();
+        $assessmentB = $user->visibilityScope(Assessment::with('framework'))
+            ->whereKey($bId)->firstOrFail();
 
         // Keyed by control_id (FK integer)
         $itemsA = AssessmentItem::where('assessment_id', $aId)

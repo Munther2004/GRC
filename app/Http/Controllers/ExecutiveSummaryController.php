@@ -13,12 +13,13 @@ use Illuminate\Support\Facades\Log;
 
 class ExecutiveSummaryController extends Controller
 {
-    public function generate()
+    public function generate(\Illuminate\Http\Request $request)
     {
         // ── 1. Gather data ────────────────────────────────────────────────────
 
         $user = Auth::user();
-        $grc = new GrcMetricsService($user);
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+        $grc = new GrcMetricsService($user, $corpFilter);
 
         // Compliance (one SQL aggregate query)
         $cs = $grc->complianceSummary();
@@ -51,7 +52,7 @@ class ExecutiveSummaryController extends Controller
         ];
 
         // Top 5 highest-scoring risks (risk_level is an accessor, not a DB column)
-        $topRisks = $user->organisationScope(\App\Models\Risk::query())
+        $topRisks = $user->visibilityScope(\App\Models\Risk::query(), 'user_id', $corpFilter)
             ->orderByRaw('likelihood * impact DESC')
             ->limit(5)
             ->get(['title', 'category', 'likelihood', 'impact', 'status'])
@@ -75,11 +76,14 @@ class ExecutiveSummaryController extends Controller
         // Recent activity count (last 7 days) — scoped through users in the
         // actor's corporation. super_admin sees the platform-wide count.
         $recentActivityQuery = AuditLog::where('created_at', '>=', now()->subDays(7));
-        if (! $user->isSuperAdmin()) {
+        $effectiveCorpId = $user->isSuperAdmin() ? $corpFilter : $user->corporation_id;
+        if ($effectiveCorpId !== null) {
             $recentActivityQuery->whereIn(
                 'user_id',
-                User::where('corporation_id', $user->corporation_id)->pluck('id')
+                User::where('corporation_id', $effectiveCorpId)->pluck('id')
             );
+        } elseif (! $user->isSuperAdmin()) {
+            $recentActivityQuery->whereRaw('1 = 0');
         }
         $recentActivityCount = $recentActivityQuery->count();
 
@@ -104,7 +108,7 @@ class ExecutiveSummaryController extends Controller
         // Most non-compliant control categories (top 5) — uses the per-tenant
         // status pivot when the actor is tenant-scoped, otherwise falls back
         // to the legacy global field.
-        $tenantId = $user->isSuperAdmin() ? null : $user->corporation_id;
+        $tenantId = $effectiveCorpId;
         $nonCompliantQuery = Control::where('is_active', true)
             ->whereNotNull('category');
 

@@ -31,6 +31,7 @@ import { RecentAlerts } from '@/components/admin/recent-alerts';
 import { RiskHeatmap } from '@/components/admin/risk-heatmap';
 import { RiskTrendChart } from '@/components/admin/risk-trend-chart';
 import { TopRisks } from '@/components/admin/top-risks';
+import { CorporationFilter } from '@/components/corporation-filter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AdminLayout from '@/layouts/admin-layout';
 import type { SharedProps } from '@/types';
@@ -1049,6 +1050,9 @@ export default function AdminDashboard({
     return (
         <AdminLayout>
             <div ref={rootRef} className="space-y-5">
+                <div className="dash-reveal flex justify-end">
+                    <CorporationFilter />
+                </div>
                 <DashboardHero healthScore={healthScore} />
 
                 {/* notifications + actions — single row when both present */}

@@ -10,28 +10,55 @@ use Illuminate\Support\Facades\DB;
 
 class GrcMetricsService
 {
-    public function __construct(private ?User $user = null) {}
+    public function __construct(private ?User $user = null, private ?int $corporationFilter = null) {}
 
-    // Apply organisation scope when a user is set
+    /**
+     * Effective corporation_id used by every aggregate query.
+     *   - non-super_admin → caller's own corporation_id
+     *   - super_admin     → optional drill-down corporation_id (or null = all)
+     *   - no user         → null (all rows)
+     */
+    private function effectiveCorporationId(): ?int
+    {
+        if (! $this->user) {
+            return null;
+        }
+        if ($this->user->isSuperAdmin()) {
+            return $this->corporationFilter;
+        }
+
+        return $this->user->corporation_id;
+    }
+
     private function scopedRisks(): Builder
     {
         $q = Risk::query();
+        $corpId = $this->effectiveCorporationId();
+        if ($corpId !== null) {
+            $q->where('risks.corporation_id', $corpId);
+        } elseif ($this->user && ! $this->user->isSuperAdmin()) {
+            $q->whereRaw('1 = 0');
+        }
 
-        return $this->user ? $this->user->organisationScope($q) : $q;
+        return $q;
     }
 
     private function scopedAssessments(): Builder
     {
         $q = \App\Models\Assessment::query();
+        $corpId = $this->effectiveCorporationId();
+        if ($corpId !== null) {
+            $q->where('assessments.corporation_id', $corpId);
+        } elseif ($this->user && ! $this->user->isSuperAdmin()) {
+            $q->whereRaw('1 = 0');
+        }
 
-        return $this->user ? $this->user->organisationScope($q) : $q;
+        return $q;
     }
 
     public function complianceSummary(): array
     {
-        $tenantId = $this->user && ! $this->user->isSuperAdmin()
-            ? $this->user->corporation_id
-            : null;
+        $tenantId = $this->effectiveCorporationId();
 
         $statusExpr = $tenantId !== null
             ? 'COALESCE(ccs.current_status, controls.current_status)'
@@ -107,7 +134,10 @@ class GrcMetricsService
 
     public function evidenceCounts(): array
     {
-        $row = DB::table('evidence')
+        $query = DB::table('evidence');
+        $this->applyEvidenceTenantScope($query);
+
+        $row = $query
             ->selectRaw("
                 COUNT(*)                                             AS total,
                 SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved,
@@ -159,17 +189,68 @@ class GrcMetricsService
     {
         $now = now();
 
+        $expiringSoon = DB::table('evidence')
+            ->whereNotNull('expiry_date')
+            ->where('expiry_date', '>=', $now)
+            ->where('expiry_date', '<=', $now->copy()->addDays($soonDays));
+        $this->applyEvidenceTenantScope($expiringSoon);
+
+        $expired = DB::table('evidence')
+            ->whereNotNull('expiry_date')
+            ->where('expiry_date', '<', $now);
+        $this->applyEvidenceTenantScope($expired);
+
         return [
-            'expiring_soon' => DB::table('evidence')
-                ->whereNotNull('expiry_date')
-                ->where('expiry_date', '>=', $now)
-                ->where('expiry_date', '<=', $now->copy()->addDays($soonDays))
-                ->count(),
-            'expired' => DB::table('evidence')
-                ->whereNotNull('expiry_date')
-                ->where('expiry_date', '<', $now)
-                ->count(),
+            'expiring_soon' => $expiringSoon->count(),
+            'expired' => $expired->count(),
         ];
+    }
+
+    /**
+     * Restrict an `evidence` table query to rows visible to $this->user.
+     *
+     * Evidence has no `corporation_id`. Tenant ownership is derived from the
+     * parent assessment_item -> assessment.corporation_id, with a fall-back to
+     * the uploader's corporation_id for direct-attached evidence.
+     *
+     * For the `user` role we additionally constrain to rows the caller
+     * personally uploaded.
+     */
+    private function applyEvidenceTenantScope(\Illuminate\Database\Query\Builder $query): void
+    {
+        $user = $this->user;
+        $corpId = $this->effectiveCorporationId();
+
+        // super_admin without a drill-down filter sees all evidence.
+        if ($corpId === null) {
+            if ($user && ! $user->isSuperAdmin()) {
+                $query->whereRaw('1 = 0');
+            }
+
+            return;
+        }
+
+        $query->where(function ($outer) use ($corpId) {
+            $outer->whereExists(function ($sub) use ($corpId) {
+                $sub->select(DB::raw(1))
+                    ->from('assessment_items as ai')
+                    ->join('assessments as a', 'ai.assessment_id', '=', 'a.id')
+                    ->whereColumn('ai.id', 'evidence.assessment_item_id')
+                    ->where('a.corporation_id', $corpId);
+            })->orWhere(function ($alt) use ($corpId) {
+                $alt->whereNull('evidence.assessment_item_id')
+                    ->whereExists(function ($sub) use ($corpId) {
+                        $sub->select(DB::raw(1))
+                            ->from('users as u')
+                            ->whereColumn('u.id', 'evidence.user_id')
+                            ->where('u.corporation_id', $corpId);
+                    });
+            });
+        });
+
+        if ($user->isUser()) {
+            $query->where('evidence.user_id', $user->id);
+        }
     }
 
     public function openRisksByLevel(): array
@@ -195,9 +276,7 @@ class GrcMetricsService
 
     public function frameworkCompliance(): \Illuminate\Support\Collection
     {
-        $tenantId = $this->user && ! $this->user->isSuperAdmin()
-            ? $this->user->corporation_id
-            : null;
+        $tenantId = $this->effectiveCorporationId();
 
         $statusExpr = $tenantId !== null
             ? 'COALESCE(ccs.current_status, controls.current_status)'
@@ -253,13 +332,16 @@ class GrcMetricsService
 
     public function frameworkAssessmentScores(): \Illuminate\Support\Collection
     {
+        $corpId = $this->effectiveCorporationId();
         $user = $this->user;
 
         return Framework::where('is_active', true)
-            ->with(['assessments' => function ($q) use ($user) {
+            ->with(['assessments' => function ($q) use ($user, $corpId) {
                 $q->where('status', 'completed')->orderBy('created_at', 'desc');
-                if ($user) {
-                    $user->organisationScope($q);
+                if ($corpId !== null) {
+                    $q->where('assessments.corporation_id', $corpId);
+                } elseif ($user && ! $user->isSuperAdmin()) {
+                    $q->whereRaw('1 = 0');
                 }
             }])
             ->get()

@@ -8,6 +8,7 @@ import {
     Plus,
 } from 'lucide-react';
 import { useState } from 'react';
+import { CorporationFilter } from '@/components/corporation-filter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -127,6 +128,7 @@ export default function AssessmentsIndex({
                     title="Assessments"
                     description="Self-assessment questionnaires per framework"
                 >
+                    <CorporationFilter />
                     <Link href="/assessments/compare">
                         <Button variant="outline" size="sm" className="gap-2">
                             <GitCompare className="h-3.5 w-3.5" /> Compare

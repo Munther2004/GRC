@@ -6,14 +6,15 @@ use App\Models\Assessment;
 use App\Models\Risk;
 use App\Services\GrcMetricsService;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ReportController extends Controller
 {
-    private function gatherReportData(): array
+    private function gatherReportData(?int $corpFilter = null): array
     {
-        $grc = new GrcMetricsService;
+        $user = Auth::user();
+        $grc = new GrcMetricsService($user, $corpFilter);
 
         // Compliance per framework (assessment-based scores)
         $fwScores = $grc->frameworkAssessmentScores();
@@ -33,7 +34,8 @@ class ReportController extends Controller
 
         // Risk summary — one aggregate query using canonical level thresholds
         $t = Risk::levelThresholds();
-        $riskRow = DB::table('risks')->selectRaw("
+        $riskBase = $user->visibilityScope(Risk::query(), 'user_id', $corpFilter);
+        $riskRow = $riskBase->selectRaw("
             COUNT(*)                                                                                      AS total,
             SUM(CASE WHEN likelihood * impact >= {$t['critical']}                             THEN 1 ELSE 0 END) AS critical,
             SUM(CASE WHEN likelihood * impact >= {$t['high']}   AND likelihood * impact < {$t['critical']} THEN 1 ELSE 0 END) AS high,
@@ -65,7 +67,7 @@ class ReportController extends Controller
         ];
 
         // Risk by category — single grouped query
-        $riskByCategory = DB::table('risks')
+        $riskByCategory = $user->visibilityScope(Risk::query(), 'user_id', $corpFilter)
             ->selectRaw('category, COUNT(*) as count')
             ->whereNotNull('category')
             ->groupBy('category')
@@ -73,7 +75,8 @@ class ReportController extends Controller
             ->pluck('count', 'category');
 
         // Assessment history
-        $assessmentHistory = Assessment::with(['framework', 'user'])
+        $assessmentHistory = $user->visibilityScope(Assessment::query(), 'user_id', $corpFilter)
+            ->with(['framework', 'user'])
             ->where('status', 'completed')
             ->orderBy('created_at', 'desc')
             ->get()
@@ -88,7 +91,8 @@ class ReportController extends Controller
             ]);
 
         // Monthly trend (last 6 months)
-        $monthlyTrend = Assessment::where('status', 'completed')
+        $monthlyTrend = $user->visibilityScope(Assessment::query(), 'user_id', $corpFilter)
+            ->where('status', 'completed')
             ->where('created_at', '>=', now()->subMonths(6))
             ->get()
             ->groupBy(fn ($a) => $a->created_at->format('M Y'))
@@ -105,9 +109,11 @@ class ReportController extends Controller
         );
     }
 
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $data = $this->gatherReportData();
+        $user = Auth::user();
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+        $data = $this->gatherReportData($corpFilter);
 
         return Inertia::render('reports/index', [
             'overallCompliance' => $data['overallCompliance'],
@@ -120,15 +126,18 @@ class ReportController extends Controller
             'stats' => [
                 'total_risks' => $data['riskTotals']['total_risks'],
                 'open_risks' => $data['riskTotals']['open_risks'],
-                'total_assessments' => Assessment::where('status', 'completed')->count(),
+                'total_assessments' => $user->visibilityScope(Assessment::query(), 'user_id', $corpFilter)
+                    ->where('status', 'completed')->count(),
                 'total_frameworks' => $data['totalFrameworks'],
             ],
         ]);
     }
 
-    public function exportPdf()
+    public function exportPdf(\Illuminate\Http\Request $request)
     {
-        $data = $this->gatherReportData();
+        $user = Auth::user();
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+        $data = $this->gatherReportData($corpFilter);
 
         $pdf = Pdf::loadView('reports.pdf', [
             'overallCompliance' => $data['overallCompliance'],

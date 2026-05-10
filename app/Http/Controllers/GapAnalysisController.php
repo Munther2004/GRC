@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assessment;
 use App\Models\AssessmentItem;
 use App\Models\AuditLog;
 use App\Models\Control;
@@ -10,18 +11,35 @@ use App\Services\AIService;
 use App\Services\GrcMetricsService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class GapAnalysisController extends Controller
 {
+    /**
+     * Restrict an AssessmentItem query to the calling user's visibility:
+     * super_admin sees all, admin/auditor see their corporation's items,
+     * user sees only items belonging to assessments they personally created.
+     */
+    private function visibleAssessmentIds(?int $corpFilter = null): \Illuminate\Database\Eloquent\Builder
+    {
+        return Auth::user()->visibilityScope(Assessment::query(), 'user_id', $corpFilter)
+            ->select('id');
+    }
+
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
         $frameworks = Framework::where('is_active', true)->get(['id', 'name', 'short_name']);
+
+        $visibleAssessmentIds = $this->visibleAssessmentIds($corpFilter);
 
         $query = AssessmentItem::with(['control', 'assessment.framework', 'assessment.user'])
             ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
+            ->whereIn('assessment_id', (clone $visibleAssessmentIds))
             ->whereHas('assessment', fn ($q) => $q->where('status', 'completed'))
             ->when($request->framework_id, fn ($q) => $q->whereHas('assessment', fn ($q2) => $q2->where('framework_id', $request->framework_id)
             )
@@ -40,6 +58,7 @@ class GapAnalysisController extends Controller
             ->withQueryString();
 
         $categories = AssessmentItem::whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
+            ->whereIn('assessment_id', (clone $visibleAssessmentIds))
             ->whereHas('assessment', fn ($q) => $q->where('status', 'completed'))
             ->join('controls', 'assessment_items.control_id', '=', 'controls.id')
             ->distinct()
@@ -51,6 +70,7 @@ class GapAnalysisController extends Controller
         $byFrameworkRaw = DB::table('assessment_items')
             ->join('assessments', 'assessment_items.assessment_id', '=', 'assessments.id')
             ->where('assessments.status', 'completed')
+            ->whereIn('assessment_items.assessment_id', (clone $visibleAssessmentIds))
             ->whereIn('assessment_items.compliance_status', ['non_compliant', 'partially_compliant'])
             ->selectRaw("
                 assessments.framework_id,
@@ -63,8 +83,10 @@ class GapAnalysisController extends Controller
 
         $stats = [
             'non_compliant' => AssessmentItem::where('compliance_status', 'non_compliant')
+                ->whereIn('assessment_id', (clone $visibleAssessmentIds))
                 ->whereHas('assessment', fn ($q) => $q->where('status', 'completed'))->count(),
             'partially_compliant' => AssessmentItem::where('compliance_status', 'partially_compliant')
+                ->whereIn('assessment_id', (clone $visibleAssessmentIds))
                 ->whereHas('assessment', fn ($q) => $q->where('status', 'completed'))->count(),
             'by_framework' => $frameworks->map(fn ($f) => [
                 'name' => $f->short_name,
@@ -84,11 +106,17 @@ class GapAnalysisController extends Controller
 
     public function generateReport(Request $request)
     {
+        $user = Auth::user();
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+
         // ── Gather gap data ──────────────────────────────────────────────────
         // withCount('evidence') avoids N+1 evidence()->count() inside the map
+        $visibleAssessmentIds = $this->visibleAssessmentIds($corpFilter);
+
         $gapItems = AssessmentItem::with(['control.framework', 'assessment.framework'])
             ->withCount('evidence')
             ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
+            ->whereIn('assessment_id', (clone $visibleAssessmentIds))
             ->whereHas('assessment', fn ($q) => $q->where('status', 'completed'))
             ->when($request->framework_id, fn ($q) => $q->whereHas('assessment', fn ($q2) => $q2->where('framework_id', $request->framework_id)
             )
@@ -106,7 +134,7 @@ class GapAnalysisController extends Controller
         ])->toArray();
 
         // Summary stats — one aggregate query replaces Control::get() + Risk::all()
-        $grc = new GrcMetricsService;
+        $grc = new GrcMetricsService($user, $corpFilter);
         $cs = $grc->complianceSummary();
         $compliancePct = $cs['overall_pct'];
 

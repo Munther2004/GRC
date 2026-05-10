@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Corporation;
 use App\Models\ControlStatusRequest;
 use App\Models\Notification;
 use App\Models\RemediationTask;
@@ -23,6 +24,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'corporationFilter' => $this->corporationFilter($request),
             'flash' => [
                 'success' => session('success'),
                 'error' => session('error'),
@@ -107,6 +109,34 @@ class HandleInertiaRequests extends Middleware
                     'security_audits_in_progress' => $securityAuditsInProgress,
                 ];
             },
+        ];
+    }
+
+    /**
+     * Provide the corporation picker payload to super_admins.
+     *
+     * For non-super_admins this is null — they are always confined to their
+     * own corporation by backend scoping, so the frontend has no decision to
+     * make. For super_admins we expose every approved corporation plus the
+     * currently selected `?corporation_id=` query param so the picker can
+     * highlight the active filter.
+     */
+    private function corporationFilter(Request $request): ?array
+    {
+        $user = $request->user();
+        if (! $user || ! $user->isSuperAdmin()) {
+            return null;
+        }
+
+        $selected = $request->integer('corporation_id') ?: null;
+
+        return [
+            'selected' => $selected,
+            'options' => Corporation::query()
+                ->orderBy('name')
+                ->get(['id', 'name'])
+                ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])
+                ->all(),
         ];
     }
 }

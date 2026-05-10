@@ -1,7 +1,7 @@
 {{-- Shared report header band.
      Variables (all optional):
        $eyebrow    — small uppercase label above the title           (escaped)
-       $brandMark  — small uppercase brand mark, defaults to "GRC · Charter" (escaped)
+       $brandMark  — small uppercase brand mark, defaults to "GRC · Trustifyjo" (escaped)
        $title      — main title                                       (escaped)
        $subtitle   — descriptive subtitle                             (escaped)
        $meta       — generation metadata line                         (escaped)
@@ -12,7 +12,7 @@
      the escaped fields render HTML entities literally.
 --}}
 @php
-    $brandMark = $brandMark ?? 'GRC · Charter';
+    $brandMark = $brandMark ?? 'GRC · Trustifyjo';
 @endphp
 <div class="header">
     @isset($right)

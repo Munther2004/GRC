@@ -7,22 +7,14 @@ import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
-import AppLayout from '@/layouts/app-layout';
+import AdminLayout from '@/layouts/admin-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { disable, enable, show } from '@/routes/two-factor';
-import type { BreadcrumbItem } from '@/types';
+import { disable, enable } from '@/routes/two-factor';
 
 type Props = {
     requiresConfirmation?: boolean;
     twoFactorEnabled?: boolean;
 };
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Two-factor authentication',
-        href: show(),
-    },
-];
 
 export default function TwoFactor({
     requiresConfirmation = false,
@@ -41,7 +33,7 @@ export default function TwoFactor({
     const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <AdminLayout>
             <Head title="Two-factor authentication" />
 
             <h1 className="sr-only">Two-factor authentication settings</h1>
@@ -136,6 +128,6 @@ export default function TwoFactor({
                     />
                 </div>
             </SettingsLayout>
-        </AppLayout>
+        </AdminLayout>
     );
 }

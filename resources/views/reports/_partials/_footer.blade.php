@@ -1,4 +1,4 @@
-{{-- Inline footer strip (optional). The universal "Confidential · GRC Charter / Page X of Y"
+{{-- Inline footer strip (optional). The universal "Confidential · GRC Trustifyjo / Page X of Y"
      line on every page is written by _page_chrome via page_script() in the @page bottom margin —
      templates do not need to call _footer for that.
 

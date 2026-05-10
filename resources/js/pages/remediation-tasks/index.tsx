@@ -14,6 +14,7 @@ import {
     X,
 } from 'lucide-react';
 import { useState } from 'react';
+import { CorporationFilter } from '@/components/corporation-filter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -549,14 +550,17 @@ export default function RemediationTasksIndex({
                             to controls
                         </p>
                     </div>
-                    {canEdit && (
-                        <Button
-                            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
-                            onClick={openAdd}
-                        >
-                            <Plus className="h-4 w-4" /> Add Task
-                        </Button>
-                    )}
+                    <div className="flex items-center gap-2">
+                        <CorporationFilter />
+                        {canEdit && (
+                            <Button
+                                className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                                onClick={openAdd}
+                            >
+                                <Plus className="h-4 w-4" /> Add Task
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Flash */}

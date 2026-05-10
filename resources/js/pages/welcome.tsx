@@ -351,24 +351,16 @@ function OpeningSeal({ onDone }: { onDone: () => void }) {
                         style={{ animation: 'seal-draw 0.5s 1.05s ease-out forwards' }}
                     />
                     <g style={{ opacity: 0, animation: 'seal-fade 0.5s 1.25s ease-out forwards' }}>
-                        <text
-                            x="0" y="14" textAnchor="middle"
-                            fill="#B0E4CC" fontSize="46"
-                            fontFamily="Cinzel, Trajan Pro, serif"
-                            style={{ letterSpacing: '-0.05em' }}
-                        >
-                            ✶
-                        </text>
-                    </g>
-                    <g style={{ opacity: 0, animation: 'seal-fade 0.6s 1.35s ease-out forwards' }}>
-                        <defs>
-                            <path id="motto-arc" d="M -125,0 a 125,125 0 1,1 250,0 a 125,125 0 1,1 -250,0" fill="none" />
-                        </defs>
-                        <text fill="#7ABFA8" fontSize="9" fontFamily="Cinzel, serif" letterSpacing="6">
-                            <textPath href="#motto-arc" startOffset="0">
-                                · FIDES · RATIO · ORDO · LEX · DISCIPLINA · CUSTODIA ·
-                            </textPath>
-                        </text>
+                        {/*
+                          Regular 7-pointed star (heptagram). 14 vertices
+                          alternating outer R=24 / inner r=10.8 (r/R = 0.45),
+                          stepping 360/14° per vertex, rotated so one tip
+                          faces straight up.
+                        */}
+                        <path
+                            d="M 0 -24 L 4.69 -9.73 L 18.76 -14.96 L 10.53 -2.40 L 23.40 5.34 L 8.44 6.73 L 10.41 21.62 L 0 10.80 L -10.41 21.62 L -8.44 6.73 L -23.40 5.34 L -10.53 -2.40 L -18.76 -14.96 L -4.69 -9.73 Z"
+                            fill="#B0E4CC"
+                        />
                     </g>
                 </svg>
 
@@ -376,13 +368,15 @@ function OpeningSeal({ onDone }: { onDone: () => void }) {
                     className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-center text-[10px] uppercase"
                     style={{
                         top: 'calc(100% + 32px)',
-                        letterSpacing: '0.6em',
+                        letterSpacing: '0.4em',
                         color: '#7ABFA8',
                         opacity: 0,
                         animation: 'seal-fade 0.6s 1.55s ease-out forwards',
                     }}
                 >
-                    The Charter Opens
+                    <span style={{ fontWeight: 600 }}>GRC</span>
+                    <span style={{ margin: '0 0.6em', opacity: 0.6 }}>·</span>
+                    <span>TRUSTIFYJO</span>
                 </div>
             </div>
 
@@ -1188,7 +1182,7 @@ export default function Welcome() {
                                 className="text-[12px] uppercase"
                                 style={{ color: 'var(--c-fg)', letterSpacing: '0.28em', fontWeight: 600 }}
                             >
-                                GRC<span style={{ color: 'var(--c-muted)', fontWeight: 400 }}> · Charter</span>
+                                GRC<span style={{ color: 'var(--c-muted)', fontWeight: 400 }}> · Trustifyjo</span>
                             </span>
                         </a>
 
@@ -1591,7 +1585,7 @@ export default function Welcome() {
                                     {[
                                         'Three-tier verdict — Adequate · Partially · Insufficient',
                                         'Confidence scoring with cited strengths and gaps',
-                                        'Tenant-scoped, queueable, no data leaves your charter',
+                                        'Tenant-scoped, queueable, no data leaves your Trustifyjo',
                                     ].map((l) => (
                                         <li key={l} className="flex items-start gap-3">
                                             <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: 'var(--c-mint)' }} />
@@ -1737,7 +1731,7 @@ export default function Welcome() {
                                 style={{ color: 'var(--c-fg)', fontWeight: 500, lineHeight: 1.05 }}
                             >
                                 Your corporation deserves{' '}
-                                <span style={{ color: 'var(--c-accent)', fontStyle: 'italic' }}>a charter</span>,
+                                <span style={{ color: 'var(--c-accent)', fontStyle: 'italic' }}>a Trustifyjo</span>,
                                 not a checklist.
                             </h2>
                             <p className="mx-auto mt-6 max-w-xl text-lg" style={{ color: 'var(--c-muted)' }}>
@@ -1783,7 +1777,7 @@ export default function Welcome() {
                                     className="text-xs uppercase"
                                     style={{ color: 'var(--c-fg)', letterSpacing: '0.28em', fontWeight: 600 }}
                                 >
-                                    GRC<span style={{ color: 'var(--c-muted)', fontWeight: 400 }}> · Charter</span>
+                                    GRC<span style={{ color: 'var(--c-muted)', fontWeight: 400 }}> · Trustifyjo</span>
                                 </span>
                             </div>
                             <p className="max-w-sm text-sm" style={{ color: 'var(--c-muted)' }}>
@@ -1821,7 +1815,7 @@ export default function Welcome() {
                         style={{ borderTop: '1px solid var(--c-border)' }}
                     >
                         <p className="text-[11px]" style={{ color: 'var(--c-muted)' }}>
-                            © Twenty Twenty-Six · GRC Charter · All rights reserved
+                            © Twenty Twenty-Six · GRC Trustifyjo · All rights reserved
                         </p>
                         <div className="flex items-center gap-4 text-[11px]" style={{ color: 'var(--c-muted)' }}>
                             <span>Fides · Ratio · Ordo</span>

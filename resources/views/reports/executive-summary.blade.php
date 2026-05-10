@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Executive Summary — GRC Charter</title>
+    <title>Executive Summary — GRC Trustifyjo</title>
     @include('reports._partials._styles')
 </head>
 <body>

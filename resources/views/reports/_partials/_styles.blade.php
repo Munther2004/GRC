@@ -458,7 +458,7 @@
     .compliance-bar-fill { height: 100%; border-radius: 4px; }
 
     /* Inline footer kept for templates that want a static text strip after content;
-       the universal "Confidential · GRC Charter / Page X of Y" line is rendered by
+       the universal "Confidential · GRC Trustifyjo / Page X of Y" line is rendered by
        _page_chrome via page_script() in the bottom margin reserved by @page. */
     .footer-static {
         margin-top: 24px;

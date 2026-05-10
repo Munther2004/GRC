@@ -11,6 +11,7 @@ import {
     AlertTriangle,
 } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
+import { CorporationFilter } from '@/components/corporation-filter';
 import type {
     AiReview,
     EvidenceItem,
@@ -324,7 +325,9 @@ export default function EvidenceIndex({
                 <PageHeader
                     title="Evidence"
                     description="All uploaded compliance evidence files"
-                />
+                >
+                    <CorporationFilter />
+                </PageHeader>
 
                 <StatStrip
                     stats={[

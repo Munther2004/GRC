@@ -16,13 +16,14 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
         $user = Auth::user();
-        $scopedRisks = fn () => $user->organisationScope(Risk::query());
-        $scopedAssessments = fn () => $user->organisationScope(Assessment::query());
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+        $scopedRisks = fn () => $user->visibilityScope(Risk::query(), 'user_id', $corpFilter);
+        $scopedAssessments = fn () => $user->visibilityScope(Assessment::query(), 'user_id', $corpFilter);
 
-        $grc = new GrcMetricsService($user);
+        $grc = new GrcMetricsService($user, $corpFilter);
         $riskStats = $grc->riskCounts();
         $complianceData = $grc->complianceSummary();
         $evidenceStats = $grc->evidenceCounts();
@@ -55,9 +56,15 @@ class DashboardController extends Controller
 
         // Audit log has no corporation_id of its own — scope through the
         // actor's tenant by joining on user_id. super_admin sees the full feed.
-        $tenantUserIds = $user->isSuperAdmin()
+        $effectiveCorpId = $user->isSuperAdmin() ? $corpFilter : $user->corporation_id;
+        $tenantUserIds = $effectiveCorpId === null
             ? null
-            : User::where('corporation_id', $user->corporation_id)->pluck('id');
+            : User::where('corporation_id', $effectiveCorpId)->pluck('id');
+        // For the operational `user` role, narrow further to the caller's own
+        // user_id so they see only their own audit-log entries.
+        if ($user->isUser()) {
+            $tenantUserIds = collect([$user->id]);
+        }
 
         $recentActivityQuery = AuditLog::query();
         if ($tenantUserIds !== null) {
@@ -125,7 +132,7 @@ class DashboardController extends Controller
             ];
         }
 
-        $metricsService = new RiskMetricsService($user);
+        $metricsService = new RiskMetricsService($user, $corpFilter);
         $riskMetrics = $metricsService->calculateRiskExposure();
         $healthScore = $metricsService->calculateHealthScore();
 
@@ -169,6 +176,8 @@ class DashboardController extends Controller
         $kriSnapshotQuery = KriSnapshot::query();
         if (! $user->isSuperAdmin()) {
             $kriSnapshotQuery->where('corporation_id', $user->corporation_id);
+        } elseif ($corpFilter !== null) {
+            $kriSnapshotQuery->where('corporation_id', $corpFilter);
         }
         $kriSnapshots = $kriSnapshotQuery->latest('snapshot_date')
             ->limit(12)

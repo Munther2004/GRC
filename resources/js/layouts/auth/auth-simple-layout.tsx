@@ -48,7 +48,7 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
                             className="text-[12px] uppercase"
                             style={{ color: 'var(--foreground)', letterSpacing: '0.28em', fontWeight: 600 }}
                         >
-                            GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Charter</span>
+                            GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Trustifyjo</span>
                         </span>
                     </Link>
                     <div className="flex items-center gap-2">
@@ -68,7 +68,7 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
                                 className="-mt-4 text-[10px] uppercase"
                                 style={{ color: 'var(--primary)', letterSpacing: '0.4em' }}
                             >
-                                The Charter
+                                The Trustifyjo
                             </span>
 
                             <div className="space-y-3">
@@ -109,7 +109,7 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
                 style={{ borderTop: '1px solid var(--border)', background: 'color-mix(in srgb, var(--card) 70%, transparent)' }}
             >
                 <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-5 text-[11px]" style={{ color: 'var(--muted-foreground)' }}>
-                    <span>© Twenty Twenty-Six · GRC Charter</span>
+                    <span>© Twenty Twenty-Six · GRC Trustifyjo</span>
                     <span>Fides · Ratio · Ordo</span>
                 </div>
             </footer>

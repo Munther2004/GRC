@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Executive Dashboard — GRC Charter</title>
+    <title>Executive Dashboard — GRC Trustifyjo</title>
     @include('reports._partials._styles')
     <style>
         /* Page-specific: Health Score banner ── */

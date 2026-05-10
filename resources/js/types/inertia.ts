@@ -52,10 +52,22 @@ export interface NotificationsProps {
     open_remediation_tasks: number;
 }
 
+export interface CorporationOption {
+    id: number;
+    name: string;
+}
+
+/** Picker payload shared with super_admins so they can drill into a tenant. */
+export interface CorporationFilterShared {
+    selected: number | null;
+    options: CorporationOption[];
+}
+
 /** Shared props injected by HandleInertiaRequests for every page. */
 export interface SharedProps {
     auth: Auth;
     flash: FlashProps;
     notifications: NotificationsProps;
+    corporationFilter: CorporationFilterShared | null;
     [key: string]: unknown;
 }

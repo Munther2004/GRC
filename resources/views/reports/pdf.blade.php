@@ -9,7 +9,7 @@
 <body>
 
     @include('reports._partials._header', [
-        'title'    => 'GRC Charter — Compliance Report',
+        'title'    => 'GRC Trustifyjo — Compliance Report',
         'subtitle' => 'Princess Sumaya University for Technology',
         'meta'     => 'Generated: ' . $generatedAt,
     ])

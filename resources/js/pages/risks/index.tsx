@@ -2,6 +2,7 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Eye, Loader2, Pencil, Plus, Search, Sliders, Sparkles, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { RouteName, RouteParams } from 'ziggy-js';
+import { CorporationFilter } from '@/components/corporation-filter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useConfirm } from '@/components/ui/confirm-dialog';
@@ -178,13 +179,16 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
             <Head title="Risk Register" />
             <div className="space-y-6">
                 <PageHeader title="Risk register" description="ISO/IEC 27005 — likelihood × impact management">
-                    {canEdit && (
-                        <Link href={route('risks.create')}>
-                            <Button className="gap-2">
-                                <Plus className="h-3.5 w-3.5" /> New risk
-                            </Button>
-                        </Link>
-                    )}
+                    <div className="flex items-center gap-2">
+                        <CorporationFilter />
+                        {canEdit && (
+                            <Link href={route('risks.create')}>
+                                <Button className="gap-2">
+                                    <Plus className="h-3.5 w-3.5" /> New risk
+                                </Button>
+                            </Link>
+                        )}
+                    </div>
                 </PageHeader>
 
                 <StatStrip stats={[

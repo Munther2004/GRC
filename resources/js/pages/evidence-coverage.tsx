@@ -11,6 +11,7 @@ import {
     XCircle,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { CorporationFilter } from '@/components/corporation-filter';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { FilterBar } from '@/components/ui/filter-bar';
@@ -322,7 +323,9 @@ export default function EvidenceCoverage({
                 <PageHeader
                     title="Evidence Coverage Matrix"
                     description="Per-control view of evidence count, AI verdict, expiry, and overall coverage."
-                />
+                >
+                    <CorporationFilter />
+                </PageHeader>
 
                 <StatStrip
                     stats={[

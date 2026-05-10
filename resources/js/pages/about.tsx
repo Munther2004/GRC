@@ -77,7 +77,7 @@ export default function About() {
                         <Link href="/" className="flex items-center gap-3">
                             <AppLogoIcon className="size-20" />
                             <span className="text-[12px] uppercase" style={{ color: 'var(--foreground)', letterSpacing: '0.28em', fontWeight: 600 }}>
-                                GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Charter</span>
+                                GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Trustifyjo</span>
                             </span>
                         </Link>
                         <div className="flex items-center gap-3">
@@ -209,11 +209,11 @@ export default function About() {
                         <div className="flex items-center gap-2">
                             <ShieldCheck className="h-4 w-4" style={{ color: 'var(--primary)' }} />
                             <span className="text-xs uppercase" style={{ color: 'var(--foreground)', letterSpacing: '0.28em', fontWeight: 600 }}>
-                                GRC <span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}>· Charter</span>
+                                GRC <span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}>· Trustifyjo</span>
                             </span>
                         </div>
                         <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
-                            © Twenty Twenty-Six · GRC Charter · All rights reserved
+                            © Twenty Twenty-Six · GRC Trustifyjo · All rights reserved
                         </p>
                     </div>
                 </footer>

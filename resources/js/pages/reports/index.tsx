@@ -8,6 +8,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend,
 } from 'recharts';
+import { CorporationFilter } from '@/components/corporation-filter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -103,6 +104,7 @@ export default function ReportsIndex({
                 <div className="flex items-start justify-between gap-4">
                     <PageHeader title="Reports" description="Organisation security and compliance summary" />
                     <div className="flex shrink-0 items-center gap-2 pt-1">
+                        <CorporationFilter />
                         <span className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                             {new Date().toLocaleDateString()}
                         </span>

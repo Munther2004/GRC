@@ -168,7 +168,7 @@ export function AdminSidebar() {
                     />
                     {!collapsed && (
                         <span className="flex-1 truncate text-[12px] uppercase" style={{ color: 'var(--sidebar-foreground)', letterSpacing: '0.28em', fontWeight: 600 }}>
-                            GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Charter</span>
+                            GRC<span style={{ color: 'var(--muted-foreground)', fontWeight: 400 }}> · Trustifyjo</span>
                         </span>
                     )}
                     {/* Mobile close (drawer mode only) */}
@@ -238,6 +238,19 @@ export function AdminSidebar() {
 
                 {/* ── User footer ───────────────────────────────────────── */}
                 <div className="shrink-0" style={{ borderTop: '1px solid var(--sidebar-border)', padding: collapsed ? '8px' : '12px' }}>
+                    <Link
+                        href="/settings/password"
+                        title="Settings"
+                        className={cn(
+                            'mb-2 flex items-center rounded-2xl text-sm transition-colors',
+                            collapsed ? 'lg:justify-center lg:p-1.5' : 'gap-3 px-3 py-2',
+                            url.startsWith('/settings') ? 'sidebar-nav-active' : '',
+                        )}
+                        style={{ color: 'var(--sidebar-foreground)' }}
+                    >
+                        <Settings className="h-4 w-4 shrink-0" style={{ color: 'var(--muted-foreground)' }} />
+                        {!collapsed && <span className="truncate" style={{ fontWeight: 500 }}>Settings</span>}
+                    </Link>
                     <div
                         className={cn(
                             'flex items-center rounded-2xl',

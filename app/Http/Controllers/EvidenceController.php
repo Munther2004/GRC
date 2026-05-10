@@ -22,18 +22,30 @@ class EvidenceController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
 
         // Tenant scope: a piece of evidence belongs to the caller's tenant
         // when its parent assessment is in that tenant, OR (when there is no
         // assessment context) when its uploader is in that tenant. Evidence
         // has no corporation_id column today.
-        $applyTenantScope = function ($q) use ($user) {
-            if ($user && $user->isSuperAdmin()) {
+        //
+        // For the `user` role we additionally narrow to evidence the caller
+        // personally uploaded — operational writers only see their own rows.
+        // super_admin can drill into a single tenant via ?corporation_id=.
+        $applyTenantScope = function ($q) use ($user, $corpFilter) {
+            $corpId = $user && $user->isSuperAdmin()
+                ? $corpFilter
+                : $user?->corporation_id;
+
+            if ($corpId === null) {
+                if ($user && ! $user->isSuperAdmin()) {
+                    $q->whereRaw('1 = 0');
+                }
+
                 return $q;
             }
-            $corpId = $user?->corporation_id;
 
-            return $q->where(function ($outer) use ($corpId) {
+            $q->where(function ($outer) use ($corpId) {
                 $outer->whereHas('assessmentItem.assessment', fn ($a) => $a->where('corporation_id', $corpId))
                     ->orWhere(function ($alt) use ($corpId) {
                         // Direct-attached evidence (no assessment item): fall
@@ -42,6 +54,12 @@ class EvidenceController extends Controller
                             ->whereHas('user', fn ($u) => $u->where('corporation_id', $corpId));
                     });
             });
+
+            if ($user && $user->isUser()) {
+                $q->where('user_id', $user->id);
+            }
+
+            return $q;
         };
 
         $query = $applyTenantScope(Evidence::with([
@@ -79,8 +97,13 @@ class EvidenceController extends Controller
         // Assessment dropdown should only list assessments in the caller's
         // tenant (it was previously global).
         $assessmentsQuery = Assessment::where('status', 'completed')->orderBy('title');
-        if ($user && ! $user->isSuperAdmin()) {
-            $assessmentsQuery->where('corporation_id', $user->corporation_id);
+        $effectiveCorpId = $user && $user->isSuperAdmin()
+            ? $corpFilter
+            : $user?->corporation_id;
+        if ($effectiveCorpId !== null) {
+            $assessmentsQuery->where('corporation_id', $effectiveCorpId);
+        } elseif ($user && ! $user->isSuperAdmin()) {
+            $assessmentsQuery->whereRaw('1 = 0');
         }
 
         return Inertia::render('evidence/index', [

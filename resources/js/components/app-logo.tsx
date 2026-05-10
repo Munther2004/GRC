@@ -6,7 +6,7 @@ export default function AppLogo() {
             <AppLogoIcon className="size-20" />
             <div className="ml-1 grid flex-1 text-left text-sm">
                 <span className="mb-0.5 truncate leading-tight font-semibold">
-                    Laravel Starter Kit
+                    GRC <span className="font-normal text-muted-foreground">· Trustifyjo</span>
                 </span>
             </div>
         </>

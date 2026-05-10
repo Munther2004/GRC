@@ -22,8 +22,9 @@ class RiskController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
 
-        $baseQuery = fn () => $user->organisationScope(Risk::query()->with(['user', 'sourceControl.framework']));
+        $baseQuery = fn () => $user->visibilityScope(Risk::query()->with(['user', 'sourceControl.framework']), 'user_id', $corpFilter);
 
         $paginator = $baseQuery()
             ->when($request->search, fn ($q) => $q->where('title', 'like', "%{$request->search}%")
@@ -56,7 +57,7 @@ class RiskController extends Controller
 
         // Client filter: escalated_only — collect escalated IDs if appetite active
         if ($request->escalated_only && $appetite) {
-            $allRisks = $user->organisationScope(Risk::query())->get();
+            $allRisks = $user->visibilityScope(Risk::query(), 'user_id', $corpFilter)->get();
             $escalatedIds = $allRisks
                 ->filter(fn ($r) => $appetite->classifyRisk($r)['band'] === 'escalated')
                 ->pluck('id')
@@ -75,7 +76,7 @@ class RiskController extends Controller
         ]));
 
         $tc = Risk::levelThresholds();
-        $scopedRisks = $user->organisationScope(Risk::query());
+        $scopedRisks = $user->visibilityScope(Risk::query(), 'user_id', $corpFilter);
         $stats = [
             'total' => (clone $scopedRisks)->count(),
             'open' => (clone $scopedRisks)->where('status', 'open')->count(),
@@ -89,7 +90,7 @@ class RiskController extends Controller
             ->orderBy('short_name')
             ->get(['id', 'short_name', 'name']);
 
-        $riskExposure = (new RiskMetricsService)->calculateRiskExposure();
+        $riskExposure = (new RiskMetricsService($user, $corpFilter))->calculateRiskExposure();
 
         return Inertia::render('risks/index', [
             'risks' => $paginator,
@@ -357,7 +358,7 @@ class RiskController extends Controller
         if (! $user) {
             abort(403);
         }
-        $visible = $user->organisationScope(Risk::query())
+        $visible = $user->visibilityScope(Risk::query())
             ->whereKey($risk->id)
             ->exists();
         if (! $visible) {
@@ -401,9 +402,11 @@ class RiskController extends Controller
         ];
     }
 
-    public function heatmap()
+    public function heatmap(Request $request)
     {
-        $risks = Auth::user()->organisationScope(Risk::query()->with(['user', 'sourceControl.framework']))
+        $user = Auth::user();
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+        $risks = $user->visibilityScope(Risk::query()->with(['user', 'sourceControl.framework']), 'user_id', $corpFilter)
             ->orderByRaw('likelihood * impact DESC')
             ->get();
 

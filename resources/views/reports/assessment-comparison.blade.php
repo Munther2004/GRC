@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Assessment Comparison Report — GRC Charter</title>
+    <title>Assessment Comparison Report — GRC Trustifyjo</title>
     @include('reports._partials._styles')
     <style>
         /* Page-specific: VS banner */

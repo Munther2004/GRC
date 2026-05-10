@@ -14,14 +14,14 @@ use Inertia\Inertia;
 
 class ExecutiveDashboardController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        return Inertia::render('executive-dashboard', $this->buildData());
+        return Inertia::render('executive-dashboard', $this->buildData($request));
     }
 
-    public function export()
+    public function export(\Illuminate\Http\Request $request)
     {
-        $data = $this->buildData();
+        $data = $this->buildData($request);
 
         AuditLog::record('exported', 'Report', 0, 'Executive Dashboard PDF exported');
 
@@ -36,11 +36,12 @@ class ExecutiveDashboardController extends Controller
 
     // ── Private ───────────────────────────────────────────────────────────────
 
-    private function buildData(): array
+    private function buildData(\Illuminate\Http\Request $request): array
     {
         $user = Auth::user();
-        $metrics = new RiskMetricsService($user);
-        $grc = new GrcMetricsService;
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+        $metrics = new RiskMetricsService($user, $corpFilter);
+        $grc = new GrcMetricsService($user, $corpFilter);
 
         // 1. Health Score
         $healthScore = $metrics->calculateHealthScore();
@@ -59,7 +60,8 @@ class ExecutiveDashboardController extends Controller
         // 3. Risk Summary (one SQL aggregate query + top-5 targeted query)
         $rc = $grc->riskCounts();
 
-        $topRisks = Risk::with('treatmentPlans')
+        $topRisks = $user->visibilityScope(Risk::query(), 'user_id', $corpFilter)
+            ->with('treatmentPlans')
             ->orderByRaw('likelihood * impact DESC')
             ->limit(5)
             ->get()
@@ -97,7 +99,8 @@ class ExecutiveDashboardController extends Controller
 
         // 5. Assessment Summary (aggregate counts from service + latest record for display)
         $agg = $grc->assessmentSummary();
-        $latestAssessment = Assessment::with('framework')->latest()->first();
+        $latestAssessment = $user->visibilityScope(Assessment::query(), 'user_id', $corpFilter)
+            ->with('framework')->latest()->first();
         $assessmentSummary = [
             'total' => $agg['total'],
             'completed' => $agg['completed'],
@@ -113,6 +116,8 @@ class ExecutiveDashboardController extends Controller
         $trendQuery = KriSnapshot::query();
         if (! $user->isSuperAdmin()) {
             $trendQuery->where('corporation_id', $user->corporation_id);
+        } elseif ($corpFilter !== null) {
+            $trendQuery->where('corporation_id', $corpFilter);
         }
         $trend = $trendQuery->latest('snapshot_date')
             ->limit(6)

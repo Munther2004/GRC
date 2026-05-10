@@ -27,7 +27,8 @@ class AssessmentController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $scoped = fn () => $user->organisationScope(Assessment::query());
+        $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+        $scoped = fn () => $user->visibilityScope(Assessment::query(), 'user_id', $corpFilter);
 
         $query = $scoped()
             ->with(['user', 'framework'])
@@ -280,7 +281,7 @@ class AssessmentController extends Controller
         // Tenant scoping is the same primitive used everywhere else.
         $user = Auth::user();
         if (! $user
-            || ! $user->organisationScope(Assessment::query())
+            || ! $user->visibilityScope(Assessment::query())
                 ->whereKey($assessment->id)
                 ->exists()
         ) {
@@ -470,11 +471,22 @@ class AssessmentController extends Controller
     /**
      * Sync every assessment item's compliance_status back to the per-tenant
      * control-status pivot. Idempotent — skips a history record if one for
-     * this assessment already exists. Falls back to the legacy global field
-     * when the assessment has no corporation context.
+     * this assessment already exists.
+     *
+     * Assessments without a `corporation_id` (i.e. super_admin assessments
+     * that were never tied to a specific tenant) DO NOT mutate any global or
+     * per-tenant control-status row. Otherwise super_admin's assessment
+     * results would leak into every tenant's compliance summary through the
+     * `COALESCE(ccs.current_status, controls.current_status)` fallback in
+     * `GrcMetricsService`. Untenanted assessments are sandbox data only.
      */
     private function syncControlStatuses(Assessment $assessment): void
     {
+        $tenantId = $assessment->corporation_id;
+        if ($tenantId === null) {
+            return;
+        }
+
         $items = AssessmentItem::with('control')
             ->where('assessment_id', $assessment->id)
             ->get();
@@ -485,7 +497,6 @@ class AssessmentController extends Controller
             ->all();
 
         $now = now();
-        $tenantId = $assessment->corporation_id;
 
         foreach ($items as $item) {
             $control = $item->control;
@@ -496,21 +507,13 @@ class AssessmentController extends Controller
             $newStatus = $item->compliance_status;
             $oldStatus = $control->statusForCorporation($tenantId);
 
-            if ($tenantId !== null) {
-                \App\Models\CorporationControlStatus::updateOrCreate(
-                    ['corporation_id' => $tenantId, 'control_id' => $control->id],
-                    [
-                        'current_status' => $newStatus,
-                        'last_remediated_at' => in_array($newStatus, ['compliant', 'partially_compliant']) ? $now : null,
-                    ]
-                );
-            } else {
-                $updates = ['current_status' => $newStatus];
-                if (in_array($newStatus, ['compliant', 'partially_compliant'])) {
-                    $updates['last_remediated_at'] = $now;
-                }
-                $control->update($updates);
-            }
+            \App\Models\CorporationControlStatus::updateOrCreate(
+                ['corporation_id' => $tenantId, 'control_id' => $control->id],
+                [
+                    'current_status' => $newStatus,
+                    'last_remediated_at' => in_array($newStatus, ['compliant', 'partially_compliant']) ? $now : null,
+                ]
+            );
 
             if (! isset($alreadySyncedControlIds[$control->id])) {
                 ControlStatusHistory::create([
@@ -620,6 +623,13 @@ class AssessmentController extends Controller
         $resyncedFromId = null;
         $resetCount = 0;
 
+        // Untenanted assessments (super_admin sandbox data) never wrote to any
+        // status pivot — see syncControlStatuses. So when one is deleted there
+        // is nothing to re-sync or roll back. Skip the entire branch.
+        if ($deletedCorpId === null) {
+            $latestRemaining = null;
+        }
+
         if ($latestRemaining) {
             $resyncedFromId = $latestRemaining->id;
 
@@ -638,21 +648,13 @@ class AssessmentController extends Controller
                 $newStatus = $rItem->compliance_status;
                 $oldStatus = $control->statusForCorporation($deletedCorpId);
 
-                if ($deletedCorpId !== null) {
-                    \App\Models\CorporationControlStatus::updateOrCreate(
-                        ['corporation_id' => $deletedCorpId, 'control_id' => $control->id],
-                        [
-                            'current_status' => $newStatus,
-                            'last_remediated_at' => in_array($newStatus, ['compliant', 'partially_compliant'], true) ? $now : null,
-                        ]
-                    );
-                } else {
-                    $updates = ['current_status' => $newStatus];
-                    if (in_array($newStatus, ['compliant', 'partially_compliant'], true)) {
-                        $updates['last_remediated_at'] = $now;
-                    }
-                    $control->update($updates);
-                }
+                \App\Models\CorporationControlStatus::updateOrCreate(
+                    ['corporation_id' => $deletedCorpId, 'control_id' => $control->id],
+                    [
+                        'current_status' => $newStatus,
+                        'last_remediated_at' => in_array($newStatus, ['compliant', 'partially_compliant'], true) ? $now : null,
+                    ]
+                );
 
                 ControlStatusHistory::create([
                     'control_id' => $control->id,
@@ -685,7 +687,7 @@ class AssessmentController extends Controller
 
                 $resetCount++;
             }
-        } else {
+        } elseif ($deletedCorpId !== null) {
             // No remaining assessment for this tenant — clear THIS tenant's
             // pivot rows for the framework, leaving other tenants' state alone.
             $controls = Control::where('framework_id', $frameworkId)->get();
@@ -693,17 +695,9 @@ class AssessmentController extends Controller
             foreach ($controls as $control) {
                 $oldStatus = $control->statusForCorporation($deletedCorpId);
 
-                if ($deletedCorpId !== null) {
-                    \App\Models\CorporationControlStatus::where('corporation_id', $deletedCorpId)
-                        ->where('control_id', $control->id)
-                        ->delete();
-                } else {
-                    // Legacy global wipe (super_admin/no-tenant context only)
-                    $control->update([
-                        'current_status' => null,
-                        'last_remediated_at' => null,
-                    ]);
-                }
+                \App\Models\CorporationControlStatus::where('corporation_id', $deletedCorpId)
+                    ->where('control_id', $control->id)
+                    ->delete();
 
                 ControlStatusHistory::create([
                     'control_id' => $control->id,
@@ -716,6 +710,8 @@ class AssessmentController extends Controller
                 $resetCount++;
             }
         }
+        // Else: untenanted (super_admin) assessment deletion has nothing to
+        // reset — those assessments never wrote to any status pivot.
 
         // 6. Delete notifications linked to this assessment (overdue alerts etc.).
         Notification::where('url', 'like', "/assessments/{$id}%")->delete();
@@ -766,7 +762,7 @@ class AssessmentController extends Controller
         if (! $user) {
             abort(403);
         }
-        $visible = $user->organisationScope(Assessment::query())
+        $visible = $user->visibilityScope(Assessment::query())
             ->whereKey($assessment->id)
             ->exists();
         if (! $visible) {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Gap Analysis Report — GRC Charter</title>
+    <title>Gap Analysis Report — GRC Trustifyjo</title>
     @include('reports._partials._styles')
     <style>
         /* Page-specific: KPI flex (gap-analysis uses flex layout, not table) */

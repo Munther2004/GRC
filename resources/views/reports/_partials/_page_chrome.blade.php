@@ -1,5 +1,5 @@
 {{-- Page chrome — @page margins reserve space; <script type="text/php"> writes:
-       footer (every page): "Confidential · GRC Charter" left, "Page X of Y" right
+       footer (every page): "Confidential · GRC Trustifyjo" left, "Page X of Y" right
        running header (pages 2+, when $reportTitle is set): brand mark + report title
 
      The @page rules already live in _styles.blade.php. This partial only injects the
@@ -27,7 +27,7 @@ if (isset($pdf)) {
         // well inside the 96px (=72pt) bottom @page margin. With body content
         // ending at y≈h-72pt, that leaves ~50pt (~17mm) of breathing room
         // between the last body element and the footer baseline.
-        $left  = 'Confidential · GRC Charter';
+        $left  = 'Confidential · GRC Trustifyjo';
         $pdf->text(48, $h - 22, $left, $font, 8, $muted);
 
         $pageTxt = 'Page ' . $pageNumber . ' of ' . $pageCount;
@@ -39,7 +39,7 @@ if (isset($pdf)) {
         // margin at 120px (=90pt), body content begins ~54pt below the rule —
         // a comfortable, unmistakable visual separation.
         if ($pageNumber > 1 && !empty($reportTitle)) {
-            $brand = 'GRC · CHARTER';
+            $brand = 'GRC · TRUSTIFYJO';
             $pdf->text(48, 20, $brand, $font, 7.5, $deep);
             $titleW = $fontMetrics->getTextWidth($reportTitle, $font, 7.5);
             $pdf->text($w - 48 - $titleW, 20, $reportTitle, $font, 7.5, $muted);

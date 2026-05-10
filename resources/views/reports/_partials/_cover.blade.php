@@ -9,11 +9,11 @@
        $description    — longer paragraph under the subtitle (optional)
        $classification — bottom-stripe text; defaults to a generic line
        $generatedDate  — Carbon-like instance; falls back to now()
-       $brandMark      — defaults to "GRC · Charter"
+       $brandMark      — defaults to "GRC · Trustifyjo"
 --}}
 @php
     $generatedDate  = $generatedDate  ?? \Carbon\CarbonImmutable::now();
-    $brandMark      = $brandMark      ?? 'GRC · Charter';
+    $brandMark      = $brandMark      ?? 'GRC · Trustifyjo';
     $classification = $classification ?? 'Confidential · Internal Use Only';
     $systemDate     = 'Generated · ' . $generatedDate->format('j M Y');
 @endphp

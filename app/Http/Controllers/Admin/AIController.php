@@ -5,16 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
 use App\Models\AssessmentItem;
-use App\Models\AuditLog;
 use App\Models\Control;
-use App\Models\Evidence;
 use App\Models\Risk;
 use App\Services\AIRiskGenerator;
 use App\Services\AIService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class AIController extends Controller
 {
@@ -176,25 +173,25 @@ PROMPT;
             return response()->json(['error' => 'Control not found'], 404);
         }
 
-        // Match an existing AI-generated risk for this control IN THE
-        // CALLER'S TENANT. Without organisationScope, this previously
-        // appended attacker-controlled remediation text to whichever
-        // tenant's risk happened to come first.
-        $risk = $user->organisationScope(Risk::query())
+        // Match an existing AI-generated risk for this control that the
+        // caller is allowed to see. visibilityScope adds the per-user
+        // owner filter for the `user` role so a regular user only
+        // mutates their own AI risks, never another user's in the same
+        // corporation.
+        $risk = $user->visibilityScope(Risk::query(), 'user_id')
             ->where('auto_generated', 1)
             ->where('source_control_id', $control->id)
             ->first();
 
         if (! $risk) {
-            // No risk yet — fall back to generating one from the caller's
-            // most recent completed assessment that flagged this control.
-            // organisationScope on AssessmentItem is applied via its parent
-            // Assessment's corporation_id.
+            // No risk yet — fall back to generating one from a completed
+            // assessment the caller can see. Assessment visibility uses
+            // the same rule (admin/auditor: corp-wide, user: own only).
             $item = AssessmentItem::where('control_id', $control->id)
                 ->whereIn('compliance_status', ['non_compliant', 'partially_compliant'])
                 ->whereHas('assessment', function ($q) use ($user) {
                     $q->where('status', 'completed');
-                    $user->organisationScope($q);
+                    $user->visibilityScope($q, 'user_id');
                 })
                 ->with('assessment')
                 ->latest()
@@ -206,7 +203,7 @@ PROMPT;
 
             (new AIRiskGenerator)->generateRiskForControl($control, $item->assessment, $item->compliance_status);
 
-            $risk = $user->organisationScope(Risk::query())
+            $risk = $user->visibilityScope(Risk::query(), 'user_id')
                 ->where('auto_generated', 1)
                 ->where('source_control_id', $control->id)
                 ->first();
@@ -231,12 +228,12 @@ PROMPT;
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
-        // Tenant scope: refuse to summarize an assessment the caller
-        // cannot see. Previous code did Assessment::findOrFail() globally,
-        // letting any authenticated user request a summary of any tenant's
-        // assessment and ship that data to Claude.
-        $assessment = $user->organisationScope(
-            Assessment::with(['framework', 'items.control'])
+        // Visibility scope: refuse to summarize an assessment the caller
+        // cannot see. admin/auditor see their corp; a `user` can only
+        // summarize assessments they personally created.
+        $assessment = $user->visibilityScope(
+            Assessment::with(['framework', 'items.control']),
+            'user_id',
         )->whereKey($assessmentId)->first();
 
         if (! $assessment) {
@@ -326,9 +323,7 @@ PROMPT;
                 return response()->json(['error' => 'AI service unavailable'], 503);
             }
 
-            $cleaned = preg_replace('/^```json\s*/i', '', trim($responseText));
-            $cleaned = preg_replace('/```$/', '', trim($cleaned));
-            $summary = json_decode(trim($cleaned), true);
+            $summary = json_decode(trim($responseText), true);
 
             if (! is_array($summary)) {
                 Log::warning('AIController::generateAssessmentSummary: invalid JSON', ['response' => $responseText]);
@@ -342,171 +337,5 @@ PROMPT;
 
             return response()->json(['error' => 'Failed to generate assessment summary'], 500);
         }
-    }
-
-    public function reviewEvidence(Request $request)
-    {
-        $request->validate(['evidence_id' => 'required|integer|exists:evidence,id']);
-
-        $user = Auth::user();
-        if (! $user) {
-            return response()->json(['error' => 'Unauthenticated'], 401);
-        }
-
-        $evidence = Evidence::with([
-            'user',
-            'assessmentItem.control',
-            'assessmentItem.assessment.framework',
-        ])->findOrFail($request->evidence_id);
-
-        // Tenant scope: evidence is owned indirectly through its
-        // assessmentItem -> assessment -> corporation_id. Refuse if the
-        // evidence's parent assessment is not in the caller's tenant.
-        if (! $this->evidenceVisibleToUser($evidence, $user)) {
-            abort(403);
-        }
-
-        $item = $evidence->assessmentItem;
-        $control = $item?->control;
-        $assessment = $item?->assessment;
-        $framework = $assessment?->framework;
-
-        // Attempt PDF text extraction if library is available
-        $fileContent = '';
-        if (! empty($evidence->file_path) && Storage::disk('public')->exists($evidence->file_path)) {
-            if (str_contains($evidence->file_type ?? '', 'pdf') && class_exists(\Smalot\PdfParser\Parser::class)) {
-                try {
-                    $raw = Storage::disk('public')->get($evidence->file_path);
-                    $parser = new \Smalot\PdfParser\Parser;
-                    $text = $parser->parseContent($raw)->getText();
-                    if (! empty(trim($text))) {
-                        $fileContent = "\nExtracted PDF Content (first 2000 chars):\n".substr($text, 0, 2000);
-                    }
-                } catch (\Exception $e) {
-                    // Parsing failed — continue with metadata only
-                }
-            }
-        }
-
-        $controlCode = $control?->control_id ?? 'N/A';
-        $controlTitle = $control?->title ?? 'N/A';
-        $controlDescription = $control?->description ?? 'N/A';
-        $frameworkName = $framework?->name ?? 'N/A';
-        $controlCategory = $control?->category ?? 'General';
-        $fileName = $evidence->file_name ?? 'N/A';
-        $fileType = $evidence->file_type ?? 'N/A';
-        $uploadDate = $evidence->created_at->toDateString();
-        $uploaderName = $evidence->user?->name ?? 'Unknown';
-        $descLine = $evidence->description ? "\n- Description: {$evidence->description}" : '';
-
-        $prompt = <<<PROMPT
-You are a GRC auditor reviewing evidence submitted for a security control compliance assessment.
-
-Control Being Assessed:
-- Code: {$controlCode}
-- Title: {$controlTitle}
-- Description: {$controlDescription}
-- Framework: {$frameworkName}
-- Category: {$controlCategory}
-
-Evidence Submitted:
-- Filename: {$fileName}
-- File Type: {$fileType}
-- Upload Date: {$uploadDate}
-- Uploaded By: {$uploaderName}{$descLine}{$fileContent}
-
-Based on the control requirements and the evidence provided, assess whether this evidence adequately demonstrates compliance.
-
-Return ONLY valid JSON, no markdown:
-{
-  "verdict": "Adequate",
-  "confidence": 85,
-  "summary": "one sentence verdict explanation",
-  "strengths": ["what the evidence does well 1", "what the evidence does well 2"],
-  "gaps": ["what is missing or insufficient 1", "what is missing or insufficient 2"],
-  "recommendation": "one clear sentence on what action to take",
-  "suggested_status": "approved"
-}
-
-verdict must be one of: Adequate, Partially Adequate, Insufficient.
-confidence must be integer 0-100.
-suggested_status must be one of: approved, rejected, pending.
-If no file content is available, base assessment on filename and metadata only and note this in gaps.
-PROMPT;
-
-        try {
-            $ai = new AIService;
-            $responseText = $ai->callClaude($prompt);
-
-            if (empty($responseText)) {
-                return response()->json(['error' => 'AI service unavailable'], 503);
-            }
-
-            $cleaned = preg_replace('/^```json\s*/i', '', trim($responseText));
-            $cleaned = preg_replace('/```$/', '', trim($cleaned));
-            $review = json_decode(trim($cleaned), true);
-
-            if (! is_array($review)) {
-                Log::warning('AIController::reviewEvidence: invalid JSON', ['response' => $responseText]);
-
-                return response()->json(['error' => 'Invalid AI response format'], 500);
-            }
-
-            // Sanitize fields
-            $review['verdict'] = in_array($review['verdict'] ?? '', ['Adequate', 'Partially Adequate', 'Insufficient'])
-                ? $review['verdict'] : 'Insufficient';
-            $review['confidence'] = max(0, min(100, (int) ($review['confidence'] ?? 50)));
-            $review['suggested_status'] = in_array($review['suggested_status'] ?? '', ['approved', 'rejected', 'pending'])
-                ? $review['suggested_status'] : 'pending';
-            $review['strengths'] = array_values(array_filter((array) ($review['strengths'] ?? [])));
-            $review['gaps'] = array_values(array_filter((array) ($review['gaps'] ?? [])));
-
-            $evidence->update([
-                'ai_review' => $review,
-                'ai_verdict' => $review['verdict'],
-                'ai_confidence' => $review['confidence'],
-                'ai_reviewed_at' => now(),
-            ]);
-
-            AuditLog::record(
-                'ai_reviewed',
-                'Evidence',
-                $evidence->id,
-                "AI reviewed evidence #{$evidence->id} — verdict: {$review['verdict']}"
-            );
-
-            return response()->json($review);
-        } catch (\Exception $e) {
-            Log::error('AIController::reviewEvidence error', ['message' => $e->getMessage()]);
-
-            return response()->json(['error' => 'Failed to review evidence'], 500);
-        }
-    }
-
-    /**
-     * Decide whether the given user is allowed to act on the given evidence.
-     * super_admin sees everything. Otherwise the evidence's parent
-     * assessment (or, if none, parent control_id) must be in the caller's
-     * corporation. Returns false if no tenant linkage can be established.
-     */
-    private function evidenceVisibleToUser(Evidence $evidence, \App\Models\User $user): bool
-    {
-        if ($user->isSuperAdmin()) {
-            return true;
-        }
-
-        $assessment = $evidence->assessmentItem?->assessment;
-        if ($assessment !== null) {
-            return (int) $assessment->corporation_id === (int) $user->corporation_id;
-        }
-
-        // Evidence attached directly to a global Control with no assessment
-        // context: there is no tenant boundary on Control, so we conservatively
-        // require the uploader to be in the caller's tenant.
-        if ($evidence->user !== null && $evidence->user->corporation_id !== null) {
-            return (int) $evidence->user->corporation_id === (int) $user->corporation_id;
-        }
-
-        return false;
     }
 }

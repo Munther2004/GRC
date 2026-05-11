@@ -118,9 +118,7 @@ class CorporationInviteController extends Controller
             ->whereNull('revoked_at')
             ->update(['revoked_at' => now()]);
 
-        $expires = isset($validated['expires_in_days'])
-            ? now()->addDays((int) $validated['expires_in_days'])
-            : null;
+        $expires = now()->addDays((int) ($validated['expires_in_days'] ?? 30));
 
         $invite = CorporationInvite::create([
             'corporation_id' => $corporation->id,

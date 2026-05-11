@@ -10,8 +10,10 @@ use App\Models\RiskAppetite;
 use App\Models\User;
 use App\Services\GrcMetricsService;
 use App\Services\RiskMetricsService;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -78,16 +80,30 @@ class DashboardController extends Controller
             'created_at' => $l->created_at->diffForHumans(),
         ]);
 
-        // Risk trend - group by month, using canonical thresholds
+        // Risk trend — group by month. SQL functions for month extraction
+        // differ across drivers (MySQL: MONTH(); SQLite: strftime). Compute a
+        // numeric month in SQL, then build the human-readable "Jan/Feb/…"
+        // label in PHP so the query stays portable between MySQL (prod) and
+        // SQLite (tests).
+        $monthExpr = DB::connection()->getDriverName() === 'sqlite'
+            ? "CAST(strftime('%m', created_at) AS INTEGER)"
+            : 'MONTH(created_at)';
+
         $t = Risk::levelThresholds();
-        $trendData = $scopedRisks()->selectRaw("DATE_FORMAT(created_at, '%b') as month,
+        $trendData = $scopedRisks()->selectRaw("{$monthExpr} as month_num,
         SUM(CASE WHEN likelihood * impact >= {$t['critical']} THEN 1 ELSE 0 END) as critical,
         SUM(CASE WHEN likelihood * impact >= {$t['high']}     AND likelihood * impact < {$t['critical']} THEN 1 ELSE 0 END) as high,
         SUM(CASE WHEN likelihood * impact >= {$t['medium']}   AND likelihood * impact < {$t['high']}     THEN 1 ELSE 0 END) as medium,
         SUM(CASE WHEN likelihood * impact <  {$t['medium']} THEN 1 ELSE 0 END) as low")
-            ->groupByRaw('DATE_FORMAT(created_at, "%b"), MONTH(created_at)')
-            ->orderByRaw('MONTH(created_at)')
-            ->get();
+            ->groupByRaw($monthExpr)
+            ->orderByRaw($monthExpr)
+            ->get()
+            ->map(function ($row) {
+                $row->month = CarbonImmutable::create(null, (int) $row->month_num, 1)->format('M');
+                unset($row->month_num);
+
+                return $row;
+            });
 
         // Slim risk load — only columns needed for heatmap and appetite classification
         $risks = $scopedRisks()->select(['id', 'title', 'likelihood', 'impact', 'status'])->get();

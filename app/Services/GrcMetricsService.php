@@ -167,7 +167,7 @@ class GrcMetricsService
                 SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) AS in_progress,
                 SUM(CASE WHEN status != 'completed'
                               AND due_date IS NOT NULL
-                              AND due_date < NOW()   THEN 1 ELSE 0 END) AS overdue
+                              AND due_date < CURRENT_TIMESTAMP   THEN 1 ELSE 0 END) AS overdue
             ")
             ->first();
 

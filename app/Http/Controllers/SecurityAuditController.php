@@ -29,11 +29,11 @@ class SecurityAuditController extends Controller
         $user = Auth::user();
 
         // security_audits.corporation_id was added in the Phase 3 migration.
-        // Use the canonical organisationScope primitive instead of joining
-        // through users — same effect, fewer indirection bugs, same column
-        // pattern as risks/assessments/remediation_tasks.
+        // visibilityScope enforces the canonical role rule: super_admin sees
+        // all, admin/auditor see their corp, a `user` only sees audits they
+        // personally uploaded (user_id column).
         $base = $user
-            ? $user->organisationScope(SecurityAudit::query())
+            ? $user->visibilityScope(SecurityAudit::query(), 'user_id')
             : SecurityAudit::query()->whereRaw('1 = 0');
 
         $base = $base->with('user:id,name,corporation_id')->latest();
@@ -62,7 +62,7 @@ class SecurityAuditController extends Controller
         // these, non-super_admin users would see global counts that include
         // other corporations' audits.
         $statsBase = fn () => $user
-            ? $user->organisationScope(SecurityAudit::query())
+            ? $user->visibilityScope(SecurityAudit::query(), 'user_id')
             : SecurityAudit::query()->whereRaw('1 = 0');
 
         $stats = [
@@ -353,17 +353,12 @@ class SecurityAuditController extends Controller
         if (! $user) {
             abort(403);
         }
-        if ($user->isSuperAdmin()) {
-            return;
-        }
-
-        $auditCorpId = $audit->corporation_id
-            ?? $audit->user?->corporation_id
-            ?? $audit->user()->value('corporation_id');
-
-        if ($auditCorpId === null
-            || (int) $auditCorpId !== (int) $user->corporation_id
-        ) {
+        // visibilityScope: super_admin sees all; admin/auditor see their corp;
+        // a `user` only sees audits they personally uploaded.
+        $visible = $user->visibilityScope(SecurityAudit::query(), 'user_id')
+            ->whereKey($audit->id)
+            ->exists();
+        if (! $visible) {
             abort(403);
         }
     }

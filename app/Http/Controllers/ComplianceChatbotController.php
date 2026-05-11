@@ -41,8 +41,11 @@ class ComplianceChatbotController extends Controller
         $isReviewer = in_array($user->role, self::AUDIT_LOG_ROLES, true)
             || $user->hasAnyRole(self::AUDIT_LOG_ROLES);
 
-        // Tenant-scoped Risk query.
-        $topRisks = $user->organisationScope(Risk::query())
+        // Tenant + ownership scope: super_admin sees all, admin/auditor see
+        // their corp, a `user` only sees risks they personally created.
+        // Keeps the chatbot consistent with the list-view rules — it must
+        // not reveal risks the user can't see in /risks.
+        $topRisks = $user->visibilityScope(Risk::query(), 'user_id')
             ->whereIn('status', ['open', 'in_progress'])
             ->orderByRaw('likelihood * impact DESC')
             ->limit(5)
@@ -93,22 +96,23 @@ class ComplianceChatbotController extends Controller
             ? $this->scopedAuditLogs($user)
             : collect();
 
-        // Risk count by tenant.
-        $totalOpenRisks = $user->organisationScope(Risk::query())
+        // Risk count by visibility — admin/auditor see corp-wide totals,
+        // a `user` sees only their own. Same rule as the list views.
+        $totalOpenRisks = $user->visibilityScope(Risk::query(), 'user_id')
             ->whereIn('status', ['open', 'in_progress'])
             ->count();
 
-        $overdueRisks = $user->organisationScope(Risk::query())
+        $overdueRisks = $user->visibilityScope(Risk::query(), 'user_id')
             ->where('due_date', '<', now())
             ->whereNotIn('status', ['closed'])
             ->count();
 
         $compliancePercentage = round(
-            $user->organisationScope(Assessment::query())->avg('compliance_percentage') ?? 0,
+            $user->visibilityScope(Assessment::query(), 'user_id')->avg('compliance_percentage') ?? 0,
             1,
         );
 
-        $overdueAssessments = $user->organisationScope(Assessment::query())
+        $overdueAssessments = $user->visibilityScope(Assessment::query(), 'user_id')
             ->where('status', '!=', 'completed')
             ->whereNotNull('due_date')
             ->where('due_date', '<', now())
@@ -116,19 +120,27 @@ class ComplianceChatbotController extends Controller
 
         // Evidence: scope through parent assessment's tenant. Falls back
         // to uploader's corp for evidence with no assessment context.
+        // For the `user` role we additionally narrow to evidence they
+        // personally uploaded, mirroring EvidenceController::index.
         $applyEvidenceScope = function ($q) use ($user) {
             if ($user->isSuperAdmin()) {
                 return $q;
             }
             $corpId = $user->corporation_id;
 
-            return $q->where(function ($outer) use ($corpId) {
+            $q->where(function ($outer) use ($corpId) {
                 $outer->whereHas('assessmentItem.assessment', fn ($a) => $a->where('corporation_id', $corpId))
                     ->orWhere(function ($alt) use ($corpId) {
                         $alt->whereDoesntHave('assessmentItem')
                             ->whereHas('user', fn ($u) => $u->where('corporation_id', $corpId));
                     });
             });
+
+            if ($user->isUser()) {
+                $q->where('user_id', $user->id);
+            }
+
+            return $q;
         };
 
         $expiringEvidence = $applyEvidenceScope(Evidence::query())
@@ -142,7 +154,8 @@ class ComplianceChatbotController extends Controller
             ->count();
 
         // Security audits: corporation_id added in Phase 3 migration.
-        $auditScope = fn () => $user->organisationScope(SecurityAudit::query());
+        // visibilityScope so a `user` only sees audits they uploaded.
+        $auditScope = fn () => $user->visibilityScope(SecurityAudit::query(), 'user_id');
 
         $recentSecurityAudits = $auditScope()
             ->where('status', 'completed')

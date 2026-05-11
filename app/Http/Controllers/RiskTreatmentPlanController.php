@@ -93,16 +93,22 @@ class RiskTreatmentPlanController extends Controller
     }
 
     /**
-     * super_admin can touch any risk; everyone else is confined to their
-     * corporation. Stops cross-tenant treatment-plan tampering by id-guessing.
+     * Same access rule as RiskController: visibilityScope decides who can
+     * touch the risk. super_admin sees all; admin/auditor see their corp;
+     * a `user` only sees risks they personally created. This prevents a
+     * regular user from editing another user's treatment plans inside the
+     * same corporation.
      */
     private function authorizeRiskAccess(Risk $risk): void
     {
         $user = Auth::user();
-        if ($user->isSuperAdmin()) {
-            return;
+        if (! $user) {
+            abort(403);
         }
-        if ($risk->corporation_id !== $user->corporation_id) {
+        $visible = $user->visibilityScope(Risk::query())
+            ->whereKey($risk->id)
+            ->exists();
+        if (! $visible) {
             abort(403);
         }
     }

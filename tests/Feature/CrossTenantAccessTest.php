@@ -226,6 +226,7 @@ test('finding 4: SecurityAudit show no longer leaks file_path', function () {
 
     $audit = SecurityAudit::create([
         'user_id' => $userA->id,
+        'corporation_id' => $corpA->id,
         'file_name' => 'config.yaml',
         'file_type' => 'text/yaml',
         'file_size' => 1024,
@@ -250,6 +251,7 @@ test('finding 4: cross-tenant SecurityAudit show is forbidden', function () {
 
     $auditB = SecurityAudit::create([
         'user_id' => $bAdmin->id,
+        'corporation_id' => $corpB->id,
         'file_name' => 'b.yaml',
         'file_type' => 'text/yaml',
         'file_size' => 100,
@@ -311,7 +313,7 @@ test('finding 3: AI review-evidence refuses cross-tenant', function () {
     ]);
 
     $resp = $this->actingAs($userA)
-        ->post(route('ai.review-evidence'), ['evidence_id' => $evidenceB->id]);
+        ->post(route('evidence.ai-review', $evidenceB->id));
 
     $resp->assertForbidden();
 });

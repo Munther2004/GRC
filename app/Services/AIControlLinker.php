@@ -66,9 +66,7 @@ PROMPT;
                 return;
             }
 
-            $cleaned = preg_replace('/^```json\s*/i', '', trim($responseText));
-            $cleaned = preg_replace('/```$/', '', trim($cleaned));
-            $data = json_decode(trim($cleaned), true);
+            $data = json_decode(trim($responseText), true);
 
             if (! is_array($suggestions)) {
                 Log::warning('AIControlLinker: invalid JSON response', ['response' => $responseText]);

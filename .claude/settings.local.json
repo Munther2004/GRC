@@ -100,7 +100,13 @@
       "Bash(nc -vz smtp.resend.com 587)",
       "Bash(kill %1 %2)",
       "Bash(pkill -f \"php artisan serve --port=8765\")",
-      "Bash(pkill -f \"vite --port=5188\")"
+      "Bash(pkill -f \"vite --port=5188\")",
+      "Bash(pdfinfo \"GP2 Second Draft.pdf\")",
+      "Bash(python -c \"import PyPDF2; r=PyPDF2.PdfReader\\('GP2 Second Draft.pdf'\\); print\\('Pages:', len\\(r.pages\\)\\)\")",
+      "PowerShell(Out-Null *)",
+      "PowerShell(Set-Content *)",
+      "Bash(start *)",
+      "PowerShell(Get-Process *)"
     ]
   },
   "enableAllProjectMcpServers": true,

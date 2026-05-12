@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ComplianceChatbotController::index
- * @see app/Http/Controllers/ComplianceChatbotController.php:315
+ * @see app/Http/Controllers/ComplianceChatbotController.php:328
  * @route '/chatbot'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\ComplianceChatbotController::index
- * @see app/Http/Controllers/ComplianceChatbotController.php:315
+ * @see app/Http/Controllers/ComplianceChatbotController.php:328
  * @route '/chatbot'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ComplianceChatbotController::index
- * @see app/Http/Controllers/ComplianceChatbotController.php:315
+ * @see app/Http/Controllers/ComplianceChatbotController.php:328
  * @route '/chatbot'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\ComplianceChatbotController::index
- * @see app/Http/Controllers/ComplianceChatbotController.php:315
+ * @see app/Http/Controllers/ComplianceChatbotController.php:328
  * @route '/chatbot'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\ComplianceChatbotController::index
- * @see app/Http/Controllers/ComplianceChatbotController.php:315
+ * @see app/Http/Controllers/ComplianceChatbotController.php:328
  * @route '/chatbot'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\ComplianceChatbotController::index
- * @see app/Http/Controllers/ComplianceChatbotController.php:315
+ * @see app/Http/Controllers/ComplianceChatbotController.php:328
  * @route '/chatbot'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\ComplianceChatbotController::index
- * @see app/Http/Controllers/ComplianceChatbotController.php:315
+ * @see app/Http/Controllers/ComplianceChatbotController.php:328
  * @route '/chatbot'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\ComplianceChatbotController::chat
- * @see app/Http/Controllers/ComplianceChatbotController.php:328
+ * @see app/Http/Controllers/ComplianceChatbotController.php:341
  * @route '/chatbot/chat'
  */
 export const chat = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ chat.definition = {
 
 /**
 * @see \App\Http\Controllers\ComplianceChatbotController::chat
- * @see app/Http/Controllers/ComplianceChatbotController.php:328
+ * @see app/Http/Controllers/ComplianceChatbotController.php:341
  * @route '/chatbot/chat'
  */
 chat.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ chat.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ComplianceChatbotController::chat
- * @see app/Http/Controllers/ComplianceChatbotController.php:328
+ * @see app/Http/Controllers/ComplianceChatbotController.php:341
  * @route '/chatbot/chat'
  */
 chat.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ chat.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\ComplianceChatbotController::chat
- * @see app/Http/Controllers/ComplianceChatbotController.php:328
+ * @see app/Http/Controllers/ComplianceChatbotController.php:341
  * @route '/chatbot/chat'
  */
     const chatForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ chat.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\ComplianceChatbotController::chat
- * @see app/Http/Controllers/ComplianceChatbotController.php:328
+ * @see app/Http/Controllers/ComplianceChatbotController.php:341
  * @route '/chatbot/chat'
  */
         chatForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

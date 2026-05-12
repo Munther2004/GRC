@@ -1,8 +1,6 @@
-import { Head, useForm } from '@inertiajs/react';
-import { AlertCircle, CheckCircle2, Clock, Mail, Shield } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { AlertCircle, CheckCircle2, Clock, LogIn, Mail, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
 import { route } from '@/lib/routes';
 
@@ -11,7 +9,6 @@ interface Corporation {
     name: string;
     email: string;
     status: 'pending' | 'approved' | 'rejected';
-    registration_code?: string;
 }
 
 interface Props {
@@ -19,15 +16,6 @@ interface Props {
 }
 
 export default function CorporationPending({ corporation }: Props) {
-    const { data, setData, post, processing, errors } = useForm({
-        code: '',
-    });
-
-    const submit = (e: React.FormEvent) => {
-        e.preventDefault();
-        post(route('corporations.verify-code', corporation.id));
-    };
-
     const isPending = corporation.status === 'pending';
     const isApproved = corporation.status === 'approved';
     const isRejected = corporation.status === 'rejected';
@@ -100,9 +88,8 @@ export default function CorporationPending({ corporation }: Props) {
                             title="What to expect"
                             body={
                                 <ul className="list-disc list-inside space-y-1">
-                                    <li>Unique registration code for your organisation</li>
                                     <li>Manager account credentials</li>
-                                    <li>Instructions to set up your first users</li>
+                                    <li>Direct link to log in to the platform</li>
                                     <li>Access to controls and assessments</li>
                                 </ul>
                             }
@@ -115,31 +102,20 @@ export default function CorporationPending({ corporation }: Props) {
                         <InfoBlock
                             tone="var(--primary)"
                             icon={<CheckCircle2 className="h-4 w-4" />}
-                            title="Congratulations — your corporation is approved."
-                            body="Your manager has received an exclusive registration code. Enter it below to create your account."
+                            title="Your corporation is approved."
+                            body={
+                                <>
+                                    Manager credentials have been emailed to <strong style={{ color: 'var(--foreground)' }}>{corporation.email}</strong>. Use them to log in below.
+                                </>
+                            }
                         />
 
-                        <form onSubmit={submit} className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="code">Registration code *</Label>
-                                <Input
-                                    id="code"
-                                    type="text"
-                                    required
-                                    autoFocus
-                                    value={data.code}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('code', e.target.value)}
-                                    placeholder="Enter your corporation code"
-                                    className="font-mono tracking-[0.2em] text-base"
-                                    aria-invalid={!!errors.code}
-                                />
-                                {errors.code && <p className="text-xs" style={{ color: 'var(--destructive)' }}>{errors.code}</p>}
-                            </div>
-
-                            <Button type="submit" disabled={processing} className="w-full">
-                                {processing ? 'Verifying…' : 'Verify code & continue'}
+                        <Link href={route('login')}>
+                            <Button className="w-full gap-2">
+                                <LogIn className="h-4 w-4" />
+                                Log in to GRC Platform
                             </Button>
-                        </form>
+                        </Link>
                     </>
                 )}
 

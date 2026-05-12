@@ -4,7 +4,6 @@ import {
     CheckCircle2,
     Clock,
     Copy,
-    RefreshCw,
     XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -26,7 +25,6 @@ import {
     CardTitle,
     CardDescription,
 } from '@/components/ui/card';
-import { useConfirm } from '@/components/ui/confirm-dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AdminLayout from '@/layouts/admin-layout';
@@ -78,19 +76,11 @@ const statusColors: Record<string, string> = {
 };
 
 export default function CorporationShow({ corporation, managerCredentials }: Props) {
-    const confirm = useConfirm();
-    const [copiedCode, setCopiedCode] = useState(false);
     const [copiedUsername, setCopiedUsername] = useState(false);
     const { data: rejectData, setData: setRejectData, post: postReject } =
         useForm({
             reason: '',
         });
-
-    const copyCode = () => {
-        navigator.clipboard.writeText(corporation.registration_code);
-        setCopiedCode(true);
-        setTimeout(() => setCopiedCode(false), 2000);
-    };
 
     const copyUsername = () => {
         if (managerCredentials?.username) {
@@ -106,18 +96,6 @@ export default function CorporationShow({ corporation, managerCredentials }: Pro
 
     const handleReject = () => {
         postReject(route('admin.corporations.reject', corporation.id));
-    };
-
-    const handleRegenerate = async () => {
-        const ok = await confirm({
-            title: 'Regenerate the registration code?',
-            description: 'The old code will no longer work.',
-            confirmLabel: 'Regenerate',
-        });
-        if (!ok) return;
-        router.post(
-            route('admin.corporations.regenerate-code', corporation.id),
-        );
     };
 
     return (
@@ -219,48 +197,6 @@ export default function CorporationShow({ corporation, managerCredentials }: Pro
                         )}
                     </CardContent>
                 </Card>
-
-                {/* Registration Code */}
-                {corporation.status === 'approved' && (
-                    <Card className="border-green-200">
-                        <CardHeader>
-                            <CardTitle className="text-base">
-                                Registration Code
-                            </CardTitle>
-                            <CardDescription>
-                                Exclusive code for manager sign-up
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center gap-2">
-                                <code className="flex-1 rounded bg-muted p-3 font-mono text-lg font-medium tracking-widest text-foreground">
-                                    {corporation.registration_code}
-                                </code>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={copyCode}
-                                    title="Copy code"
-                                >
-                                    <Copy className="h-4 w-4" />
-                                </Button>
-                            </div>
-                            {copiedCode && (
-                                <p className="text-xs text-green-600">
-                                    Code copied to clipboard!
-                                </p>
-                            )}
-                            <Button
-                                variant="outline"
-                                onClick={handleRegenerate}
-                                className="w-full gap-2"
-                            >
-                                <RefreshCw className="h-4 w-4" />
-                                Regenerate Code
-                            </Button>
-                        </CardContent>
-                    </Card>
-                )}
 
                 {/* Manager Credentials */}
                 {corporation.status === 'approved' && managerCredentials?.username && (

@@ -4,11 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\CorporationApproved;
+use App\Models\Assessment;
 use App\Models\AuditLog;
 use App\Models\Corporation;
+use App\Models\CorporationControlStatus;
+use App\Models\CorporationInvite;
+use App\Models\Evidence;
 use App\Models\Notification;
+use App\Models\RemediationTask;
+use App\Models\Risk;
+use App\Models\RiskAppetite;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
@@ -139,16 +147,37 @@ class CorporationController extends Controller
 
     public function destroy(Corporation $corporation)
     {
-        if ($corporation->users()->count() > 0) {
-            return back()->with('error', 'Cannot delete corporations with active users. Please remove users first.');
-        }
-
         $name = $corporation->name;
-        $corporation->delete();
+        $corpId = $corporation->id;
+        $userIds = $corporation->users()->pluck('id')->all();
 
-        AuditLog::record('deleted', 'Corporation', $corporation->id, "Corporation '{$name}' deleted");
+        DB::transaction(function () use ($corporation, $corpId, $userIds) {
+            // Detach the manager pointer before purging users so the
+            // FK to users.id on corporations.manager_user_id is released.
+            $corporation->update(['manager_user_id' => null]);
+
+            // Tenant-scoped data. Order matters: child rows first so we
+            // don't trip referential constraints on tables without ON DELETE
+            // CASCADE configured at the DB level.
+            Evidence::whereIn('user_id', $userIds)->delete();
+            RemediationTask::where('corporation_id', $corpId)->delete();
+            Risk::where('corporation_id', $corpId)->delete();
+            Assessment::where('corporation_id', $corpId)->delete();
+            RiskAppetite::where('corporation_id', $corpId)->delete();
+            CorporationControlStatus::where('corporation_id', $corpId)->delete();
+            CorporationInvite::where('corporation_id', $corpId)->delete();
+
+            // Drop the users belonging to this corporation. super_admins
+            // (corporation_id = NULL) are never in $userIds and stay intact.
+            User::whereIn('id', $userIds)->delete();
+
+            $corporation->registrations()->delete();
+            $corporation->delete();
+        });
+
+        AuditLog::record('deleted', 'Corporation', $corpId, "Corporation '{$name}' deleted (cascade: ".count($userIds).' user(s) and tenant data removed)');
 
         return redirect()->route('admin.corporations.index')
-            ->with('success', 'Corporation deleted.');
+            ->with('success', "Corporation '{$name}' and all related data deleted.");
     }
 }

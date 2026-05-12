@@ -134,7 +134,7 @@ storeShareable.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
     storeShareable.form = storeShareableForm
 /**
 * @see \App\Http\Controllers\CorporationInviteController::storeEmail
- * @see app/Http/Controllers/CorporationInviteController.php:141
+ * @see app/Http/Controllers/CorporationInviteController.php:139
  * @route '/admin/invites/email'
  */
 export const storeEmail = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -149,7 +149,7 @@ storeEmail.definition = {
 
 /**
 * @see \App\Http\Controllers\CorporationInviteController::storeEmail
- * @see app/Http/Controllers/CorporationInviteController.php:141
+ * @see app/Http/Controllers/CorporationInviteController.php:139
  * @route '/admin/invites/email'
  */
 storeEmail.url = (options?: RouteQueryOptions) => {
@@ -158,7 +158,7 @@ storeEmail.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\CorporationInviteController::storeEmail
- * @see app/Http/Controllers/CorporationInviteController.php:141
+ * @see app/Http/Controllers/CorporationInviteController.php:139
  * @route '/admin/invites/email'
  */
 storeEmail.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -168,7 +168,7 @@ storeEmail.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\CorporationInviteController::storeEmail
- * @see app/Http/Controllers/CorporationInviteController.php:141
+ * @see app/Http/Controllers/CorporationInviteController.php:139
  * @route '/admin/invites/email'
  */
     const storeEmailForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -178,7 +178,7 @@ storeEmail.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\CorporationInviteController::storeEmail
- * @see app/Http/Controllers/CorporationInviteController.php:141
+ * @see app/Http/Controllers/CorporationInviteController.php:139
  * @route '/admin/invites/email'
  */
         storeEmailForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -189,7 +189,7 @@ storeEmail.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     storeEmail.form = storeEmailForm
 /**
 * @see \App\Http\Controllers\CorporationInviteController::destroy
- * @see app/Http/Controllers/CorporationInviteController.php:181
+ * @see app/Http/Controllers/CorporationInviteController.php:179
  * @route '/admin/invites/{invite}'
  */
 export const destroy = (args: { invite: number | { id: number } } | [invite: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -204,7 +204,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\CorporationInviteController::destroy
- * @see app/Http/Controllers/CorporationInviteController.php:181
+ * @see app/Http/Controllers/CorporationInviteController.php:179
  * @route '/admin/invites/{invite}'
  */
 destroy.url = (args: { invite: number | { id: number } } | [invite: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -237,7 +237,7 @@ destroy.url = (args: { invite: number | { id: number } } | [invite: number | { i
 
 /**
 * @see \App\Http\Controllers\CorporationInviteController::destroy
- * @see app/Http/Controllers/CorporationInviteController.php:181
+ * @see app/Http/Controllers/CorporationInviteController.php:179
  * @route '/admin/invites/{invite}'
  */
 destroy.delete = (args: { invite: number | { id: number } } | [invite: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -247,7 +247,7 @@ destroy.delete = (args: { invite: number | { id: number } } | [invite: number | 
 
     /**
 * @see \App\Http\Controllers\CorporationInviteController::destroy
- * @see app/Http/Controllers/CorporationInviteController.php:181
+ * @see app/Http/Controllers/CorporationInviteController.php:179
  * @route '/admin/invites/{invite}'
  */
     const destroyForm = (args: { invite: number | { id: number } } | [invite: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -262,7 +262,7 @@ destroy.delete = (args: { invite: number | { id: number } } | [invite: number | 
 
             /**
 * @see \App\Http\Controllers\CorporationInviteController::destroy
- * @see app/Http/Controllers/CorporationInviteController.php:181
+ * @see app/Http/Controllers/CorporationInviteController.php:179
  * @route '/admin/invites/{invite}'
  */
         destroyForm.delete = (args: { invite: number | { id: number } } | [invite: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

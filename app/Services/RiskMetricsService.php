@@ -176,7 +176,11 @@ class RiskMetricsService
             $total = (int) ($row->applicable ?? 0);
             $compliant = (int) ($row->compliant ?? 0);
             $partial = (int) ($row->partial ?? 0);
-            $selfAssessed = $total > 0 ? (($compliant + ($partial * 0.5)) / $total) * 100 : 0;
+            // A brand-new tenant has no completed assessments AND no
+            // self-assessed controls. Score them as fully compliant (40/40)
+            // so the dashboard reads 100 by default; the score only drops
+            // as real evaluation introduces gaps.
+            $selfAssessed = $total > 0 ? (($compliant + ($partial * 0.5)) / $total) * 100 : 100;
             $compliancePts = ($selfAssessed / 100) * 40;
         }
 

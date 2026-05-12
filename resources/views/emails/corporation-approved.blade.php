@@ -210,28 +210,13 @@
 
             <hr class="divider">
 
-            {{-- ── Registration code for employees ── --}}
-            <span class="section-label">Employee Registration Code</span>
-            <div class="code-box">
-                <div class="credential-label">Share this code with your team</div>
-                <div class="code-value">{{ $registrationCode }}</div>
-                <p class="code-desc">
-                    Employees enter this code when signing up at
-                    <strong style="color:#E0F5EC; font-style:normal;">{{ $registerUrl }}</strong>
-                    to be linked to <strong style="color:#E0F5EC; font-style:normal;">{{ $corporation->name }}</strong>.
-                </p>
-            </div>
-
-            <hr class="divider">
-
             {{-- ── Next steps ── --}}
             <span class="section-label">Getting Started</span>
             <div class="steps-box">
                 <ol>
                     <li><span>Log in</span> using the credentials above.</li>
                     <li><span>Change your password</span> from your account settings.</li>
-                    <li><span>Share the registration code</span> with each employee who needs access.</li>
-                    <li><span>Employees sign up</span> at {{ $registerUrl }} and enter the code during registration.</li>
+                    <li><span>Invite your team</span> from the user management page.</li>
                     <li><span>Start managing compliance</span> — risks, controls, assessments, and evidence.</li>
                 </ol>
             </div>

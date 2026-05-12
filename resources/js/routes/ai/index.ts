@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\Admin\AIController::suggestThreats
- * @see app/Http/Controllers/Admin/AIController.php:21
+ * @see app/Http/Controllers/Admin/AIController.php:18
  * @route '/ai/suggest-threats'
  */
 export const suggestThreats = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ suggestThreats.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AIController::suggestThreats
- * @see app/Http/Controllers/Admin/AIController.php:21
+ * @see app/Http/Controllers/Admin/AIController.php:18
  * @route '/ai/suggest-threats'
  */
 suggestThreats.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ suggestThreats.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\AIController::suggestThreats
- * @see app/Http/Controllers/Admin/AIController.php:21
+ * @see app/Http/Controllers/Admin/AIController.php:18
  * @route '/ai/suggest-threats'
  */
 suggestThreats.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ suggestThreats.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
 
     /**
 * @see \App\Http\Controllers\Admin\AIController::suggestThreats
- * @see app/Http/Controllers/Admin/AIController.php:21
+ * @see app/Http/Controllers/Admin/AIController.php:18
  * @route '/ai/suggest-threats'
  */
     const suggestThreatsForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ suggestThreats.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
 
             /**
 * @see \App\Http\Controllers\Admin\AIController::suggestThreats
- * @see app/Http/Controllers/Admin/AIController.php:21
+ * @see app/Http/Controllers/Admin/AIController.php:18
  * @route '/ai/suggest-threats'
  */
         suggestThreatsForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -56,7 +56,7 @@ suggestThreats.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
     suggestThreats.form = suggestThreatsForm
 /**
 * @see \App\Http\Controllers\Admin\AIController::remediateGap
- * @see app/Http/Controllers/Admin/AIController.php:85
+ * @see app/Http/Controllers/Admin/AIController.php:82
  * @route '/ai/remediate-gap'
  */
 export const remediateGap = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -71,7 +71,7 @@ remediateGap.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AIController::remediateGap
- * @see app/Http/Controllers/Admin/AIController.php:85
+ * @see app/Http/Controllers/Admin/AIController.php:82
  * @route '/ai/remediate-gap'
  */
 remediateGap.url = (options?: RouteQueryOptions) => {
@@ -80,7 +80,7 @@ remediateGap.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\AIController::remediateGap
- * @see app/Http/Controllers/Admin/AIController.php:85
+ * @see app/Http/Controllers/Admin/AIController.php:82
  * @route '/ai/remediate-gap'
  */
 remediateGap.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -90,7 +90,7 @@ remediateGap.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\AIController::remediateGap
- * @see app/Http/Controllers/Admin/AIController.php:85
+ * @see app/Http/Controllers/Admin/AIController.php:82
  * @route '/ai/remediate-gap'
  */
     const remediateGapForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -100,7 +100,7 @@ remediateGap.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\AIController::remediateGap
- * @see app/Http/Controllers/Admin/AIController.php:85
+ * @see app/Http/Controllers/Admin/AIController.php:82
  * @route '/ai/remediate-gap'
  */
         remediateGapForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -111,7 +111,7 @@ remediateGap.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     remediateGap.form = remediateGapForm
 /**
 * @see \App\Http\Controllers\Admin\AIController::saveRemediation
- * @see app/Http/Controllers/Admin/AIController.php:159
+ * @see app/Http/Controllers/Admin/AIController.php:156
  * @route '/ai/save-remediation'
  */
 export const saveRemediation = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -126,7 +126,7 @@ saveRemediation.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AIController::saveRemediation
- * @see app/Http/Controllers/Admin/AIController.php:159
+ * @see app/Http/Controllers/Admin/AIController.php:156
  * @route '/ai/save-remediation'
  */
 saveRemediation.url = (options?: RouteQueryOptions) => {
@@ -135,7 +135,7 @@ saveRemediation.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\AIController::saveRemediation
- * @see app/Http/Controllers/Admin/AIController.php:159
+ * @see app/Http/Controllers/Admin/AIController.php:156
  * @route '/ai/save-remediation'
  */
 saveRemediation.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -145,7 +145,7 @@ saveRemediation.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
 
     /**
 * @see \App\Http\Controllers\Admin\AIController::saveRemediation
- * @see app/Http/Controllers/Admin/AIController.php:159
+ * @see app/Http/Controllers/Admin/AIController.php:156
  * @route '/ai/save-remediation'
  */
     const saveRemediationForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -155,7 +155,7 @@ saveRemediation.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
 
             /**
 * @see \App\Http\Controllers\Admin\AIController::saveRemediation
- * @see app/Http/Controllers/Admin/AIController.php:159
+ * @see app/Http/Controllers/Admin/AIController.php:156
  * @route '/ai/save-remediation'
  */
         saveRemediationForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -166,7 +166,7 @@ saveRemediation.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
     saveRemediation.form = saveRemediationForm
 /**
 * @see \App\Http\Controllers\Admin\AIController::assessmentSummary
- * @see app/Http/Controllers/Admin/AIController.php:227
+ * @see app/Http/Controllers/Admin/AIController.php:224
  * @route '/ai/assessment-summary/{assessment}'
  */
 export const assessmentSummary = (args: { assessment: string | number } | [assessment: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -181,7 +181,7 @@ assessmentSummary.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\AIController::assessmentSummary
- * @see app/Http/Controllers/Admin/AIController.php:227
+ * @see app/Http/Controllers/Admin/AIController.php:224
  * @route '/ai/assessment-summary/{assessment}'
  */
 assessmentSummary.url = (args: { assessment: string | number } | [assessment: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -209,7 +209,7 @@ assessmentSummary.url = (args: { assessment: string | number } | [assessment: st
 
 /**
 * @see \App\Http\Controllers\Admin\AIController::assessmentSummary
- * @see app/Http/Controllers/Admin/AIController.php:227
+ * @see app/Http/Controllers/Admin/AIController.php:224
  * @route '/ai/assessment-summary/{assessment}'
  */
 assessmentSummary.post = (args: { assessment: string | number } | [assessment: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -219,7 +219,7 @@ assessmentSummary.post = (args: { assessment: string | number } | [assessment: s
 
     /**
 * @see \App\Http\Controllers\Admin\AIController::assessmentSummary
- * @see app/Http/Controllers/Admin/AIController.php:227
+ * @see app/Http/Controllers/Admin/AIController.php:224
  * @route '/ai/assessment-summary/{assessment}'
  */
     const assessmentSummaryForm = (args: { assessment: string | number } | [assessment: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -229,7 +229,7 @@ assessmentSummary.post = (args: { assessment: string | number } | [assessment: s
 
             /**
 * @see \App\Http\Controllers\Admin\AIController::assessmentSummary
- * @see app/Http/Controllers/Admin/AIController.php:227
+ * @see app/Http/Controllers/Admin/AIController.php:224
  * @route '/ai/assessment-summary/{assessment}'
  */
         assessmentSummaryForm.post = (args: { assessment: string | number } | [assessment: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -238,67 +238,11 @@ assessmentSummary.post = (args: { assessment: string | number } | [assessment: s
         })
     
     assessmentSummary.form = assessmentSummaryForm
-/**
-* @see \App\Http\Controllers\Admin\AIController::reviewEvidence
- * @see app/Http/Controllers/Admin/AIController.php:347
- * @route '/ai/review-evidence'
- */
-export const reviewEvidence = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: reviewEvidence.url(options),
-    method: 'post',
-})
-
-reviewEvidence.definition = {
-    methods: ["post"],
-    url: '/ai/review-evidence',
-} satisfies RouteDefinition<["post"]>
-
-/**
-* @see \App\Http\Controllers\Admin\AIController::reviewEvidence
- * @see app/Http/Controllers/Admin/AIController.php:347
- * @route '/ai/review-evidence'
- */
-reviewEvidence.url = (options?: RouteQueryOptions) => {
-    return reviewEvidence.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\Admin\AIController::reviewEvidence
- * @see app/Http/Controllers/Admin/AIController.php:347
- * @route '/ai/review-evidence'
- */
-reviewEvidence.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: reviewEvidence.url(options),
-    method: 'post',
-})
-
-    /**
-* @see \App\Http\Controllers\Admin\AIController::reviewEvidence
- * @see app/Http/Controllers/Admin/AIController.php:347
- * @route '/ai/review-evidence'
- */
-    const reviewEvidenceForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: reviewEvidence.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Admin\AIController::reviewEvidence
- * @see app/Http/Controllers/Admin/AIController.php:347
- * @route '/ai/review-evidence'
- */
-        reviewEvidenceForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: reviewEvidence.url(options),
-            method: 'post',
-        })
-    
-    reviewEvidence.form = reviewEvidenceForm
 const ai = {
     suggestThreats: Object.assign(suggestThreats, suggestThreats),
 remediateGap: Object.assign(remediateGap, remediateGap),
 saveRemediation: Object.assign(saveRemediation, saveRemediation),
 assessmentSummary: Object.assign(assessmentSummary, assessmentSummary),
-reviewEvidence: Object.assign(reviewEvidence, reviewEvidence),
 }
 
 export default ai

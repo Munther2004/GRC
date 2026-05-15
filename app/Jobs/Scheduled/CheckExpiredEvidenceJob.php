@@ -18,13 +18,18 @@ class CheckExpiredEvidenceJob implements ShouldQueue
         Evidence::whereNotNull('expiry_date')
             ->where('expiry_date', '<', Carbon::today())
             ->whereIn('status', ['pending', 'approved'])
+            ->with(['assessmentItem.assessment', 'user'])
             ->chunkById(100, function ($chunk) {
                 foreach ($chunk as $evidence) {
+                    $corpId = $evidence->assessmentItem?->assessment?->corporation_id
+                        ?? $evidence->user?->corporation_id;
                     $url = "/evidence-expired-{$evidence->id}";
-                    Notification::firstOrCreate(
-                        ['type' => 'expired_evidence', 'url' => $url, 'is_read' => false],
-                        ['user_id' => null, 'title' => 'Evidence Expired', 'message' => "Evidence '{$evidence->file_name}' has expired and requires renewal"]
-                    );
+                    if ($corpId !== null) {
+                        Notification::firstOrCreate(
+                            ['type' => 'expired_evidence', 'url' => $url, 'is_read' => false, 'corporation_id' => $corpId],
+                            ['user_id' => null, 'title' => 'Evidence Expired', 'message' => "Evidence '{$evidence->file_name}' has expired and requires renewal"]
+                        );
+                    }
 
                     AuditLog::create([
                         'user_id' => null,

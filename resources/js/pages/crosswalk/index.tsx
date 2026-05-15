@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { StatStrip } from '@/components/ui/stat-strip';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
@@ -266,18 +267,22 @@ export default function CrosswalkIndex({
                             className="pl-9"
                         />
                     </div>
-                    <select
-                        value={frameworkId}
-                        onChange={(e) => setFrameworkId(e.target.value)}
-                        className="rounded-full border bg-card px-4 py-2 text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                    <Select
+                        value={frameworkId === '' ? '__all__' : frameworkId}
+                        onValueChange={(v) => setFrameworkId(v === '__all__' ? '' : v)}
                     >
-                        <option value="">All Frameworks</option>
-                        {frameworks.map((f) => (
-                            <option key={f.id} value={String(f.id)}>
-                                {f.short_name}
-                            </option>
-                        ))}
-                    </select>
+                        <SelectTrigger className="min-w-[160px]">
+                            <SelectValue placeholder="All Frameworks" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="__all__">All Frameworks</SelectItem>
+                            {frameworks.map((f) => (
+                                <SelectItem key={f.id} value={String(f.id)}>
+                                    {f.short_name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <button
                         onClick={applyFilters}
                         className="rounded-full bg-primary px-5 py-2 text-sm transition-all hover:brightness-110"

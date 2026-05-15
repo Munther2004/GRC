@@ -29,7 +29,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => session('success'),
                 'error' => session('error'),
             ],
-            'notifications' => function () {
+            'notifications' => function () use ($request) {
                 if (! auth()->check()) {
                     return ['unread_count' => 0, 'recent' => []];
                 }
@@ -38,11 +38,11 @@ class HandleInertiaRequests extends Middleware
                 $user = auth()->user();
                 $types = NotificationService::typesForRole($user->role);
 
-                $base = Notification::where('is_read', false)
-                    ->where(function ($q) use ($user) {
-                        $q->whereNull('user_id')
-                            ->orWhere('user_id', $user->id);
-                    });
+                // Honour ?corporation_id= drill-down for super_admin so the
+                // badges reflect the tenant the user is currently looking at.
+                $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
+
+                $base = Notification::forUser($user, $corpFilter)->where('is_read', false);
 
                 if ($types !== null) {
                     $base->whereIn('type', $types);
@@ -53,16 +53,22 @@ class HandleInertiaRequests extends Middleware
                 $writerRoles = [User::ROLE_SUPER_ADMIN, User::ROLE_ADMIN, User::ROLE_USER];
 
                 $isSuper = $user->isSuperAdmin();
-                $corpId = $user->corporation_id;
-                $cacheTag = $isSuper ? 'all' : "corp:{$corpId}";
+                // Effective scope corp for all badge queries:
+                //   - super_admin drilled in → $corpFilter
+                //   - super_admin not drilled → null (= all corps)
+                //   - non-super_admin → own corporation_id (regardless of any query param)
+                $effectiveCorp = $isSuper ? $corpFilter : $user->corporation_id;
+                $cacheTag = $effectiveCorp === null
+                    ? ($isSuper ? 'all' : 'none')
+                    : "corp:{$effectiveCorp}";
 
                 $pendingApprovals = in_array($user->role, $reviewerRoles, true)
-                    ? Cache::remember("badge:pending_approvals:{$cacheTag}", 60, function () use ($isSuper, $corpId) {
+                    ? Cache::remember("badge:pending_approvals:{$cacheTag}", 60, function () use ($isSuper, $effectiveCorp) {
                         $q = ControlStatusRequest::where('status', 'pending');
-                        // Phase 3 added control_status_requests.corporation_id;
-                        // use the column directly instead of joining users.
-                        if (! $isSuper) {
-                            $q->where('corporation_id', $corpId);
+                        if ($effectiveCorp !== null) {
+                            $q->where('corporation_id', $effectiveCorp);
+                        } elseif (! $isSuper) {
+                            $q->whereRaw('1 = 0');
                         }
 
                         return $q->count();
@@ -70,11 +76,11 @@ class HandleInertiaRequests extends Middleware
                     : 0;
 
                 $openRemediationTasks = in_array($user->role, $writerRoles, true)
-                    ? Cache::remember("badge:open_remediation_tasks:{$cacheTag}", 60, function () use ($isSuper, $corpId) {
+                    ? Cache::remember("badge:open_remediation_tasks:{$cacheTag}", 60, function () use ($isSuper, $effectiveCorp) {
                         $q = RemediationTask::whereIn('status', ['open', 'in_progress']);
-                        if (! $isSuper && $corpId) {
-                            $q->where('corporation_id', $corpId);
-                        } elseif (! $isSuper && ! $corpId) {
+                        if ($effectiveCorp !== null) {
+                            $q->where('corporation_id', $effectiveCorp);
+                        } elseif (! $isSuper) {
                             $q->whereRaw('1 = 0');
                         }
 
@@ -83,18 +89,14 @@ class HandleInertiaRequests extends Middleware
                     : 0;
 
                 $securityAuditsInProgress = Cache::remember(
-                    'badge:security_audits_in_progress:'.$user->id,
+                    "badge:security_audits_in_progress:{$cacheTag}:{$user->id}",
                     30,
-                    function () use ($isSuper, $user) {
+                    function () use ($isSuper, $effectiveCorp) {
                         $q = SecurityAudit::whereIn('status', ['pending', 'analyzing']);
-                        // security_audits.corporation_id was added in Phase 3
-                        // of the security remediation. Use the column directly.
-                        if (! $isSuper) {
-                            if (! $user->corporation_id) {
-                                $q->whereRaw('1 = 0');
-                            } else {
-                                $q->where('corporation_id', $user->corporation_id);
-                            }
+                        if ($effectiveCorp !== null) {
+                            $q->where('corporation_id', $effectiveCorp);
+                        } elseif (! $isSuper) {
+                            $q->whereRaw('1 = 0');
                         }
 
                         return $q->count();

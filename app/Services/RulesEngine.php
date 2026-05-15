@@ -32,10 +32,12 @@ class RulesEngine
                         $risk->save();
 
                         $riskUrl = "/risks/{$risk->id}";
-                        Notification::firstOrCreate(
-                            ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false],
-                            ['title' => 'Risk Score Auto-Adjusted', 'message' => "Risk '{$risk->title}' likelihood raised due to non-compliant control {$item->control->control_id}"]
-                        );
+                        if ($risk->corporation_id !== null) {
+                            Notification::firstOrCreate(
+                                ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false, 'corporation_id' => $risk->corporation_id],
+                                ['title' => 'Risk Score Auto-Adjusted', 'message' => "Risk '{$risk->title}' likelihood raised due to non-compliant control {$item->control->control_id}"]
+                            );
+                        }
 
                         AuditLog::record(
                             'updated',
@@ -63,10 +65,12 @@ class RulesEngine
                 $risk->save();
 
                 $riskUrl = "/risks/{$risk->id}";
-                Notification::firstOrCreate(
-                    ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false],
-                    ['title' => 'Risk Score Auto-Adjusted', 'message' => "Risk '{$risk->title}' likelihood raised — control {$control->control_id} marked non-compliant in Controls Hub"]
-                );
+                if ($risk->corporation_id !== null) {
+                    Notification::firstOrCreate(
+                        ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false, 'corporation_id' => $risk->corporation_id],
+                        ['title' => 'Risk Score Auto-Adjusted', 'message' => "Risk '{$risk->title}' likelihood raised — control {$control->control_id} marked non-compliant in Controls Hub"]
+                    );
+                }
 
                 AuditLog::record(
                     'updated',
@@ -95,10 +99,12 @@ class RulesEngine
                 $risk->save();
 
                 $riskUrl = "/risks/{$risk->id}";
-                Notification::firstOrCreate(
-                    ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false],
-                    ['title' => 'Risk Score Improved', 'message' => "Risk '{$risk->title}' likelihood reduced — control {$control->control_id} marked compliant in Controls Hub"]
-                );
+                if ($risk->corporation_id !== null) {
+                    Notification::firstOrCreate(
+                        ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false, 'corporation_id' => $risk->corporation_id],
+                        ['title' => 'Risk Score Improved', 'message' => "Risk '{$risk->title}' likelihood reduced — control {$control->control_id} marked compliant in Controls Hub"]
+                    );
+                }
 
                 AuditLog::record(
                     'updated',
@@ -151,10 +157,12 @@ class RulesEngine
                     $risk->save();
 
                     $riskUrl = "/risks/{$risk->id}";
-                    Notification::firstOrCreate(
-                        ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false],
-                        ['title' => 'Risk Score Improved', 'message' => "Risk '{$risk->title}' likelihood reduced — control {$item->control->control_id} is now compliant"]
-                    );
+                    if ($risk->corporation_id !== null) {
+                        Notification::firstOrCreate(
+                            ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false, 'corporation_id' => $risk->corporation_id],
+                            ['title' => 'Risk Score Improved', 'message' => "Risk '{$risk->title}' likelihood reduced — control {$item->control->control_id} is now compliant"]
+                        );
+                    }
 
                     AuditLog::record(
                         'updated',

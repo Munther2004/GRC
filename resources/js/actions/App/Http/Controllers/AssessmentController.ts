@@ -314,7 +314,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\AssessmentController::destroy
- * @see app/Http/Controllers/AssessmentController.php:555
+ * @see app/Http/Controllers/AssessmentController.php:587
  * @route '/assessments/{assessment}'
  */
 export const destroy = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -329,7 +329,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::destroy
- * @see app/Http/Controllers/AssessmentController.php:555
+ * @see app/Http/Controllers/AssessmentController.php:587
  * @route '/assessments/{assessment}'
  */
 destroy.url = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -362,7 +362,7 @@ destroy.url = (args: { assessment: number | { id: number } } | [assessment: numb
 
 /**
 * @see \App\Http\Controllers\AssessmentController::destroy
- * @see app/Http/Controllers/AssessmentController.php:555
+ * @see app/Http/Controllers/AssessmentController.php:587
  * @route '/assessments/{assessment}'
  */
 destroy.delete = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -372,7 +372,7 @@ destroy.delete = (args: { assessment: number | { id: number } } | [assessment: n
 
     /**
 * @see \App\Http\Controllers\AssessmentController::destroy
- * @see app/Http/Controllers/AssessmentController.php:555
+ * @see app/Http/Controllers/AssessmentController.php:587
  * @route '/assessments/{assessment}'
  */
     const destroyForm = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -387,7 +387,7 @@ destroy.delete = (args: { assessment: number | { id: number } } | [assessment: n
 
             /**
 * @see \App\Http\Controllers\AssessmentController::destroy
- * @see app/Http/Controllers/AssessmentController.php:555
+ * @see app/Http/Controllers/AssessmentController.php:587
  * @route '/assessments/{assessment}'
  */
         destroyForm.delete = (args: { assessment: number | { id: number } } | [assessment: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -818,7 +818,7 @@ uploadEvidence.post = (args: { assessment: number | { id: number }, item: number
     uploadEvidence.form = uploadEvidenceForm
 /**
 * @see \App\Http\Controllers\AssessmentController::explainControl
- * @see app/Http/Controllers/AssessmentController.php:530
+ * @see app/Http/Controllers/AssessmentController.php:562
  * @route '/assessments/explain-control'
  */
 export const explainControl = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -833,7 +833,7 @@ explainControl.definition = {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::explainControl
- * @see app/Http/Controllers/AssessmentController.php:530
+ * @see app/Http/Controllers/AssessmentController.php:562
  * @route '/assessments/explain-control'
  */
 explainControl.url = (options?: RouteQueryOptions) => {
@@ -842,7 +842,7 @@ explainControl.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AssessmentController::explainControl
- * @see app/Http/Controllers/AssessmentController.php:530
+ * @see app/Http/Controllers/AssessmentController.php:562
  * @route '/assessments/explain-control'
  */
 explainControl.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -852,7 +852,7 @@ explainControl.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
 
     /**
 * @see \App\Http\Controllers\AssessmentController::explainControl
- * @see app/Http/Controllers/AssessmentController.php:530
+ * @see app/Http/Controllers/AssessmentController.php:562
  * @route '/assessments/explain-control'
  */
     const explainControlForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -862,7 +862,7 @@ explainControl.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
 
             /**
 * @see \App\Http\Controllers\AssessmentController::explainControl
- * @see app/Http/Controllers/AssessmentController.php:530
+ * @see app/Http/Controllers/AssessmentController.php:562
  * @route '/assessments/explain-control'
  */
         explainControlForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

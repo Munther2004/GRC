@@ -49,7 +49,7 @@ export default function InvitesIndex({ corporation, shareable, emailInvites, all
     const [copied, setCopied] = useState(false);
 
     const shareableForm = useForm({
-        expires_in_days: '30',
+        expires_in_minutes: '60',
         corporation_id: corporation?.id ?? '',
     });
 
@@ -168,14 +168,14 @@ export default function InvitesIndex({ corporation, shareable, emailInvites, all
 
                                 <form onSubmit={generate} className="flex flex-wrap items-end gap-3 border-t pt-4" style={{ borderColor: 'var(--border)' }}>
                                     <div className="space-y-1">
-                                        <Label className="text-xs">Expires in (days)</Label>
+                                        <Label className="text-xs">Expires in (minutes)</Label>
                                         <Input
                                             type="number"
                                             min={1}
-                                            max={365}
-                                            value={shareableForm.data.expires_in_days}
-                                            onChange={(e) => shareableForm.setData('expires_in_days', e.target.value)}
-                                            placeholder="leave blank = no expiry"
+                                            max={525600}
+                                            value={shareableForm.data.expires_in_minutes}
+                                            onChange={(e) => shareableForm.setData('expires_in_minutes', e.target.value)}
+                                            placeholder="e.g. 60"
                                             className="w-44"
                                         />
                                     </div>
@@ -183,8 +183,8 @@ export default function InvitesIndex({ corporation, shareable, emailInvites, all
                                         <RefreshCw className="mr-1 h-4 w-4" />
                                         {shareable ? 'Regenerate link' : 'Generate link'}
                                     </Button>
-                                    {shareableForm.errors.expires_in_days && (
-                                        <p className="text-xs" style={{ color: 'var(--destructive)' }}>{shareableForm.errors.expires_in_days}</p>
+                                    {shareableForm.errors.expires_in_minutes && (
+                                        <p className="text-xs" style={{ color: 'var(--destructive)' }}>{shareableForm.errors.expires_in_minutes}</p>
                                     )}
                                 </form>
                             </CardContent>

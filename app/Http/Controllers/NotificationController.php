@@ -13,12 +13,10 @@ class NotificationController extends Controller
 
     public function index()
     {
-        $types = NotificationService::typesForRole(auth()->user()->role);
+        $user = auth()->user();
+        $types = NotificationService::typesForRole($user->role);
 
-        $query = Notification::where(function ($q) {
-            $q->whereNull('user_id')
-                ->orWhere('user_id', auth()->id());
-        });
+        $query = Notification::forUser($user);
 
         if ($types !== null) {
             $query->whereIn('type', $types);
@@ -38,12 +36,10 @@ class NotificationController extends Controller
 
     public function getNotifications(): JsonResponse
     {
-        $types = NotificationService::typesForRole(auth()->user()->role);
+        $user = auth()->user();
+        $types = NotificationService::typesForRole($user->role);
 
-        $query = Notification::where(function ($q) {
-            $q->whereNull('user_id')
-                ->orWhere('user_id', auth()->id());
-        });
+        $query = Notification::forUser($user);
 
         if ($types !== null) {
             $query->whereIn('type', $types);
@@ -72,13 +68,10 @@ class NotificationController extends Controller
 
     public function markAllRead()
     {
-        $types = NotificationService::typesForRole(auth()->user()->role);
+        $user = auth()->user();
+        $types = NotificationService::typesForRole($user->role);
 
-        $query = Notification::where('is_read', false)
-            ->where(function ($q) {
-                $q->whereNull('user_id')
-                    ->orWhere('user_id', auth()->id());
-            });
+        $query = Notification::forUser($user)->where('is_read', false);
 
         if ($types !== null) {
             $query->whereIn('type', $types);
@@ -99,22 +92,32 @@ class NotificationController extends Controller
 
     public function destroyAll()
     {
-        Notification::where(function ($q) {
-            $q->whereNull('user_id')
-                ->orWhere('user_id', auth()->id());
-        })->delete();
+        Notification::forUser(auth()->user())->delete();
 
         return back();
     }
 
     /**
-     * A notification is visible to its addressee or to any user when broadcast
-     * (user_id IS NULL). Anything else is somebody else's row.
+     * Visibility check for marking/deleting a single notification.
+     * Personal notifications (user_id != null) belong to that user.
+     * Broadcast notifications (user_id IS NULL) are accessible to:
+     *   - any super_admin (sees all tenants)
+     *   - any user whose corporation matches notification.corporation_id
      */
     private function authorizeAccess(Notification $notification): void
     {
-        $userId = auth()->id();
-        if ($notification->user_id !== null && $notification->user_id !== $userId) {
+        $user = auth()->user();
+        if ($notification->user_id !== null) {
+            if ($notification->user_id !== $user->id) {
+                abort(403);
+            }
+
+            return;
+        }
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+        if ($notification->corporation_id === null || $notification->corporation_id !== $user->corporation_id) {
             abort(403);
         }
     }

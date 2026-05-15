@@ -196,10 +196,12 @@ PROMPT;
             $risk = $created;
 
             $riskUrl = "/risks/{$risk->id}";
-            Notification::firstOrCreate(
-                ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false],
-                ['title' => 'AI Generated New Risk', 'message' => "AI generated new risk: {$risk->title} from {$statusLabel} control {$control->control_id}"]
-            );
+            if ($risk->corporation_id !== null) {
+                Notification::firstOrCreate(
+                    ['type' => 'critical_risk', 'url' => $riskUrl, 'is_read' => false, 'corporation_id' => $risk->corporation_id],
+                    ['title' => 'AI Generated New Risk', 'message' => "AI generated new risk: {$risk->title} from {$statusLabel} control {$control->control_id}"]
+                );
+            }
 
             AuditLog::record(
                 'created',

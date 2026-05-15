@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Notification extends Model
 {
     protected $fillable = [
-        'user_id', 'type', 'title', 'message', 'url', 'is_read',
+        'user_id', 'corporation_id', 'type', 'title', 'message', 'url', 'is_read',
     ];
 
     protected $casts = [
@@ -17,6 +17,55 @@ class Notification extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function corporation()
+    {
+        return $this->belongsTo(Corporation::class);
+    }
+
+    /**
+     * Centralized visibility scope. Personal notifications (user_id = $user->id)
+     * are always shown. Broadcast notifications (user_id IS NULL) are shown
+     * only when the recipient's tenant matches:
+     *   - super_admin → all broadcasts
+     *   - tenant user → broadcasts with corporation_id = own tenant
+     *   - tenantless user (no corporation_id, not super_admin) → personal only
+     *
+     * Untagged historical broadcasts (corporation_id IS NULL, predating this
+     * column) are intentionally invisible to tenant users — they were the
+     * leaked notifications this scope exists to prevent.
+     */
+    public function scopeForUser(
+        \Illuminate\Database\Eloquent\Builder $query,
+        User $user,
+        ?int $superAdminCorporationFilter = null,
+    ): \Illuminate\Database\Eloquent\Builder {
+        $isSuper = $user->isSuperAdmin();
+        $userId = $user->id;
+        $corpId = $user->corporation_id;
+
+        return $query->where(function ($outer) use ($isSuper, $userId, $corpId, $superAdminCorporationFilter) {
+            $outer->where('user_id', $userId);
+
+            if ($isSuper) {
+                if ($superAdminCorporationFilter !== null) {
+                    // super_admin drilled into a specific tenant — only show
+                    // broadcasts tagged for that tenant.
+                    $outer->orWhere(function ($sub) use ($superAdminCorporationFilter) {
+                        $sub->whereNull('user_id')
+                            ->where('corporation_id', $superAdminCorporationFilter);
+                    });
+                } else {
+                    $outer->orWhereNull('user_id');
+                }
+            } elseif ($corpId !== null) {
+                $outer->orWhere(function ($sub) use ($corpId) {
+                    $sub->whereNull('user_id')
+                        ->where('corporation_id', $corpId);
+                });
+            }
+        });
     }
 
     /**

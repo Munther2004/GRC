@@ -21,10 +21,12 @@ class CheckOverdueAssessmentsJob implements ShouldQueue
             ->chunkById(100, function ($chunk) {
                 foreach ($chunk as $assessment) {
                     $url = "/assessments/{$assessment->id}";
-                    Notification::firstOrCreate(
-                        ['type' => 'overdue_assessment', 'url' => $url, 'is_read' => false],
-                        ['user_id' => null, 'title' => 'Assessment Overdue', 'message' => "Assessment '{$assessment->title}' is overdue since {$assessment->due_date->format('Y-m-d')}"]
-                    );
+                    if ($assessment->corporation_id !== null) {
+                        Notification::firstOrCreate(
+                            ['type' => 'overdue_assessment', 'url' => $url, 'is_read' => false, 'corporation_id' => $assessment->corporation_id],
+                            ['user_id' => null, 'title' => 'Assessment Overdue', 'message' => "Assessment '{$assessment->title}' is overdue since {$assessment->due_date->format('Y-m-d')}"]
+                        );
+                    }
 
                     AuditLog::create([
                         'user_id' => null,

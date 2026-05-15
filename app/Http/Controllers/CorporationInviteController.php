@@ -101,7 +101,7 @@ class CorporationInviteController extends Controller
     public function storeShareable(Request $request)
     {
         $validated = $request->validate([
-            'expires_in_days' => 'nullable|integer|min:1|max:365',
+            'expires_in_minutes' => 'nullable|integer|min:1|max:525600',
             'corporation_id' => 'nullable|integer|exists:corporations,id',
         ]);
 
@@ -118,7 +118,7 @@ class CorporationInviteController extends Controller
             ->whereNull('revoked_at')
             ->update(['revoked_at' => now()]);
 
-        $expires = now()->addDays((int) ($validated['expires_in_days'] ?? 30));
+        $expires = now()->addMinutes((int) ($validated['expires_in_minutes'] ?? 60));
 
         $invite = CorporationInvite::create([
             'corporation_id' => $corporation->id,

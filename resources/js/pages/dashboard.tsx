@@ -32,6 +32,7 @@ import { RiskHeatmap } from '@/components/admin/risk-heatmap';
 import { RiskTrendChart } from '@/components/admin/risk-trend-chart';
 import { TopRisks } from '@/components/admin/top-risks';
 import { CorporationFilter } from '@/components/corporation-filter';
+import { FrameworkFilter, type FrameworkOption } from '@/components/framework-filter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AdminLayout from '@/layouts/admin-layout';
 import type { SharedProps } from '@/types';
@@ -143,6 +144,7 @@ type Props = {
     kriSnapshots: KriSnapshot[];
     healthScore: HealthScore;
     appetiteCounts: AppetiteCounts | null;
+    frameworkFilter: { selected: number | null; options: FrameworkOption[] };
 };
 
 // ── Theme tokens (single source) ────────────────────────────────────────────
@@ -968,6 +970,7 @@ export default function AdminDashboard({
     kriSnapshots,
     healthScore,
     appetiteCounts,
+    frameworkFilter,
 }: Props) {
     const { notifications } = usePage<SharedProps>().props;
     const unreadCount = notifications?.unread_count ?? 0;
@@ -1050,7 +1053,11 @@ export default function AdminDashboard({
     return (
         <AdminLayout>
             <div ref={rootRef} className="space-y-5">
-                <div className="dash-reveal flex justify-end">
+                <div className="dash-reveal flex flex-wrap items-center justify-end gap-3">
+                    <FrameworkFilter
+                        selected={frameworkFilter?.selected ?? null}
+                        options={frameworkFilter?.options ?? []}
+                    />
                     <CorporationFilter />
                 </div>
                 <DashboardHero healthScore={healthScore} />

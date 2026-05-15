@@ -88,14 +88,22 @@ class ControlStatusRequestController extends Controller
             'evidence_description' => 'nullable|string',
         ]);
 
-        // Block duplicate pending requests
-        if (ControlStatusRequest::where('control_id', $control->id)->where('status', 'pending')->exists()) {
+        $tenantId = Auth::user()?->corporation_id;
+
+        // Block duplicate pending requests — scoped to the requester's tenant so
+        // one corp can't observe another corp's pending request via this check.
+        $dupQuery = ControlStatusRequest::where('control_id', $control->id)
+            ->where('status', 'pending');
+        if ($tenantId !== null) {
+            $dupQuery->where('corporation_id', $tenantId);
+        } else {
+            $dupQuery->whereNull('corporation_id');
+        }
+        if ($dupQuery->exists()) {
             return response()->json([
                 'error' => 'This control already has a pending status update request.',
             ], 422);
         }
-
-        $tenantId = Auth::user()?->corporation_id;
         $statusRequest = ControlStatusRequest::create([
             'control_id' => $control->id,
             'requested_by' => Auth::id(),

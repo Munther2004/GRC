@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import AdminLayout from '@/layouts/admin-layout';
 import type { SharedProps } from '@/types';
@@ -662,24 +663,28 @@ export default function RiskAppetiteIndex({
                         <Label htmlFor="corp-picker" className="text-xs text-muted-foreground">
                             Corporation
                         </Label>
-                        <select
-                            id="corp-picker"
-                            className="rounded border border-border bg-background px-2 py-1 text-sm"
-                            value={context?.corporation_id ?? ''}
-                            onChange={(e) => {
-                                const v = e.target.value;
-                                router.get('/risk-appetite', v ? { corporation_id: v } : {}, {
-                                    preserveState: false,
-                                });
+                        <Select
+                            value={context?.corporation_id ? String(context.corporation_id) : '__none__'}
+                            onValueChange={(v) => {
+                                router.get(
+                                    '/risk-appetite',
+                                    v && v !== '__none__' ? { corporation_id: v } : {},
+                                    { preserveState: false },
+                                );
                             }}
                         >
-                            <option value="">Select corporation…</option>
-                            {context.corporations.map((c) => (
-                                <option key={c.id} value={c.id}>
-                                    {c.name}
-                                </option>
-                            ))}
-                        </select>
+                            <SelectTrigger id="corp-picker" className="min-w-[200px]">
+                                <SelectValue placeholder="Select corporation…" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="__none__">Select corporation…</SelectItem>
+                                {context.corporations.map((c) => (
+                                    <SelectItem key={c.id} value={String(c.id)}>
+                                        {c.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 )}
 

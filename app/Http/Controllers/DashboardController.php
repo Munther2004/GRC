@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Assessment;
 use App\Models\AuditLog;
+use App\Models\Framework;
 use App\Models\KriSnapshot;
 use App\Models\Risk;
 use App\Models\RiskAppetite;
@@ -22,10 +23,37 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $corpFilter = $user->resolveCorporationFilter($request->integer('corporation_id') ?: null);
-        $scopedRisks = fn () => $user->visibilityScope(Risk::query(), 'user_id', $corpFilter);
-        $scopedAssessments = fn () => $user->visibilityScope(Assessment::query(), 'user_id', $corpFilter);
+        $frameworkFilter = $request->integer('framework_id') ?: null;
+        if ($frameworkFilter !== null && ! Framework::where('id', $frameworkFilter)->exists()) {
+            $frameworkFilter = null;
+        }
 
-        $grc = new GrcMetricsService($user, $corpFilter);
+        $applyRiskFw = function ($q) use ($frameworkFilter) {
+            if ($frameworkFilter !== null) {
+                $q->whereExists(function ($sub) use ($frameworkFilter) {
+                    $sub->select(DB::raw(1))
+                        ->from('controls')
+                        ->whereColumn('controls.id', 'risks.source_control_id')
+                        ->where('controls.framework_id', $frameworkFilter);
+                });
+            }
+
+            return $q;
+        };
+
+        $scopedRisks = fn () => $applyRiskFw(
+            $user->visibilityScope(Risk::query(), 'user_id', $corpFilter)
+        );
+        $scopedAssessments = function () use ($user, $corpFilter, $frameworkFilter) {
+            $q = $user->visibilityScope(Assessment::query(), 'user_id', $corpFilter);
+            if ($frameworkFilter !== null) {
+                $q->where('assessments.framework_id', $frameworkFilter);
+            }
+
+            return $q;
+        };
+
+        $grc = new GrcMetricsService($user, $corpFilter, $frameworkFilter);
         $riskStats = $grc->riskCounts();
         $complianceData = $grc->complianceSummary();
         $evidenceStats = $grc->evidenceCounts();
@@ -148,7 +176,7 @@ class DashboardController extends Controller
             ];
         }
 
-        $metricsService = new RiskMetricsService($user, $corpFilter);
+        $metricsService = new RiskMetricsService($user, $corpFilter, $frameworkFilter);
         $riskMetrics = $metricsService->calculateRiskExposure();
         $healthScore = $metricsService->calculateHealthScore();
 
@@ -216,6 +244,16 @@ class DashboardController extends Controller
                 'compliant_controls' => $s->compliant_controls,
             ]);
 
+        $frameworks = Framework::where('is_active', true)
+            ->orderBy('short_name')
+            ->get(['id', 'short_name', 'name'])
+            ->map(fn ($fw) => [
+                'id' => $fw->id,
+                'short_name' => $fw->short_name,
+                'name' => $fw->name,
+            ])
+            ->values();
+
         return Inertia::render('dashboard', [
             'stats' => $stats,
             'recentRisks' => $recentRisks,
@@ -228,6 +266,10 @@ class DashboardController extends Controller
             'kriSnapshots' => $kriSnapshots,
             'healthScore' => $healthScore,
             'appetiteCounts' => $appetiteCounts,
+            'frameworkFilter' => [
+                'selected' => $frameworkFilter,
+                'options' => $frameworks,
+            ],
         ]);
     }
 }

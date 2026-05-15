@@ -19,13 +19,18 @@ class CheckExpiringEvidenceJob implements ShouldQueue
             ->where('expiry_date', '>=', Carbon::today())
             ->where('expiry_date', '<=', Carbon::today()->addDays(14))
             ->whereIn('status', ['pending', 'approved'])
+            ->with(['assessmentItem.assessment', 'user'])
             ->chunkById(100, function ($chunk) {
                 foreach ($chunk as $evidence) {
+                    $corpId = $evidence->assessmentItem?->assessment?->corporation_id
+                        ?? $evidence->user?->corporation_id;
                     $url = "/evidence-expiring-{$evidence->id}";
-                    Notification::firstOrCreate(
-                        ['type' => 'expiring_evidence', 'url' => $url, 'is_read' => false],
-                        ['user_id' => null, 'title' => 'Evidence Expiring Soon', 'message' => "Evidence '{$evidence->file_name}' expires on {$evidence->expiry_date->format('Y-m-d')} — renewal required soon"]
-                    );
+                    if ($corpId !== null) {
+                        Notification::firstOrCreate(
+                            ['type' => 'expiring_evidence', 'url' => $url, 'is_read' => false, 'corporation_id' => $corpId],
+                            ['user_id' => null, 'title' => 'Evidence Expiring Soon', 'message' => "Evidence '{$evidence->file_name}' expires on {$evidence->expiry_date->format('Y-m-d')} — renewal required soon"]
+                        );
+                    }
 
                     AuditLog::create([
                         'user_id' => null,

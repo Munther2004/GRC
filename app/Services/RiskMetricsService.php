@@ -11,7 +11,11 @@ use Illuminate\Support\Facades\DB;
 
 class RiskMetricsService
 {
-    public function __construct(private ?User $user = null, private ?int $corporationFilter = null) {}
+    public function __construct(
+        private ?User $user = null,
+        private ?int $corporationFilter = null,
+        private ?int $frameworkFilter = null,
+    ) {}
 
     /**
      * Effective corporation_id used by all internal aggregates:
@@ -39,6 +43,15 @@ class RiskMetricsService
         } elseif ($this->user && ! $this->user->isSuperAdmin()) {
             $q->whereRaw('1 = 0');
         }
+        if ($this->frameworkFilter !== null) {
+            $fwId = $this->frameworkFilter;
+            $q->whereExists(function ($sub) use ($fwId) {
+                $sub->select(DB::raw(1))
+                    ->from('controls')
+                    ->whereColumn('controls.id', 'risks.source_control_id')
+                    ->where('controls.framework_id', $fwId);
+            });
+        }
 
         return $q;
     }
@@ -51,6 +64,9 @@ class RiskMetricsService
             $q->where('assessments.corporation_id', $corpId);
         } elseif ($this->user && ! $this->user->isSuperAdmin()) {
             $q->whereRaw('1 = 0');
+        }
+        if ($this->frameworkFilter !== null) {
+            $q->where('assessments.framework_id', $this->frameworkFilter);
         }
 
         return $q;

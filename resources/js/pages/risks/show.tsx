@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useConfirm } from '@/components/ui/confirm-dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AdminLayout from '@/layouts/admin-layout';
 import { route } from '@/lib/routes';
 import type { SharedProps } from '@/types';
@@ -570,54 +571,48 @@ export default function RiskShow({
                                         <label className="mb-1 block text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                             Strategy
                                         </label>
-                                        <select
+                                        <Select
                                             value={planForm.strategy}
-                                            onChange={(e) =>
+                                            onValueChange={(v) =>
                                                 setPlanForm((f) => ({
                                                     ...f,
-                                                    strategy: e.target
-                                                        .value as any,
+                                                    strategy: v as any,
                                                 }))
                                             }
-                                            className="w-full rounded-full px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                         >
-                                            <option value="mitigate">
-                                                Mitigate
-                                            </option>
-                                            <option value="accept">
-                                                Accept
-                                            </option>
-                                            <option value="transfer">
-                                                Transfer
-                                            </option>
-                                            <option value="avoid">Avoid</option>
-                                        </select>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="mitigate">Mitigate</SelectItem>
+                                                <SelectItem value="accept">Accept</SelectItem>
+                                                <SelectItem value="transfer">Transfer</SelectItem>
+                                                <SelectItem value="avoid">Avoid</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                     <div>
                                         <label className="mb-1 block text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
                                             Status
                                         </label>
-                                        <select
+                                        <Select
                                             value={planForm.status}
-                                            onChange={(e) =>
+                                            onValueChange={(v) =>
                                                 setPlanForm((f) => ({
                                                     ...f,
-                                                    status: e.target
-                                                        .value as any,
+                                                    status: v as any,
                                                 }))
                                             }
-                                            className="w-full rounded-full px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                         >
-                                            <option value="not_started">
-                                                Not Started
-                                            </option>
-                                            <option value="in_progress">
-                                                In Progress
-                                            </option>
-                                            <option value="completed">
-                                                Completed
-                                            </option>
-                                        </select>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="not_started">Not Started</SelectItem>
+                                                <SelectItem value="in_progress">In Progress</SelectItem>
+                                                <SelectItem value="completed">Completed</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                 </div>
 

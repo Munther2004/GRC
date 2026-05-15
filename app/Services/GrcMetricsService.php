@@ -10,7 +10,27 @@ use Illuminate\Support\Facades\DB;
 
 class GrcMetricsService
 {
-    public function __construct(private ?User $user = null, private ?int $corporationFilter = null) {}
+    public function __construct(
+        private ?User $user = null,
+        private ?int $corporationFilter = null,
+        private ?int $frameworkFilter = null,
+    ) {}
+
+    private function applyRiskFrameworkFilter(Builder $q): Builder
+    {
+        if ($this->frameworkFilter === null) {
+            return $q;
+        }
+        $fwId = $this->frameworkFilter;
+        $q->whereExists(function ($sub) use ($fwId) {
+            $sub->select(DB::raw(1))
+                ->from('controls')
+                ->whereColumn('controls.id', 'risks.source_control_id')
+                ->where('controls.framework_id', $fwId);
+        });
+
+        return $q;
+    }
 
     /**
      * Effective corporation_id used by every aggregate query.
@@ -40,7 +60,7 @@ class GrcMetricsService
             $q->whereRaw('1 = 0');
         }
 
-        return $q;
+        return $this->applyRiskFrameworkFilter($q);
     }
 
     private function scopedAssessments(): Builder
@@ -51,6 +71,9 @@ class GrcMetricsService
             $q->where('assessments.corporation_id', $corpId);
         } elseif ($this->user && ! $this->user->isSuperAdmin()) {
             $q->whereRaw('1 = 0');
+        }
+        if ($this->frameworkFilter !== null) {
+            $q->where('assessments.framework_id', $this->frameworkFilter);
         }
 
         return $q;
@@ -66,6 +89,10 @@ class GrcMetricsService
 
         $query = DB::table('controls')
             ->where('controls.is_active', true);
+
+        if ($this->frameworkFilter !== null) {
+            $query->where('controls.framework_id', $this->frameworkFilter);
+        }
 
         if ($tenantId !== null) {
             $query->leftJoin('corporation_control_statuses as ccs', function ($join) use ($tenantId) {

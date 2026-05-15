@@ -497,6 +497,7 @@ class AssessmentController extends Controller
             ->all();
 
         $now = now();
+        $assessmentDate = $assessment->updated_at?->toDateString() ?? $now->toDateString();
 
         foreach ($items as $item) {
             $control = $item->control;
@@ -523,6 +524,37 @@ class AssessmentController extends Controller
                     'new_status' => $newStatus,
                     'notes' => "Synced from assessment #{$assessment->id}",
                 ]);
+            }
+
+            // Supersede any open/in-progress AI-generated risks for this control
+            // that came from an earlier assessment. The new assessment is the
+            // current state of truth — for still-non-compliant controls, the
+            // queued GenerateAIRisksJob will emit fresh risks. Manual risks
+            // (auto_generated = false) are never auto-closed.
+            $supersededRisks = Risk::query()
+                ->where('corporation_id', $tenantId)
+                ->where('source_control_id', $control->id)
+                ->where('auto_generated', true)
+                ->whereIn('status', ['open', 'in_progress'])
+                ->where(function ($q) use ($assessment) {
+                    $q->where('assessment_id', '!=', $assessment->id)
+                        ->orWhereNull('assessment_id');
+                })
+                ->get();
+
+            foreach ($supersededRisks as $risk) {
+                $note = "[Superseded by assessment #{$assessment->id} on {$assessmentDate}]";
+                $risk->update([
+                    'status' => 'closed',
+                    'description' => trim(($risk->description ?? '').(($risk->description ?? '') === '' ? '' : "\n\n").$note),
+                ]);
+
+                AuditLog::record(
+                    'closed',
+                    'Risk',
+                    $risk->id,
+                    "Risk auto-closed: superseded by assessment #{$assessment->id} (control {$control->control_id})"
+                );
             }
         }
     }
@@ -669,12 +701,13 @@ class AssessmentController extends Controller
                 // along with this assessment), surface it for human review.
                 if (in_array($newStatus, ['non_compliant', 'partially_compliant'], true)) {
                     $hasRisk = Risk::where('source_control_id', $control->id)->exists();
-                    if (! $hasRisk) {
+                    if (! $hasRisk && $deletedCorpId !== null) {
                         Notification::firstOrCreate(
                             [
                                 'type' => 'critical_risk',
                                 'url' => "/controls/{$control->id}",
                                 'is_read' => false,
+                                'corporation_id' => $deletedCorpId,
                             ],
                             [
                                 'user_id' => null,

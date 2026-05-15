@@ -21,10 +21,12 @@ class CheckOverdueRisksJob implements ShouldQueue
             ->chunkById(100, function ($chunk) {
                 foreach ($chunk as $risk) {
                     $url = "/risks/{$risk->id}";
-                    Notification::firstOrCreate(
-                        ['type' => 'overdue_risk', 'url' => $url, 'is_read' => false],
-                        ['user_id' => null, 'title' => 'Risk Treatment Overdue', 'message' => "Risk '{$risk->title}' treatment is overdue since {$risk->due_date->format('Y-m-d')}"]
-                    );
+                    if ($risk->corporation_id !== null) {
+                        Notification::firstOrCreate(
+                            ['type' => 'overdue_risk', 'url' => $url, 'is_read' => false, 'corporation_id' => $risk->corporation_id],
+                            ['user_id' => null, 'title' => 'Risk Treatment Overdue', 'message' => "Risk '{$risk->title}' treatment is overdue since {$risk->due_date->format('Y-m-d')}"]
+                        );
+                    }
 
                     AuditLog::create([
                         'user_id' => null,

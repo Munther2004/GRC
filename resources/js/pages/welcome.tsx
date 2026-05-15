@@ -1189,8 +1189,8 @@ export default function Welcome() {
                         <nav className="hidden items-center gap-8 md:flex">
                             {[
                                 { l: 'Tenets',     h: '#tenets' },
-                                { l: 'Platform',   h: '#features' },
                                 { l: 'Frameworks', h: '#frameworks' },
+                                { l: 'Platform',   h: '#features' },
                                 { l: 'About',      h: '/about' },
                             ].map((n) => (
                                 <a
@@ -1291,8 +1291,8 @@ export default function Welcome() {
                             <nav className="flex flex-1 min-h-0 flex-col gap-1 overflow-y-auto px-3 py-4">
                                 {[
                                     { l: 'Tenets',     h: '#tenets' },
-                                    { l: 'Platform',   h: '#features' },
                                     { l: 'Frameworks', h: '#frameworks' },
+                                    { l: 'Platform',   h: '#features' },
                                     { l: 'About',      h: '/about' },
                                 ].map((n) => (
                                     <a
@@ -1731,7 +1731,7 @@ export default function Welcome() {
                                 style={{ color: 'var(--c-fg)', fontWeight: 500, lineHeight: 1.05 }}
                             >
                                 Your corporation deserves{' '}
-                                <span style={{ color: 'var(--c-accent)', fontStyle: 'italic' }}>a Trustifyjo</span>,
+                                <span style={{ color: 'var(--c-accent)', fontStyle: 'italic' }}>a Charter</span>,
                                 not a checklist.
                             </h2>
                             <p className="mx-auto mt-6 max-w-xl text-lg" style={{ color: 'var(--c-muted)' }}>

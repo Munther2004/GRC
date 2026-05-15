@@ -289,6 +289,13 @@ export default function CrosswalkIndex({
                             className="pl-9"
                         />
                     </div>
+                    <button
+                        onClick={() => navigateWith({})}
+                        className="rounded-full bg-primary px-5 py-2 text-sm transition-all hover:brightness-110"
+                        style={{ color: 'var(--primary-foreground)' }}
+                    >
+                        Search
+                    </button>
                     <Select
                         value={frameworkId === '' ? '__all__' : frameworkId}
                         onValueChange={handleFrameworkChange}
@@ -305,13 +312,6 @@ export default function CrosswalkIndex({
                             ))}
                         </SelectContent>
                     </Select>
-                    <button
-                        onClick={() => navigateWith({})}
-                        className="rounded-full bg-primary px-5 py-2 text-sm transition-all hover:brightness-110"
-                        style={{ color: 'var(--primary-foreground)' }}
-                    >
-                        Search
-                    </button>
                     {(search || frameworkId) && (
                         <button
                             onClick={clearFilters}

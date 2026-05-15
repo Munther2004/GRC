@@ -118,6 +118,9 @@ export const route = (name: string, params?: any): string => {
         // Evidence Coverage Matrix
         'evidence-coverage.index': '/evidence-coverage',
 
+        // Crosswalk
+        'crosswalk.index': '/crosswalk',
+
         //Evidence
         'evidence.index': '/evidence',
         'evidence.approve': `/evidence/${id}/approve`,

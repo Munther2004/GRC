@@ -203,16 +203,38 @@ export default function CrosswalkIndex({
     const [search, setSearch] = useState(filters.search ?? '');
     const [frameworkId, setFrameworkId] = useState(filters.framework_id ?? '');
 
-    const applyFilters = () => {
+    const navigateWith = (next: { search?: string; framework_id?: string }) => {
         const params: Record<string, string> = {};
-        if (search) params.search = search;
-        if (frameworkId) params.framework_id = frameworkId;
+        const s = next.search ?? search;
+        const f = next.framework_id ?? frameworkId;
+        if (s) params.search = s;
+        if (f) params.framework_id = f;
         const qs = new URLSearchParams(params).toString();
-        router.visit(route('crosswalk.index') + (qs ? `?${qs}` : ''));
+        router.visit(route('crosswalk.index') + (qs ? `?${qs}` : ''), {
+            preserveScroll: true,
+            preserveState: false,
+            replace: true,
+        });
+    };
+
+    const handleFrameworkChange = (v: string) => {
+        const next = v === '__all__' ? '' : v;
+        setFrameworkId(next);
+        navigateWith({ framework_id: next });
     };
 
     const handleKey = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') applyFilters();
+        if (e.key === 'Enter') navigateWith({});
+    };
+
+    const clearFilters = () => {
+        setSearch('');
+        setFrameworkId('');
+        router.visit(route('crosswalk.index'), {
+            preserveScroll: true,
+            preserveState: false,
+            replace: true,
+        });
     };
 
     return (
@@ -269,7 +291,7 @@ export default function CrosswalkIndex({
                     </div>
                     <Select
                         value={frameworkId === '' ? '__all__' : frameworkId}
-                        onValueChange={(v) => setFrameworkId(v === '__all__' ? '' : v)}
+                        onValueChange={handleFrameworkChange}
                     >
                         <SelectTrigger className="min-w-[160px]">
                             <SelectValue placeholder="All Frameworks" />
@@ -284,19 +306,15 @@ export default function CrosswalkIndex({
                         </SelectContent>
                     </Select>
                     <button
-                        onClick={applyFilters}
+                        onClick={() => navigateWith({})}
                         className="rounded-full bg-primary px-5 py-2 text-sm transition-all hover:brightness-110"
                         style={{ color: 'var(--primary-foreground)' }}
                     >
-                        Filter
+                        Search
                     </button>
                     {(search || frameworkId) && (
                         <button
-                            onClick={() => {
-                                setSearch('');
-                                setFrameworkId('');
-                                router.visit(route('crosswalk.index'));
-                            }}
+                            onClick={clearFilters}
                             className="rounded-full border px-5 py-2 text-sm transition-colors hover:bg-muted"
                         >
                             Clear

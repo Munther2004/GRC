@@ -126,7 +126,12 @@ class RiskController extends Controller
             'treatment_plan' => 'nullable|string',
             'due_date' => 'nullable|date',
             'ai_validated' => 'boolean',
+            'linked_control_ids' => 'nullable|array',
+            'linked_control_ids.*' => 'integer|exists:controls,id',
         ]);
+
+        $linkedControlIds = $validated['linked_control_ids'] ?? [];
+        unset($validated['linked_control_ids']);
 
         $risk = Risk::create([
             ...$validated,
@@ -142,6 +147,22 @@ class RiskController extends Controller
         );
 
         (new AIControlLinker)->linkControlsToRisk($risk);
+
+        if (! empty($linkedControlIds)) {
+            $now = now();
+            foreach (array_unique($linkedControlIds) as $controlId) {
+                DB::table('control_risk')->updateOrInsert(
+                    ['risk_id' => $risk->id, 'control_id' => $controlId],
+                    [
+                        'auto_linked' => false,
+                        'link_type' => 'ai-suggested',
+                        'link_reason' => 'User accepted AI suggestion on create',
+                        'updated_at' => $now,
+                        'created_at' => $now,
+                    ],
+                );
+            }
+        }
 
         return redirect()->route('risks.show', $risk)
             ->with('success', 'Risk created successfully.');

@@ -10,6 +10,7 @@ class Risk extends Model
 
     protected $casts = [
         'due_date' => 'date',
+        'ai_validated' => 'boolean',
     ];
 
     public function user()

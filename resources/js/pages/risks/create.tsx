@@ -8,6 +8,8 @@ import {
     Loader2,
     CheckCircle2,
     XCircle,
+    Check,
+    ShieldCheck,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +54,15 @@ interface ThreatSuggestion {
     suggested_treatment: string;
 }
 
+interface ControlSuggestion {
+    control_id: number;
+    control_code: string;
+    title: string;
+    framework: string;
+    category: string;
+    reason: string;
+}
+
 export default function RiskCreate({
     categories,
     statuses,
@@ -69,11 +80,18 @@ export default function RiskCreate({
         treatment_plan: '',
         due_date: '',
         ai_validated: false,
+        linked_control_ids: [] as number[],
     });
 
     const [threats, setThreats] = useState<ThreatSuggestion[]>([]);
     const [loadingThreats, setLoadingThreats] = useState(false);
     const [threatError, setThreatError] = useState('');
+
+    const [controlSuggestions, setControlSuggestions] = useState<
+        ControlSuggestion[]
+    >([]);
+    const [loadingControls, setLoadingControls] = useState(false);
+    const [controlError, setControlError] = useState('');
 
     const [validationResult, setValidationResult] =
         useState<ValidationResult | null>(null);
@@ -103,6 +121,35 @@ export default function RiskCreate({
         } finally {
             setLoadingThreats(false);
         }
+    };
+
+    const suggestControls = async () => {
+        if (!canSuggest) return;
+        setLoadingControls(true);
+        setControlError('');
+        setControlSuggestions([]);
+        try {
+            const res = await axios.post('/ai/suggest-controls', {
+                title: data.title,
+                description: data.description,
+                category: data.category || 'General',
+            });
+            setControlSuggestions(res.data);
+        } catch {
+            setControlError('AI control suggestion failed. Please try again.');
+        } finally {
+            setLoadingControls(false);
+        }
+    };
+
+    const toggleControlSelection = (controlId: number) => {
+        const current = data.linked_control_ids;
+        setData(
+            'linked_control_ids',
+            current.includes(controlId)
+                ? current.filter((id) => id !== controlId)
+                : [...current, controlId],
+        );
     };
 
     const applyThreatSuggestion = (t: ThreatSuggestion) => {
@@ -179,6 +226,50 @@ export default function RiskCreate({
                             ISO/IEC 27005 risk assessment
                         </p>
                     </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="gap-1.5"
+                            onClick={suggestThreats}
+                            disabled={!canSuggest || loadingThreats}
+                            title={
+                                !canSuggest
+                                    ? 'Enter at least 10 characters in title and description'
+                                    : 'Suggest threat scenarios from the description'
+                            }
+                        >
+                            {loadingThreats ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                                <Sparkles className="h-3.5 w-3.5" />
+                            )}
+                            {loadingThreats ? 'Thinking...' : 'Suggest Threats'}
+                        </Button>
+                        <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="gap-1.5"
+                            onClick={suggestControls}
+                            disabled={!canSuggest || loadingControls}
+                            title={
+                                !canSuggest
+                                    ? 'Enter at least 10 characters in title and description'
+                                    : 'Suggest up to 8 relevant controls from your frameworks'
+                            }
+                        >
+                            {loadingControls ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                                <ShieldCheck className="h-3.5 w-3.5" />
+                            )}
+                            {loadingControls
+                                ? 'Thinking...'
+                                : 'Suggest Controls'}
+                        </Button>
+                    </div>
                 </div>
 
                 <form onSubmit={submit} className="space-y-6">
@@ -193,28 +284,7 @@ export default function RiskCreate({
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-1">
-                                <div className="flex items-center justify-between">
-                                    <Label htmlFor="title">Risk Title *</Label>
-                                    {canSuggest && (
-                                        <Button
-                                            type="button"
-                                            size="sm"
-                                            variant="outline"
-                                            className="gap-1.5"
-                                            onClick={suggestThreats}
-                                            disabled={loadingThreats}
-                                        >
-                                            {loadingThreats ? (
-                                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                            ) : (
-                                                <Sparkles className="h-3.5 w-3.5" />
-                                            )}
-                                            {loadingThreats
-                                                ? 'Thinking...'
-                                                : 'Suggest Threats'}
-                                        </Button>
-                                    )}
-                                </div>
+                                <Label htmlFor="title">Risk Title *</Label>
                                 <Input
                                     id="title"
                                     value={data.title}
@@ -293,6 +363,76 @@ export default function RiskCreate({
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* AI Control Suggestions */}
+                    {controlError && (
+                        <p className="px-1 text-sm" style={{ color: 'var(--destructive)' }}>
+                            {controlError}
+                        </p>
+                    )}
+
+                    {controlSuggestions.length > 0 && (
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                                <ShieldCheck className="h-4 w-4" style={{ color: 'var(--primary)' }} />
+                                <p className="text-[10px] uppercase" style={{ color: 'var(--primary)', letterSpacing: '0.28em' }}>
+                                    AI Control Suggestions ({controlSuggestions.length}): toggle "Link on save" to attach selected controls when the risk is saved
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-1 gap-3">
+                                {controlSuggestions.map((c) => {
+                                    const selected = data.linked_control_ids.includes(c.control_id);
+                                    return (
+                                        <Card key={c.control_id}>
+                                            <CardContent className="p-4">
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <div className="flex-1 space-y-1.5">
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <Badge variant="outline" className="text-xs">
+                                                                {c.framework}
+                                                            </Badge>
+                                                            <span className="text-sm font-medium text-foreground">
+                                                                {c.control_code}
+                                                            </span>
+                                                            <span className="text-sm text-foreground">
+                                                                {c.title}
+                                                            </span>
+                                                            {c.category && (
+                                                                <Badge variant="outline" className="text-xs capitalize">
+                                                                    {c.category}
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                        {c.reason && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {c.reason}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <Button
+                                                        type="button"
+                                                        size="sm"
+                                                        variant={selected ? 'default' : 'outline'}
+                                                        className="shrink-0 gap-1.5"
+                                                        onClick={() => toggleControlSelection(c.control_id)}
+                                                    >
+                                                        {selected ? (
+                                                            <>
+                                                                <Check className="h-3.5 w-3.5" />
+                                                                Will link on save
+                                                            </>
+                                                        ) : (
+                                                            'Link on save'
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     {/* AI Threat Suggestions */}
                     {threatError && (

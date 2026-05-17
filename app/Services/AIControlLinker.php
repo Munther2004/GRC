@@ -66,7 +66,7 @@ PROMPT;
                 return;
             }
 
-            $data = json_decode(trim($responseText), true);
+            $suggestions = json_decode(trim($responseText), true);
 
             if (! is_array($suggestions)) {
                 Log::warning('AIControlLinker: invalid JSON response', ['response' => $responseText]);

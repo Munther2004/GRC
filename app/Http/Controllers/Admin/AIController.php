@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Assessment;
 use App\Models\AssessmentItem;
 use App\Models\Control;
+use App\Models\Framework;
 use App\Models\Risk;
 use App\Services\AIRiskGenerator;
 use App\Services\AIService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AIController extends Controller
@@ -75,6 +77,90 @@ PROMPT;
                     : 'mitigate',
             ];
         }, array_slice($suggestions, 0, 4));
+
+        return response()->json($suggestions);
+    }
+
+    public function suggestControls(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|min:1',
+            'description' => 'required|string|min:1',
+            'category' => 'nullable|string',
+        ]);
+
+        $title = $request->input('title');
+        $description = $request->input('description');
+        $category = $request->input('category', 'General');
+
+        $activeFrameworkIds = DB::table('assessments')->distinct()->pluck('framework_id');
+        if ($activeFrameworkIds->isEmpty()) {
+            $activeFrameworkIds = Framework::where('is_active', true)->pluck('id');
+        }
+
+        $controls = Control::whereIn('framework_id', $activeFrameworkIds)
+            ->where('is_active', true)
+            ->with('framework')
+            ->limit(200)
+            ->get();
+
+        if ($controls->isEmpty()) {
+            return response()->json([]);
+        }
+
+        $controlsList = $controls->map(
+            fn ($c) => "{$c->id} | {$c->control_id} | {$c->title} | {$c->framework->short_name} | {$c->category}"
+        )->implode("\n");
+
+        $prompt = <<<PROMPT
+You are a GRC expert. Given this risk, identify the most relevant security controls from the list below.
+
+Risk Title: {$title}
+Risk Description: {$description}
+Risk Category: {$category}
+
+Controls list (format: ID | Code | Title | Framework | Category):
+{$controlsList}
+
+Return ONLY a valid JSON array, no explanation, no markdown, like this:
+[
+  {"control_id": 5, "reason": "This control directly addresses account lockout which mitigates unauthorized access"}
+]
+
+Return maximum 8 most relevant controls only. If none are relevant return empty array [].
+PROMPT;
+
+        $ai = new AIService;
+        $responseText = $ai->callClaude($prompt);
+
+        if (empty($responseText)) {
+            return response()->json(['error' => 'AI service unavailable'], 503);
+        }
+
+        $raw = json_decode(trim($responseText), true);
+        if (! is_array($raw)) {
+            Log::warning('AIController::suggestControls: invalid JSON', ['response' => $responseText]);
+
+            return response()->json(['error' => 'Invalid AI response'], 500);
+        }
+
+        $byId = $controls->keyBy('id');
+        $suggestions = [];
+        foreach (array_slice($raw, 0, 8) as $s) {
+            $id = (int) ($s['control_id'] ?? 0);
+            $ctrl = $byId->get($id);
+            if (! $ctrl) {
+                continue;
+            }
+            $suggestions[] = [
+                'control_id' => $ctrl->id,
+                'control_code' => $ctrl->control_id,
+                'title' => $ctrl->title,
+                'framework' => $ctrl->framework->short_name,
+                'category' => $ctrl->category,
+                'reason' => is_string($s['reason'] ?? null) ? $s['reason'] : '',
+            ];
+        }
 
         return response()->json($suggestions);
     }

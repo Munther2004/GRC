@@ -141,6 +141,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // AI assistance — write/operational endpoints
         Route::post('/ai/suggest-threats', [AdminAIController::class, 'suggestThreats'])->name('ai.suggest-threats');
+        Route::post('/ai/suggest-controls', [AdminAIController::class, 'suggestControls'])->name('ai.suggest-controls');
         Route::post('/ai/remediate-gap', [AdminAIController::class, 'remediateGap'])->name('ai.remediate-gap');
         Route::post('/ai/save-remediation', [AdminAIController::class, 'saveRemediation'])->name('ai.save-remediation');
         Route::post('/ai/assessment-summary/{assessment}', [AdminAIController::class, 'generateAssessmentSummary'])->name('ai.assessment-summary');

@@ -22,27 +22,25 @@ class EvidenceFileExtractor
      */
     public function extract(string $filePath, string $mimeType): array
     {
-        $absolutePath = Storage::disk('public')->path($filePath);
-        $existsStorage = ! empty($filePath) && Storage::disk('public')->exists($filePath);
-        $existsDirect = ! empty($filePath) && file_exists($absolutePath);
+        $disk = config('filesystems.evidence_disk');
+        $existsStorage = ! empty($filePath) && Storage::disk($disk)->exists($filePath);
 
         Log::info('EvidenceFileExtractor: path check', [
             'file_path' => $filePath,
-            'absolute_path' => $absolutePath,
+            'disk' => $disk,
             'exists_storage' => $existsStorage,
-            'exists_direct' => $existsDirect,
             'mime_type' => $mimeType,
         ]);
 
-        if (empty($filePath) || (! $existsStorage && ! $existsDirect)) {
+        if (empty($filePath) || ! $existsStorage) {
             Log::warning('EvidenceFileExtractor: file not found on disk', [
                 'file_path' => $filePath,
-                'absolute_path' => $absolutePath,
+                'disk' => $disk,
             ]);
 
             return [
                 'content_type' => 'unsupported',
-                'content' => 'File not found on disk (checked: '.$absolutePath.'). Assessment based on metadata only.',
+                'content' => 'File not found on disk (path: '.$filePath.'). Assessment based on metadata only.',
             ];
         }
 
@@ -55,7 +53,7 @@ class EvidenceFileExtractor
 
             return [
                 'content_type' => $normalized,
-                'content' => base64_encode(Storage::disk('public')->get($filePath)),
+                'content' => base64_encode(Storage::disk(config('filesystems.evidence_disk'))->get($filePath)),
             ];
         }
 
@@ -63,7 +61,7 @@ class EvidenceFileExtractor
         if ($mime === 'application/pdf') {
             return [
                 'content_type' => 'application/pdf',
-                'content' => base64_encode(Storage::disk('public')->get($filePath)),
+                'content' => base64_encode(Storage::disk(config('filesystems.evidence_disk'))->get($filePath)),
             ];
         }
 
@@ -88,7 +86,7 @@ class EvidenceFileExtractor
         // ── Plain text / CSV ─────────────────────────────────────────────────
         if (str_starts_with($mime, 'text/') ||
             in_array($mime, ['application/csv', 'text/comma-separated-values'], true)) {
-            $text = Storage::disk('public')->get($filePath) ?? '';
+            $text = Storage::disk(config('filesystems.evidence_disk'))->get($filePath) ?? '';
 
             return ['content_type' => 'text', 'content' => $this->truncate($text)];
         }
@@ -110,7 +108,7 @@ class EvidenceFileExtractor
 
         try {
             $tmp = tempnam(sys_get_temp_dir(), 'grc_docx_');
-            file_put_contents($tmp, Storage::disk('public')->get($filePath));
+            file_put_contents($tmp, Storage::disk(config('filesystems.evidence_disk'))->get($filePath));
             $phpWord = \PhpOffice\PhpWord\IOFactory::load($tmp);
             $text = '';
 
@@ -153,7 +151,7 @@ class EvidenceFileExtractor
 
         try {
             $tmp = tempnam(sys_get_temp_dir(), 'grc_xlsx_');
-            file_put_contents($tmp, Storage::disk('public')->get($filePath));
+            file_put_contents($tmp, Storage::disk(config('filesystems.evidence_disk'))->get($filePath));
             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tmp);
             $lines = [];
 

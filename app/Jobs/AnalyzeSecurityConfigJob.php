@@ -145,7 +145,10 @@ class AnalyzeSecurityConfigJob implements ShouldQueue
         ]);
 
         try {
-            $absolutePath = Storage::disk('public')->path($audit->file_path);
+            $absolutePath = \App\Support\StorageHelper::tempLocalPath(
+                config('filesystems.evidence_disk'),
+                $audit->file_path,
+            );
             $candidate = $vision->analyzeImage($absolutePath, [
                 'evidence_id' => $audit->id, // reused as a generic source-id for the log line
                 'mime_type' => $extracted['content_type'],
@@ -191,7 +194,7 @@ class AnalyzeSecurityConfigJob implements ShouldQueue
 
         // For structured config formats Claude reads as text — bypass extractor's mime gating
         if (in_array($extension, $textLikeExtensions, true)) {
-            $raw = Storage::disk('public')->get($audit->file_path) ?? '';
+            $raw = Storage::disk(config('filesystems.evidence_disk'))->get($audit->file_path) ?? '';
 
             return [
                 'content_type' => 'text',

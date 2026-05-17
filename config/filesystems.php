@@ -17,6 +17,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Evidence Disk
+    |--------------------------------------------------------------------------
+    |
+    | Disk used for user-uploaded evidence, security audit configs, and
+    | reputation-check sources. Defaults to the local "public" disk for dev.
+    | On App Platform (ephemeral filesystem) set EVIDENCE_DISK=s3 so files
+    | persist across deploys via DigitalOcean Spaces.
+    |
+    */
+
+    'evidence_disk' => env('EVIDENCE_DISK', 'public'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |

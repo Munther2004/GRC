@@ -122,7 +122,7 @@ class ControlStatusRequestController extends Controller
         $uploadedEvidence = null;
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $path = $file->store("evidence/control-{$control->id}", 'public');
+            $path = $file->store("evidence/control-{$control->id}", config('filesystems.evidence_disk'));
             $uploadSha256 = @hash_file('sha256', $file->getRealPath()) ?: null;
             $uploadedEvidence = Evidence::create([
                 'user_id' => Auth::id(),

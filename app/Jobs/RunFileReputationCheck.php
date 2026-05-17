@@ -26,14 +26,12 @@ class RunFileReputationCheck implements ShouldQueue
     {
         $check = $this->reputationCheck->refresh();
 
-        $absolutePath = Storage::disk('public')->path($check->file_path);
+        $absolutePath = \App\Support\StorageHelper::tempLocalPath(
+            config('filesystems.evidence_disk'),
+            $check->file_path,
+        );
 
-        // Resolve the baseline (upload-time) hash from the polymorphic parent.
-        // Files uploaded before this feature won't have one — that maps to
-        // integrity_status = 'unknown' rather than a tampering claim.
-        $baselineHash = $this->resolveBaselineHash($check);
-
-        if (! is_file($absolutePath)) {
+        if ($absolutePath === null) {
             Log::warning('RunFileReputationCheck: file missing on disk', [
                 'check_id' => $check->id,
                 'file_path' => $check->file_path,
@@ -42,12 +40,14 @@ class RunFileReputationCheck implements ShouldQueue
             $check->update([
                 'status' => 'error',
                 'integrity_status' => 'error',
-                'upload_sha256' => $baselineHash,
+                'upload_sha256' => $this->resolveBaselineHash($check),
                 'checked_at' => now(),
             ]);
 
             return;
         }
+
+        $baselineHash = $this->resolveBaselineHash($check);
 
         try {
             $sha256 = $vt->hashFile($absolutePath);

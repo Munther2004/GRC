@@ -95,7 +95,7 @@ class SecurityAuditController extends Controller
         ]);
 
         $file = $request->file('file');
-        $path = $file->store('security-audits', 'public');
+        $path = $file->store('security-audits', config('filesystems.evidence_disk'));
         $uploadSha256 = @hash_file('sha256', $file->getRealPath()) ?: null;
 
         $audit = SecurityAudit::create([
@@ -270,8 +270,10 @@ class SecurityAuditController extends Controller
         $pdf = $this->buildPdf($securityAudit);
         $fileName = 'security-audit-'.$securityAudit->id.'-'.now()->format('Ymd-His').'.pdf';
         $storagePath = "evidence/{$fileName}";
-        Storage::disk('public')->put($storagePath, $pdf->output());
-        $uploadSha256 = @hash_file('sha256', Storage::disk('public')->path($storagePath)) ?: null;
+        $disk = config('filesystems.evidence_disk');
+        Storage::disk($disk)->put($storagePath, $pdf->output());
+        $localPath = \App\Support\StorageHelper::tempLocalPath($disk, $storagePath);
+        $uploadSha256 = $localPath ? (@hash_file('sha256', $localPath) ?: null) : null;
 
         $evidence = Evidence::create([
             'user_id' => Auth::id(),
@@ -324,8 +326,9 @@ class SecurityAuditController extends Controller
         $name = $securityAudit->file_name;
         $id = $securityAudit->id;
 
-        if ($securityAudit->file_path && Storage::disk('public')->exists($securityAudit->file_path)) {
-            Storage::disk('public')->delete($securityAudit->file_path);
+        $disk = config('filesystems.evidence_disk');
+        if ($securityAudit->file_path && Storage::disk($disk)->exists($securityAudit->file_path)) {
+            Storage::disk($disk)->delete($securityAudit->file_path);
         }
 
         $securityAudit->delete();

@@ -246,18 +246,20 @@ class EvidenceController extends Controller
     {
         $this->authorizeEvidenceAccess($evidence);
 
-        if (! Storage::disk('public')->exists($evidence->file_path)) {
+        $disk = config('filesystems.evidence_disk');
+
+        if (! Storage::disk($disk)->exists($evidence->file_path)) {
             abort(404, 'File not found.');
         }
 
-        return Storage::disk('public')->download($evidence->file_path, $evidence->file_name);
+        return Storage::disk($disk)->download($evidence->file_path, $evidence->file_name);
     }
 
     public function destroy(Evidence $evidence)
     {
         $this->authorizeEvidenceAccess($evidence);
 
-        Storage::disk('public')->delete($evidence->file_path);
+        Storage::disk(config('filesystems.evidence_disk'))->delete($evidence->file_path);
 
         $title = $evidence->title;
         $id = $evidence->id;
@@ -344,7 +346,10 @@ class EvidenceController extends Controller
             && ! empty(config('services.gemini.key'))
         ) {
             try {
-                $absolutePath = Storage::disk('public')->path($evidence->file_path);
+                $absolutePath = \App\Support\StorageHelper::tempLocalPath(
+                    config('filesystems.evidence_disk'),
+                    $evidence->file_path,
+                );
                 $vision = new GeminiVisionService;
                 $candidate = $vision->analyzeImage($absolutePath, [
                     'evidence_id' => $evidence->id,

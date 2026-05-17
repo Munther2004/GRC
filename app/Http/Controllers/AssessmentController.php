@@ -393,7 +393,7 @@ class AssessmentController extends Controller
         ]);
 
         $file = $request->file('file');
-        $path = $file->store("evidence/assessment-{$assessment->id}", 'public');
+        $path = $file->store("evidence/assessment-{$assessment->id}", config('filesystems.evidence_disk'));
         $uploadSha256 = @hash_file('sha256', $file->getRealPath()) ?: null;
 
         Evidence::create([
@@ -633,7 +633,7 @@ class AssessmentController extends Controller
         $evidenceCount = 0;
         foreach ($evidenceRecords as $ev) {
             if ($ev->file_path) {
-                Storage::disk('public')->delete($ev->file_path);
+                Storage::disk(config('filesystems.evidence_disk'))->delete($ev->file_path);
             }
             $ev->delete();
             $evidenceCount++;

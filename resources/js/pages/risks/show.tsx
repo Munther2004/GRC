@@ -343,7 +343,7 @@ export default function RiskShow({
                                 <span style={{ color: 'var(--foreground)', fontWeight: 500 }}>
                                     {risk.source_control.control_id}
                                 </span>{' '}
-                                — {risk.source_control.title}
+                                : {risk.source_control.title}
                             </p>
                         </div>
                     </div>
@@ -398,7 +398,7 @@ export default function RiskShow({
                         <Card>
                             <CardHeader>
                                 <CardTitle className="text-base">
-                                    Risk Matrix — ISO/IEC 27005
+                                    Risk Matrix: ISO/IEC 27005
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
@@ -721,7 +721,7 @@ export default function RiskShow({
                                                                   ),
                                                     }))
                                                 }
-                                                placeholder="—"
+                                                placeholder="-"
                                                 className="w-full rounded-full px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                             />
                                         </div>
@@ -747,7 +747,7 @@ export default function RiskShow({
                                                                   ),
                                                     }))
                                                 }
-                                                placeholder="—"
+                                                placeholder="-"
                                                 className="w-full rounded-full px-3 py-1.5 text-sm focus:outline-none" style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                                             />
                                         </div>
@@ -1050,7 +1050,7 @@ export default function RiskShow({
                                                                 c.id,
                                                             );
                                                             setControlSearch(
-                                                                `[${c.framework}] ${c.control_id} — ${c.title}`,
+                                                                `[${c.framework}] ${c.control_id}: ${c.title}`,
                                                             );
                                                         }}
                                                     >

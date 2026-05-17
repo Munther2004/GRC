@@ -37,7 +37,7 @@ const frameworks = [
 export default function About() {
     return (
         <>
-            <Head title="About — GRC System" />
+            <Head title="About: GRC System" />
             <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground antialiased">
                 {/* Mesh + grid background */}
                 <div

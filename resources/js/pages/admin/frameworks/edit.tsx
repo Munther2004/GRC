@@ -34,7 +34,7 @@ export default function FrameworkEdit({ framework }: Props) {
 
     return (
         <AdminLayout>
-            <Head title={`Edit — ${framework.short_name}`} />
+            <Head title={`Edit: ${framework.short_name}`} />
 
             <div className="mx-auto max-w-2xl space-y-6">
                 <div className="flex items-center gap-3">

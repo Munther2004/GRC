@@ -181,7 +181,7 @@ function TaskForm({
                             placeholder="Search by ID, title or framework..."
                             value={
                                 selectedControl
-                                    ? `[${selectedControl.framework}] ${selectedControl.control_id} — ${selectedControl.title}`
+                                    ? `[${selectedControl.framework}] ${selectedControl.control_id}: ${selectedControl.title}`
                                     : controlSearch
                             }
                             onChange={(e) => {
@@ -207,7 +207,7 @@ function TaskForm({
                                                     control_id: c.id,
                                                 }));
                                                 setControlSearch(
-                                                    `[${c.framework}] ${c.control_id} — ${c.title}`,
+                                                    `[${c.framework}] ${c.control_id}: ${c.title}`,
                                                 );
                                                 setShowControlList(false);
                                             }}
@@ -794,7 +794,7 @@ export default function RemediationTasksIndex({
                                                         </span>
                                                     ) : (
                                                         <span className="text-xs text-muted-foreground">
-                                                            —
+                                                            -
                                                         </span>
                                                     )}
                                                 </td>
@@ -817,7 +817,7 @@ export default function RemediationTasksIndex({
                                                         </span>
                                                     ) : (
                                                         <span className="text-xs text-muted-foreground">
-                                                            —
+                                                            -
                                                         </span>
                                                     )}
                                                 </td>
@@ -975,7 +975,7 @@ export default function RemediationTasksIndex({
                                 <span className="font-mono font-medium">
                                     {editTask.control.control_id}
                                 </span>{' '}
-                                — {editTask.control.title}
+                                : {editTask.control.title}
                             </p>
                         )}
                     </DialogHeader>

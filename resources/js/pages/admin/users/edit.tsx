@@ -95,7 +95,7 @@ function EditForm({
 
     return (
         <>
-            <Head title={`Edit — ${user.name}`} />
+            <Head title={`Edit: ${user.name}`} />
             <div className="mx-auto max-w-2xl space-y-6">
                 <div className="flex items-center gap-3">
                     <Link href={route('admin.users.index')}>

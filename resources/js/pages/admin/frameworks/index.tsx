@@ -168,7 +168,7 @@ export default function FrameworksIndex({ frameworks }: Props) {
                                                 <td className="px-4 py-3 text-muted-foreground">
                                                     {framework.version ?? (
                                                         <span className="text-muted-foreground/40">
-                                                            —
+                                                            -
                                                         </span>
                                                     )}
                                                 </td>

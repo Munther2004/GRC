@@ -21,7 +21,7 @@ interface Props {
 }
 
 function formatDate(value: string | null): string {
-    if (!value) return '—';
+    if (!value) return '-';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return value;
     return date.toLocaleString();
@@ -176,7 +176,7 @@ function IntegritySection({
                 <HashRow
                     label="Current (on disk)"
                     hash={currentHash}
-                    fallback="—"
+                    fallback="-"
                     highlightChange={
                         integrityStatus === 'tampered' &&
                         Boolean(uploadHash) &&

@@ -46,7 +46,7 @@ export function MetricsCards({ stats }: { stats: Stats }) {
         },
         {
             title: 'Avg Compliance',
-            value: stats.total_assessments > 0 ? `${Math.round(stats.compliance_score)}%` : '—',
+            value: stats.total_assessments > 0 ? `${Math.round(stats.compliance_score)}%` : '-',
             sub:   stats.total_assessments > 0 ? 'across all assessments' : 'no assessments yet',
             tone:  stats.compliance_score >= 70 ? 'ok' : stats.compliance_score >= 40 ? 'warn' : 'bad',
         },

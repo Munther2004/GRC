@@ -112,7 +112,7 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
             return;
         }
         if (file.size > 10 * 1024 * 1024) {
-            setError('File too large — maximum 10 MB.');
+            setError('File too large. Maximum 10 MB.');
             return;
         }
 
@@ -152,7 +152,7 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
 
             <PageHeader
                 title="Security Configuration Auditor"
-                description="Upload a configuration file or screenshot of a configuration/security setting — Claude analyses it against best-practice security baselines."
+                description="Upload a configuration file or screenshot of a configuration/security setting. Claude analyses it against best-practice security baselines."
             />
 
             <StatStrip
@@ -294,7 +294,7 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <span className="text-xs text-muted-foreground">—</span>
+                                                    <span className="text-xs text-muted-foreground">-</span>
                                                 )}
                                             </td>
                                             <td className="px-4 py-3">
@@ -311,11 +311,11 @@ export default function SecurityAuditsIndex({ audits, stats }: Props) {
                                                         {Number(a.compliance_score).toFixed(1)}
                                                     </span>
                                                 ) : (
-                                                    <span className="text-xs text-muted-foreground">—</span>
+                                                    <span className="text-xs text-muted-foreground">-</span>
                                                 )}
                                             </td>
                                             <td className="px-4 py-3 text-xs text-muted-foreground">
-                                                {a.created_at ? new Date(a.created_at).toLocaleString() : '—'}
+                                                {a.created_at ? new Date(a.created_at).toLocaleString() : '-'}
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex justify-end gap-1">

@@ -246,7 +246,7 @@ export default function InvitesIndex({ corporation, shareable, emailInvites, all
                                                         <td className="px-3 py-2">{inv.email}</td>
                                                         <td className="px-3 py-2"><StatusBadge status={inv.status} /></td>
                                                         <td className="px-3 py-2 text-xs" style={{ color: 'var(--muted-foreground)' }}>
-                                                            {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : '—'}
+                                                            {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : '-'}
                                                         </td>
                                                         <td className="px-3 py-2 text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                                             {inv.expires_at ? new Date(inv.expires_at).toLocaleDateString() : 'never'}

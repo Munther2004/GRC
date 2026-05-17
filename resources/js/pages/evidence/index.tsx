@@ -637,6 +637,30 @@ export default function EvidenceIndex({
                                     </Card>
                                 );
                             })}
+
+                            {evidence.links.length > 3 && (
+                                <div className="flex items-center justify-center gap-1 border-t p-4">
+                                    {evidence.links.map((link, i) => (
+                                        <Button
+                                            key={i}
+                                            variant={
+                                                link.active
+                                                    ? 'default'
+                                                    : 'outline'
+                                            }
+                                            size="sm"
+                                            disabled={!link.url}
+                                            onClick={() =>
+                                                link.url &&
+                                                router.get(link.url)
+                                            }
+                                            dangerouslySetInnerHTML={{
+                                                __html: link.label,
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

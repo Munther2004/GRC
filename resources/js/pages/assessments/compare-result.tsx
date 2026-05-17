@@ -162,7 +162,7 @@ function DirectionBadge({ direction }: { direction: string }) {
 
 function VerdictBadge({ verdict }: { verdict: string | null }) {
     if (!verdict) {
-        return <span className="text-xs text-muted-foreground">—</span>;
+        return <span className="text-xs text-muted-foreground">-</span>;
     }
     const cfg = verdictConfig[verdict] ?? {
         label: verdict,

@@ -129,7 +129,7 @@ export default function RiskEdit({
 
     return (
         <AdminLayout>
-            <Head title={`Edit — ${risk.title}`} />
+            <Head title={`Edit: ${risk.title}`} />
 
             <div className="mx-auto max-w-3xl space-y-6">
                 <div className="flex items-center gap-3">
@@ -232,7 +232,7 @@ export default function RiskEdit({
                                         Risk Scoring
                                     </CardTitle>
                                     <CardDescription>
-                                        ISO/IEC 27005 — Likelihood × Impact
+                                        ISO/IEC 27005: Likelihood × Impact
                                     </CardDescription>
                                 </div>
                                 {data.ai_validated && (
@@ -349,7 +349,7 @@ export default function RiskEdit({
                                         <div className="flex items-center gap-2 px-4 py-2" style={{ background: 'color-mix(in srgb, var(--primary) 12%, transparent)' }}>
                                             <CheckCircle2 className="h-4 w-4" style={{ color: 'var(--primary)' }} />
                                             <span className="text-[10px] uppercase" style={{ color: 'var(--primary)', letterSpacing: '0.28em' }}>
-                                                Scores Validated — Looks Good
+                                                Scores Validated: Looks Good
                                             </span>
                                             <span
                                                 className="ml-auto rounded-full px-2 py-0.5 text-[9px] uppercase" style={{ color: 'var(--primary)', letterSpacing: '0.28em' }}
@@ -373,7 +373,7 @@ export default function RiskEdit({
                                         <div className="flex items-center gap-2 px-4 py-2" style={{ background: 'color-mix(in srgb, #f5b929 14%, transparent)' }}>
                                             <AlertTriangle className="h-4 w-4" style={{ color: '#f5b929' }} />
                                             <span className="text-[10px] uppercase" style={{ color: '#f5b929', letterSpacing: '0.28em' }}>
-                                                Scores Adjusted —
+                                                Scores Adjusted:
                                                 Recommendations Available
                                             </span>
                                             <span

@@ -394,7 +394,7 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
                                 <ShieldCheck className="h-10 w-10 text-emerald-400" />
                                 <p className="text-sm text-muted-foreground">
                                     {findings.length === 0
-                                        ? 'No findings — this configuration appears clean.'
+                                        ? 'No findings; this configuration appears clean.'
                                         : 'No findings match the selected filter.'}
                                 </p>
                             </CardContent>
@@ -480,7 +480,7 @@ export default function SecurityAuditShow({ audit, findings }: Props) {
                                                             </span>
                                                             {f.control && (
                                                                 <span className="ml-2 text-muted-foreground">
-                                                                    — {f.control.title}
+                                                                    : {f.control.title}
                                                                 </span>
                                                             )}
                                                         </div>

@@ -61,7 +61,7 @@ export function FileIntegrityBadge({ integrityStatus, className }: Props) {
                 <Badge
                     variant="outline"
                     className={`gap-1 border-border bg-muted text-muted-foreground ${className ?? ''}`}
-                    title="No baseline hash was recorded — file uploaded before integrity tracking was enabled"
+                    title="No baseline hash was recorded; file uploaded before integrity tracking was enabled"
                 >
                     <FingerprintIcon className={ICON_CLASS} />
                     Integrity Unknown

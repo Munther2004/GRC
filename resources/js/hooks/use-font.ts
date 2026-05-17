@@ -37,7 +37,7 @@ export const FONTS: FontConfig[] = [
         label: 'Crimson Pro',
         stack: "'Crimson Pro', Georgia, serif",
         googleFont: 'family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400',
-        description: 'Elegant literary serif — the GRC default',
+        description: 'Elegant literary serif: the GRC default',
         category: 'serif',
     },
     {
@@ -45,7 +45,7 @@ export const FONTS: FontConfig[] = [
         label: 'Cormorant Garamond',
         stack: "'Cormorant Garamond', Georgia, serif",
         googleFont: 'family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400',
-        description: 'Classical Garamond revival — refined and scholarly',
+        description: 'Classical Garamond revival: refined and scholarly',
         category: 'serif',
     },
     {
@@ -61,7 +61,7 @@ export const FONTS: FontConfig[] = [
         label: 'Merriweather',
         stack: "'Merriweather', Georgia, serif",
         googleFont: 'family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400',
-        description: 'Readable newspaper serif — clear at any size',
+        description: 'Readable newspaper serif: clear at any size',
         category: 'serif',
     },
     {
@@ -69,7 +69,7 @@ export const FONTS: FontConfig[] = [
         label: 'EB Garamond',
         stack: "'EB Garamond', Garamond, Georgia, serif",
         googleFont: 'family=EB+Garamond:ital,wght@0,400;0,500;1,400',
-        description: 'Open-source Garamond — old-world typesetting',
+        description: 'Open-source Garamond: old-world typesetting',
         category: 'serif',
     },
     {
@@ -77,7 +77,7 @@ export const FONTS: FontConfig[] = [
         label: 'Inter',
         stack: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         googleFont: 'family=Inter:wght@300;400;500;600',
-        description: 'The modern UI standard — clean and legible',
+        description: 'The modern UI standard: clean and legible',
         category: 'sans',
     },
     {
@@ -85,7 +85,7 @@ export const FONTS: FontConfig[] = [
         label: 'DM Sans',
         stack: "'DM Sans', -apple-system, sans-serif",
         googleFont: 'family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400',
-        description: 'Geometric sans with optical sizing — contemporary',
+        description: 'Geometric sans with optical sizing: contemporary',
         category: 'sans',
     },
     {
@@ -93,7 +93,7 @@ export const FONTS: FontConfig[] = [
         label: 'Space Grotesk',
         stack: "'Space Grotesk', -apple-system, sans-serif",
         googleFont: 'family=Space+Grotesk:wght@300;400;500;600',
-        description: 'Quirky geometric sans — distinctive tech character',
+        description: 'Quirky geometric sans: distinctive tech character',
         category: 'sans',
     },
     {
@@ -109,7 +109,7 @@ export const FONTS: FontConfig[] = [
         label: 'Raleway',
         stack: "'Raleway', -apple-system, sans-serif",
         googleFont: 'family=Raleway:ital,wght@0,300;0,400;0,500;1,400',
-        description: 'Elegant thin sans — refined and airy',
+        description: 'Elegant thin sans: refined and airy',
         category: 'sans',
     },
     {
@@ -117,7 +117,7 @@ export const FONTS: FontConfig[] = [
         label: 'Syne',
         stack: "'Syne', -apple-system, sans-serif",
         googleFont: 'family=Syne:wght@400;500;600;700',
-        description: 'Experimental display sans — bold and editorial',
+        description: 'Experimental display sans: bold and editorial',
         category: 'display',
     },
     {
@@ -125,7 +125,7 @@ export const FONTS: FontConfig[] = [
         label: 'Nunito',
         stack: "'Nunito', -apple-system, sans-serif",
         googleFont: 'family=Nunito:ital,wght@0,300;0,400;0,500;1,400',
-        description: 'Rounded and approachable — warm and friendly',
+        description: 'Rounded and approachable: warm and friendly',
         category: 'sans',
     },
     {
@@ -133,7 +133,7 @@ export const FONTS: FontConfig[] = [
         label: 'Lato',
         stack: "'Lato', -apple-system, sans-serif",
         googleFont: 'family=Lato:ital,wght@0,300;0,400;0,700;1,400',
-        description: 'Humanist sans — versatile corporate workhorse',
+        description: 'Humanist sans: versatile corporate workhorse',
         category: 'sans',
     },
     {
@@ -141,7 +141,7 @@ export const FONTS: FontConfig[] = [
         label: 'JetBrains Mono',
         stack: "'JetBrains Mono', 'Courier New', monospace",
         googleFont: 'family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400',
-        description: 'Developer mono — ligatures, crystal clear',
+        description: 'Developer mono: ligatures, crystal clear',
         category: 'mono',
     },
     {
@@ -157,7 +157,7 @@ export const FONTS: FontConfig[] = [
         label: 'Source Code Pro',
         stack: "'Source Code Pro', 'Courier New', monospace",
         googleFont: 'family=Source+Code+Pro:ital,wght@0,300;0,400;0,500;1,400',
-        description: 'Adobe mono — technical and precise',
+        description: 'Adobe mono: technical and precise',
         category: 'mono',
     },
     {
@@ -165,7 +165,7 @@ export const FONTS: FontConfig[] = [
         label: 'System Default',
         stack: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         googleFont: null,
-        description: 'OS native fonts — fastest, no loading',
+        description: 'OS native fonts: fastest, no loading',
         category: 'sans',
     },
 ];

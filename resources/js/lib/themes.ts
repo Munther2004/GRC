@@ -12,7 +12,7 @@ export const THEMES: Theme[] = [
     {
         name: 'cohere-light',
         label: 'Cohere Light',
-        description: 'Editorial white canvas with deep enterprise green — design.md reference',
+        description: 'Editorial white canvas with deep enterprise green: design.md reference',
         category: 'light',
         preview: ['#ffffff', '#fbfbfa', '#003c33', '#edfce9'],
         vars: {
@@ -53,7 +53,7 @@ export const THEMES: Theme[] = [
     {
         name: 'forest-grc',
         label: 'Forest GRC',
-        description: 'Deep woodland greens — the default GRC palette',
+        description: 'Deep woodland greens, the default GRC palette',
         category: 'dark',
         preview: ['#091413', '#0D1F1C', '#408A71', '#B0E4CC'],
         vars: {
@@ -94,7 +94,7 @@ export const THEMES: Theme[] = [
     {
         name: 'midnight-ocean',
         label: 'Midnight Ocean',
-        description: 'Deep navy and cerulean — calm authority',
+        description: 'Deep navy and cerulean: calm authority',
         category: 'dark',
         preview: ['#060B14', '#0A1220', '#3B82F6', '#93C5FD'],
         vars: {
@@ -135,7 +135,7 @@ export const THEMES: Theme[] = [
     {
         name: 'crimson-court',
         label: 'Crimson Court',
-        description: 'Deep wine and rose — regal severity',
+        description: 'Deep wine and rose: regal severity',
         category: 'dark',
         preview: ['#100708', '#1A0C0E', '#BE185D', '#F9A8D4'],
         vars: {
@@ -176,7 +176,7 @@ export const THEMES: Theme[] = [
     {
         name: 'obsidian',
         label: 'Obsidian',
-        description: 'Pure noir — maximum focus, zero distraction',
+        description: 'Pure noir: maximum focus, zero distraction',
         category: 'dark',
         preview: ['#080808', '#111111', '#E0E0E0', '#A0A0A0'],
         vars: {
@@ -217,7 +217,7 @@ export const THEMES: Theme[] = [
     {
         name: 'arctic-horizon',
         label: 'Arctic Horizon',
-        description: 'Ice blue and glacial white — crisp clarity',
+        description: 'Ice blue and glacial white: crisp clarity',
         category: 'dark',
         preview: ['#06101A', '#0A1828', '#38BDF8', '#BAE6FD'],
         vars: {
@@ -258,7 +258,7 @@ export const THEMES: Theme[] = [
     {
         name: 'amber-codex',
         label: 'Amber Codex',
-        description: 'Warm amber and parchment — the scholar\'s study',
+        description: 'Warm amber and parchment: the scholar\'s study',
         category: 'dark',
         preview: ['#0F0A00', '#1A1200', '#D97706', '#FCD34D'],
         vars: {
@@ -299,7 +299,7 @@ export const THEMES: Theme[] = [
     {
         name: 'brass-leather',
         label: 'Brass & Leather',
-        description: 'Antique gold and tobacco — old-world opulence',
+        description: 'Antique gold and tobacco: old-world opulence',
         category: 'dark',
         preview: ['#1C1714', '#231E19', '#C9A962', '#F5D48A'],
         vars: {
@@ -340,7 +340,7 @@ export const THEMES: Theme[] = [
     {
         name: 'violet-protocol',
         label: 'Violet Protocol',
-        description: 'Deep purple and amethyst — arcane intelligence',
+        description: 'Deep purple and amethyst: arcane intelligence',
         category: 'dark',
         preview: ['#080612', '#0E0A1F', '#7C3AED', '#C4B5FD'],
         vars: {
@@ -381,7 +381,7 @@ export const THEMES: Theme[] = [
     {
         name: 'jade-empire',
         label: 'Jade Empire',
-        description: 'Bright emerald on near-black — vivid precision',
+        description: 'Bright emerald on near-black: vivid precision',
         category: 'dark',
         preview: ['#041210', '#071C17', '#10B981', '#6EE7B7'],
         vars: {
@@ -422,7 +422,7 @@ export const THEMES: Theme[] = [
     {
         name: 'rose-editorial',
         label: 'Rose Editorial',
-        description: 'Deep plum and blush — bold editorial character',
+        description: 'Deep plum and blush: bold editorial character',
         category: 'dark',
         preview: ['#100810', '#1A0A1A', '#E11D48', '#FDA4AF'],
         vars: {
@@ -463,7 +463,7 @@ export const THEMES: Theme[] = [
     {
         name: 'solar-flare',
         label: 'Solar Flare',
-        description: 'Burnt orange and golden — warm authority',
+        description: 'Burnt orange and golden: warm authority',
         category: 'dark',
         preview: ['#0C0700', '#160E00', '#F59E0B', '#FCD34D'],
         vars: {
@@ -504,7 +504,7 @@ export const THEMES: Theme[] = [
     {
         name: 'slate-bureau',
         label: 'Slate Bureau',
-        description: 'GitHub-dark inspired — clean professional default',
+        description: 'GitHub-dark inspired: clean professional default',
         category: 'dark',
         preview: ['#0D1117', '#161B22', '#58A6FF', '#79C0FF'],
         vars: {
@@ -545,7 +545,7 @@ export const THEMES: Theme[] = [
     {
         name: 'indigo-vault',
         label: 'Indigo Vault',
-        description: 'Indigo and periwinkle — calm strategic depth',
+        description: 'Indigo and periwinkle: calm strategic depth',
         category: 'dark',
         preview: ['#05070F', '#0A0E1F', '#6366F1', '#A5B4FC'],
         vars: {
@@ -586,7 +586,7 @@ export const THEMES: Theme[] = [
     {
         name: 'phosphor-terminal',
         label: 'Phosphor Terminal',
-        description: 'Green-on-black CRT glow — hacker aesthetic',
+        description: 'Green-on-black CRT glow: hacker aesthetic',
         category: 'dark',
         preview: ['#000800', '#001200', '#00FF41', '#00CC33'],
         vars: {
@@ -627,7 +627,7 @@ export const THEMES: Theme[] = [
     {
         name: 'polar-night',
         label: 'Polar Night',
-        description: 'Catppuccin-inspired steel blue — soft and legible',
+        description: 'Catppuccin-inspired steel blue: soft and legible',
         category: 'dark',
         preview: ['#1B2027', '#232B35', '#89B4FA', '#74C7EC'],
         vars: {
@@ -668,7 +668,7 @@ export const THEMES: Theme[] = [
     {
         name: 'copper-circuit',
         label: 'Copper Circuit',
-        description: 'Warm copper on near-black — industrial steampunk',
+        description: 'Warm copper on near-black: industrial steampunk',
         category: 'dark',
         preview: ['#100A06', '#1C120A', '#B87333', '#E8B87A'],
         vars: {
@@ -710,7 +710,7 @@ export const THEMES: Theme[] = [
     {
         name: 'dracula',
         label: 'Dracula',
-        description: 'Purple and pink on dark grey — the beloved hacker theme',
+        description: 'Purple and pink on dark grey: the beloved hacker theme',
         category: 'dark',
         preview: ['#282A36', '#44475A', '#BD93F9', '#FF79C6'],
         vars: {
@@ -751,7 +751,7 @@ export const THEMES: Theme[] = [
     {
         name: 'nord',
         label: 'Nord',
-        description: 'Arctic blues and snowfield whites — serene Scandinavian',
+        description: 'Arctic blues and snowfield whites: serene Scandinavian',
         category: 'dark',
         preview: ['#2E3440', '#3B4252', '#88C0D0', '#81A1C1'],
         vars: {
@@ -792,7 +792,7 @@ export const THEMES: Theme[] = [
     {
         name: 'gruvbox',
         label: 'Gruvbox',
-        description: 'Warm retro browns and golden yellow — pixel-era nostalgia',
+        description: 'Warm retro browns and golden yellow: pixel-era nostalgia',
         category: 'dark',
         preview: ['#1D2021', '#282828', '#FABD2F', '#B8BB26'],
         vars: {
@@ -833,7 +833,7 @@ export const THEMES: Theme[] = [
     {
         name: 'tokyo-night',
         label: 'Tokyo Night',
-        description: 'Neon city lights on deep indigo — urban cyberpunk',
+        description: 'Neon city lights on deep indigo: urban cyberpunk',
         category: 'dark',
         preview: ['#1A1B2E', '#24253D', '#7AA2F7', '#BB9AF7'],
         vars: {
@@ -874,7 +874,7 @@ export const THEMES: Theme[] = [
     {
         name: 'one-dark',
         label: 'One Dark',
-        description: 'Atom One Dark — the developer\'s workhorse',
+        description: 'Atom One Dark: the developer\'s workhorse',
         category: 'dark',
         preview: ['#21252B', '#282C34', '#61AFEF', '#C678DD'],
         vars: {
@@ -915,7 +915,7 @@ export const THEMES: Theme[] = [
     {
         name: 'synthwave',
         label: 'Synthwave',
-        description: 'Hot pink and electric purple — retrowave 80s neon',
+        description: 'Hot pink and electric purple: retrowave 80s neon',
         category: 'dark',
         preview: ['#0D0221', '#1A0536', '#FF2D78', '#BE00FF'],
         vars: {
@@ -956,7 +956,7 @@ export const THEMES: Theme[] = [
     {
         name: 'cyberpunk',
         label: 'Cyberpunk',
-        description: 'Electric yellow on black — high-voltage street tech',
+        description: 'Electric yellow on black: high-voltage street tech',
         category: 'dark',
         preview: ['#0A0A0A', '#111111', '#FFE600', '#00FFFF'],
         vars: {
@@ -997,7 +997,7 @@ export const THEMES: Theme[] = [
     {
         name: 'blood-moon',
         label: 'Blood Moon',
-        description: 'Deep crimson and rust — ominous crisis command',
+        description: 'Deep crimson and rust: ominous crisis command',
         category: 'dark',
         preview: ['#0F0000', '#1F0505', '#DC143C', '#FF6B6B'],
         vars: {
@@ -1038,7 +1038,7 @@ export const THEMES: Theme[] = [
     {
         name: 'deep-sea',
         label: 'Deep Sea',
-        description: 'Abyssal teal and bioluminescent cyan — ocean floor',
+        description: 'Abyssal teal and bioluminescent cyan: ocean floor',
         category: 'dark',
         preview: ['#020E12', '#051E24', '#00CED1', '#00FA9A'],
         vars: {
@@ -1120,7 +1120,7 @@ export const THEMES: Theme[] = [
     {
         name: 'sakura',
         label: 'Sakura',
-        description: 'Cherry blossom pink on deep ink — Japanese minimalism',
+        description: 'Cherry blossom pink on deep ink: Japanese minimalism',
         category: 'dark',
         preview: ['#0D080E', '#1A0E1C', '#FFB7C5', '#FF80AB'],
         vars: {
@@ -1161,7 +1161,7 @@ export const THEMES: Theme[] = [
     {
         name: 'graphite',
         label: 'Graphite',
-        description: 'Cool blue-grey on near-black — understated authority',
+        description: 'Cool blue-grey on near-black: understated authority',
         category: 'dark',
         preview: ['#0E1015', '#171C24', '#94A3B8', '#CBD5E1'],
         vars: {
@@ -1202,7 +1202,7 @@ export const THEMES: Theme[] = [
     {
         name: 'rust-protocol',
         label: 'Rust Protocol',
-        description: 'Oxidised orange on near-black — systems programming soul',
+        description: 'Oxidised orange on near-black: systems programming soul',
         category: 'dark',
         preview: ['#0E0800', '#1C1000', '#CE422B', '#FF6B35'],
         vars: {
@@ -1243,7 +1243,7 @@ export const THEMES: Theme[] = [
     {
         name: 'sage-mist',
         label: 'Sage Mist',
-        description: 'Muted sage and eucalyptus — calm botanical wellness',
+        description: 'Muted sage and eucalyptus: calm botanical wellness',
         category: 'dark',
         preview: ['#0D1610', '#162018', '#6BAE82', '#A8D5B5'],
         vars: {
@@ -1284,7 +1284,7 @@ export const THEMES: Theme[] = [
     {
         name: 'vintage-wine',
         label: 'Vintage Wine',
-        description: 'Bordeaux and aged oak — old-world sophistication',
+        description: 'Bordeaux and aged oak: old-world sophistication',
         category: 'dark',
         preview: ['#0C0608', '#1A0C10', '#8B1A3A', '#C4526A'],
         vars: {
@@ -1325,7 +1325,7 @@ export const THEMES: Theme[] = [
     {
         name: 'ocean-depth',
         label: 'Ocean Depth',
-        description: 'Deep sapphire and pearl — corporate maritime gravitas',
+        description: 'Deep sapphire and pearl: corporate maritime gravitas',
         category: 'dark',
         preview: ['#020818', '#050F2E', '#1E90FF', '#87CEEB'],
         vars: {
@@ -1366,7 +1366,7 @@ export const THEMES: Theme[] = [
     {
         name: 'lava-lamp',
         label: 'Lava Lamp',
-        description: 'Magenta and tangerine on black — retro lounge psychedelia',
+        description: 'Magenta and tangerine on black: retro lounge psychedelia',
         category: 'dark',
         preview: ['#0A0005', '#15000C', '#FF1493', '#FF6600'],
         vars: {
@@ -1407,7 +1407,7 @@ export const THEMES: Theme[] = [
     {
         name: 'moonstone',
         label: 'Moonstone',
-        description: 'Silver and pearl on midnight blue — lunar elegance',
+        description: 'Silver and pearl on midnight blue: lunar elegance',
         category: 'dark',
         preview: ['#080D18', '#0F1828', '#B8C8E0', '#D4E4F8'],
         vars: {
@@ -1448,7 +1448,7 @@ export const THEMES: Theme[] = [
     {
         name: 'forest-night',
         label: 'Forest Night',
-        description: 'Pine and moss on near-black — deep woodland silence',
+        description: 'Pine and moss on near-black: deep woodland silence',
         category: 'dark',
         preview: ['#050D07', '#0C1A0F', '#2D6A4F', '#74C69D'],
         vars: {
@@ -1490,7 +1490,7 @@ export const THEMES: Theme[] = [
     {
         name: 'catppuccin-mocha',
         label: 'Catppuccin Mocha',
-        description: 'Warm pastel colours on deep brown — cosy and complete',
+        description: 'Warm pastel colours on deep brown: cosy and complete',
         category: 'dark',
         preview: ['#1E1E2E', '#313244', '#CBA6F7', '#F38BA8'],
         vars: {
@@ -1531,7 +1531,7 @@ export const THEMES: Theme[] = [
     {
         name: 'everforest',
         label: 'Everforest',
-        description: 'Soft woodland greens and earthy tones — easy on the eyes',
+        description: 'Soft woodland greens and earthy tones: easy on the eyes',
         category: 'dark',
         preview: ['#2D353B', '#3D484D', '#A7C080', '#DBBC7F'],
         vars: {
@@ -1613,7 +1613,7 @@ export const THEMES: Theme[] = [
     {
         name: 'kanagawa',
         label: 'Kanagawa',
-        description: 'Inspired by "The Great Wave" — ink on Japanese paper',
+        description: 'Inspired by "The Great Wave": ink on Japanese paper',
         category: 'dark',
         preview: ['#1F1F28', '#2A2A37', '#7E9CD8', '#957FB8'],
         vars: {
@@ -1654,7 +1654,7 @@ export const THEMES: Theme[] = [
     {
         name: 'material-ocean',
         label: 'Material Ocean',
-        description: 'Material Design dark — vivid cyan on deep blue-grey',
+        description: 'Material Design dark: vivid cyan on deep blue-grey',
         category: 'dark',
         preview: ['#0F111A', '#1A1C25', '#80CBC4', '#82AAFF'],
         vars: {
@@ -1695,7 +1695,7 @@ export const THEMES: Theme[] = [
     {
         name: 'high-contrast',
         label: 'High Contrast',
-        description: 'Maximum accessibility — pure black with vivid teal',
+        description: 'Maximum accessibility: pure black with vivid teal',
         category: 'dark',
         preview: ['#000000', '#0A0A0A', '#00E5CC', '#FFFFFF'],
         vars: {
@@ -1777,7 +1777,7 @@ export const THEMES: Theme[] = [
     {
         name: 'mellow-purple',
         label: 'Mellow Purple',
-        description: 'Dusty lavender on deep slate — calm and introspective',
+        description: 'Dusty lavender on deep slate: calm and introspective',
         category: 'dark',
         preview: ['#1A1A2E', '#252540', '#9B8EC4', '#C4B5FD'],
         vars: {
@@ -1818,7 +1818,7 @@ export const THEMES: Theme[] = [
     {
         name: 'github-dimmed',
         label: 'GitHub Dimmed',
-        description: 'The "dimmed" variant — softer than dark, easier than light',
+        description: 'The "dimmed" variant: softer than dark, easier than light',
         category: 'dark',
         preview: ['#22272E', '#2D333B', '#539BF5', '#768390'],
         vars: {
@@ -1859,7 +1859,7 @@ export const THEMES: Theme[] = [
     {
         name: 'poimandres',
         label: 'Poimandres',
-        description: 'Cosmic teal on near-black — deep space serenity',
+        description: 'Cosmic teal on near-black: deep space serenity',
         category: 'dark',
         preview: ['#1B1E28', '#252837', '#89DDFF', '#A6ACCD'],
         vars: {
@@ -1901,7 +1901,7 @@ export const THEMES: Theme[] = [
     {
         name: 'rosepine',
         label: "Rosé Pine",
-        description: 'Warm dark with dusty rose — all natural, gentle on the eyes',
+        description: 'Warm dark with dusty rose: all natural, gentle on the eyes',
         category: 'dark',
         preview: ['#191724', '#26233A', '#EBBCBA', '#9CCFD8'],
         vars: {
@@ -1924,7 +1924,7 @@ export const THEMES: Theme[] = [
     {
         name: 'vesper',
         label: 'Vesper',
-        description: 'Warm grey and gold — evening editorial refinement',
+        description: 'Warm grey and gold: evening editorial refinement',
         category: 'dark',
         preview: ['#101010', '#1C1C1C', '#FFC799', '#FFFFFF'],
         vars: {
@@ -1947,7 +1947,7 @@ export const THEMES: Theme[] = [
     {
         name: 'horizon',
         label: 'Horizon',
-        description: 'Warm dark with coral and peach — sunset in the terminal',
+        description: 'Warm dark with coral and peach: sunset in the terminal',
         category: 'dark',
         preview: ['#1C1E26', '#232530', '#E95678', '#FAB28E'],
         vars: {
@@ -1970,7 +1970,7 @@ export const THEMES: Theme[] = [
     {
         name: 'night-owl',
         label: 'Night Owl',
-        description: 'Sarah Drasner\'s famous VS Code theme — vivid blues and greens',
+        description: 'Sarah Drasner\'s famous VS Code theme: vivid blues and greens',
         category: 'dark',
         preview: ['#011627', '#01243D', '#82AAFF', '#22DA6E'],
         vars: {
@@ -1993,7 +1993,7 @@ export const THEMES: Theme[] = [
     {
         name: 'dune',
         label: 'Dune',
-        description: 'Saharan sand and spice brown — desert heat and silence',
+        description: 'Saharan sand and spice brown: desert heat and silence',
         category: 'dark',
         preview: ['#150F05', '#221805', '#D4A853', '#E8CFA0'],
         vars: {
@@ -2016,7 +2016,7 @@ export const THEMES: Theme[] = [
     {
         name: 'gloom',
         label: 'Gloom',
-        description: 'Desaturated dark grey with soft cyan — quiet overcast afternoon',
+        description: 'Desaturated dark grey with soft cyan: quiet overcast afternoon',
         category: 'dark',
         preview: ['#111111', '#1D1D1D', '#5EB5C5', '#AAAAAA'],
         vars: {
@@ -2039,7 +2039,7 @@ export const THEMES: Theme[] = [
     {
         name: 'palenight',
         label: 'Palenight',
-        description: 'Material Palenight — cool blue-grey with lavender accents',
+        description: 'Material Palenight: cool blue-grey with lavender accents',
         category: 'dark',
         preview: ['#292D3E', '#32374D', '#82AAFF', '#C792EA'],
         vars: {
@@ -2062,7 +2062,7 @@ export const THEMES: Theme[] = [
     {
         name: 'mint',
         label: 'Mint',
-        description: 'Fresh spearmint on deep forest — crisp and alert',
+        description: 'Fresh spearmint on deep forest: crisp and alert',
         category: 'light',
         preview: ['#071A12', '#0E2A1E', '#3DFFA0', '#80FFD0'],
         vars: {
@@ -2085,7 +2085,7 @@ export const THEMES: Theme[] = [
     {
         name: 'iceberg',
         label: 'Iceberg',
-        description: 'Cool steel blue on dark — calm deep water stillness',
+        description: 'Cool steel blue on dark: calm deep water stillness',
         category: 'dark',
         preview: ['#161821', '#1E2132', '#84A0C6', '#6B7089'],
         vars: {
@@ -2108,7 +2108,7 @@ export const THEMES: Theme[] = [
     {
         name: 'deep-forest',
         label: 'Deep Forest',
-        description: 'Darkest pine and lichen — primal old-growth atmosphere',
+        description: 'Darkest pine and lichen: primal old-growth atmosphere',
         category: 'dark',
         preview: ['#080E08', '#101A10', '#4A7C59', '#8FBC8F'],
         vars: {
@@ -2133,7 +2133,7 @@ export const THEMES: Theme[] = [
     {
         name: 'stark',
         label: 'Stark',
-        description: 'Pure white background, jet black type — maximum legibility',
+        description: 'Pure white background, jet black type: maximum legibility',
         category: 'high-contrast',
         preview: ['#FFFFFF', '#F2F2F2', '#0A0A0A', '#0055CC'],
         vars: {
@@ -2156,7 +2156,7 @@ export const THEMES: Theme[] = [
     {
         name: 'ink',
         label: 'Ink',
-        description: 'True black canvas, pure white type — absolute dark contrast',
+        description: 'True black canvas, pure white type: absolute dark contrast',
         category: 'high-contrast',
         preview: ['#000000', '#111111', '#FFFFFF', '#FF6B00'],
         vars: {
@@ -2179,7 +2179,7 @@ export const THEMES: Theme[] = [
     {
         name: 'neon-sign',
         label: 'Neon Sign',
-        description: 'Pitch black with electric matrix green — hacker arcade energy',
+        description: 'Pitch black with electric matrix green: hacker arcade energy',
         category: 'high-contrast',
         preview: ['#000000', '#080808', '#00FF41', '#00CFCF'],
         vars: {
@@ -2202,7 +2202,7 @@ export const THEMES: Theme[] = [
     {
         name: 'high-voltage',
         label: 'High Voltage',
-        description: 'Black with electric yellow — warning tape meets interface',
+        description: 'Black with electric yellow: warning tape meets interface',
         category: 'high-contrast',
         preview: ['#0A0A0A', '#141414', '#FFE800', '#FF3B30'],
         vars: {
@@ -2225,7 +2225,7 @@ export const THEMES: Theme[] = [
     {
         name: 'blueprint',
         label: 'Blueprint',
-        description: 'Dark navy canvas with bright sky blue — architect\'s technical draft',
+        description: 'Dark navy canvas with bright sky blue: architect\'s technical draft',
         category: 'high-contrast',
         preview: ['#0B1426', '#142040', '#5BC8FF', '#FFFFFF'],
         vars: {
@@ -2248,7 +2248,7 @@ export const THEMES: Theme[] = [
     {
         name: 'paper',
         label: 'Paper',
-        description: 'Warm cream background, rich ink type — printed document tactility',
+        description: 'Warm cream background, rich ink type: printed document tactility',
         category: 'high-contrast',
         preview: ['#F7F2E8', '#FFFFFF', '#1A0800', '#8B1A1A'],
         vars: {
@@ -2271,7 +2271,7 @@ export const THEMES: Theme[] = [
     {
         name: 'wcag-dark',
         label: 'WCAG Dark',
-        description: 'Dark grey with pure yellow — designed for WCAG AAA compliance',
+        description: 'Dark grey with pure yellow: designed for WCAG AAA compliance',
         category: 'high-contrast',
         preview: ['#1A1A1A', '#252525', '#FFE000', '#FFFFFF'],
         vars: {
@@ -2294,7 +2294,7 @@ export const THEMES: Theme[] = [
     {
         name: 'signal',
         label: 'Signal',
-        description: 'Red on black — emergency broadcast, maximum urgency contrast',
+        description: 'Red on black: emergency broadcast, maximum urgency contrast',
         category: 'high-contrast',
         preview: ['#0A0000', '#150000', '#FF2020', '#FF8888'],
         vars: {

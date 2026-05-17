@@ -173,7 +173,7 @@ function AIExecutiveSummarySection() {
                             Generate a board-ready PDF narrative
                         </p>
                         <p className="mt-1 text-xs" style={{ color: 'var(--muted-foreground)' }}>
-                            Claude-powered analysis of compliance posture, top risks, and remediation priorities — packaged as a one-page exec brief.
+                            Claude-powered analysis of compliance posture, top risks, and remediation priorities, packaged as a one-page exec brief.
                         </p>
                     </div>
                     <Button
@@ -818,7 +818,7 @@ export default function ExecutiveDashboard({
                                     <Clock className="h-3.5 w-3.5 shrink-0" />
                                     {assessmentSummary.overdue} assessment
                                     {assessmentSummary.overdue > 1 ? 's' : ''}{' '}
-                                    overdue — action required
+                                    overdue, action required
                                 </div>
                             )}
                         </CardContent>

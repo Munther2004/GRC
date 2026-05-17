@@ -260,7 +260,7 @@ export default function ChatbotIndex({ context }: Props) {
                     {
                         role: 'assistant',
                         content:
-                            'Connection error — please check your network and try again.',
+                            'Connection error. Please check your network and try again.',
                         error: true,
                     },
                 ]);

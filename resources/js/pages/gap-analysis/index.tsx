@@ -103,7 +103,7 @@ function formatPlanAsText(item: Item, plan: RemediationPlan): string {
         year: 'numeric',
     });
     const lines: string[] = [
-        `AI Remediation Plan — ${item.control.control_id}: ${item.control.title}`,
+        `AI Remediation Plan, ${item.control.control_id}: ${item.control.title}`,
         `Generated: ${date}`,
         '',
         `Summary: ${plan.summary}`,
@@ -613,7 +613,7 @@ export default function GapAnalysisIndex({
                             {planModal.plan.quick_wins.length > 0 && (
                                 <div>
                                     <p className="mb-2 text-xs" style={{ color: '#46bd5f', fontWeight: 500 }}>
-                                        Quick Wins — Do These First
+                                        Quick Wins: Do These First
                                     </p>
                                     <div className="space-y-1.5">
                                         {planModal.plan.quick_wins.map(

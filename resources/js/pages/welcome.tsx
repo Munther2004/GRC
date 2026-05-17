@@ -1054,7 +1054,7 @@ const FEATURES: Feature[] = [
     {
         icon: ClipboardList,
         title: 'Compliance Assessments',
-        body: 'Self-assessments across ISO 27001, NIST 800-53, OWASP ASVS, and CIS Benchmarks — generated from one library, scored on one yardstick.',
+        body: 'Self-assessments across ISO 27001, NIST 800-53, OWASP ASVS, and CIS Benchmarks, generated from one library, scored on one yardstick.',
         tag: 'Frameworks',
     },
     {
@@ -1072,13 +1072,13 @@ const FEATURES: Feature[] = [
     {
         icon: FileSearch,
         title: 'Gap Analysis',
-        body: 'Surface every non-compliant and partially compliant control in a single ledger — ranked by exposure, framework, and time open.',
+        body: 'Surface every non-compliant and partially compliant control in a single ledger, ranked by exposure, framework, and time open.',
         tag: 'Insight',
     },
     {
         icon: Sparkles,
         title: 'AI Assistance',
-        body: 'Claude-powered evidence review, threat suggestion, gap remediation, and security-config analysis — verdicts you can audit, not just trust.',
+        body: 'Claude-powered evidence review, threat suggestion, gap remediation, and security-config analysis: verdicts you can audit, not just trust.',
         tag: 'Anthropic',
     },
     {
@@ -1090,13 +1090,13 @@ const FEATURES: Feature[] = [
     {
         icon: Users,
         title: 'Role-Based Access',
-        body: 'Super Admin, Admin, Auditor, and User. Tenant-scoped at the controller, never just the UI — separation of duty by construction.',
+        body: 'Super Admin, Admin, Auditor, and User. Tenant-scoped at the controller, never just the UI: separation of duty by construction.',
         tag: 'RBAC',
     },
     {
         icon: Building2,
         title: 'Corporation Onboarding',
-        body: 'Multi-tenant by design. Self-serve registration, super-admin approval, and credentialed manager handoff — every row carries a corporation.',
+        body: 'Multi-tenant by design. Self-serve registration, super-admin approval, and credentialed manager handoff: every row carries a corporation.',
         tag: 'Tenant',
     },
 ];
@@ -1132,7 +1132,7 @@ export default function Welcome() {
 
     return (
         <>
-            <Head title="GRC System — Risk is not eliminated. It is governed." />
+            <Head title="GRC System: Risk is not eliminated. It is governed." />
 
             <OpeningSeal onDone={() => setSealDone(true)} />
 
@@ -1338,7 +1338,7 @@ export default function Welcome() {
                                     className="inline-block h-1.5 w-1.5 rounded-full"
                                     style={{ background: 'var(--c-accent)', animation: 'welcome-pulse 2s ease-in-out infinite' }}
                                 />
-                                Risk · Controls · Evidence — one ledger
+                                Risk · Controls · Evidence · one ledger
                             </div>
 
                             <HeroTitle start={sealDone} />
@@ -1367,7 +1367,7 @@ export default function Welcome() {
                                     transition: 'all .9s 1.0s cubic-bezier(.2,.7,.2,1)',
                                 }}
                             >
-                                A scholarly platform for governance, risk, and compliance — where ISO&nbsp;27001, NIST,
+                                A scholarly platform for governance, risk, and compliance, where ISO&nbsp;27001, NIST,
                                 OWASP, and CIS converge into one disciplined ledger. Bind risks to controls, controls to
                                 evidence, and evidence to outcomes.
                             </p>
@@ -1495,11 +1495,11 @@ export default function Welcome() {
                             </h2>
                             <p className="mt-6 max-w-md text-lg" style={{ color: 'var(--c-muted)' }}>
                                 ISO 27001, ISO 27005, NIST 800-53, OWASP ASVS, and CIS Benchmarks share
-                                the platform's spine — one library, one yardstick, one ledger.
+                                the platform's spine: one library, one yardstick, one ledger.
                             </p>
                             <div className="mt-8 flex items-center gap-3 text-xs" style={{ color: 'var(--c-muted)' }}>
                                 <ActivitySquare className="h-4 w-4" style={{ color: 'var(--c-accent)' }} />
-                                Move your cursor — the orbit responds
+                                Move your cursor, the orbit responds
                             </div>
                         </div>
                         <div className="lg:col-span-7">
@@ -1578,12 +1578,12 @@ export default function Welcome() {
                                 <p className="mt-5 max-w-md text-base" style={{ opacity: 0.8 }}>
                                     Claude-powered evidence review, threat suggestion, gap remediation, and
                                     security-config analysis. Every verdict carries strengths, gaps, and a confidence
-                                    score — bound to the control it reviewed.
+                                    score, bound to the control it reviewed.
                                 </p>
 
                                 <ul className="mt-8 space-y-3 text-sm" style={{ opacity: 0.92 }}>
                                     {[
-                                        'Three-tier verdict — Adequate · Partially · Insufficient',
+                                        'Three-tier verdict: Adequate · Partially · Insufficient',
                                         'Confidence scoring with cited strengths and gaps',
                                         'Tenant-scoped, queueable, no data leaves your Trustifyjo',
                                     ].map((l) => (
@@ -1624,7 +1624,7 @@ export default function Welcome() {
                                         </span>
                                     </div>
                                     <p className="mt-4 text-sm" style={{ opacity: 0.85 }}>
-                                        <span className="opacity-60">Control:</span> AC-2 — Account Management
+                                        <span className="opacity-60">Control:</span> AC-2: Account Management
                                     </p>
                                     <div
                                         className="mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px]"
@@ -1694,7 +1694,7 @@ export default function Welcome() {
                                     <LivingMetric value={443} label="controls across the four frameworks" kicker="Controls" />
                                 </div>
                                 <div style={{ borderBottom: '1px solid var(--c-border)' }}>
-                                    <LivingMetric value={9} label="AI-powered automation features" kicker="AI Features" delay={120} />
+                                    <LivingMetric value={12} label="AI-powered automation features" kicker="AI Features" delay={120} />
                                 </div>
                                 <div style={{ borderRight: '1px solid var(--c-border)' }}>
                                     <LivingMetric value={4} label="frameworks unified under one ledger" kicker="Frameworks" delay={240} />
@@ -1782,7 +1782,7 @@ export default function Welcome() {
                             </div>
                             <p className="max-w-sm text-sm" style={{ color: 'var(--c-muted)' }}>
                                 Risk is not eliminated. It is governed. A scholarly platform for governance, risk, and
-                                compliance — bound to ISO 27001, NIST, OWASP, and CIS.
+                                compliance, bound to ISO 27001, NIST, OWASP, and CIS.
                             </p>
                         </div>
                         <div>

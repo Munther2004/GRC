@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Assessment Comparison Report — GRC Trustifyjo</title>
+    <title>Assessment Comparison Report: GRC Trustifyjo</title>
     @include('reports._partials._styles')
     <style>
         /* Page-specific: VS banner */
@@ -259,7 +259,7 @@
                             {{ $verdictLabel[$row['evidence_verdict_a']] ?? $row['evidence_verdict_a'] }}
                         </span>
                     @else
-                        <span class="text-none">—</span>
+                        <span class="text-none">-</span>
                     @endif
                 </td>
                 <td>
@@ -268,7 +268,7 @@
                             {{ $verdictLabel[$row['evidence_verdict_b']] ?? $row['evidence_verdict_b'] }}
                         </span>
                     @else
-                        <span class="text-none">—</span>
+                        <span class="text-none">-</span>
                     @endif
                 </td>
             </tr>

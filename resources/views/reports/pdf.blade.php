@@ -9,7 +9,7 @@
 <body>
 
     @include('reports._partials._header', [
-        'title'    => 'GRC Trustifyjo — Compliance Report',
+        'title'    => 'GRC Trustifyjo: Compliance Report',
         'subtitle' => 'Princess Sumaya University for Technology',
         'meta'     => 'Generated: ' . $generatedAt,
     ])
@@ -35,9 +35,9 @@
                     @if($overallCompliance >= 80)
                         <span style="color:#46bd5f;">&#10003; Good compliance posture</span>
                     @elseif($overallCompliance >= 50)
-                        <span style="color:#f5b929;">&#9888; Moderate compliance — improvements needed</span>
+                        <span style="color:#f5b929;">&#9888; Moderate compliance: improvements needed</span>
                     @else
-                        <span style="color:#e5484d;">&#10005; Low compliance — immediate action required</span>
+                        <span style="color:#e5484d;">&#10005; Low compliance: immediate action required</span>
                     @endif
                 </div>
             </div>
@@ -104,22 +104,22 @@
                 <tr>
                     <td><strong style="color:#e5484d;">&#9632; Critical</strong></td>
                     <td class="num" style="font-size:14px; font-weight:bold; color:#e5484d;">{{ $riskByLevel['critical'] }}</td>
-                    <td style="color:#75758a;">Score &ge; 20 — Immediate treatment required</td>
+                    <td style="color:#75758a;">Score &ge; 20: Immediate treatment required</td>
                 </tr>
                 <tr>
                     <td><strong style="color:#f76b15;">&#9632; High</strong></td>
                     <td class="num" style="font-size:14px; font-weight:bold; color:#f76b15;">{{ $riskByLevel['high'] }}</td>
-                    <td style="color:#75758a;">Score 13–19 — Priority treatment needed</td>
+                    <td style="color:#75758a;">Score 13-19: Priority treatment needed</td>
                 </tr>
                 <tr>
                     <td><strong style="color:#f5b929;">&#9632; Medium</strong></td>
                     <td class="num" style="font-size:14px; font-weight:bold; color:#f5b929;">{{ $riskByLevel['medium'] }}</td>
-                    <td style="color:#75758a;">Score 7–12 — Treatment plan required</td>
+                    <td style="color:#75758a;">Score 7-12: Treatment plan required</td>
                 </tr>
                 <tr>
                     <td><strong style="color:#46bd5f;">&#9632; Low</strong></td>
                     <td class="num" style="font-size:14px; font-weight:bold; color:#46bd5f;">{{ $riskByLevel['low'] }}</td>
-                    <td style="color:#75758a;">Score &le; 6 — Monitor and review</td>
+                    <td style="color:#75758a;">Score &le; 6: Monitor and review</td>
                 </tr>
             </tbody>
         </table>

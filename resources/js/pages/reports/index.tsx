@@ -189,7 +189,7 @@ export default function ReportsIndex({
                 {/* Monthly Trend */}
                 {monthlyTrend.length > 0 && (
                     <Card>
-                        <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Compliance Trend — Last 6 Months</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-lg" style={{ fontWeight: 500 }}>Compliance Trend: Last 6 Months</CardTitle></CardHeader>
                         <CardContent>
                             <div className="h-48 w-full min-w-0">
                                 <ResponsiveContainer width="100%" height="100%">

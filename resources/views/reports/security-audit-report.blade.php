@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Security Audit Report — GRC Trustifyjo</title>
+    <title>Security Audit Report: GRC Trustifyjo</title>
     @include('reports._partials._styles')
     <style>
         /* Page-specific: meta key/value table */
@@ -206,7 +206,7 @@
                         <div class="finding-text">
                             {{ $finding->control_reference }}
                             @if($finding->control)
-                                — {{ $finding->control->title }}
+                                : {{ $finding->control->title }}
                             @endif
                         </div>
                     </div>

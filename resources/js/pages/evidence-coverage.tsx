@@ -169,7 +169,7 @@ function ExpiryCell({ status }: { status: ExpiryStatus }) {
             return <span className="text-muted-foreground">No expiry set</span>;
         case 'none':
         default:
-            return <span className="text-muted-foreground">—</span>;
+            return <span className="text-muted-foreground">-</span>;
     }
 }
 
@@ -192,7 +192,7 @@ function VerdictCell({
 
 function ConfidenceCell({ confidence }: { confidence: ControlRow['ai_confidence'] }) {
     if (!confidence) {
-        return <span className="text-muted-foreground">—</span>;
+        return <span className="text-muted-foreground">-</span>;
     }
     return <span className="text-xs">{confidence}</span>;
 }
@@ -499,7 +499,7 @@ export default function EvidenceCoverage({
                                                 </Badge>
                                             ) : (
                                                 <span className="text-muted-foreground">
-                                                    —
+                                                    -
                                                 </span>
                                             )}
                                         </TableCell>

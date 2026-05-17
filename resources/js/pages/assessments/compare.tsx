@@ -120,7 +120,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                             {/* Assessment A */}
                             <div className="space-y-2">
                                 <label className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
-                                    Assessment A — Baseline
+                                    Assessment A: Baseline
                                 </label>
                                 <Select
                                     value={selectedA}
@@ -146,7 +146,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                                                         >
                                                             {a.title}
                                                             <span className="ml-1.5 text-xs text-muted-foreground">
-                                                                — {a.created_at}
+                                                                · {a.created_at}
                                                             </span>
                                                         </SelectItem>
                                                     ))}
@@ -208,7 +208,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                             {/* Assessment B */}
                             <div className="space-y-2">
                                 <label className="text-[10px] uppercase" style={{ color: 'var(--muted-foreground)', letterSpacing: '0.28em' }}>
-                                    Assessment B — Latest
+                                    Assessment B: Latest
                                 </label>
                                 <Select
                                     value={selectedB}
@@ -238,7 +238,7 @@ export default function AssessmentCompare({ assessments }: Props) {
                                                         >
                                                             {a.title}
                                                             <span className="ml-1.5 text-xs text-muted-foreground">
-                                                                — {a.created_at}
+                                                                · {a.created_at}
                                                             </span>
                                                         </SelectItem>
                                                     ))}

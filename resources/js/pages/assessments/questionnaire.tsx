@@ -291,7 +291,7 @@ export default function Questionnaire({
 
     return (
         <AdminLayout>
-            <Head title={`Questionnaire — ${assessment.title}`} />
+            <Head title={`Questionnaire: ${assessment.title}`} />
 
             <div className="mx-auto max-w-4xl space-y-6">
                 {/* Controls Hub pre-fill notice */}
@@ -301,7 +301,7 @@ export default function Questionnaire({
                         <span style={{ color: 'var(--primary)' }}>
                             <strong>{prefilledCount}</strong> control
                             {prefilledCount !== 1 ? 's' : ''} pre-filled from
-                            Controls Hub — update if status has changed.
+                            Controls Hub. Update if status has changed.
                         </span>
                     </div>
                 )}
@@ -496,7 +496,7 @@ export default function Questionnaire({
                                                 <div className="flex items-center gap-2">
                                                     <Sparkles className="h-3.5 w-3.5" style={{ color: 'var(--primary)' }} />
                                                     <span className="text-xs" style={{ color: 'var(--primary)', fontWeight: 500 }}>
-                                                        AI Guidance —{' '}
+                                                        AI Guidance:{' '}
                                                         {
                                                             item.control
                                                                 .control_id

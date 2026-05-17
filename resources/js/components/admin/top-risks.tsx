@@ -91,7 +91,7 @@ export function TopRisks({ risks = [] }: Props) {
                                         {risk.title}
                                     </p>
                                     <p className="truncate text-xs mt-0.5" style={{ color: 'var(--muted-foreground)' }}>
-                                        {risk.category || '—'}
+                                        {risk.category || '-'}
                                         {risk.owner ? <> · <span>{risk.owner}</span></> : null}
                                     </p>
                                 </div>

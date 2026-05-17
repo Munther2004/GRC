@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Gap Analysis Report — GRC Trustifyjo</title>
+    <title>Gap Analysis Report: GRC Trustifyjo</title>
     @include('reports._partials._styles')
     <style>
         /* Page-specific: KPI flex (gap-analysis uses flex layout, not table) */
@@ -122,11 +122,11 @@
             <tbody>
                 @foreach($result['critical_gaps'] as $gap)
                 <tr>
-                    <td><strong>{{ $gap['control_id'] ?? '—' }}</strong></td>
-                    <td>{{ $gap['framework'] ?? '—' }}</td>
-                    <td>{{ $gap['title'] ?? '—' }}</td>
-                    <td>{{ $gap['finding'] ?? '—' }}</td>
-                    <td>{{ $gap['recommendation'] ?? '—' }}</td>
+                    <td><strong>{{ $gap['control_id'] ?? '-' }}</strong></td>
+                    <td>{{ $gap['framework'] ?? '-' }}</td>
+                    <td>{{ $gap['title'] ?? '-' }}</td>
+                    <td>{{ $gap['finding'] ?? '-' }}</td>
+                    <td>{{ $gap['recommendation'] ?? '-' }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -150,10 +150,10 @@
             <tbody>
                 @foreach($result['category_analysis'] as $cat)
                 <tr>
-                    <td><strong>{{ $cat['category'] ?? '—' }}</strong></td>
+                    <td><strong>{{ $cat['category'] ?? '-' }}</strong></td>
                     <td><span class="badge badge-nc">{{ $cat['gap_count'] ?? 0 }}</span></td>
                     <td><span class="badge badge-pc">{{ $cat['partial_count'] ?? 0 }}</span></td>
-                    <td>{{ $cat['summary'] ?? '—' }}</td>
+                    <td>{{ $cat['summary'] ?? '-' }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -188,7 +188,7 @@
                     <td><strong>{{ $row['control_id'] }}</strong></td>
                     <td>{{ $row['framework'] }}</td>
                     <td>{{ $row['title'] }}</td>
-                    <td>{{ $row['category'] ?? '—' }}</td>
+                    <td>{{ $row['category'] ?? '-' }}</td>
                     <td>
                         @if($row['compliance_status'] === 'non_compliant')
                             <span class="badge badge-nc">Non-Compliant</span>
@@ -197,7 +197,7 @@
                         @endif
                     </td>
                     <td class="num">{{ $row['evidence_count'] }}</td>
-                    <td>{{ $row['notes'] ?? '—' }}</td>
+                    <td>{{ $row['notes'] ?? '-' }}</td>
                 </tr>
                 @empty
                 <tr><td colspan="7" style="text-align:center; color: #75758a;">No gaps recorded.</td></tr>

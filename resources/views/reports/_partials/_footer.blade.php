@@ -12,6 +12,6 @@
 @endphp
 @if($left || $right)
     <div class="footer-static">
-        {{ $left }} @if($right) — {{ $right }} @endif
+        {{ $left }} @if($right) · {{ $right }} @endif
     </div>
 @endif

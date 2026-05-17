@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Executive Dashboard — GRC Trustifyjo</title>
+    <title>Executive Dashboard: GRC Trustifyjo</title>
     @include('reports._partials._styles')
     <style>
         /* Page-specific: Health Score banner ── */
@@ -122,7 +122,7 @@
 @include('reports._partials._header', [
     'title'    => 'Executive Dashboard',
     'subtitle' => 'Compliance & Risk Posture Overview',
-    'right'    => 'Confidential — Internal Use Only<br>Generated: ' . e($generatedAt),
+    'right'    => 'Confidential: Internal Use Only<br>Generated: ' . e($generatedAt),
 ])
 
 <div class="content">
@@ -145,7 +145,7 @@
         </div>
         <div class="health-body">
             <span class="health-score-big" style="color: {{ $gradeColor }}">{{ $healthScore['health_score'] }}</span>
-            <span class="health-score-sub"> / 100 — Compliance Health Score</span>
+            <span class="health-score-sub"> / 100. Compliance Health Score</span>
             <div class="health-basis">
                 Basis: {{ $healthScore['raw']['compliance_basis'] === 'evidence' ? 'Evidence-weighted compliance' : 'Self-assessed compliance' }}
                 &nbsp;&middot;&nbsp; Open risks: {{ $healthScore['raw']['open_risks'] }}

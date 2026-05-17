@@ -39,7 +39,7 @@ export default function ControlEdit({ control }: Props) {
 
     return (
         <AdminLayout>
-            <Head title={`Edit Control — ${control.control_id}`} />
+            <Head title={`Edit Control: ${control.control_id}`} />
 
             <div className="mx-auto max-w-3xl space-y-6">
                 <div className="flex items-center gap-3">
@@ -56,7 +56,7 @@ export default function ControlEdit({ control }: Props) {
                             <span className="font-mono">
                                 {control.control_id}
                             </span>{' '}
-                            — {control.framework.short_name}
+                            · {control.framework.short_name}
                         </p>
                     </div>
                 </div>
@@ -147,7 +147,7 @@ export default function ControlEdit({ control }: Props) {
                                     className="h-4 w-4 accent-primary"
                                 />
                                 <Label htmlFor="is_active">
-                                    Active — include in assessments
+                                    Active: include in assessments
                                 </Label>
                             </div>
                         </CardContent>

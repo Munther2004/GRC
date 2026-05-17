@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 export default function Error403() {
     return (
         <>
-            <Head title="403 — Forbidden" />
+            <Head title="403: Forbidden" />
             <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background p-6 text-foreground">
                 <div
                     aria-hidden

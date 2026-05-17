@@ -347,7 +347,7 @@ export default function AuditLogsIndex({
                                                     {log.description}
                                                 </td>
                                                 <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--muted-foreground)' }}>
-                                                    {log.ip_address ?? '—'}
+                                                    {log.ip_address ?? '-'}
                                                 </td>
                                             </tr>
                                         ))

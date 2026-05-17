@@ -184,7 +184,7 @@
             <p>Welcome,</p>
             <p>
                 Your organisation has been <strong>approved</strong> on the GRC Platform.
-                Your manager account has been created — use the credentials below to log in.
+                Your manager account has been created. Use the credentials below to log in.
             </p>
 
             {{-- ── Manager login credentials ── --}}
@@ -201,7 +201,7 @@
             </div>
 
             <div class="warning">
-                <strong>⚠ Security notice —</strong> change this temporary password immediately after your first login. Never share it.
+                <strong>⚠ Security notice:</strong> change this temporary password immediately after your first login. Never share it.
             </div>
 
             <p style="text-align:center; margin: 24px 0;">
@@ -217,7 +217,7 @@
                     <li><span>Log in</span> using the credentials above.</li>
                     <li><span>Change your password</span> from your account settings.</li>
                     <li><span>Invite your team</span> from the user management page.</li>
-                    <li><span>Start managing compliance</span> — risks, controls, assessments, and evidence.</li>
+                    <li><span>Start managing compliance</span>: risks, controls, assessments, and evidence.</li>
                 </ol>
             </div>
 

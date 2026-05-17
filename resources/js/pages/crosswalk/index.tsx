@@ -264,16 +264,16 @@ export default function CrosswalkIndex({
                         Mapping types:
                     </span>
                     <span className="flex items-center gap-1 rounded-full border px-2.5 py-1" style={{ borderColor: 'rgba(70,189,95,0.4)', background: 'rgba(70,189,95,0.12)', color: '#46bd5f' }}>
-                        <CheckCircle2 className="h-3 w-3" /> Equivalent — direct 1:1 control match
+                        <CheckCircle2 className="h-3 w-3" /> Equivalent: direct 1:1 control match
                     </span>
                     <span className="flex items-center gap-1 rounded-full border px-2.5 py-1" style={{ borderColor: 'rgba(245,185,41,0.4)', background: 'rgba(245,185,41,0.12)', color: '#f5b929' }}>
-                        Partial — overlapping but not identical scope
+                        Partial: overlapping but not identical scope
                     </span>
                     <span className="flex items-center gap-1 rounded-full border bg-muted px-2.5 py-1" style={{ color: 'var(--foreground)' }}>
-                        Related — thematically linked, different scope
+                        Related: thematically linked, different scope
                     </span>
                     <span className="flex items-center gap-1 rounded-full border border-dashed bg-muted/20 px-2.5 py-1" style={{ color: '#f5b929' }}>
-                        <AlertTriangle className="h-3 w-3" /> No mapping — coverage gap
+                        <AlertTriangle className="h-3 w-3" /> No mapping: coverage gap
                     </span>
                 </div>
 

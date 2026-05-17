@@ -399,7 +399,7 @@ export default function CorporationRegister({ industries }: Props) {
                                     }}
                                 >
                                     <p className="text-sm leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
-                                        Your application will be reviewed by our administrators. You'll receive an email once a decision is made — typically within one business day.
+                                        Your application will be reviewed by our administrators. You'll receive an email once a decision is made, typically within one business day.
                                     </p>
 
                                     <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-between">

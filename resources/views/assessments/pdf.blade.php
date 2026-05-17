@@ -41,7 +41,7 @@
 <body>
 
     @include('reports._partials._header', [
-        'title'    => 'Assessment Report — ' . $assessment->title,
+        'title'    => 'Assessment Report: ' . $assessment->title,
         'subtitle' => $assessment->framework->name . ' • Period: ' . $assessment->period,
         'meta'     => 'Conducted by: ' . $assessment->user->name . ' • Scope: ' . $assessment->scope . ' • Generated: ' . $generatedAt,
     ])
@@ -163,7 +163,7 @@
                         <td>{{ $item->control->title }}</td>
                         <td style="color:#75758a;">{{ $item->control->category }}</td>
                         <td><span class="status-badge {{ $cls }}">{{ $label }}</span></td>
-                        <td style="color:#75758a; font-size:9px;">{{ $item->comments ?? '—' }}</td>
+                        <td style="color:#75758a; font-size:9px;">{{ $item->comments ?? '-' }}</td>
                     </tr>
                 @endforeach
             </tbody>

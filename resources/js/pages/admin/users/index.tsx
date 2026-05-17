@@ -254,7 +254,7 @@ export default function UsersIndex() {
                                                 </td>
                                                 {permissions.is_super_admin && (
                                                     <td className="px-4 py-3 text-foreground/80">
-                                                        {u.corporation?.name ?? '—'}
+                                                        {u.corporation?.name ?? '-'}
                                                     </td>
                                                 )}
                                                 <td className="px-4 py-3 text-muted-foreground">

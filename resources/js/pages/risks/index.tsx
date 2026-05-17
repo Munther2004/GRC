@@ -178,7 +178,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
         <AdminLayout>
             <Head title="Risk Register" />
             <div className="space-y-6">
-                <PageHeader title="Risk register" description="ISO/IEC 27005 — likelihood × impact management">
+                <PageHeader title="Risk register" description="ISO/IEC 27005: likelihood × impact management">
                     <div className="flex items-center gap-2">
                         <CorporationFilter />
                         {canEdit && (
@@ -202,7 +202,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                 {risks_generating && (
                     <div className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        AI is analyzing controls — risks will appear here as they're generated.
+                        AI is analyzing controls, risks will appear here as they're generated.
                     </div>
                 )}
 
@@ -363,7 +363,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                     </td>
                                                     {appetite && (
                                                         <td className="px-4 py-3">
-                                                            {risk.appetite_band ? <AppetiteDot band={risk.appetite_band} /> : <span style={{ color: 'var(--muted-foreground)' }}>—</span>}
+                                                            {risk.appetite_band ? <AppetiteDot band={risk.appetite_band} /> : <span style={{ color: 'var(--muted-foreground)' }}>-</span>}
                                                         </td>
                                                     )}
                                                     <td className="px-4 py-3">
@@ -373,7 +373,7 @@ export default function RisksIndex({ risks, stats, riskExposure, filters, framew
                                                     </td>
                                                     <td className="px-4 py-3 text-sm capitalize" style={{ color: 'var(--muted-foreground)' }}>{risk.treatment}</td>
                                                     <td className="px-4 py-3 text-[11px]" style={{ color: 'var(--muted-foreground)' }}>
-                                                        {risk.due_date ? new Date(risk.due_date).toLocaleDateString() : '—'}
+                                                        {risk.due_date ? new Date(risk.due_date).toLocaleDateString() : '-'}
                                                     </td>
                                                     <td className="px-4 py-3">
                                                         <div className="flex items-center gap-1">

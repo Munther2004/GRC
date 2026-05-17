@@ -12,7 +12,7 @@ const members = [
 export default function Team() {
     return (
         <>
-            <Head title="Team — GRC System" />
+            <Head title="Team: GRC System" />
             <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground antialiased">
                 <div
                     aria-hidden
@@ -87,7 +87,7 @@ export default function Team() {
                             <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>team.</span>
                         </h1>
                         <p className="mx-auto max-w-2xl text-base" style={{ color: 'var(--muted-foreground)' }}>
-                            Senior Design Project — Networks &amp; Information Security Engineering, PSUT, 2025/2026
+                            Senior Design Project: Networks &amp; Information Security Engineering, PSUT, 2025/2026
                         </p>
                     </div>
 

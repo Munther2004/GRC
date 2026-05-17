@@ -202,7 +202,7 @@ function StatusBadge({ status }: { status: ControlRow['current_status'] }) {
 
 function EvidenceBadge({ status }: { status: ControlRow['evidence_status'] }) {
     if (status === 'none') {
-        return <span className="text-muted-foreground">—</span>;
+        return <span className="text-muted-foreground">-</span>;
     }
     const config = {
         valid: {
@@ -724,7 +724,7 @@ export default function ControlsHub({
                                                         </span>
                                                     ) : (
                                                         <span className="text-muted-foreground">
-                                                            —
+                                                            -
                                                         </span>
                                                     )}
                                                 </td>
@@ -767,7 +767,7 @@ export default function ControlsHub({
                                                         </div>
                                                     ) : (
                                                         <span className="text-xs text-muted-foreground">
-                                                            —
+                                                            -
                                                         </span>
                                                     )}
                                                 </td>
@@ -782,7 +782,7 @@ export default function ControlsHub({
                                                                 className="h-7 cursor-default px-2"
                                                                 style={{ borderColor: 'rgba(245,185,41,0.4)', color: '#f5b929' }}
                                                                 disabled
-                                                                title={`Pending approval — requested by ${ctrl.pending_request.requested_by}`}
+                                                                title={`Pending approval, requested by ${ctrl.pending_request.requested_by}`}
                                                             >
                                                                 <Clock className="mr-1 h-3 w-3" />
                                                                 Pending
@@ -1118,7 +1118,7 @@ export default function ControlsHub({
                                 <span className="font-mono">
                                     {historyModal.ctrl.control_id}
                                 </span>{' '}
-                                — {historyModal.ctrl.title}
+                                : {historyModal.ctrl.title}
                             </p>
 
                             {historyLoading ? (
@@ -1408,7 +1408,7 @@ function formatPlan(ctrl: ControlRow, plan: RemediationPlan): string {
         year: 'numeric',
     });
     return [
-        `AI Remediation Plan — ${ctrl.control_id}: ${ctrl.title}`,
+        `AI Remediation Plan, ${ctrl.control_id}: ${ctrl.title}`,
         `Generated: ${date}`,
         '',
         `Summary: ${plan.summary}`,

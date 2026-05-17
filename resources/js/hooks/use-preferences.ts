@@ -3,11 +3,11 @@ import { useCallback, useSyncExternalStore } from 'react';
 // ── Radius ────────────────────────────────────────────────────────────────────
 export type RadiusPreset = 'none' | 'subtle' | 'default' | 'rounded' | 'pill';
 export const RADIUS_PRESETS: { name: RadiusPreset; label: string; value: string; description: string }[] = [
-    { name: 'none',    label: 'None',    value: '0rem',     description: 'Sharp corners — precise and technical' },
-    { name: 'subtle',  label: 'Subtle',  value: '0.15rem',  description: 'Barely-there rounding — almost sharp' },
-    { name: 'default', label: 'Default', value: '0.25rem',  description: 'The GRC standard — clean and balanced' },
-    { name: 'rounded', label: 'Rounded', value: '0.5rem',   description: 'Friendly rounded corners — approachable' },
-    { name: 'pill',    label: 'Pill',    value: '0.75rem',  description: 'Maximum rounding — modern and soft' },
+    { name: 'none',    label: 'None',    value: '0rem',     description: 'Sharp corners: precise and technical' },
+    { name: 'subtle',  label: 'Subtle',  value: '0.15rem',  description: 'Barely-there rounding, almost sharp' },
+    { name: 'default', label: 'Default', value: '0.25rem',  description: 'The GRC standard: clean and balanced' },
+    { name: 'rounded', label: 'Rounded', value: '0.5rem',   description: 'Friendly rounded corners, approachable' },
+    { name: 'pill',    label: 'Pill',    value: '0.75rem',  description: 'Maximum rounding: modern and soft' },
 ];
 
 // ── Density ───────────────────────────────────────────────────────────────────
@@ -16,19 +16,19 @@ export const DENSITY_PRESETS: { name: DensityPreset; label: string; description:
     {
         name: 'compact',
         label: 'Compact',
-        description: 'Tighter spacing — more content on screen',
+        description: 'Tighter spacing: more content on screen',
         vars: { '--spacing-scale': '0.85', '--line-height-scale': '1.4' },
     },
     {
         name: 'default',
         label: 'Default',
-        description: 'Balanced spacing — the GRC standard',
+        description: 'Balanced spacing: the GRC standard',
         vars: { '--spacing-scale': '1', '--line-height-scale': '1.65' },
     },
     {
         name: 'comfortable',
         label: 'Comfortable',
-        description: 'Generous breathing room — relaxed reading',
+        description: 'Generous breathing room: relaxed reading',
         vars: { '--spacing-scale': '1.15', '--line-height-scale': '1.9' },
     },
 ];
@@ -37,16 +37,16 @@ export const DENSITY_PRESETS: { name: DensityPreset; label: string; description:
 export type MotionPreset = 'full' | 'reduced' | 'none';
 export const MOTION_PRESETS: { name: MotionPreset; label: string; description: string }[] = [
     { name: 'full',    label: 'Full',    description: 'All animations and transitions enabled' },
-    { name: 'reduced', label: 'Reduced', description: 'Subtle transitions only — no decorative motion' },
-    { name: 'none',    label: 'None',    description: 'Zero motion — instant state changes' },
+    { name: 'reduced', label: 'Reduced', description: 'Subtle transitions only, no decorative motion' },
+    { name: 'none',    label: 'None',    description: 'Zero motion: instant state changes' },
 ];
 
 // ── Sidebar width ─────────────────────────────────────────────────────────────
 export type SidebarWidth = 'compact' | 'default' | 'wide';
 export const SIDEBAR_WIDTHS: { name: SidebarWidth; label: string; value: string; description: string }[] = [
-    { name: 'compact', label: 'Compact', value: '14rem', description: 'Narrower sidebar — more content width' },
+    { name: 'compact', label: 'Compact', value: '14rem', description: 'Narrower sidebar: more content width' },
     { name: 'default', label: 'Default', value: '16rem', description: 'Standard sidebar width' },
-    { name: 'wide',    label: 'Wide',    value: '18rem', description: 'Wider sidebar — more label space' },
+    { name: 'wide',    label: 'Wide',    value: '18rem', description: 'Wider sidebar: more label space' },
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────

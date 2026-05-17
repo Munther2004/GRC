@@ -100,7 +100,7 @@ export default function CorporationShow({ corporation, managerCredentials }: Pro
 
     return (
         <AdminLayout>
-            <Head title={`Corporation — ${corporation.name}`} />
+            <Head title={`Corporation: ${corporation.name}`} />
 
             <div className="space-y-6">
                 {/* Header */}

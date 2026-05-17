@@ -62,7 +62,7 @@ export default function CorporateDashboard({ corporation, stats, users }: Props)
 
     return (
         <AppLayout>
-            <Head title={`Corporate Dashboard — ${corporation.name}`} />
+            <Head title={`Corporate Dashboard: ${corporation.name}`} />
 
             <div className="space-y-6">
                 {/* Header */}

@@ -178,8 +178,10 @@ export default function EvidenceIndex({
         );
     };
 
-    const approve = (id: number) => router.post(route('evidence.approve', id));
-    const reject = (id: number) => router.post(route('evidence.reject', id));
+    const approve = (id: number) =>
+        router.post(route('evidence.approve', id), {}, { preserveScroll: true });
+    const reject = (id: number) =>
+        router.post(route('evidence.reject', id), {}, { preserveScroll: true });
 
     const rejectForRelevance = async (id: number) => {
         try {
@@ -188,7 +190,7 @@ export default function EvidenceIndex({
                 ? `Evidence rejected. Control status reverted to "${formatStatus(data.reverted_to)}".`
                 : 'Evidence rejected.';
             setToast({ type: 'success', text: msg });
-            router.reload({ only: ['evidence', 'stats'] });
+            router.reload({ only: ['evidence', 'stats'], preserveScroll: true });
         } catch {
             setToast({
                 type: 'error',

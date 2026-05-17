@@ -248,7 +248,20 @@ class EvidenceController extends Controller
 
         $disk = config('filesystems.evidence_disk');
 
-        if (! Storage::disk($disk)->exists($evidence->file_path)) {
+        // S3-style HeadObject can return 403 (not 404) for a missing object when
+        // the access key lacks ListBucket — Flysystem then throws
+        // UnableToCheckFileExistence. Swallow that and treat as not-found so the
+        // request becomes a clean 404 instead of a 500.
+        try {
+            if (! Storage::disk($disk)->exists($evidence->file_path)) {
+                abort(404, 'File not found.');
+            }
+        } catch (\League\Flysystem\UnableToCheckFileExistence $e) {
+            Log::warning('Evidence download: existence check failed, treating as missing', [
+                'evidence_id' => $evidence->id,
+                'file_path' => $evidence->file_path,
+                'error' => $e->getMessage(),
+            ]);
             abort(404, 'File not found.');
         }
 

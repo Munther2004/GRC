@@ -70,6 +70,10 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            // AWS_VERIFY_PEER=false works around the Laragon/Windows missing-CA
+            // problem locally. Production containers have a real CA bundle and
+            // should leave this true (the default).
+            'http' => ['verify' => env('AWS_VERIFY_PEER', true)],
             'throw' => false,
             'report' => false,
         ],

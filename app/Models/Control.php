@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Control extends Model
 {
     protected $fillable = [
-        'framework_id', 'control_id', 'title', 'description', 'category',
+        'framework_id', 'control_id', 'title', 'description', 'category', 'domain',
         'implementation_guidance', 'is_active',
         'current_status', 'last_remediated_at', 'remediation_notes',
     ];

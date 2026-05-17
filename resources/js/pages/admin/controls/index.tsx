@@ -21,6 +21,7 @@ interface Control {
     control_id: string;
     title: string;
     category: string;
+    domain: string | null;
     is_active: boolean;
     framework: { id: number; short_name: string };
 }
@@ -33,7 +34,13 @@ interface Props {
     };
     frameworks: { id: number; name: string; short_name: string }[];
     categories: string[];
-    filters: { search?: string; framework_id?: string; category?: string };
+    domains: string[];
+    filters: {
+        search?: string;
+        framework_id?: string;
+        domain?: string;
+        category?: string;
+    };
     stats: {
         total: number;
         by_framework: {
@@ -48,12 +55,14 @@ export default function ControlsIndex({
     controls,
     frameworks,
     categories,
+    domains,
     filters,
     stats,
 }: Props) {
     const confirm = useConfirm();
     const [search, setSearch] = useState(filters.search ?? '');
     const [frameworkId, setFramework] = useState(filters.framework_id ?? 'all');
+    const [domain, setDomain] = useState(filters.domain ?? 'all');
     const [category, setCategory] = useState(filters.category ?? 'all');
 
     const applyFilters = (overrides: Record<string, string> = {}) => {
@@ -62,6 +71,7 @@ export default function ControlsIndex({
             {
                 search,
                 framework_id: frameworkId === 'all' ? '' : frameworkId,
+                domain: domain === 'all' ? '' : domain,
                 category: category === 'all' ? '' : category,
                 ...overrides,
             },
@@ -136,8 +146,10 @@ export default function ControlsIndex({
                                 value={frameworkId}
                                 onValueChange={(v: string) => {
                                     setFramework(v);
+                                    setCategory('all');
                                     applyFilters({
                                         framework_id: v === 'all' ? '' : v,
+                                        category: '',
                                     });
                                 }}
                             >
@@ -159,7 +171,31 @@ export default function ControlsIndex({
                                 </SelectContent>
                             </Select>
                             <Select
+                                value={domain}
+                                onValueChange={(v: string) => {
+                                    setDomain(v);
+                                    applyFilters({
+                                        domain: v === 'all' ? '' : v,
+                                    });
+                                }}
+                            >
+                                <SelectTrigger className="w-[220px]">
+                                    <SelectValue placeholder="Domain" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">
+                                        All Domains
+                                    </SelectItem>
+                                    {domains.map((d) => (
+                                        <SelectItem key={d} value={d}>
+                                            {d}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Select
                                 value={category}
+                                disabled={frameworkId === 'all'}
                                 onValueChange={(v: string) => {
                                     setCategory(v);
                                     applyFilters({
@@ -167,8 +203,14 @@ export default function ControlsIndex({
                                     });
                                 }}
                             >
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Category" />
+                                <SelectTrigger className="w-[200px]">
+                                    <SelectValue
+                                        placeholder={
+                                            frameworkId === 'all'
+                                                ? 'Pick a framework first'
+                                                : 'Category'
+                                        }
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
@@ -207,6 +249,7 @@ export default function ControlsIndex({
                                             'Control ID',
                                             'Title',
                                             'Framework',
+                                            'Domain',
                                             'Category',
                                             'Status',
                                             'Actions',
@@ -224,7 +267,7 @@ export default function ControlsIndex({
                                     {controls.data.length === 0 ? (
                                         <tr>
                                             <td
-                                                colSpan={6}
+                                                colSpan={7}
                                                 className="px-4 py-12 text-center text-muted-foreground"
                                             >
                                                 No controls found.
@@ -256,6 +299,9 @@ export default function ControlsIndex({
                                                                 .short_name
                                                         }
                                                     </Badge>
+                                                </td>
+                                                <td className="px-4 py-3 text-xs text-foreground/80">
+                                                    {control.domain ?? '-'}
                                                 </td>
                                                 <td className="px-4 py-3 text-xs text-foreground/80">
                                                     {control.category}

@@ -106,7 +106,20 @@
       "PowerShell(Out-Null *)",
       "PowerShell(Set-Content *)",
       "Bash(start *)",
-      "PowerShell(Get-Process *)"
+      "PowerShell(Get-Process *)",
+      "Bash(grep -n 'protected $fillable\\\\|VALID_ROLES\\\\|ROLE_' app/Models/User.php)",
+      "Bash(grep -n 'fillable\\\\|protected $casts' app/Models/Notification.php)",
+      "Bash(composer dev *)",
+      "Bash(python3 -c \"import sys; sys.stdout.write\\(open\\(r'c:\\\\Users\\\\atrash\\\\GRC\\\\resources\\\\js\\\\hooks\\\\use-preferences.ts','r',encoding='utf-8'\\).read\\(\\)\\)\")",
+      "Bash(python3 -c \"import sys; data=sys.stdin.read\\(\\); print\\([hex\\(ord\\(c\\)\\) for c in data if c in '─—']\\); print\\(set\\(c for c in data if c in '─—'\\)\\)\")",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(composer show *)",
+      "Bash(composer require *)",
+      "Bash(vendor/bin/pint --test)",
+      "Bash(vendor/bin/pint --test app/Services/ControlDomainMapper.php app/Console/Commands/BackfillControlDomain.php app/Http/Controllers/Admin/ControlController.php app/Models/Control.php database/migrations/2026_05_18_120000_add_domain_to_controls_table.php database/seeders/DatabaseSeeder.php)",
+      "Bash(grep -iE \"deploy|procfile|app\\\\\\\\.yaml|app-spec|do-app|forge|ploi|\\\\\\\\.github/workflows\")",
+      "Bash(vendor/bin/pest --filter='FileReputation|SecurityAudit|Evidence' --stop-on-failure)"
     ]
   },
   "enableAllProjectMcpServers": true,

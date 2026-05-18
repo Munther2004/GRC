@@ -339,7 +339,7 @@ reject.post = (args: { evidence: number | { id: number } } | [evidence: number |
     reject.form = rejectForm
 /**
 * @see \App\Http\Controllers\EvidenceController::aiReview
- * @see app/Http/Controllers/EvidenceController.php:271
+ * @see app/Http/Controllers/EvidenceController.php:286
  * @route '/evidence/{evidence}/ai-review'
  */
 export const aiReview = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -354,7 +354,7 @@ aiReview.definition = {
 
 /**
 * @see \App\Http\Controllers\EvidenceController::aiReview
- * @see app/Http/Controllers/EvidenceController.php:271
+ * @see app/Http/Controllers/EvidenceController.php:286
  * @route '/evidence/{evidence}/ai-review'
  */
 aiReview.url = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -387,7 +387,7 @@ aiReview.url = (args: { evidence: number | { id: number } } | [evidence: number 
 
 /**
 * @see \App\Http\Controllers\EvidenceController::aiReview
- * @see app/Http/Controllers/EvidenceController.php:271
+ * @see app/Http/Controllers/EvidenceController.php:286
  * @route '/evidence/{evidence}/ai-review'
  */
 aiReview.post = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -397,7 +397,7 @@ aiReview.post = (args: { evidence: number | { id: number } } | [evidence: number
 
     /**
 * @see \App\Http\Controllers\EvidenceController::aiReview
- * @see app/Http/Controllers/EvidenceController.php:271
+ * @see app/Http/Controllers/EvidenceController.php:286
  * @route '/evidence/{evidence}/ai-review'
  */
     const aiReviewForm = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -407,7 +407,7 @@ aiReview.post = (args: { evidence: number | { id: number } } | [evidence: number
 
             /**
 * @see \App\Http\Controllers\EvidenceController::aiReview
- * @see app/Http/Controllers/EvidenceController.php:271
+ * @see app/Http/Controllers/EvidenceController.php:286
  * @route '/evidence/{evidence}/ai-review'
  */
         aiReviewForm.post = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -418,7 +418,7 @@ aiReview.post = (args: { evidence: number | { id: number } } | [evidence: number
     aiReview.form = aiReviewForm
 /**
 * @see \App\Http\Controllers\EvidenceController::destroy
- * @see app/Http/Controllers/EvidenceController.php:256
+ * @see app/Http/Controllers/EvidenceController.php:271
  * @route '/evidence/{evidence}'
  */
 export const destroy = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -433,7 +433,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\EvidenceController::destroy
- * @see app/Http/Controllers/EvidenceController.php:256
+ * @see app/Http/Controllers/EvidenceController.php:271
  * @route '/evidence/{evidence}'
  */
 destroy.url = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -466,7 +466,7 @@ destroy.url = (args: { evidence: number | { id: number } } | [evidence: number |
 
 /**
 * @see \App\Http\Controllers\EvidenceController::destroy
- * @see app/Http/Controllers/EvidenceController.php:256
+ * @see app/Http/Controllers/EvidenceController.php:271
  * @route '/evidence/{evidence}'
  */
 destroy.delete = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -476,7 +476,7 @@ destroy.delete = (args: { evidence: number | { id: number } } | [evidence: numbe
 
     /**
 * @see \App\Http\Controllers\EvidenceController::destroy
- * @see app/Http/Controllers/EvidenceController.php:256
+ * @see app/Http/Controllers/EvidenceController.php:271
  * @route '/evidence/{evidence}'
  */
     const destroyForm = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -491,7 +491,7 @@ destroy.delete = (args: { evidence: number | { id: number } } | [evidence: numbe
 
             /**
 * @see \App\Http\Controllers\EvidenceController::destroy
- * @see app/Http/Controllers/EvidenceController.php:256
+ * @see app/Http/Controllers/EvidenceController.php:271
  * @route '/evidence/{evidence}'
  */
         destroyForm.delete = (args: { evidence: number | { id: number } } | [evidence: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

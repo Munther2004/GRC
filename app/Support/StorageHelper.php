@@ -4,7 +4,10 @@ namespace App\Support;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\UnableToCheckFileExistence;
+use League\Flysystem\UnableToReadFile;
 
 class StorageHelper
 {
@@ -23,14 +26,23 @@ class StorageHelper
     {
         $fs = Storage::disk($disk);
 
-        if (! $fs->exists($path)) {
-            return null;
-        }
-
         if (self::isLocal($fs)) {
+            try {
+                if (! $fs->exists($path)) {
+                    return null;
+                }
+            } catch (UnableToCheckFileExistence) {
+                return null;
+            }
+
             return $fs->path($path);
         }
 
+        // Remote disk (s3 / DO Spaces). Skip the exists() precheck: per-bucket
+        // Spaces keys lacking ListBucket make HeadObject return 403 instead of
+        // 404, which Flysystem surfaces as UnableToCheckFileExistence even for
+        // present objects. Attempt the download directly and treat a real miss
+        // as null. See commit 1ee92ce.
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $tmp = tempnam(sys_get_temp_dir(), 'grc_remote_');
         if ($extension !== '') {
@@ -39,7 +51,35 @@ class StorageHelper
             $tmp = $withExt;
         }
 
-        file_put_contents($tmp, $fs->get($path));
+        try {
+            $stream = $fs->readStream($path);
+            if ($stream === null) {
+                @unlink($tmp);
+
+                return null;
+            }
+
+            $dest = @fopen($tmp, 'wb');
+            if ($dest === false) {
+                @fclose($stream);
+                @unlink($tmp);
+                throw new \RuntimeException("StorageHelper: unable to open tempfile [{$tmp}] for write");
+            }
+
+            stream_copy_to_stream($stream, $dest);
+            @fclose($stream);
+            @fclose($dest);
+        } catch (UnableToReadFile|UnableToCheckFileExistence $e) {
+            Log::warning('StorageHelper::tempLocalPath: remote read failed, treating as missing', [
+                'disk' => $disk,
+                'path' => $path,
+                'error' => $e->getMessage(),
+            ]);
+            @unlink($tmp);
+
+            return null;
+        }
+
         register_shutdown_function(static function () use ($tmp) {
             @unlink($tmp);
         });
